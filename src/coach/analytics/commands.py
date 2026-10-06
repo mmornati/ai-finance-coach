@@ -78,9 +78,14 @@ def cmd_averages(a, cfg):
     else:
         print("household: no month fully covered by every account that carries spending")
     print(f"{'category':<34}{'EUR/month':>11}{'months':>8}  accounts")
-    for c in r.categories[: a.top]:
+    for c in [c for c in r.categories if not c.net_refund][: a.top]:
         print(f"{c.category:<34}{_fmt(c.monthly_avg_c):>11}{c.n_months:>8}  {', '.join(c.accounts)}"
               + ("   (low confidence)" if c.low_confidence else ""))
+    back = [c for c in r.categories if c.net_refund]
+    if back:
+        print("net refunds (more money back than spent in the window: not spending, not in the lines above):")
+        for c in back:
+            print(f"  {c.category:<32}{_fmt(-c.monthly_avg_c):>11} EUR/month back  over {c.n_months} months")
     if r.unavailable:
         print(f"{len(r.unavailable)} categories have no commonly covered month: " + ", ".join(u["category"] for u in r.unavailable[:6]))
     if r.excluded:

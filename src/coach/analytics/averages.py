@@ -34,6 +34,11 @@ class CategoryAverage(Result):
     lumpy: bool = False                                    # seasonal / lumpy category: needs >= lumpy_min_months
     low_confidence: bool = False
 
+    @property
+    def net_refund(self) -> bool:
+        """Refunds exceed the spending of the window: money BACK, not a spending line (a negative monthly average)."""
+        return self.total_c < 0
+
 
 @dataclass
 class AccountAverage(Result):

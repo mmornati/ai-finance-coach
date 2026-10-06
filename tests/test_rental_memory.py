@@ -59,12 +59,12 @@ def test_what_the_household_pays_as_its_own_rent_is_not_labelled_as_rent_receive
 def test_the_new_rules_hold_only_generic_words_never_a_brand():
     rules = yaml.safe_load((rules_mod.HERE / "rules.yaml").read_text())["merchant_rules"]
     new = [m for m in rules if m["category"] in ("housing.property_tax", "housing.property_management", "housing.property_insurance")]
-    assert len(new) == 3
+    assert len(new) == 4                                      # tax, management (out), management (refund in), insurance
     import re
     for m in new:
         words = set(re.findall(r"[A-Z]{3,}", m["match"].replace("\\s", " ")))
         assert words <= {"TAXE", "FONCI", "FONC", "ERE", "ERES", "GESTION", "LOCATIVE", "HONORAIRES", "FRAIS", "PNO", "PROPRIETAIRE", "NON", "OCCUPANT", "GLI",
-                         "GARANTIE", "DES", "LOYERS", "LOYER", "IMPAYES", "IMPAYE", "DE", "GERANCE", "LOCATIVE", "IMMOBILIER", "DEPOT", "CAUTION", "REMBOURSEMENT", "REMBT", "RBT", "REGULARISATION"}, words
+                         "GARANTIE", "DES", "LOYERS", "LOYER", "IMPAYES", "IMPAYE", "DE", "GERANCE", "LOCATIVE", "IMMOBILIER", "DEPOT", "CAUTION", "REMBOURSEMENT", "REMBT", "RBT", "REGULARISATION", "AVOIR", "ANNULATION"}, words
 
 
 def test_an_older_user_copy_gets_the_new_leaves_with_merge_package(tmp_path, monkeypatch):

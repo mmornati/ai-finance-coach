@@ -22,7 +22,7 @@ describe("money", () => {
     expect(nbsp(fmtMoney("5", { signed: true, locale: "fr-FR" }))).toBe("+5,00 €");
     expect(nbsp(fmtMoney("0", { signed: true, locale: "fr-FR" }))).toBe("0,00 €");
     expect(nbsp(fmtMoney("1234.56", { round: true, locale: "fr-FR" }))).toBe("1 235 €");
-    expect(nbsp(fmtMoney("12300", { compact: true, locale: "en-GB" }))).toBe("€12.3K");
+    expect(nbsp(fmtMoney("12300", { compact: true, locale: "en-GB" }))).toMatch(/^€12\.3[kK]$/); // the ICU of Node 22 says "k", newer "K"
   });
   it("shows a dash for a missing amount, never 0", () => {
     expect(fmtMoney(null)).toBe("–");

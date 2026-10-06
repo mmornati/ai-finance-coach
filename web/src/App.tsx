@@ -94,7 +94,20 @@ function Landing() {
   return to ? <Navigate to={to} replace /> : <Dashboard />;
 }
 
-function Routed() {
+/** A one-time login link opened while a session is already valid (E13 hand test): not a page. Go home and drop the fragment so the unused token does
+ *  not linger in the address bar or the history. The token is left unused (it expires); nothing is consumed silently. */
+export function LoginRedirect() {
+  useEffect(() => {
+    try {
+      window.history.replaceState(window.history.state, "", "/");
+    } catch {
+      /* history blocked: the redirect below still leaves the page */
+    }
+  }, []);
+  return <Navigate to="/" replace />;
+}
+
+export function Routed() {
   const { locale } = usePrefs();
   const user = useUser();
   if (user?.role === "child") {
@@ -103,6 +116,7 @@ function Routed() {
       <div key={locale}>
         <BrowserRouter>
           <Routes>
+            <Route path="login" element={<LoginRedirect />} />
             <Route path="*" element={<KidHome />} />
           </Routes>
         </BrowserRouter>
@@ -113,6 +127,7 @@ function Routed() {
     <div key={locale}>
       <BrowserRouter>
         <Routes>
+          <Route path="login" element={<LoginRedirect />} />
           <Route element={<Layout />}>
             <Route index element={<Landing />} />
             <Route path="transactions" element={<Transactions />} />

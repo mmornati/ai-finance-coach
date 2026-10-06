@@ -31,8 +31,17 @@ merchant_rules:
   - match: '\bTAXE\s+FONCI(ERE|ERES)\b|\bTAXE\s+FONC\b'
     category: housing.property_tax
   # a bare "frais de gestion" is also a bank, life-insurance or PEA fee: the words need a rental context in the same label
+  # Direction matters (E13 review): management words on a payment that LEAVES are fees; on money that COMES IN they are the agency paying the owner the rent
+  # it collected ("compte rendu de gestion", "reversement ... gerance"), unless the label says it is a refund / adjustment of fees.
   - match: '\bGESTION\s+LOCATIVE\b|\bGERANCE\b|\b(HONORAIRES?|FRAIS)\s+(DE\s+)?GESTION\b(?=.*\b(LOCATIVE|LOYERS?|GERANCE|IMMOBILIER)\b)'
+    direction: out
     category: housing.property_management
+  - match: '(?=.*\b(REMBOURSEMENT|REMBT|RBT|REGULARISATION|AVOIR|ANNULATION)\b)(?=.*(\bGESTION\s+LOCATIVE\b|\bGERANCE\b|\b(HONORAIRES?|FRAIS)\s+(DE\s+)?GESTION\b))'
+    direction: in
+    category: housing.property_management        # a refund of management fees: a refund of that cost (netted, and shown as a refund, not as spending)
+  - match: '\bGESTION\s+LOCATIVE\b|\bGERANCE\b|\b(HONORAIRES?|FRAIS)\s+(DE\s+)?GESTION\b(?=.*\b(LOCATIVE|LOYERS?|GERANCE|IMMOBILIER)\b)'
+    direction: in
+    category: income.rental
   - match: '\bPNO\b|\bPROPRIETAIRE\s+NON\s+OCCUPANT\b|\bGLI\b|\bGARANTIE\s+(DES\s+)?LOYERS?\s+IMPAYES?\b|\bLOYERS?\s+IMPAYES?\b'
     category: housing.property_insurance
   - match: '\bCOPROPRIETE\b|\bCHARGES\s+DE\s+COPRO\b'
@@ -48,7 +57,7 @@ merchant_rules:
   - match: '\bSYNDIC(AT)?\b'
     category: housing.property_charges
   # money received from a property manager = rent collected on a rental flat (direction-aware rule)
-  - match: '\b(FONCIA|CITYA|NEXITY|ORPI|LAFORET)\b'
+  - match: '^(?!.*\b(REMBOURSEMENT|REMBT|RBT|REGULARISATION|AVOIR|ANNULATION)\b).*\b(FONCIA|CITYA|NEXITY|ORPI|LAFORET)\b'      # an agency refund / adjustment is not rent
     direction: in
     category: income.rental
   - match: '^PRIME PARRAINAGE'

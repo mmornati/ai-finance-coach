@@ -217,3 +217,22 @@ def test_the_wizard_bank_step_in_a_container_offers_the_callback_flow_and_copy_p
     W.step_connect(ctx)
     assert calls == [("Bank A", "FR", True)]                                                          # copy-paste fallback
     assert W.CONTAINER_COMMANDS["connect"].startswith("docker compose run --rm -p 127.0.0.1:8443:8443 coach connect")
+
+
+def test_no_cli_hint_is_html_escaped(eb_cfg, monkeypatch):
+    """The hints are terminal text: `<that url>` must never come out as `&lt;that url&gt;` (or any other entity)."""
+    import re
+    for in_c in (True, False):
+        monkeypatch.setattr(home_mod, "in_container", lambda v=in_c: v)
+        lines = []
+        con = connect(eb_cfg, insecure=True, create=True)
+        auth.connect_flow(con, FakeClient(), eb_cfg, "Bank", "FR", 90, no_server=True, no_browser=True, out=lines.append)
+        done = []
+        auth.print_completion({"session_id": "s", "bank": "B", "valid_until": "x", "accounts": [], "retired": [], "orphans": []}, done.append)
+        text = "\n".join(lines + done + [auth.finish_hint(), auth._friendly(ApiError(400, "x"))])
+        assert "<that url>" in text and not re.search(r"&(lt|gt|amp|quot|#\d+);", text)
+        for msg in ("no ?code=",):
+            try:
+                auth.parse_finish_arg(con, "https://localhost:8443/callback")
+            except auth.ConnectError as e:
+                assert "<address>" in str(e) and not re.search(r"&(lt|gt|amp|quot|#\d+);", str(e))

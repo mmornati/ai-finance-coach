@@ -126,7 +126,8 @@ def test_notify_builds_argv_and_never_interpolates(monkeypatch):
     assert all('do shell script' not in part for part in seen[0][:-2])
 
 
-def test_default_runner_is_blocked_in_tests():
+def test_default_runner_is_blocked_in_tests(monkeypatch):
+    monkeypatch.setattr(notify.sys, "platform", "darwin")              # off macOS the function returns before any runner (CI runs on Linux)
     with pytest.raises(AssertionError, match="must not run"):
         notify.notify_macos("x")
 

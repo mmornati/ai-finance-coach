@@ -446,6 +446,9 @@ def _coverage_averages(con, cfg) -> None:
     if r.categories:
         print("\nmonthly average by category over the months covered by the accounts that carry it "
               "(one-offs excluded, refunds netted; `coach averages` for the accounts, `coach coverage` for the base):")
-        for c in r.categories[:25]:
+        for c in [c for c in r.categories if not c.net_refund][:25]:
             print(f"  {c.category:<34}{c.monthly_avg_c / 100:>9.0f}/month  {c.total_c / 100:>9.0f} total  "
                   f"over {c.n_months} months" + ("  (few months)" if c.low_confidence else ""))
+        for c in [c for c in r.categories if c.net_refund]:
+            print(f"  net refund: {c.category:<26}{-c.monthly_avg_c / 100:>9.0f}/month back  {-c.total_c / 100:>9.0f} total "
+                  f"over {c.n_months} months (more money back than spent: not spending)")

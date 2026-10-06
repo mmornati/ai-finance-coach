@@ -223,7 +223,8 @@ def test_the_migration_labels_and_checks_the_insights_that_already_exist(con):
 # ---------------------------------------------------------------- the web app and the CLI
 
 
-def test_a_flagged_answer_carries_the_banner_in_the_stream_and_in_the_job(ctx):
+def test_a_flagged_answer_carries_the_banner_in_the_stream_and_in_the_job(ctx, monkeypatch):
+    monkeypatch.setattr(WHICH, lambda name: "/usr/bin/claude")        # the backend must look configured on a machine without `claude` (CI)
     text = "Pour votre épargne, vous devriez placer 200 euros par mois dans un ETF sur le MSCI World."
     ctx.state.coach_jobs.runner = fake_runner(text)
     ev = parse(ctx.post("/coach/stream", {"question": "Où placer mon épargne ?"}).text)
@@ -237,7 +238,8 @@ def test_a_flagged_answer_carries_the_banner_in_the_stream_and_in_the_job(ctx):
     assert ctx.sql("SELECT COUNT(*) FROM compliance_events")[0][0] >= 1
 
 
-def test_a_clean_answer_is_labelled_but_has_no_banner(ctx):
+def test_a_clean_answer_is_labelled_but_has_no_banner(ctx, monkeypatch):
+    monkeypatch.setattr(WHICH, lambda name: "/usr/bin/claude")        # the backend must look configured on a machine without `claude` (CI)
     ctx.state.coach_jobs.runner = fake_runner("Your spending on groceries rose 12% in September.")
     ev = parse(ctx.post("/coach/stream", {"question": "Why?"}).text)
     ans = next(d for e, d in ev if e == "answer")
@@ -245,7 +247,8 @@ def test_a_clean_answer_is_labelled_but_has_no_banner(ctx):
     assert "AI-generated" in ans["compliance"]["label"]
 
 
-def test_the_insights_feed_shows_the_label_and_the_banner(ctx):
+def test_the_insights_feed_shows_the_label_and_the_banner(ctx, monkeypatch):
+    monkeypatch.setattr(WHICH, lambda name: "/usr/bin/claude")        # the backend must look configured on a machine without `claude` (CI)
     ctx.state.coach_jobs.runner = fake_runner("You should invest in an ETF every month for your savings.")
     ctx.post("/coach/stream", {"question": "Where do I put money?"})
     items = ctx.get("/insights").json()["coach"]["items"]
