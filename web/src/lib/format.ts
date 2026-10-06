@@ -1,24 +1,18 @@
 // Presentation only: the API sends money as decimal strings ("-12.34") computed by the Python analytics; these helpers
 // parse them for display and charts and format them for the chosen locale. Nothing here computes a business figure.
 
-export type Locale = "fr-FR" | "en-GB";
-export const LOCALES: Locale[] = ["fr-FR", "en-GB"];
+import { LOCALES, type Locale } from "@/i18n/languages";
 
-let current: Locale = "fr-FR";
+// The dates-and-numbers locale follows the interface language (src/i18n/languages.ts lists each language with the locale it implies).
+export { LOCALES };
+export type { Locale };
+
+let current: Locale = "en-GB";
 export function setLocale(l: Locale) {
   current = l;
 }
 export function getLocale(): Locale {
   return current;
-}
-export function initialLocale(): Locale {
-  try {
-    const v = localStorage.getItem("coach.locale");
-    if (v === "fr-FR" || v === "en-GB") return v;
-  } catch {
-    /* storage blocked */
-  }
-  return "fr-FR";
 }
 
 /** "-1234.50" -> -1234.5; null/undefined/garbage -> null. */

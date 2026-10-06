@@ -1,4 +1,5 @@
 import { lazy, ReactNode, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PrefsProvider, ScopeProvider, ToastProvider, UserProvider, usePrefs, useScope, useUser } from "@/lib/app";
@@ -6,7 +7,8 @@ import { Layout } from "@/components/Layout";
 import { ApiError, api, UNAUTHORIZED_EVENT } from "@/lib/api";
 import { Login } from "@/components/Login";
 import { Spinner } from "@/components/ui";
-import type { Locale } from "@/lib/format";
+import { hasSavedLanguage, setLanguage } from "@/i18n";
+import { languageFromTag } from "@/i18n/languages";
 import type { SessionInfo } from "@/api/types";
 
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
@@ -44,6 +46,7 @@ export const queryClient = new QueryClient({
 
 /** Nothing but the login screen is shown until the server accepted a session (one-time link, see Login). */
 function AuthGate({ children }: { children: (user: SessionInfo["user"]) => ReactNode }) {
+  const { t } = useTranslation();
   const [state, setState] = useState<"checking" | "in" | "out" | "down">("checking");
   const [user, setUser] = useState<SessionInfo["user"]>(null);
   const check = () =>
@@ -60,12 +63,12 @@ function AuthGate({ children }: { children: (user: SessionInfo["user"]) => React
     window.addEventListener(UNAUTHORIZED_EVENT, lost);
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, lost);
   }, []);
-  if (state === "checking") return <div className="grid min-h-dvh place-items-center"><Spinner label="Starting" /></div>;
+  if (state === "checking") return <div className="grid min-h-dvh place-items-center"><Spinner label={t("app.starting")} /></div>;
   if (state === "out") return <Login onDone={() => { queryClient.clear(); void check(); }} />;
   if (state === "down")
     return (
       <div className="grid min-h-dvh place-items-center p-6 text-center text-sm text-muted">
-        <p>The app server is not reachable. Is <code>coach ui</code> still running? Reload once it is back.</p>
+        <p><Trans i18nKey="app.serverDown" components={{ code: <code /> }} /></p>
       </div>
     );
   return <>{children(user)}</>;
@@ -74,13 +77,16 @@ function AuthGate({ children }: { children: (user: SessionInfo["user"]) => React
 /** The preferences stored for this login (E14-8) are applied once at sign-in: theme, language, the default person view. */
 function ApplyUserPrefs() {
   const user = useUser();
-  const { setTheme, setLocale } = usePrefs();
+  const { setTheme } = usePrefs();
   const { scope, setScope } = useScope();
   useEffect(() => {
     if (!user) return;
     const p = user.prefs;
     if (p.theme === "light" || p.theme === "dark" || p.theme === "system") setTheme(p.theme);
-    if (p.locale === "fr-FR" || p.locale === "en-GB") setLocale(p.locale as Locale);
+    // the stored value is a locale tag ("fr-FR", "en-GB", "it-IT") or a language code: both name a language. A language picked in
+    // this browser wins, and the login's one is not saved locally, so it keeps being followed until the person picks one here.
+    const lang = languageFromTag(p.locale);
+    if (lang && !hasSavedLanguage()) void setLanguage(lang, { persist: false }).catch(() => undefined);
     if (user.role === "adult" && p.default_member && !scope.member && !localStorage.getItem("coach.scope")) setScope({ ...scope, member: p.default_member });
     // once per login
     // eslint-disable-next-line react-hooks/exhaustive-deps

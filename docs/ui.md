@@ -369,5 +369,5 @@ Remote use, step by step: `tailscale serve --bg 8765` (HTTPS in front of the loo
 * Documents (loan offers, contracts) cannot be uploaded from the page yet; use `coach memory doc add` / `doc extract`.
 * The net-worth history shows only what can be known (see [loans.md](loans.md)): bank balances rebuilt from the transactions, loans from their schedules, manual assets from their own date.
 * The coach answers one question at a time and has no conversation memory (each question stands alone).
-* Strings are English only; dates and numbers follow the chosen locale.
+* The interface is available in English, French and Italian (the language in the header also sets the format of dates and numbers, see [i18n.md](i18n.md)). The migration of the pages is in progress: a page not yet migrated, text sent by the server and category names are still English.
 * The offline shell shows the app frame only; data needs the local server.

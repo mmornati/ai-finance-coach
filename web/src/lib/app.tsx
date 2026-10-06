@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { getLocale, initialLocale, Locale, setLocale as setGlobalLocale } from "./format";
+import i18n, { currentLanguage, setLanguage as applyLanguage } from "@/i18n";
+import { localeOf, type LanguageCode, type Locale } from "@/i18n/languages";
 
 /* ------------------------------------------------------------------ theme */
 export type ThemePref = "system" | "light" | "dark";
@@ -17,18 +18,24 @@ function readPref(): ThemePref {
 interface PrefsCtx {
   theme: ThemePref;
   setTheme: (t: ThemePref) => void;
+  /** the interface language (strings AND the dates / numbers format) */
+  language: LanguageCode;
+  setLanguage: (l: LanguageCode) => void;
+  /** the Intl locale the language implies: changes with the language, so it is also what remounts the page tree */
   locale: Locale;
-  setLocale: (l: Locale) => void;
 }
 const Prefs = createContext<PrefsCtx | null>(null);
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemePref>(readPref);
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    const l = initialLocale();
-    setGlobalLocale(l);
-    return l;
-  });
+  // the language itself lives in i18next (initialised before the first render, see main.tsx); the provider mirrors it
+  const [language, setLanguageState] = useState<LanguageCode>(currentLanguage);
+  useEffect(() => {
+    const sync = () => setLanguageState(currentLanguage());
+    i18n.on("languageChanged", sync);
+    sync();
+    return () => i18n.off("languageChanged", sync);
+  }, []);
   const setTheme = useCallback((t: ThemePref) => {
     setThemeState(t);
     try {
@@ -40,17 +47,10 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     if (t === "system") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
   }, []);
-  const setLocale = useCallback((l: Locale) => {
-    setGlobalLocale(l);
-    setLocaleState(l);
-    try {
-      localStorage.setItem("coach.locale", l);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-  const v = useMemo(() => ({ theme, setTheme, locale, setLocale }), [theme, setTheme, locale, setLocale]);
-  // the key remounts the tree on a locale change so every formatted value is recomputed
+  const setLanguage = useCallback((l: LanguageCode) => void applyLanguage(l).catch(() => undefined), []);
+  const locale = localeOf(language);
+  const v = useMemo(() => ({ theme, setTheme, language, setLanguage, locale }), [theme, setTheme, language, setLanguage, locale]);
+  // the pages are keyed by the locale (App.tsx): a language change remounts them so every formatted value is recomputed
   return <Prefs.Provider value={v}>{children}</Prefs.Provider>;
 }
 

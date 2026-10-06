@@ -5,6 +5,13 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 1 of 5 (see `docs/i18n.md`)
+- The web app has one **language** setting (English, French, Italian) in the header and the "More" sheet; it replaces the "dates and numbers" selector and sets the interface text, the date / number / money format (`en-GB`, `fr-FR`, `it-IT`) and `<html lang>`.
+  The choice is saved in the browser (the former `coach.locale` value is migrated); by default the first supported language of the browser is used, else English.
+- `i18next` and `react-i18next`, bundled JSON files under `web/src/locales/<language>/<namespace>.json`, typed keys, a single language registry (`web/src/i18n/languages.ts`): adding a language is a folder of JSON files and one entry.
+  A completeness test fails when a translation misses a key, a plural form or a `{{variable}}`.
+- Translated in this step: the navigation, the header, the sign-in page and the shared components (dialogs, charts, transaction panel, loan dialog, item forms). The pages follow in steps 2 and 3, the text sent by the server in step 4.
+
 ### Changed: release hygiene and hardening (security scan of 2026-10-06)
 - The project is licensed under MIT (`LICENSE`); the security contact is GitHub's private vulnerability reporting; the repository URL is set in `pyproject.toml`.
 - CI actions are pinned to commit SHAs, Dependabot watches uv, pnpm, GitHub Actions and Docker; the Docker base images are pinned by digest.
