@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "finance": {
+      "command": "uv",
+      "args": ["run", "coach", "mcp", "serve"],
+      "env": {}
+    }
+  }
+}

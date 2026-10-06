@@ -1,0 +1,20 @@
+# Who is in the household. Names stay local: a model only sees pseudonyms (adult-1, kid-1).
+# Add members with `coach memory member add --id ID --name NAME --role adult|child [--birth-year YYYY]`
+# or in the web app (Setup).
+members: []
+
+# Optional, once members exist (docs/household.md):
+#
+# members:
+#   - { id: parent-a, name: First Parent, role: adult }
+#   - { id: kid-a, name: First Kid, role: child, pocket_money: { amount: 10, period: monthly, day: 5 } }
+#
+# attribution:        # who a transaction belongs to: a manual reassignment, then the first matching rule, then the owner of the account
+#   - { id: kid-a-prepaid, member: kid-a, match: { account: PREPAID_ACCOUNT_UID_OR_LABEL } }
+#   - { id: kid-a-card, member: kid-a, match: { account: SHARED_ACCOUNT, card_last4: "0000" } }
+#
+# kid_budgets:        # weekly or monthly limits; alerts stay in the local feed
+#   - { id: kid-a-weekly, member: kid-a, period: weekly, limit: 15 }
+#
+# allocations:        # shared costs split by rule: equal, income, custom
+#   - { id: housing, title: Housing, match: { group: housing }, method: income }

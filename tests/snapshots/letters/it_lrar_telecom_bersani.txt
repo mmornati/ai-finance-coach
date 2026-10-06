@@ -1,0 +1,42 @@
+Jeanne Exemple
+12 rue de l'Exemple
+59000 Montfort-Test
+jeanne.exemple@example.org
+
+TelcoItalia Test
+Ufficio disdette
+[indirizzo del servizio disdette]
+
+[città], 5 ottobre 2026
+
+Raccomandata A/R n. [numero della raccomandata]
+
+Oggetto: recesso dal contratto n. TI-9 (servizi di telecomunicazioni)
+
+Spett.le TelcoItalia Test,
+
+In qualità di intestatario del contratto n. TI-9 (servizi di telecomunicazioni), Vi comunico con la presente la mia decisione di esercitare il recesso dal contratto stesso con effetto allo scadere del preavviso di 30 giorni dalla ricezione della presente.
+
+Il recesso è esercitato ai sensi dell'art. 1 del D.L. 7/2007 (c.d. decreto Bersani), convertito con modificazioni dalla L. 40/2007, senza penali, salvo i soli costi giustificati dai costi reali dell'operatore, con preavviso non superiore a trenta giorni.
+
+Vi prego di:
+- confermarmi per iscritto la presa in carico della richiesta e la data di efficacia;
+- interrompere ogni addebito a partire da tale data;
+- indicarmi le modalità di restituzione delle apparecchiature;
+- rimborsarmi, se del caso, la parte di canone o di importo pagata anticipatamente e non goduta.
+
+In attesa di un Vostro riscontro scritto, porgo distinti saluti.
+
+Firma:
+
+Jeanne Exemple
+
+=== to complete ===
+town / city
+provider's cancellation address
+registered mail number
+=== notes ===
+Inviala con raccomandata A/R e conserva la ricevuta; completa i [campi] tra parentesi quadre.
+Bozza generata localmente a partire da regole generali di diritto dei consumatori: verifica con il contratto e la fonte ufficiale prima dell'invio. Nulla è stato inviato.
+=== legal basis ===
+it-bersani-telecom | D.L. 7/2007 conv. L. 40/2007 art. 1 (Bersani), AGCOM rules | reviewed 2026-10

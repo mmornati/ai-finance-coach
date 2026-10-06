@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------------------------------------------------------------------
+# What must NEVER be published (E13-4). `coach dev release-check` applies these rules to decide which files are scanned for
+# personal data, so a path ignored here is a path nobody will review: keep this file and docs/release.md consistent.
+# ---------------------------------------------------------------------------------------------------------------------------
+
+# personal data: keep only the structure/templates of memory/ (the packaged skeleton lives in src/coach/templates/memory/)
+memory/*
+!memory/README.md
+!memory/liabilities/
+memory/liabilities/*
+!memory/liabilities/_template.yaml
+!memory/contracts/
+memory/contracts/*
+!memory/contracts/_template.yaml
+**/data/
+.env
+*.pem
+
+# local configuration (config.example.toml is the committed template; `coach init` copies it)
+config.toml
+# your editable copies of the packaged taxonomy / rules (config/import_profiles/ holds shipped examples and IS committed)
+config/taxonomy.yaml
+config/rules.yaml
+# your agent permission file: it holds absolute paths of your machine. The shareable template is docs/claude-settings.example.json
+.claude/settings.json
+.claude/settings.local.json
+
+# E11-2: secrets and web-app state must never be committed, wherever a stray copy ends up
+*.key
+ui-*.json
+.env.*
+!.env.example
+coach-export-*
+*.zip.enc
+setup-state.json
+# E13-4: the LOCAL list of terms that identify your household (coach dev hygiene --build-terms): never publish it
+hygiene-terms*
+
+# docker: the compose volumes and the secrets folder (docs/docker.md)
+/coach-home/
+/secrets/
+docker-compose.override.yml
+
+# database copies and backups
+*.plaintext.bak
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.encrypting
+*.importing
+backups/
+*.tar.enc
+*.enc
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+*.bak
+dist/
+build/
+
+# web app: dependencies and the production build. The build is NOT committed: CI, the Dockerfile and the release procedure
+# (docs/release.md) run `pnpm build`, and the wheel includes it (pyproject: artifacts). In a checkout: `cd web && pnpm install && pnpm build`.
+web/node_modules/
+web/dist/
+src/coach/api/static/
+
+# tools
+.DS_Store
+graphify-out/

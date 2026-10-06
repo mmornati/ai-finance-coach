@@ -1,0 +1,5424 @@
+{
+ "bank": "CIC",
+ "parser": "cic",
+ "synthetic": true,
+ "generator": "coach eval fixtures synth",
+ "version": 1,
+ "seed": 12,
+ "account": {
+  "name": "M OU MME CLAUDIO JOEL",
+  "iban": "FR0030090765207098107412328",
+  "country": "FR",
+  "currency": "EUR"
+ },
+ "household": {
+  "holders": [
+   [
+    "CLAUDIO",
+    "JOEL"
+   ],
+   [
+    "CLAUDIO",
+    "LAETITIA"
+   ],
+   [
+    "CLAUDIO",
+    "ELENA"
+   ],
+   [
+    "CLAUDIO",
+    "PAOLO"
+   ],
+   [
+    "JOEL",
+    "PAOLO"
+   ]
+  ],
+  "family": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "first_names": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "own_banks": {
+   "FORTUNEO": "Fortuneo",
+   "CIC": "CIC",
+   "REVOLUT": "Revolut"
+  }
+ },
+ "transactions": [
+  {
+   "tx": {
+    "entry_reference": "23113108195373554-32h256n404os3d1971c64qa7ls8s33n1eplo8f31i5q51776b0576r538291863c",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 08892 684636 92"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "24910662580151129-75l352c658zm6z5675s16lj8st5c36o2ywuc0n85s4h27054k9206s181363559r",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 24620 334771 94"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "35670537718390735-94k917k903dc1z5493b05lb7ay1j82y4hdra0t36z2p75514g4766t986270652v",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 39841 486605 37"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "40316960369868536-86u552k367ue5a0829l27rr7oi7z67v8simz3w80o4y18382l6696v243384122p",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 81461 044088 52"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "42303958939632764-46o903l687bm4i0336o00ko0kc7t84d2rzyv3y53h1g69988t8604x579988690h",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 79592 637446 81"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "48853762877110918-69q232y510vx9i1986q27kx2ji0m72f9rfgg9a68o5g11416o4527d692435834o",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 93767 010180 15"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "64588322452048261-24v708v635dc8y9314f80za2wk5x06z7cezx7j50z1l19789d2712n584213598x",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 88952 427669 06"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "84280911012745596-75r808u489yd1d2303o76ka8qp3s29d7cjke5o13g2o39074k2567f204764151y",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 41590 139653 35"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "92396720226685489-27q243k096jh2a9637d90wv1zl3k55a1gzov0v47v3g29421w0523q469314256m",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 80255 524480 60"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "13611311757007247-40o461b528vs5j7186u61vu1cs2u02k4knfo8v33c3o62159f5868w945764131q",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 6",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 80"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "15349614830475763-45p272h508yi7s2984f01tq3wl2t78n0nkkg6a65l2p77602j9524w385910901f",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 0",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 41"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "36820001826483178-18f412m050ed1a4544x51vs2ot1w66l4lddk4h54y7p50116a2377v866112972w",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 7",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 48"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "49543181314607130-94f540c453kx1h1094i90dw7ss9t50g6zjpj7d38l4s48565d9958k812717204r",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 8",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 43"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63251040798024700-37n630o265bf3c4695r94hh6ag0p67w8fvzr7s56u2x21010q9101t670369747p",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 4",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 91"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "65257770158881767-44a942p638ye0r5332u54nw7ft1h60e2effu7j54q8c67813b2930p195598768n",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 9",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 37"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "70583110135784169-55b514y174zr4g7032m98ic4gk2m42v6zfce4x05e0y26927y1334s180692822d",
+    "booking_date": "2024-07-19",
+    "value_date": "2024-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 4",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 48"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "02413894842935393-50n810v127qp4s5784h84hd1vg8f85l5name9t07l3o46229p7292w541118497r",
+    "booking_date": "2024-08-02",
+    "value_date": "2024-08-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "459.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-18AF5W5494SU9332N4D29628"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "20955557868391688-05e528p341np1l1848s82ju8ga3y51c6nugm5x91s2y70110d2205e245519382s",
+    "booking_date": "2024-08-02",
+    "value_date": "2024-08-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "459.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-10NB3S1624NH7143I4F31319"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "46204515808144209-31m605g503qt2k1955g84al8oe1b84n8plbp7a36s8c69649b3971n011310915z",
+    "booking_date": "2024-08-02",
+    "value_date": "2024-08-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "459.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-92FA9W7113WD1442A0G55671"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "64127545120236198-11d851w814lz5l3441x44nf1uz8q86y8vbfa0p49g9y77681a4740v626538298c",
+    "booking_date": "2024-08-02",
+    "value_date": "2024-08-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "459.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-27PO5U7283TO6678K3V55882"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "26517991834282761-74e304x678cg1o3745h77vg7wd6e41l0fgpr6g26f4y29888w7896p097892830x",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "47961982586579107-61m706k814sv2y4739h07uf4zp2b28c8dpzy2h07b2h08383p5192d207741882c",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "59951461783790568-64d895w206nc7z8018q74be4kl6j18i3cdpg3x22k7e84120l5873m196889540n",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61811030850295922-14v408d402bf7k3279y92ba9vq2c77r7uyct9h45h9f46773u6552p172484894z",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "66151071076948776-93r762u390oy5f3748t13ef9af7r63t6vnff5r75v2o20813z9469j757619018d",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "72586034299053122-10q741t933yj6p3416d05nd0ez2s11c1zxju9s87d3f15587u0927k595011286o",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "93012056214583428-03t324o851fu9o7009a12gc5pe3j22y2ybjq7i47e8g35665q3594t796720573t",
+    "booking_date": "2024-08-08",
+    "value_date": "2024-08-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "05241792403317656-55t675g989lc3k6247e87xi4kn1d97f5rett9i65j5l58971f9635t595245560q",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "10713277043510402-41y830t141cj5d0532b21gh0xu2k50g4zjhg6b49p9y62388o9597c131112949f",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "15527490861107653-53o755t142tw1n4855u39jj9tf0c52q6rljq6d61y7j80055v6106a059068628v",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "22016520503175991-22z333n949on5o3992l96hv9hw7j89c3chjb3j11i5p85905z7833k579665692n",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "59353536455872519-73t010e103iq9s8017g41cu1pt3q00x0wvut7z06h1i65985d5825y812347011y",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61815416272881727-95z638m058sn7s6628e40xo4kh7e80g8virp2a88c7g80968d3459l849045432s",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "79640281467950054-66s455u104rq2x5075r19zy2ka5a77i0wmmf4j02v0g24698m0297u054023749g",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "88548089965063571-45n785x185tw0f6924v18su5ta0e71h8qyzp3l58d7v36062n8917a389559819v",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99261979276259995-62a779o795ol1y8658m92fw0ry9i92o9ykyk1w64r8x52662o2811p644857804n",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "09562931219934843-02j788c763qs0y4031m27va7jt8j69n5aswa8r02v0j92693d0077i171123748q",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7008.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 65377 264264 12"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "15724167612944113-88f472v692ze7x4584y34bi6yt0o69s1kipy9f39p8q74515w0719r646102941s",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7008.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 58758 610234 67"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "40631633291941945-89k921d805zy3f9833v79al7rq8h12q2auhw0a05t4g21244q7693d034911719m",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7008.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 49447 835083 41"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "67103917277068204-28v001v698ft2a8902v89ic3ky8q42o4awpn8i93c8n61134a1238y247852699k",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7008.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 41404 472577 57"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96574593337765395-04g921s116dc7r8437a34xm8sj5r06h2rbvo2z54k6s00691p3366w855203448b",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7008.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 43121 515675 67"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99249454967736248-20k450y770zw9n1220w18oj6sz2s51c9fdlz7f48v2z57481t9500b459380793v",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7008.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 08826 901523 13"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "07703435058297552-93o341e812kh5r6317v30kv2kh4e82f8cfyy7z89h0k16028t7010r821099455g",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-6D69F08LE1R71C32NAG93W9M"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "27429339224459870-83f339n481tn0x2060h82di3ks0m23f9ydsg7l49a8d68785u1511g797998234u",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-1T22V91DB5T66E96JYF49F1B"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "31449727356930639-76s875z477sw8d0145j30tw9uz2v71p7itbm5u44h3j31609v3389e026304015c",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-8O33J95OP8B09V82ZNY19L5I"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "39054039272145408-79a581x277is2t6034n38km9sw4j91h4apvj1l00j3u10573o3846y334410188i",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-5U80G63AM3A46Q22OEV52R6I"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "69855000958887417-60x595t822ui5c8042z19tt9lw7j58u6ntcn7f44a1u80001q6928g847633903m",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-9Y82E67VJ1V58O77BKF61J2N"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "76750695469867584-34b845x822pq5x9605q56wf9ek5l18u6fhrq1u79k0z48930i0969a920784271e",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-2K65P51CX2U16S22RVK73Z6G"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "87951003806212685-85h153t524if6l985a87cu4kt6b44b6yttr3h87n0x21186c5076j683259189p",
+    "booking_date": "2024-09-03",
+    "value_date": "2024-09-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-8W22U14FE6M52A71BLB14D6J"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "14551325127297867-16t215i749gk8e3319k89qk7rw6l05y2wsah6m63v2k45770d3909s480516943j",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "18883115380244707-52x813x945qi3n5983u21cm6cs4w75x9bxpw5s65f5c15498g2055l049689444l",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "51861523633670726-16m569v461uw1c1686e95nk9pw7x63i6pycj7o27t5d78126x1342w416784842f",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "77884359975130904-49c019v658cu3t8673s99bi5px8q81u0ukzy2n61d7w18565b2661s025626017c",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "78716761809714105-84a071v010ce0f1121n16ac6iv0l52k6msnr4b76s7p90310d5744l985825385y",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "26724993665606487-15g324o870ju0y9776k60xp7fg1j63s0shbe9g14z3t03597w6307i928284277n",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "34952205599304681-31f370y234nl5d5350h67kw0jh5u94a1ocdr5d46e6y34307s0273b705926960n",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "45086970623331083-23k791w543oc5t1462r33sa5yy4s18s8bcjw8p06j5l37634i2015e166053738o",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "67494675879695698-80t719k398ak7s6968p44df2gl8h42v7wrij9z14z7k64734y0435q533196847l",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "81427142734133341-39f747e767om5i3398z78vv9wk5m42a1vzjm4p28n9k24660e0718j323186874t",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "86530797350420881-72i128j158kl7f2891d13hi5lc6d56k2qfjh3g21h4r34709f9522f568818820s",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "97026281217571238-01g738n675bu1u8121i01yv7hz8m96c1gcna7q53l0b79130c8543w678898887c",
+    "booking_date": "2024-09-10",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "17499722634547647-88c461a371ld1z5792e41js5cs1h94t3rucj4g80q5l88729w2712l526740738q",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 72089 337103 11"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "40071542209035602-77p903h281nm1q4334c77vb0fg2i65f5qids5v09v9p11501i3728f950675246s",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 43324 325434 94"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "40838179675599567-03m789n846ql6e6050z59dq9qv1w88r2kxrt0c89s8k02958q1472o807278478y",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 69640 992103 10"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "41076026339600387-75l007u180qy0g6666m43hs8qa0c31x9qhxw3i56p3f02049i1108o484599504t",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 80473 958386 60"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "56822418913084144-21q485v127xl5d1826z84an1er2s26c6jkzn7w82x9y02438z4746v018846798k",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 52220 024562 11"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63081463780100827-83k195m899hz4k6686b64rl4nj8i87x3juzb1u60q5a83308c4273e190999382o",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 04240 135813 63"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63827767286923113-51j461t174qb1k2826y58jq7kc1r98x4lakv7d53x7z38980e4358z714619266d",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 13454 775623 35"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96333874964998166-50w310i128vh8v1079z38iv8ai0n59g8akwq5b05y6o70976q4620q785686258k",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 98928 905830 48"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "97988342214376585-04a154t578zk0d4082d99hj2zi5j30w5qhap5o84s1t12173t9027g889155423a",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 36306 840724 20"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99356365572706054-61v811h426je3t7222o76wd4df5h68b9qnhl3m24l3m02811w0436b118988190i",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 00302 753448 57"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "03556182287871913-27k376m292gt3p0183z29ms9qj6v74x8zzsm8h50x6b67260q8439p005608288l",
+    "booking_date": "2024-10-02",
+    "value_date": "2024-10-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-7E1SQ7XK68BNCLMMFGQ65491"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "19420508912460165-99u418h498ou8z1896l89fk6bp0r68y4tdal9d54i0j38584n1645d418871105o",
+    "booking_date": "2024-10-02",
+    "value_date": "2024-10-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-2N0SF9WD31LMWBCJOUO31475"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "27612076749363919-00c865c348fx0s3090n25xx2ig7f98m2eohu3r37c4u18001z1512y354239979l",
+    "booking_date": "2024-10-02",
+    "value_date": "2024-10-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-5W0NV5WF63TVABEYPAQ22345"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63362802301614872-29w781n347bi2b1351e77dt7wy7l55e0kzdh1d79k6u66429d0089t303476726x",
+    "booking_date": "2024-10-02",
+    "value_date": "2024-10-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-6J6FI4VT11SYNXMWCSD36993"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "89789170224736225-77i454f375xs2s1843w43ng8wp5o49p6oqoz9p26j9v98451x7499t214378831y",
+    "booking_date": "2024-10-02",
+    "value_date": "2024-10-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-8G1OP3SX45RSJKSWEOV28121"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "04316301097346042-79x694j352ud3q9121t31lz4vg8p88n2yrct5h28d5q79501d3473c280212856n",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "07122594025776049-49n030o416zl0j3701y93pk0oa4n49v1rdiq9v24f3i97680c0011l806361482a",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "12610453155066917-83k603p206lh9j9649x74vm9sg3n77l0ownn1u39e4b02781q7133k591333320a",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "26593758854077320-31o169h287df8b2720r18cs2uy1t75s6cfus7n30s3v90103p9922j248921064b",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61981712308445810-39h071k585iv7u2523m11ts7ll3v23x6rahl3n78m1e53236s9922l838127471b",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63281521115539199-87t376s606pf6j4240e07sc7od3e78k6eltr4d36m1d75474b3726f261583071x",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "69466647436291015-25c432q992sq8z2756s51nd5zf6u29j3epuo8v40x8f13402t0017j652408890z",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "94599966958294897-21r068c697jm5m6274k73fs2ic4d31c0gljc9m04f3k66804b4843c676315538e",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET DEKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "05495169214625156-49c831g785fu7k9611g45aq0gj7q53s8jhia0l94b6k43697x5113y592636007z",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "16304261792698248-21v195k190ub0z3320o30li3bg5o37k1gtwt0x40x3r30901k9116x714714660q",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "30023109298087010-65g572v125ja7h9724e42xa6kp8e74i9gfru8k86j5i31919s8717q394791035q",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "38068879291145227-32i364t769az5l3050m57xr8lb1x65v3titi3e49b0q85806b1548n438763198f",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "67170905328673537-06e530g507zs4m4976e95in7ak4a12p9gplo3j99u4z57362c1289q970712308i",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "70223237917567903-83e583z262hu8h6659d41xs2av1a45y6exii1q86a5f54219a5363p725248888l",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "85854630687313507-80q554k469bl8r4379n55we0kf9q09y2msvt1z68k1i65249p1489t863926094i",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "95590596127302563-07w463m885zm6n6968n25nt1yy8c50v5kxng7t45y4u25355b4540v323281726v",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96627402377318971-53g352l431bj5j9064w16by1fl7e84p8ecsk6e74g1e81909z9611f593901688m",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "00597480978273608-40b780k668sq0d0024m76fx4ut4j11i8anso5z28c3h43576t3871b595648351v",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 13101 456525 53"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "24356676355141525-72a294w737zc2z5567z46xb3nl4s76n9yunv0m76q3u04132m8426v085491921f",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 81012 709174 00"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "51644170417505862-61q643o593vg9m5806h59yw5ie2p97u8pmqx7j97g2b93066k8654h908728599i",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 04259 207830 47"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "52726056492121573-27t821s925iu6i0194v08rx0pn8d76j7giyi9p15u6c62466k5081g825948709g",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 00162 775977 11"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "59974382895722351-43l354c321mh7v8665w90pj5dn1c94h1xvqa0q28z8q04584j6962x810476117x",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 67244 365506 25"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "79903181339447141-10s800j341xw1u5662m49ip0zs8c97c6kqmo5a54m0b58362i9355t344806567p",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 13593 622838 47"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "83708052253392496-85j832g981po5y4226q79mk1vu8a65d5vkdt6w04a2a01946n5847s024198117z",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 52230 409680 90"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "83973646322804284-84d698s120qc4v0592v04zz3sd8p38k3vqdv5e50m5v78872g0526y533352377k",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 26076 449165 07"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "91950332712864219-35z844p103gp6w9520d45aq7cd5s67o1vjhb2h74a9i10273k7059r876609225k",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 76806 914367 09"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "13566549298669831-48p929z635go9c6983c44hr0lw3y95l6unsl6e30m0c67632j4837o483006843w",
+    "booking_date": "2024-10-18",
+    "value_date": "2024-10-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 4",
+     "E2E-2O1L3GXLPW0E90K6291R98BK",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 57 54",
+     "8103 8 1"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "59401731346730247-56k299j192ie5w8263m26hu5bz8z20d6vtwn0z45n6u64582v8875u537472662r",
+    "booking_date": "2024-10-18",
+    "value_date": "2024-10-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 2",
+     "E2E-6D3Q8ZYQYR3Y65S9241I94IY",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 36 57",
+     "0810 1 6"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "65463636057926267-33j455p526ya1l4911t85xb3kf5f90a8zzfj1o74t0x68605g6735q746673255o",
+    "booking_date": "2024-10-18",
+    "value_date": "2024-10-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 4",
+     "E2E-8Y6M1TRBZG0K80K5458U69GD",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 54 72",
+     "3102 6 1"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "85360247975240466-32a955j197ln5k0948q98aj9rk2b53r3dcct2x65i0n35550u5733t117728378y",
+    "booking_date": "2024-10-18",
+    "value_date": "2024-10-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "823.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SEPA SYNDICAT KEJUZOHAKO 3",
+     "E2E-2I9C5PVOQC6U63F9292C82XK",
+     "JALOZ HEFOLEZEMU SUR LUMIFOJ 84 89",
+     "0690 7 8"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "04491694288683992-41j432c985oy3b1662p61aq5xk6b54n1mqih1i03j6y92366f5384q865156442v",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "23506770385459969-10r675i687um6r8990a04km1sc8e91d8rcef0b59u1z46440l8306d047580247k",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "26086007550976215-50v311x171lo5v4670i39no9lp9i09g2vxlv0z17y2u59456d4465h569368717m",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "33210428731711109-12d448c151vm5g8893k15nn1hs6a61b9xhbj0x05x1t20670v7367d912936946k",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "51942432076736979-40l242b935cb3q5572h43ni4xg4q46i5ixfw8b75y3x46839i0659n488363685p",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "52157131529679986-14m461y837av5p1876l06lr9xh6v79w4kskd6u77t6y80890r1510x669415269k",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63764436411262218-35u196v447vp7z3636l87ih9zl2y91b4tcwy2a28e4g52516k5717r187189560v",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63978742312358271-26p406p359nt6u3469k04wn4rx7s73q2oaba8y61n4f37968z6624i863280312r",
+    "booking_date": "2024-10-26",
+    "value_date": "2024-10-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "137.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL",
+     "VIREMENT INSTANTANE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "30034288217366877-41d972w177jn5o4633c80am8nr7u65z7nebf6o28y0a39041w9054r060019190c",
+    "booking_date": "2024-11-01",
+    "value_date": "2024-11-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-4M00558K6J0348X511U79944",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "34624922452109541-86e514h791ud3k7239n40te6oh1z74h2tlus0a72t6h74562e7359r952547340y",
+    "booking_date": "2024-11-01",
+    "value_date": "2024-11-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-7C75902Q6N2921R884H38781",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "77402136253349452-40n270w690mw7c1056x96jp4ax2e15l4eslp8m09l1m75127q2313h092194781a",
+    "booking_date": "2024-11-01",
+    "value_date": "2024-11-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-1Q57702B2C1504F940O31152",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99329006473349308-67v343l598cf7c7252x53aq3wd6f94g6sjam8k98w9r93946t8298v352236947v",
+    "booking_date": "2024-11-01",
+    "value_date": "2024-11-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-4R10778R8N4604A027T77547",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "04719109194292941-10b419u132oc6q2673e61lo3ev6z18z3miud6i66p4a17314r3402k617652453i",
+    "booking_date": "2024-11-08",
+    "value_date": "2024-11-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "07487224273068155-92q401y319en5z4313b69nk8aa8i00w2nhdg7z55d2k13886b2748x499466484x",
+    "booking_date": "2024-11-08",
+    "value_date": "2024-11-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "57622861923236925-32e685s311wv2n8865q72fb1ki2z39a5lveb0b62c0j34415i1736p682729469s",
+    "booking_date": "2024-11-08",
+    "value_date": "2024-11-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "73440587084524919-20l066v632da0a1774i18bm0vp4i11w1aqgc9w17y4d44292p2616r066209816t",
+    "booking_date": "2024-11-08",
+    "value_date": "2024-11-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "75546869068943539-61m853g998qq7c8998k80zh6bs2z63u0vctm5t94d7x29466a0274y295102589i",
+    "booking_date": "2024-11-08",
+    "value_date": "2024-11-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "90648325491815464-19q707d714ig3y1803k12ob2nm2l70r4drzz9j47b1m48204t2333u347649731p",
+    "booking_date": "2024-11-08",
+    "value_date": "2024-11-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "20911728882103279-56k892v923vi1k8943q02hf9pr1g24d0txyk8k24p7t62623p7107m813321287f",
+    "booking_date": "2024-11-12",
+    "value_date": "2024-11-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "22074005100068474-11j724d150tn3w6008l94tr7tr2c21f0kdvt3y55j5v74089r5127g604122064b",
+    "booking_date": "2024-11-12",
+    "value_date": "2024-11-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "32368485323813408-87d798f906ja7m5611r87rz8mr0q56e0kzcq9i43j6i86810j5451u101219228r",
+    "booking_date": "2024-11-12",
+    "value_date": "2024-11-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "90388383452264750-66w381m841tg8r3055h84qp8ev2f62b5nmim5y79w2z29242l8648z898028176i",
+    "booking_date": "2024-11-12",
+    "value_date": "2024-11-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "00979970510249997-22p599z017lk6h9651h47ey6ju2c31z3xeys6d41w9d46782u3563w622893444o",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 24283 833995 00"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "36046523352141737-73v094p885jp6h3219c53td5ah3x68v0rfrh5e00u4x61857e2002z738626459u",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 54204 180083 08"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61379926110588484-05a537n745bc2l8434i16sl5cq9j75g1gcfd2x70i4n73176g0405d588586850j",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 44933 768270 05"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "67731870838138731-60q169l406vv0n2551i51xq3ft8p72x7pkrx6n70o7z47396g9443i780884218o",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 34540 938343 56"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "68760113192332765-83s385u158wa1q5735x76pw6tx7s26k4sorc6h61g6a45244k6198w605022285i",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 98420 432380 08"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "68976168693241976-73j438q855rj1h2736z59hb5by9t68r2erie8g30d7x55883x0633f438719160t",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 89164 507821 71"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "85668867197707041-93k579o329mj5z6557e98qq4pt8c07n7obkl6t90l3k12381u6387n358243975a",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 69225 005938 44"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96613348102039722-47r334x484wt6h6264l78rl8ho3d31u4yehz3s25j3q92978n2852z834417626a",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 77768 258949 31"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "98036988287291219-80v825h623dz0g4724g68bk6tl6e65a0vuwo5t87i1l32928u7868l537800464k",
+    "booking_date": "2024-11-14",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9105.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 26035 550277 48"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "01088571979197136-86v266e190il4v9983q51di7lk7m60e1yoff2u58f0v28369r2164o386726035r",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-5D6Z1Y48SY43GO6HWP8H7I5B",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "21367535766719400-84h022o215pu4l1223q49lf6ah2g87w2vzil2a33g5d26456z8208x150147251w",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-5I0S6L81IJ45PD4ERR3W7J2V",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "23407745939348181-52q150u908da7i9387q05ry0ni8v99s5xxlz6r10s6o08015b2329n311932669i",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-1E4W1C14MC24YT8KFJ2E8W0F",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "38840933340025508-17o847z489da9n2656c68sn8yo6b49r3rtid1z98f0d12893u6513u461108537u",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-9M0F1E63EP62SE6CGA3A4E9C",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "45163496247767849-38b311h583fb8a4676j90vt8kx6o45c4ixkq0j44g7f50675z9529e180829198b",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-6P0K2E70UV03ND9MYV2F5J4R",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "50464151343857624-01b670r099fg8e9362e27dj6eo8o41v8qyab9m89n6b05288g9229j058516771o",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-1M3S2H14BV34QA7RZW1B4Y2N",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63133394189637107-62j953t232nq4v3271o34sh8me8q43t9ysxi1b11d0z98159m0421k364340418g",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-8W3Q0J48PM02PS1WHT9Q2W1A",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "73747199824529926-77y569m556uq8t3245c83ku9ei6p21r6gnzj4v65g2f75212z8031e205575854n",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-9G3T7S82ON40JH7TKO8X9G5O",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "80286233020128315-67c560y161bw3q2630l18fq2gg1h67r6kxue6y38j3m26754l7698i153000684s",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-9E7R7Z26BV84VV6WEW8C6V9C",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "90271455707497185-90p409a172kd1h8842m47oj9jq9g30g6dvec8u54u0u40593p6722r709236938m",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-3K2Z7L97GG01GQ6HDR4H7K9A",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96012963280027700-44n645h232ss3b9541z36eo4tg2x18x3bkxa5d16g0n02753q0499v848065160j",
+    "booking_date": "2024-12-02",
+    "value_date": "2024-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SAS   UVAPEP HOJOP DE SI",
+     "E2E-4J6C0Y81JU83FD5DSJ0C3D9A",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "04405215252976171-22k432o482es7s3507a39de3jv9t37x6cvwf7t50p2q71397q5259f970854836k",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "30035768522162195-60k745c455ad5n3430n23yw9ax3j10z2azlr1l32n9d11857f2275n122471007b",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "65365469019174215-64q578k411fe5m8733x52dg4wi6k10b9exug1f84g6y34766s3957r338725595x",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "73385506771073007-98q985t791md6h8296d29es2pg9l33u4nxzu0i57c0n36804e4777w919051511i",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "86131649027680563-42x983j126wv9e0113h65fp7pj3c51a5kmzg3i41g3a67260t8337j977344670w",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "91413727171403706-05t635z859kj2z6543q65up2ei5r07a0shux3p92f5j76885l0079o645266363y",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "97106908153462780-65e903a257hu2z3763n69ja4qj4t12s8scns6y27k7g28897e2984j467737858i",
+    "booking_date": "2024-12-09",
+    "value_date": "2024-12-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "00718580584153932-92p348n048sm2i2715h16fw1dk2b20y4stfi0x76i0p46279s6478t767217098x",
+    "booking_date": "2024-12-11",
+    "value_date": "2024-12-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "04673675972294045-89e248r495ne9w0193k78mc0pb2g23o7psop8l54g0t54178s9995n930070640t",
+    "booking_date": "2024-12-11",
+    "value_date": "2024-12-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "63181313419197079-40k080i027ns4v8931s08ic1kj4z73l8tbah5f99l2m12682k1133u133412801l",
+    "booking_date": "2024-12-11",
+    "value_date": "2024-12-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "86799800655031308-99n075f511nz0k9609s26yp2eb9c14k1udqw2f27w9a74207y6175p976453317t",
+    "booking_date": "2024-12-11",
+    "value_date": "2024-12-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "51631858717877289-79n104o461pu3d6695z76ur4gj7r74l0xxsu0p36e9w91696q7517n633209276a",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6311.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 47342 268845 23"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "55049078768702201-70w568m826di8z1467b22rr9cd6s64j7gewv8w60a4q58331l3184q153584655z",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6311.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 45446 722827 67"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "64984716327756063-90e555u476uj4d6800i84lk5gi5x43l3oiwl9w86h2b44329b8718f661931059q",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6311.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 77276 408606 51"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "78453018404388828-75p780l224ym8q5424k51fm4co3z96l3cpjh2d54w0d32083u4926n918813575g",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6311.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 84919 609029 80"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96225618276611039-26a227v569np9j5634l17aj2uq0d03e0ubmh2w05w9j55834t7081n627622788i",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6311.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 99355 119690 21"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "98177257991482866-67s555o495tq0o2947a58qx2nu8z52e9xkzc8s63e4w94860c3867i136747593q",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6311.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET CAP+IN 81271 678082 77"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "05196045582423229-62p664c347aj2n0065w91jm4pe3l35d8udhz9x82g6r35853q2073a482881999n",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-9PP67W2YYOD6B26VM0GA2A72",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "26211141847608708-50c883t655gn1b9280c13hw7gr3b70v6svul4s02j2p06627p7183a172740970i",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-3UX49Y0YKIQ2T64OX0BL6G43",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "28676272050820534-67f448c941aj2d4898y17mj2ic8j48f7fakd3u37e5e07894t1362z108237201o",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-2LY56Z4FYEY0H37YE4CL9Z08",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "36404753837907595-72b796f932lz6l3885b66kn5sl0r88e2oghd7y44e6s26045x2750k795612985h",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-4JL18M2PYNU5H06CZ0AJ2M67",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "38445001684990199-41a903x058hg8f0313r03ur5sf9m74v3dykt1r06b7v92248t8583u864884958p",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-4ZW94E9SQDZ5V79KC1YY0D95",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "62144571421494720-41f816o620ta3w3464q64tr0fa9b84u9pcer2y18k5i59946m1436v459358726b",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-2CV29E1SQAV0Y90NL1LE3J42",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "69927642694399779-30o042w924ng3d4499b05lt4na4w28k9jkqx5r64u3m69610d1568m534841975u",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-6SI11Q8XMVB7I60AU9FG9S87",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "85936671163886633-37p210m214ve3i7657z74ru1gj7v45i3vrdt1p36z1u12648b2190v667323572u",
+    "booking_date": "2025-01-03",
+    "value_date": "2025-01-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "912.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR UVAPEP UJOG ERIKAFU",
+     "E2E-3JW35I4KDFB7F64WJ2LW4V91",
+     "PAIEMENT BIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "00166790976025036-14v846r363kh1f3797y32ud8bc9e66l1qmtr7t60v3e47715j0338n992106084j",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "07463206117729732-36e426n035oj1a3567g35xj0ua5d56i6thcq4w19p8i38995i5485k481966853s",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "08628969259246858-72k234s578og3w5314q78qe0np6o47x5htwm4i68g5b81443c7332v463277317z",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "08926833534889112-66l010l250vm7i4433x49gf8di5d92z1szoz4l45i5g09874l6676k673785138u",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "14670104537283271-20j865h769xm7z5985r91sb1hq7e51x1cwcp0b51j5e96885p8019v501859052l",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "18445948568863239-73n286y527cn1h9649o85wb8tx9p16t4uoay4s16f1d97598j5218j268295822n",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "29897616557888029-94m376n602la1l3834p48st6mu1j36a8xrzs6r71d0j00562z2127j392473550v",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "43872280965653139-86f273z668jh2c0478a02fn1me0d93i5fbfc9s18a7g06176r5418r357525718j",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "47148298104576324-95w239k244qh3j7793d30ic4wk6j12f5aifg2l36m0d96913l5958k942804843o",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "53151443850273542-22y633h743lt7p1675d82az2ng0h88d0lxtx0i96g1l49333l1165b798140756q",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "54359250041162417-49g191c838hw0q8131i16jv2md9y33w6eohx7i13y9x59233c4241a678443636u",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61485781969559001-19o247p798jj5p5317h66xw8si6i55t3klkd6o80u4k51701u5909o016243963u",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "74316005966608343-81a614r334gb2r1239c29xr2xw6c04u3ymrm4u52i4i45830y6951z391791762z",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "80630880480886456-56f101s965il2j0357c85od6xg4j18v7lmok1x48k4v11254q3084i487543726d",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "82446282634571735-65g879m988bi7d0331a03po6co9n08n5ufgw8n03q5o40834x4114c575186351a",
+    "booking_date": "2025-01-08",
+    "value_date": "2025-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "152.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL",
+     "VIREMENT LIBI CIC JOEL ET PAOLO",
+     "VIREMENT DE MR OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "07149517556076101-22c815y246pv1s2545f02ha8qh8c85z4iefp5s49e3h38480z2526c311033032i",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "09402481508979624-85c792j618jv4f2933f09ll4qu6l20i0plnb3h79w5l11270s4846r578327855h",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "15530268341638893-73b965e304gx0g6682t81hu7th5i49i6ebcv5x50p4s52042f4937f581989238b",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "19752292488960823-14j122p799ad5w1392m39eh0jp5p66u3zsje3g69t6r86175o7030s218565835c",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "20674586367651245-90p780b556am3y5320k52ig7ua0c36w7jbnx1r33k7m54753x3300u392552682w",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "25323036497979269-84a561w716fz8t2175a88tb1ay9f75j5xcdl1j01i1t43669w3973p477151743w",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "30163165305956892-77h557d351sw4c5758i29yl8fi8e13k8bciq1v42r3e91837e4293w803891729v",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "70220826890129215-03g103d445br6i0147o70ql9mz1x47t7uxaz5k35l3f82979g2781m331545022d",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "74531591728946609-28p668x082eu3a0364z99tx6ba6t61h4giwi8p70a8v37226r5428b843850949k",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "80118917129777148-31v129b356et9o0082y27ix7jc0e60l6fxqa6l78x2a36229y2305n340366367p",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "94046758601229054-50a969l590up7m4711h34cp5uh4b46o3pgzh2x82a3f38234d3041l499273766u",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99300759557194436-40p802h981wf0k9485k49ga8jn6f37y4pubb5h18h1v92834r2069n937656077z",
+    "booking_date": "2025-01-10",
+    "value_date": "2025-01-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     " F TENUE DE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  }
+ ]
+}

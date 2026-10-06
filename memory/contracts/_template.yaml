@@ -1,0 +1,17 @@
+# One file per contract or subscription (insurance, energy, telecom, streaming, software...).
+id: null                        # e.g. energy-octopus
+provider: null
+kind: null                      # energy | telecom | insurance_home | insurance_car | health | streaming | software | other
+merchant_match: null            # regex on merchant key, links bank payments to this contract
+start_date: null
+renewal: null                   # tacit renewal date / anniversary
+billing: { amount: null, period: monthly }   # monthly | bimonthly | quarterly | yearly
+commitment_end: null            # end of minimum term, if any
+notice_period_days: null
+cancellation:
+  method: null                  # online | letter | email | via new provider
+  legal_basis: null             # e.g. Loi Hamon (FR insurance after 1y), Loi Chatel, Legge Bersani (IT)
+usage: null                     # how much it is really used (user / measured)
+keep: null                      # true | false | review
+documents: []                   # local paths to contract / T&C PDFs
+notes: ""

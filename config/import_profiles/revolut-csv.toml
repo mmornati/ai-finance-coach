@@ -1,0 +1,26 @@
+# Revolut statement CSV (app > account > Statement > Excel/CSV).
+# TO VERIFY WITH A REAL EXPORT: based on the publicly documented personal-account layout
+#   Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance
+# (comma separated, ISO dates with time, decimal point, amount signed, fee subtracted).
+# One account per currency: pass --currency EUR (or import each currency into its own account).
+name = "revolut-csv"
+description = "Revolut statement CSV (Completed Date, Amount, Fee, Currency, State) - to verify with a real export"
+
+[format]
+encoding = "auto"
+delimiter = ","
+date_format = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d"]
+decimal = "."
+thousands = ""
+currency = "EUR"
+
+[columns]
+date = "Completed Date"
+description = ["Description", "Type"]
+amount = "Amount"
+fee = "Fee"
+currency = "Currency"
+
+[filter]
+column = "State"           # pending / declined / reverted lines are not bookings
+keep = ["COMPLETED"]

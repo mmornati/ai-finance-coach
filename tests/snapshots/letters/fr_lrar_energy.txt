@@ -1,0 +1,42 @@
+Jeanne Exemple
+12 rue de l'Exemple
+59000 Montfort-Test
+jeanne.exemple@example.org
+
+SunPower Energie
+Service résiliation
+[adresse postale du service résiliation]
+
+[ville], le 5 octobre 2026
+
+Lettre recommandée avec accusé de réception n° [numéro de l'envoi recommandé]
+
+Objet : résiliation du contrat n° SP-1 (fourniture d'énergie)
+
+Madame, Monsieur,
+
+Titulaire du contrat n° SP-1 (fourniture d'énergie), je vous notifie par la présente ma décision de le résilier dans les meilleurs délais permis par le contrat.
+
+Cette résiliation est faite conformément au libre choix du fournisseur prévu par le Code de l'énergie, et sans frais.
+
+Je vous prie de bien vouloir :
+- me confirmer par écrit la prise en compte de cette demande et sa date d'effet ;
+- cesser tout prélèvement à compter de cette date ;
+- me rembourser, le cas échéant, la part d'abonnement ou de facturation payée d'avance et non consommée.
+
+Dans l'attente de votre confirmation écrite, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+Signature :
+
+Jeanne Exemple
+
+=== to complete ===
+town / city
+provider's cancellation address
+registered mail number
+=== notes ===
+Ne résiliez pas avant d'avoir souscrit chez le nouveau fournisseur, qui résilie l'ancien contrat pour vous : pas d'interruption de fourniture.
+Envoyez-la en recommandé avec accusé de réception et gardez le justificatif de dépôt ; complétez les [champs] entre crochets.
+Brouillon généré localement à partir des règles générales du droit de la consommation : vérifiez avec votre contrat et la source officielle avant l'envoi. Aucun envoi n'a été fait.
+=== legal basis ===
+fr-energy | Code de l'energie (free choice of supplier) | reviewed 2026-10

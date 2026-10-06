@@ -1,0 +1,19 @@
+Message to paste into the cancellation form or chat:
+
+Hello, I would like to cancel my contract no. LG-3 (energy supply), taking effect at the end of the 30-day notice period following its receipt. Please confirm the end date of the contract in writing.
+
+This notice is given in accordance with ARERA rules for the retail market; D.L. 7/2007 (Bersani).
+
+Steps:
+1. Log in to your customer area and use the cancellation button or form (online cancellation must be offered for a contract that can be taken out online).
+2. Keep the confirmation (screenshot and e-mail) showing the end date announced.
+3. Check that the direct debits stop on that date.
+
+=== to complete ===
+town / city
+=== notes ===
+Do not cancel before signing with the new supplier, who cancels the old contract for you: no gap in supply.
+Use the online cancellation form or button and keep the confirmation.
+Draft generated locally from general consumer-law rules: verify with your contract and the official source before sending. Nothing was sent.
+=== legal basis ===
+it-bersani-energy | ARERA rules for the retail market; D.L. 7/2007 (Bersani) | reviewed 2026-10

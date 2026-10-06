@@ -1,0 +1,32 @@
+Objet : résiliation du contrat n° TC-778899
+
+Madame, Monsieur,
+
+Titulaire du contrat n° TC-778899 (services de communications électroniques), je vous notifie par la présente ma décision de le résilier avec effet à l'issue du délai de préavis de 10 jours suivant sa réception.
+
+Cette résiliation est faite conformément aux dispositions applicables aux contrats de communications électroniques (loi n° 2008-3 du 3 janvier 2008, dite loi Chatel, et Code de la consommation).
+
+Je vous rappelle que, pour un contrat pouvant être conclu en ligne, l'article L215-1-1 du Code de la consommation (loi n° 2022-1158 du 16 août 2022) impose de permettre sa résiliation en ligne et de confirmer au consommateur la date de fin du contrat.
+
+Je vous prie de bien vouloir :
+- me confirmer par écrit la prise en compte de cette demande et sa date d'effet ;
+- cesser tout prélèvement à compter de cette date ;
+- m'indiquer les modalités de restitution du matériel ;
+- me rembourser, le cas échéant, la part d'abonnement ou de facturation payée d'avance et non consommée.
+
+Dans l'attente de votre confirmation écrite, je vous prie de croire, Madame, Monsieur, en l'expression de mes salutations distinguées.
+
+Jeanne Exemple
+12 rue de l'Exemple
+59000 Montfort-Test
+jeanne.exemple@example.org
+
+=== to complete ===
+
+=== notes ===
+Quitter maintenant coûte environ 29.99 EUR (4 mois restants, 25 % de l'abonnement restant dû) ; la sortie est gratuite à partir du 15 janvier 2027.
+Envoyez-la depuis l'adresse e-mail du contrat, gardez l'accusé d'envoi et complétez les [champs] entre crochets.
+Brouillon généré localement à partir des règles générales du droit de la consommation : vérifiez avec votre contrat et la source officielle avant l'envoi. Aucun envoi n'a été fait.
+=== legal basis ===
+fr-telecom | loi n° 2008-3 du 3 janvier 2008 (Code de la consommation / CPCE) | reviewed 2026-10
+fr-3-clics | loi n° 2022-1158 du 16 aout 2022 (pouvoir d'achat), art. L215-1-1 Code de la consommation, in force since 1 June 2023 | reviewed 2026-10

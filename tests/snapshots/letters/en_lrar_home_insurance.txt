@@ -1,0 +1,45 @@
+Jeanne Exemple
+12 rue de l'Exemple
+59000 Montfort-Test
+jeanne.exemple@example.org
+
+HomeSure Assurances
+Cancellations department
+[provider's cancellation postal address]
+
+[town], 5 October 2026
+
+Registered letter with acknowledgement of receipt no. [registered mail number]
+
+Subject: cancellation of contract no. HS-0001 (home insurance)
+
+Dear Sir or Madam,
+
+As the holder of contract no. HS-0001 (home insurance), I hereby give notice that I am cancelling it, taking effect at the end of the 30-day notice period following its receipt.
+
+This notice is given in accordance with loi n° 2014-344 du 17 mars 2014 (Code des assurances art. L113-15-2).
+
+As this contract may have been taken out online, please confirm its end date in writing, as required for online termination (loi n° 2022-1158 du 16 aout 2022 (pouvoir d'achat), art. L215-1-1 Code de la consommation, in force since 1 June 2023).
+
+Please:
+- confirm in writing that this request has been received and the date it takes effect;
+- stop all direct debits from that date;
+- refund, where applicable, any amount paid in advance for a period not used.
+
+I look forward to your written confirmation.
+Yours faithfully,
+
+Signature:
+
+Jeanne Exemple
+
+=== to complete ===
+town / city
+provider's cancellation address
+registered mail number
+=== notes ===
+Send it by registered post with acknowledgement of receipt and keep the receipt; complete the [fields] in brackets.
+Draft generated locally from general consumer-law rules: verify with your contract and the official source before sending. Nothing was sent.
+=== legal basis ===
+fr-hamon | loi n° 2014-344 du 17 mars 2014 (Code des assurances art. L113-15-2) | reviewed 2026-10
+fr-3-clics | loi n° 2022-1158 du 16 aout 2022 (pouvoir d'achat), art. L215-1-1 Code de la consommation, in force since 1 June 2023 | reviewed 2026-10

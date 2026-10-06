@@ -1,0 +1,96 @@
+[project]
+name = "ai-finance-coach"
+version = "0.2.0"
+description = "Private, self-hosted personal finance coach: PSD2 bank sync (Enable Banking), local classification, deterministic analytics, encrypted storage, an LLM coach that never sees raw bank data."
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["personal-finance", "psd2", "open-banking", "enable-banking", "budgeting", "privacy", "self-hosted", "llm", "mcp", "sqlcipher"]
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Natural Language :: English",
+]
+dependencies = [
+    "requests>=2.32",
+    "pyjwt[crypto]>=2.9",
+    "python-dotenv>=1.0",
+    "pyyaml>=6",
+    "keyring>=25",
+    "cryptography>=43",
+    # SQLCipher binding shipped as a self-contained wheel (no brew / system libs needed).
+    # sqlcipher3-binary has no macOS wheels; sqlcipher3-wheels has cp311-cp314 on macOS arm64.
+    "sqlcipher3-wheels>=0.5.5",
+    "anthropic>=1.11.0",
+    "pydantic>=2.13.5",
+    "ruamel-yaml>=0.19.1",
+    "pypdf>=6.19.0",
+    "fastapi>=0.142.2",
+    "uvicorn>=0.30",
+    "mcp>=1.2",
+    "jsonschema>=4",
+    "defusedxml>=0.7.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/mmornati/ai-finance-coach"
+Repository = "https://github.com/mmornati/ai-finance-coach"
+Issues = "https://github.com/mmornati/ai-finance-coach/issues"
+Changelog = "https://github.com/mmornati/ai-finance-coach/blob/main/CHANGELOG.md"
+
+[project.scripts]
+coach = "coach.cli:main"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8",
+    "ruff>=0.16.10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# The wheel carries what the program needs at run time and that the .gitignore keeps out of the repository:
+#   * the built web app (src/coach/api/static, produced by `pnpm build`; `coach dev release-check` refuses a missing or stale build)
+#   * the commented configuration example and the CSV import profile examples that `coach init` copies (one source of truth at the root)
+# Migrations (*.sql / *.py) and the YAML data files (taxonomy, rules, memory templates) sit inside the package and are included as is.
+[tool.hatch.build.targets.wheel]
+packages = ["src/coach"]
+artifacts = ["src/coach/api/static/**"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"config.example.toml" = "coach/templates/config.example.toml"
+"config/import_profiles" = "coach/templates/import_profiles"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src", "/tests", "/web/src", "/web/public", "/web/index.html", "/web/package.json", "/web/pnpm-lock.yaml", "/web/tsconfig.json",
+    "/web/vite.config.ts", "/config.example.toml", "/config/import_profiles", "/docs", "/evals", "/Dockerfile", "/docker", "/docker-compose.yml",
+    "/README.md", "/CHANGELOG.md", "/CONTRIBUTING.md", "/SECURITY.md", "/CODE_OF_CONDUCT.md", "/LICENSE*", "/uv.lock", "/.python-version",
+]
+exclude = ["/docs/research", "/evals"]          # the market research and the evaluation data are not part of what a user installs
+artifacts = ["src/coach/api/static/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+# Lint policy: correctness rules only (syntax errors, undefined names, redefinitions, invalid constructs). Style is not enforced.
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82", "F811"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F811"]        # tests re-import inside functions on purpose

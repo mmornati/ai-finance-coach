@@ -1,0 +1,23 @@
+# Caisse d'Epargne online-banking CSV export (account > "Exporter" > CSV).
+# TO VERIFY WITH A REAL EXPORT: written from the publicly described layout (semicolon separated, a few
+# account/period lines before the header, dd/mm/yy dates, decimal comma, Debit negative / Credit positive).
+# If the header names differ, adjust [columns]; `--dry-run` shows what would be read.
+name = "caisse-epargne-csv"
+description = "Caisse d'Epargne CSV export (semicolon, dd/mm/yy, Debit/Credit columns) - to verify with a real export"
+
+[format]
+encoding = "auto"
+delimiter = ";"
+header_contains = ["Date", "Debit", "Credit"]     # skips the account/period lines above the header
+date_format = ["%d/%m/%y", "%d/%m/%Y"]
+decimal = ","
+thousands = ""
+currency = "EUR"
+
+[columns]
+date = "Date de comptabilisation"
+value_date = "Date de valeur"
+description = ["Libelle simplifie", "Libelle operation"]
+reference = "Reference"
+debit = "Debit"
+credit = "Credit"

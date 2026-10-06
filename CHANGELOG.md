@@ -1,0 +1,106 @@
+# Changelog
+
+All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/)
+(below 1.0, minor versions may change behaviour). The top section must carry the version in `pyproject.toml` and a date: `coach dev release-check` enforces it.
+
+## [Unreleased]
+
+### Changed: release hygiene and hardening (security scan of 2026-10-06)
+- The project is licensed under MIT (`LICENSE`); the security contact is GitHub's private vulnerability reporting; the repository URL is set in `pyproject.toml`.
+- CI actions are pinned to commit SHAs, Dependabot watches uv, pnpm, GitHub Actions and Docker; the Docker base images are pinned by digest.
+- The CAMT.053 import parses with `defusedxml` (DTD, entities and external references refused) in addition to the existing pre-check.
+- An unexpected API error no longer names the exception type in the response body.
+
+### Added: rental property under a tax-incentive scheme (E15, see `docs/rental.md`)
+- A rental property is an asset of kind `real_estate_rental` with its `account`, `loan`, `scheme` (a name: data), a `commitment` block (start, length, end, rent cap, tenant income limit, reduction rate, extension decision), a typed `market_rate`
+  and declared `vacancies`: every figure is the owner's own, nothing is looked up and a missing fact is listed and asked (one open question per property, `memory check` on the links).
+- Property flows: three new taxonomy leaves (`housing.property_tax`, `housing.property_management`, `housing.property_insurance`) and generic French rules (taxe fonciere, gestion locative, PNO / GLI, copropriete, an incoming loyer); an older copy gets
+  them with `coach taxonomy merge-package`.
+- `coach rental list / show / cashflow / pnl / scheme / tax / indicators / flows` and the writes `add / edit / extension / vacancy / market-rate` (previewed, typed yes); the Rental page (`/rental`) and `GET /rental/...`: the monthly cash flow with the effort d'epargne and the
+  vacancy months, the yearly P&L (loan interest and principal from the E9 schedule), the commitment with its reminders, the tax-year candidates of the rental-income return (micro-foncier vs reel, the scheme reduction from the declared price and rate, a documents checklist),
+  and the renegotiate-or-sell indicators (loan rate vs the market rate typed, end of the commitment, net equity).
+- Alert kinds `scheme_end`, `scheme_check`, `rent_missing` (local content, minimal external messages); a `rental` card kind in the Insights feed.
+- New MCP tool `rental_overview` (read-only; a property is `asset-N`, never an address, manager, lender or tenant); `tax_candidates` gains `fr-revenus-fonciers` and computes the Pinel reduction from the declared price and rate.
+- `[analytics]` settings `rental_reminder_months`, `rental_rent_grace_days`, `rental_rate_gap_pts`. No migration.
+
+### Added: household and people (E14, see `docs/household.md`)
+- Members and owners: the Household page (members, account owner and purpose editing, attribution rules, logins, audit); `coach accounts set` stores the member id and refuses an owner that is neither
+  `joint` nor a declared member.
+- Attribution: every transaction belongs to a person (`member id | joint | nobody`): a manual reassignment (`coach household assign / unassign / why / log / undo`, the transaction panel; recorded
+  in `tx_person_log`, reversible), then `attribution` rules in `household.yaml` (account, card last four digits, merchant / description pattern, direction, amount), then the owner of the account.
+  `coach explain` and the panel say why.
+- Person views: `?member=` on every analytics endpoint, the person switch in the header, a `member` pseudonym argument on the analytics MCP tools (a member view of the dataset: their
+  transactions on any account, the balances of the accounts they own).
+- The children's money (`coach household kids`, the Kids' money page, the `kids_money` tool): regular pocket money detected or declared, extra top-ups with their source, spending, month-end
+  balance trend, pocket versus extra. Kid budgets (`coach household budget`) with a gentle, LOCAL-ONLY `kid_budget` alert kind.
+- Transfers across the household's banks: `[transfers] cross_bank_window_days` (default 5) and household members named in a leg as strong evidence; a parent's top-up stays an internal transfer for the
+  household and is the child's income in the children's view.
+- Who pays what (`coach household allocation / allocate`, the Who pays what page, the `who_pays` tool): shared costs split equally, by income or by custom percentages; the settlement adds up to zero.
+- Per-person logins (`coach users add / list / set-role / disable / enable / remove / prefs / audit`, `coach ui --login-link --user ID`): adult = all data, child = own data through `/api/v1/me/*` only,
+  enforced server-side on every endpoint, deny by default; per-login preferences; an audit log of web changes and `Source: ui:<login>` in the memory history. The one-time link, CSRF, Host checks, CSP and
+  the terminal-only acceptance of memory proposals are unchanged.
+- Cross-bank transfer matching runs in two passes (the original window first, pairs locked; then a wider, strong-evidence-only pass on the leftovers): it can only add links. A model gets an age band, never a birth year.
+- New MCP tools `household_overview`, `kids_money`, `who_pays`; migration 0022 (additive: `tx_person`, `tx_person_log`, `ui_users`, `audit_log`).
+
+### Changed
+- `LoginTokens.issue(user=...)`, `Security.new_cookie(user=...)` and `parse_session` carry a login in the one-time token and the signed cookie; `coach.api.state.UiMemoryStore` derives the history
+  source from the login of the current request.
+
+## [0.2.0] - 2026-10-06
+
+First packaged release: everything of epics E0 to E12, installable in ten minutes, and ready to publish once the owner chooses a licence.
+
+### Added: packaging and first run (E13)
+- `coach init`: a fresh private home in one command (commented `config.toml`, 0700 data folder, memory skeleton of templates only, secrets generated after a typed
+  confirmation, empty encrypted database). Idempotent, never overwrites, `--dry-run`.
+- `coach doctor`: Python, SQLCipher, secret store and secrets, database, Enable Banking, permissions, built web app, `claude` command, git; every problem comes
+  with its next step; `--json`.
+- `coach setup`: the resumable first-run wizard (init, Enable Banking, first bank, first sync, categorize with a printed dry run and an explicit privacy choice,
+  onboarding interview, optional daily job). Nothing leaves the machine without a typed word at the step that sends it. The web Setup page shows the same steps read-only.
+- `coach setup enablebanking`: guided creation of your own Enable Banking application in restricted mode, with key handling and an optional `coach check`.
+- Docker: multi-stage `Dockerfile`, `docker-compose.yml` (non-root, read-only root filesystem, dropped capabilities, port on 127.0.0.1 only, docker secrets),
+  `file` secrets backend (`COACH_SECRETS_BACKEND=file`), `coach schedule loop` for the daily job without launchd, container defaults. Statically checked in the tests; not built by them.
+- Package metadata, classifiers, the built web app, migrations, data files and the shipped templates in the wheel; `uvx` / `uv tool` / `pipx` install paths.
+
+### Added: open-source readiness (E13-4)
+- README for newcomers, CONTRIBUTING (parsers, skills, review checklist), SECURITY, CODE_OF_CONDUCT, `docs/architecture.md`, `docs/reference.md` (the former README),
+  `docs/docker.md`, `docs/release.md`, `LICENSE.choose.md`, a Claude Code permission-rules template (`docs/claude-settings.example.json`).
+- `coach dev hygiene` and `coach dev release-check`. The scan covers every publishable file (everything `.gitignore` does not exclude) and the sdist member list, with structural rules
+  (keys, home-folder paths, valid IBANs, e-mail addresses) and a real-data rule driven by a LOCAL term file (`hygiene-terms.txt`, never in the tree: `coach dev hygiene --build-terms`
+  derives it from your database and memory). No hash, salt or list of real terms ships with the package. A missing local file FAILS the release check; `--ci` skips only that rule and says so.
+- GitHub Actions workflow (pytest, vitest, type check, lint, release-check).
+
+### Changed
+- `.gitignore` reviewed: the built web app (`src/coach/api/static/`) is not committed and is built by CI, Docker and the release procedure; `.claude/settings.json`,
+  `config/taxonomy.yaml`, `config/rules.yaml`, `secrets/` and `coach-home/` are ignored.
+- The market research moved from `reports/` and `research_notes/` to `docs/research/` (it contains no personal data).
+- Test data, docs and examples were re-invented where they echoed real-looking names, places, merchants, amounts and the household's situation; built-in name lists are generic.
+- `coach config set-secret`, `wipe` and the scheduler preflight work on the active secret store.
+- The web app may listen on all interfaces only inside a real container (marker file or cgroup) AND with `[ui] container_bind = true` (written by the image's `coach init` only); it warns at start
+  that the port must be published on `127.0.0.1`, and does not print the login link into the container logs. The compose file publishes on the host's loopback only; a lint rule rejects any example that does not.
+- Connecting a bank from the Docker image: the HTTPS redirect server listens on 0.0.0.0 inside a real container only (marker AND `[callback] container_bind`, written by the
+  image's init), published as `-p 127.0.0.1:8443:8443`; hints name `docker compose run --rm coach ...`; `coach finish` tolerates a shell-escaped or quoted paste and never echoes the code.
+- The `file` secrets backend checks the folder (owner, 0700) and writes with a random temporary name, `O_EXCL | O_NOFOLLOW`, 0600, fsync, atomic rename.
+- The sdist excludes `docs/research` and `evals`.
+
+### Known limits
+- No licence yet (owner's decision): the release check fails until `LICENSE` exists.
+- The Docker image has not been built or run by the automated checks; the Enable Banking guide has not been run against the live control panel.
+
+## Earlier work (summarised by epic; this project had no public releases before 0.2.0)
+
+- **E0 Foundations**: single `coach` package and CLI, `config.toml` + secrets in the Keychain or environment, numbered migrations, SQLCipher encryption, launchd scheduler, encrypted backups.
+- **E1 Bank ingestion**: Enable Banking connect / finish flow with a local HTTPS callback, longest history at first link, deduplication, pending transactions, balances, PSD2 call limits,
+  consent tracking and renewal, connector health, CSV / OFX / QFX / CAMT.053 imports, internal transfer matching.
+- **E2 Normalization and categorization**: per-bank description parsers, a two-level taxonomy, rules, household memory annotations, a local nearest-neighbour step, canonical merchants, split transactions,
+  LLM labelling with redaction, batches and a review queue, corrections as permanent memory.
+- **E3 Household memory**: plain-file memory (Markdown + YAML) with schemas, validated and recorded writes (local change history), proposals the user accepts, open questions, documents, explain and context for models.
+- **E4 Analytics**: coverage-aware averages, recurring payments and price changes, anomalies, cash-flow forecast, budgets, goals, calendar, year in review.
+- **E5 Web app**: local React app (dashboard, transactions, categories, budgets, subscriptions, loans, calendar, insights, memory, connections) behind a one-time login link, loopback only.
+- **E6 Coach runtime**: finance MCP server (redacted read-only tools, injection guard), coach backends (Claude Code, Anthropic API, Ollama), "Ask the coach", digests, insights.
+- **E7 Skills**: monthly review, explain a spike, subscription audit, contract check, find cheaper, mortgage check, what-if, tax helper, onboarding interview.
+- **E8 Subscriptions and contracts**: inventory, usage questions, cancellability rules (FR / IT), alternatives with sources, letters, decisions and savings tracking.
+- **E9 Loans, mortgage and net worth**: schedules, payment alerts, inference from bank data, net-worth history, scenarios, end-of-lease reminders.
+- **E10 Alerts**: signals to events, noise control, the weekly summary, in-app centre, optional macOS / ntfy / e-mail / Telegram channels (all off by default, minimal messages).
+- **E11 Privacy, security and compliance**: egress policy and journal, `local_only` / `offline` modes, security audit, export and wipe, AI-generated labels and disclaimers, the agent threat model.
+- **E12 Quality**: parser fixtures synthesised without real data, gold set and evaluations, model comparison, usage and cost tracking, structured run logs.

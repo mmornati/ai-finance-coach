@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* dark mode: follows the system, or the explicit toggle (data-theme on <html>) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  color-scheme: light;
+  --bg: #f5f3ee;
+  --surface: #fffefb;
+  --surface-2: #efece4;
+  --border: #e2ded3;
+  --border-strong: #cbc6b8;
+  --text: #1b1f1d;
+  --muted: #626459;
+  --faint: #70715f;
+  --accent: #1f5fbf;
+  --accent-hover: #194f9f;
+  --accent-fg: #ffffff;
+  --accent-soft: #e5edfa;
+  --pos: #17704a;
+  --pos-soft: #e1f1e8;
+  --neg: #b3382a;
+  --neg-soft: #f8e4df;
+  --warn: #8f5a00;
+  --warn-soft: #f8ecd0;
+  --ring: #1f5fbf;
+  /* validated categorical series (see the dataviz palette): blue, orange, aqua, yellow, magenta, green, violet, red */
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  --grid: #e6e2d8;
+  --shadow: 0 1px 2px rgb(40 36 20 / 0.06), 0 1px 1px rgb(40 36 20 / 0.04);
+}
+:root:where(:not([data-theme="light"])) {
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+    --bg: #121413; --surface: #1a1c1a; --surface-2: #232622; --border: #2d302c; --border-strong: #42463f;
+    --text: #ecebe4; --muted: #a3a498; --faint: #8e9084;
+    --accent: #5b9bf0; --accent-hover: #7cb0f5; --accent-fg: #0b0e12; --accent-soft: #1b2a41;
+    --pos: #56c58d; --pos-soft: #163325; --neg: #f0877a; --neg-soft: #3a1d19; --warn: #e6b04a; --warn-soft: #3a2d10;
+    --ring: #7cb0f5;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --grid: #2a2d29;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121413; --surface: #1a1c1a; --surface-2: #232622; --border: #2d302c; --border-strong: #42463f;
+  --text: #ecebe4; --muted: #a3a498; --faint: #8e9084;
+  --accent: #5b9bf0; --accent-hover: #7cb0f5; --accent-fg: #0b0e12; --accent-soft: #1b2a41;
+  --pos: #56c58d; --pos-soft: #163325; --neg: #f0877a; --neg-soft: #3a1d19; --warn: #e6b04a; --warn-soft: #3a2d10;
+  --ring: #7cb0f5;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --grid: #2a2d29;
+  --shadow: none;
+}
+
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-pos: var(--pos);
+  --color-pos-soft: var(--pos-soft);
+  --color-neg: var(--neg);
+  --color-neg-soft: var(--neg-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+}
+
+html { background: var(--bg); color: var(--text); font-family: var(--font-sans); -webkit-text-size-adjust: 100%; }
+body { margin: 0; overflow-x: clip; min-height: 100dvh; font-size: 15px; line-height: 1.5; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { text-wrap: balance; letter-spacing: -0.012em; }
+.num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 4px; }
+::selection { background: var(--accent-soft); }
+button, [role="button"], a, summary, label[for], select { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), [role="button"], select { cursor: pointer; }
+dialog { color: inherit; }
+dialog::backdrop { background: rgb(10 12 10 / 0.5); backdrop-filter: blur(2px); }
+
+/* scrollbars stay quiet */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+.skeleton { background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in srgb, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 6px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+.recharts-surface:focus, .recharts-wrapper:focus { outline: none; }
+.recharts-text { fill: var(--muted); font-size: 11px; }
+.recharts-cartesian-axis-tick-value { fill: var(--muted); }
+
+.pad-safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
+
+@media print { .no-print { display: none !important; } }
+
+/* a grid without explicit columns is one column that can shrink (never wider than the screen); utilities override it */
+@layer base {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .grid > * { min-width: 0; }
+}

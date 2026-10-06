@@ -1,0 +1,8 @@
+# Annotations applied by classify before any rule or LLM label (source = "memory").
+# match keys (all given keys must match):
+#   merchant_key: regex on the normalised merchant key   (see `coach classify review`)
+#   description:  regex on the raw bank description
+#   tx_keys:      explicit list of transaction keys
+#   date_from / date_to: ISO dates (booking date), amount_min / amount_max
+# effects: category (taxonomy id), tags (see README), event (events.md id), note
+annotations: []

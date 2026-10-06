@@ -1,0 +1,219 @@
+# Copy to config.toml (git-ignored) and adjust.  `uv run coach config show` prints the effective
+# configuration.  Relative paths are resolved against the folder containing this file.
+# Secrets (db_key, backup_key, anthropic_api_key) are NOT stored here: they live in the macOS
+# Keychain (service "ai-finance-coach") or in environment variables, see README.md.
+
+data_dir = "data"                 # database, logs
+memory_dir = "memory"             # household memory (categorization.yaml, profile.md, ...)
+# db_path = "data/finance.db"     # default: <data_dir>/finance.db
+insecure_plaintext_db = false     # true = allow opening an unencrypted DB (same as --insecure)
+
+[db]
+auto_migrate = true              # true = any command applies pending migrations when it opens the database (a
+                                  # notice is printed); false = only `coach db migrate` does, other commands refuse
+                                  # to run on a database that is behind
+
+[enable_banking]
+app_id = ""                       # application id from the Enable Banking control panel
+redirect_url = ""                 # must be whitelisted in your Enable Banking app
+private_key_path = ""             # the .pem downloaded when you created the app (keep outside the repo)
+# api_url = "https://api.enablebanking.com"
+
+[llm]
+backend = "claude-code"           # claude-code (headless `claude -p`) | anthropic-api (SDK, key = secret
+                                  # anthropic_api_key) | ollama (local HTTP server)
+model = "sonnet"                  # model for claude-code (sonnet | haiku | opus); `classify run --model` overrides
+anthropic_model = "claude-haiku-4-5"   # anthropic-api: model id (aliases haiku | sonnet | opus also accepted)
+batch_api = false                 # anthropic-api: send a run as ONE Message Batches request (50% cheaper, async)
+ollama_url = "http://localhost:11434"  # ollama: base URL of the server
+ollama_model = "llama3.1"         # ollama: model name (must support JSON-schema `format`)
+ollama_allow_remote = false       # the ollama server must be on this machine (loopback) unless you set true:
+                                  # prompts contain (redacted) bank data
+# anthropic_base_url = ""         # anthropic-api talks to https://api.anthropic.com; ANTHROPIC_BASE_URL is ignored
+# Every call is logged in the llm_usage table (backend, model, tokens, cost estimate, duration, purpose).
+
+[classify]
+knn_enabled = true                # near-duplicates of already-labelled merchants are labelled without the LLM
+knn_threshold = 0.92              # min cosine similarity (character 3-grams) for such an automatic label
+knn_examples = 5                  # nearest labelled merchants sent to the LLM with each item
+llm_allowlist = []                # regexes of transfer-like merchant keys (companies without a legal form in their
+                                  # name, e.g. "^CREDITEST$") that may be sent to the LLM. By default a transfer /
+                                  # direct-debit counterparty is sent only if it looks like an organisation or is a
+                                  # known merchant; anything that could be a person is held back
+                                  # (see `coach classify run --dry-run` and `classify review`).
+
+[sync]
+daily_limit = 4                   # max unattended syncs per account per day (PSD2 cap)
+
+[schedule]
+time = "07:30"                    # daily run time (HH:MM, local time) for `coach schedule install`
+memory_check = true               # the daily job ends with a warn-only `coach memory check` (never fails the job)
+analytics = true                  # ... and a warn-only analytics refresh (recurring series, anomalies, budget status) and a net-worth snapshot (E9-4)
+eval = true                       # ... and, once a week, a warn-only OFFLINE score of the gold set (`coach eval classify`; no model is called) (E12-2)
+
+[backup]
+dir = "backups"                   # encrypted archives are written here
+retention = 14                    # keep the N most recent archives
+
+[callback]
+timeout_seconds = 600             # how long `coach connect` / `reconnect` wait for the bank redirect on the
+                                  # local HTTPS server (host/port come from [enable_banking] redirect_url,
+                                  # default https://localhost:8443/callback; TLS cert in <data_dir>/tls/)
+container_bind = false            # written true by the Docker image's `coach init` ONLY: in a real container the redirect server listens on 0.0.0.0 so that a port
+                                  # published as `-p 127.0.0.1:8443:8443` reaches it. Publish it on 127.0.0.1 only (docs/docker.md). Never set it on a host.
+
+[notify]
+macos = false                     # true = osascript notification when a consent is about to expire (superseded by [alerts.macos] when that is on)
+
+[transfers]
+window_days = 3                   # internal transfer legs must be within +-N days of each other
+cross_bank_window_days = 5        # the same when the two legs are on DIFFERENT banks (weekends, holidays, instant credits): E14-7
+auto_link = false                 # true = the daily job links confident pairs itself; false = it only proposes
+                                  # them (`coach transfers --proposals`; `coach transfers match` links by hand)
+topup_merchants = ["REVOLUT", "LYDIA", "PAYPAL"]   # card payments to these may be top-ups of another own account:
+                                  # paired with the credit on the other account as PROPOSALS only (never auto-linked)
+min_confidence = 0.85             # pairs below this are proposals, never auto-linked
+
+[memory]
+history = true                    # keep a git change history of memory/ (memory/.history.git; needs git). false = write without history
+stale_months = 6                  # `coach memory check`: loan/contract facts (outstanding capital...) older than this are reported
+asset_stale_months = 3            # ... and assets.yaml values older than this (reminder to refresh)
+big_tx_threshold = 2000           # `coach questions generate`: one-off payments above this (EUR) not explained by memory
+question_min_stake = 300          # `coach questions generate`: merchants with less money at stake (EUR) are not asked about
+
+[health]
+stale_days = 2                    # `coach health`: no successful sync for more than N days = stale
+
+[import]
+profiles_dir = "config/import_profiles"   # CSV mapping profiles (TOML), see the shipped examples
+
+[analytics]                       # thresholds of the deterministic analytics (E4); every key is optional, see docs/analytics.md
+# average_window_months = 12              # a category average uses at most the last N fully covered months
+# average_min_months = 3                  # fewer covered months = the average is flagged low_confidence
+# recurring_amount_tolerance = 0.15       # recurring payments: amounts within +-15 % of the median
+# recurring_min_occurrences = 3           # (a yearly cadence needs only 2, with low confidence)
+# recurring_ended_factor = 1.5            # no payment for more than 1.5 x the cadence = ended
+# recurring_variable_categories = ["housing.energy", "housing.water", "subscriptions.telecom"]   # bills that vary
+# recurring_yearly_pair_groups = ["subscriptions", "insurance", "housing", "taxes", "fees", "health", "education", "charity", "debt", "income"]
+# price_change_threshold_pct = 3.0        # price changes: at least 3 % ...
+# price_change_min_abs = 0.50             # ... and 0.50 EUR
+# price_change_variable_pct = 20.0        # variable bills (utilities): only 20 % moves count
+# anomaly_min_history_months = 6          # category spikes need this many earlier covered months
+# anomaly_z = 3.5                         # robust z-score (median / MAD) of a category month
+# anomaly_min_excess = 50.0               # EUR above the usual month
+# anomaly_min_ratio = 1.5                 # ... and at least this multiple of it
+# anomaly_duplicate_days = 3              # same merchant + amount within N days = duplicate charge
+# anomaly_duplicate_min_amount = 10.0
+# anomaly_new_merchant_days = 60
+# anomaly_new_merchant_min = 150.0        # a new merchant with a payment of at least this (EUR)
+# anomaly_large_tx_min = 100.0
+# anomaly_lookback_days = 90              # duplicates / new merchants / large payments: how far back to look
+# anomaly_months = 3                      # category spikes: the last N closed months
+# forecast_band_z = 1.28                  # confidence band of the forecast (1.28 = about 80 %)
+# forecast_variable_months = 6            # covered months behind the variable-spend estimate
+# forecast_balance_stale_days = 3         # a balance snapshot older than this is flagged
+# budget_suggest_months = 6               # `coach budget suggest`: median of the last N covered months
+# calendar_days = 60                      # `coach calendar` default window
+# asset_stale_months = 3                  # calendar: remind to refresh a manual asset older than this
+# loan_grace_days = 5                    # E9: days after a loan's due date before a missing payment is reported
+# loan_reminder_months = 6                # E9: LOA / LLD end-of-contract reminders start this many months before the end
+# rental_reminder_months = 12             # E15: the end of a scheme commitment: reminders start this many months before it (then at 6 and 3)
+# rental_rent_grace_days = 7              # E15: days after the usual rent day before this month's missing rent is reported
+# rental_rate_gap_pts = 0.5               # E15: a loan rate this many points above the market rate you entered is flagged as worth a quote
+
+[privacy]
+model_detail = "coarse"           # what the analytics registry (the finance MCP, E6) tells a model: "coarse" masks the salary
+                                  # payer ([employer]), school payees ([school]), sole-trader / person-like merchants
+                                  # ([merchant:<category>]-<hash>) and towns in merchant titles; "standard" keeps merchant
+                                  # titles except what the person guard flags. Names, accounts and keys are always pseudonymised.
+# E11 (docs/privacy.md): the egress policy. `coach privacy status` shows the effective mode, `coach privacy report` the inventory of every
+# outbound path and the last 30 days of the local egress journal (host, size, purpose: never a payload).
+local_only = false                # true = fully local: every LLM path must be ollama on THIS machine (loopback; the coach and `classify`
+                                  # refuse a cloud backend), no web search, no external alert channel (ntfy / e-mail / Telegram), the
+                                  # interactive web-search skills (find-cheaper, mortgage-check) refuse, `coach mcp serve` refuses.
+                                  # Enable Banking stays allowed (it is the data source). Set [llm] backend and [coach] backend = "ollama".
+offline = false                   # true = nothing leaves this machine (implies local_only): no bank sync (import files with `coach import`)
+web_enrich = false                # opt-in: `classify enrich` searches the web with REDACTED merchant descriptors (shops only, never a person-like name)
+egress_journal = true             # log every outbound call (time, kind, destination host, bytes, purpose, redaction mode) in the local DB
+egress_journal_days = 365         # `schedule run` deletes journal rows older than this (30-3650)
+
+[coach]                           # the LLM coach: "Ask the coach", `coach coach ask|digest`, Claude Code + the finance MCP (docs/coach.md)
+backend = "claude-code"           # "claude-code" (headless `claude -p`, your personal Max subscription: low-frequency personal use only)
+                                  # | "anthropic-api" (API key from the Keychain secret anthropic_api_key: use it for automation / sharing)
+                                  # | "ollama" ([llm] ollama_url; only models that support tool calling, otherwise the coach refuses)
+# model = "sonnet"                # default: sonnet (claude-code), claude-sonnet-5-5 (anthropic-api), [llm] ollama_model (ollama)
+max_tool_calls = 12               # tool calls per question (digests get twice as many); the job stops beyond it
+max_tokens = 4096                 # per model answer (anthropic-api / ollama)
+timeout_seconds = 180             # per question (digests: three times); the job is killed beyond it
+schedule_weekly = false           # opt-in: `coach schedule run` also writes the weekly digest (skipped when nothing is new)
+schedule_monthly = false          # opt-in: ... and the monthly review
+max_budget_usd = 1.0              # --max-budget-usd of `claude -p` per question (digests: x2 / x3); 0 = no cap
+allowed_builtin_agents = ["general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide"]   # agents the claude init event may list; any other aborts the run
+                                  # (the observed init summary of every run is logged: <data_dir>/logs/coach-init.log)
+allowed_plugins = []              # plugin ids the init event may list (default none); any other plugin aborts the run
+allow_builtin_plugins = true      # plugins whose id ends with "@builtin" are Claude Code's own and are accepted; user-installed ones never are
+claude_env = []                   # extra environment variable NAMES passed to `claude` (default: a minimal allowlist, no proxy, no key)
+claude_restricted = false         # also pass --restricted to `claude -p` (not verified with a subscription login: opt in once tested)
+
+[ui]                              # the local web app: `uv run coach ui` (docs/ui.md)
+host = "127.0.0.1"                # loopback only; any other value is refused unless allow_remote and remote_tls_ack are true
+port = 8765
+allow_remote = false              # true = listen on a non-loopback host. WARNING: this app shows your whole financial life:
+                                  # reach it only through Tailscale / a VPN (HTTPS via `tailscale serve`), never the internet
+remote_tls_ack = false            # required with allow_remote: confirms an HTTPS proxy terminates TLS in front of the app
+allowed_hosts = []                # Host header names accepted when allow_remote is true, e.g. ["mac.tailnet.ts.net"] (required then)
+session_hours = 12                # a browser session (cookie) lasts this long; sign in again with `coach ui --login-link`
+key_rotation_days = 30            # the session secret is replaced when older than this (or now: `coach ui --rotate-session-key`)
+open_browser = true               # `coach ui` opens your browser on the one-time login link (--no-browser to skip)
+container_bind = false            # written true by the Docker image's `coach init` ONLY: inside a real container the app may listen on 0.0.0.0 so that a
+                                  # published port reaches it. The port MUST be published on 127.0.0.1 only (docs/docker.md). Never set it on a host.
+
+[alerts]                          # E10 alerts, noise control and channels (docs/alerts.md). Every EXTERNAL channel is OFF until you enable it here.
+enabled = true                    # evaluate the signals and keep the events: the in-app alerts center (always local)
+min_severity = "low"              # low | medium | high: events below it stay in the app and are never sent outside it
+external_detail = "minimal"       # what ntfy / e-mail / Telegram may say (they are third-party transports):
+                                  #   "minimal" = "Coach: 2 new alerts (1 high). Open the app."  (no amount, kind, merchant, name, account)
+                                  #   "summary" = adds each alert's KIND and an amount rounded to 10 EUR; still never a name, merchant, bank, IBAN
+quiet_hours = ""                  # e.g. "22:00-08:00" (local time): no channel sends in this window; held alerts go out after it
+max_per_week = 7                  # messages per channel in a rolling 7 days (a batch counts once); 0 = send nothing outside the app
+disabled_kinds = []               # kinds not evaluated at all: consent, sync_failing, unusual_charge, price_increase, low_balance, budget,
+                                  #   loan_alert, loa_end, unused_subscription, contract_notice, decision_contradicted, scheme_end, scheme_check, rent_missing
+digest_only_kinds = ["price_increase", "unusual_charge"]   # shipped default: shown in the app and the weekly summary, never sent one by one ([] = send them)
+external_min_severity = "medium"  # nothing below it is sent by any channel (the in-app feed is unaffected)
+weekly_digest = true              # build the weekly summary (deterministic, local) into the in-app feed once a week
+weekly_digest_day = "mon"         # mon .. sun
+weekly_digest_to_channels = false # also send a short teaser ("your weekly summary is ready") to the enabled channels
+app_url = ""                      # optional link added to external messages; "" = just "Open the app." (the app is local: see docs/alerts.md)
+
+[alerts.thresholds]
+sync_failures = 3                 # consecutive failed syncs of an account before an alert (high at twice that)
+anomaly_min_severity = "medium"   # unusual-charge alerts: medium | high
+
+[alerts.macos]                    # local notification (osascript; the text may be more detailed, never a full IBAN)
+enabled = false
+
+[alerts.ntfy]                     # https://ntfy.sh or your own server. A public topic name is a password: use a long random one
+enabled = false
+url = ""                          # https://ntfy.sh/<long-random-topic>  (https only; an access token, if any: `coach config set-secret ntfy_token`)
+
+[alerts.email]                    # SMTP over STARTTLS or SSL (a connection without TLS is refused)
+enabled = false
+host = ""
+port = 587
+tls = "starttls"                  # starttls | ssl
+username = ""                     # the password: `coach config set-secret smtp_password` (Keychain), never here
+from = ""
+to = ""
+
+[alerts.telegram]                 # bot token: `coach config set-secret telegram_bot_token`; the chat id is not secret
+enabled = false
+chat_id = ""
+
+[usage]                           # E12-4: `coach usage`, the AI usage page
+monthly_warn_usd = 0              # > 0: the `llm_usage_high` alert (local feed only, never sent to a channel) when a month's cost passes it; 0 = off
+include_notional = true           # a subscription (claude-code) call has a NOTIONAL cost (API prices for its tokens); false = leave it out of the threshold
+
+[logs]                            # E12: <data_dir>/logs/runs.jsonl (one JSON line per event of a scheduled run) and the other logs of that folder
+max_kb = 512                      # a log is rotated (name.1, name.2 ...) when it reaches this size (the small ones at a quarter of it, at least 64 KiB; launchd's stdout / stderr files when the run is over)
+keep = 5                          # rotated files kept per log
+max_age_days = 90                 # rotated files older than this are deleted at the start of a run

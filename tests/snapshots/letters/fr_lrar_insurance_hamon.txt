@@ -1,0 +1,44 @@
+Jeanne Exemple
+12 rue de l'Exemple
+59000 Montfort-Test
+jeanne.exemple@example.org
+
+HomeSure Assurances
+Service résiliation
+[adresse postale du service résiliation]
+
+[ville], le 5 octobre 2026
+
+Lettre recommandée avec accusé de réception n° [numéro de l'envoi recommandé]
+
+Objet : résiliation du contrat n° HS-0001 (assurance habitation)
+
+Madame, Monsieur,
+
+Titulaire du contrat n° HS-0001 (assurance habitation), je vous notifie par la présente ma décision de le résilier avec effet à l'issue du délai de préavis de 30 jours suivant sa réception.
+
+Cette résiliation est faite conformément à l'article L113-15-2 du Code des assurances (loi Hamon, loi n° 2014-344 du 17 mars 2014) : elle prend effet un mois après sa réception par vos services.
+
+Je vous rappelle que, pour un contrat pouvant être conclu en ligne, l'article L215-1-1 du Code de la consommation (loi n° 2022-1158 du 16 août 2022) impose de permettre sa résiliation en ligne et de confirmer au consommateur la date de fin du contrat.
+
+Je vous prie de bien vouloir :
+- me confirmer par écrit la prise en compte de cette demande et sa date d'effet ;
+- cesser tout prélèvement à compter de cette date ;
+- me rembourser, le cas échéant, la part de cotisation ou de prime payée d'avance et non consommée.
+
+Dans l'attente de votre confirmation écrite, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+Signature :
+
+Jeanne Exemple
+
+=== to complete ===
+town / city
+provider's cancellation address
+registered mail number
+=== notes ===
+Envoyez-la en recommandé avec accusé de réception et gardez le justificatif de dépôt ; complétez les [champs] entre crochets.
+Brouillon généré localement à partir des règles générales du droit de la consommation : vérifiez avec votre contrat et la source officielle avant l'envoi. Aucun envoi n'a été fait.
+=== legal basis ===
+fr-hamon | loi n° 2014-344 du 17 mars 2014 (Code des assurances art. L113-15-2) | reviewed 2026-10
+fr-3-clics | loi n° 2022-1158 du 16 aout 2022 (pouvoir d'achat), art. L215-1-1 Code de la consommation, in force since 1 June 2023 | reviewed 2026-10
