@@ -253,8 +253,8 @@ GOOD = DOCKERFILE
     (GOOD.replace("USER 10001:10001\n", ""), "DF001"),
     (GOOD.replace("COPY docker/entrypoint.sh", "ADD https://example.com/x.sh"), "DF002"),
     (GOOD.replace("COPY docker/entrypoint.sh", "ADD docker/entrypoint.sh"), "DF002"),
-    (GOOD.replace("FROM node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 AS web", "FROM node:22-bookworm-slim AS web"), "DF003"),            # a floating tag without a digest or a PIN-DIGEST comment
-    (GOOD.replace("FROM node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 AS web", "FROM node:latest AS web"), "DF003"),
+    (GOOD.replace("FROM node:24-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS web", "FROM node:22-bookworm-slim AS web"), "DF003"),            # a floating tag without a digest or a PIN-DIGEST comment
+    (GOOD.replace("FROM node:24-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS web", "FROM node:latest AS web"), "DF003"),
     (GOOD.replace("FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803a5c4247979ac7655f4d641 AS build", "FROM python AS build"), "DF003"),
     (re.sub(r"HEALTHCHECK .*\n    CMD .*\n", "", GOOD), "DF004"),
     (GOOD.replace("ENV PIP_NO_CACHE_DIR=1", "ENV API_TOKEN=abc123 PIP_NO_CACHE_DIR=1"), "DF005"),
