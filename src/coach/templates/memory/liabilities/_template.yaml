@@ -1,0 +1,27 @@
+# Copy to e.g. mortgage.yaml / car.yaml and fill. Unknown fields: leave null.
+id: mortgage-main               # referenced by analysis and the UI
+kind: mortgage                  # mortgage | car_loan | loa | lld | consumer_loan | bnpl
+lender: null                    # bank / financing company
+asset: null                     # "main house", "family car"...
+start_date: null                # YYYY-MM-DD
+end_date: null
+principal: null                 # initial amount borrowed (EUR)
+outstanding: null               # capital still due
+outstanding_as_of: null
+rate:
+  type: fixed                   # fixed | variable | mixed
+  nominal: null                 # e.g. 3.15 (%)
+  taeg: null                    # TAEG / TAEG (APR) incl. fees & insurance
+monthly_payment: null           # total debited per month
+insurance:
+  provider: null                # assurance emprunteur / polizza
+  monthly: null
+  delegated: null               # true if not the bank's group insurance (Lemoine law, FR)
+debited_from: null              # account + how it appears in bank data (regex), so payments get matched
+payment_match: null             # regex on description, e.g. 'ECHEANCE PRET'
+early_repayment_penalty: null   # IRA (FR) / penale estinzione anticipata (IT)
+# LOA / LLD only
+residual_value: null            # buy-back price at the end
+mileage_limit_km: null
+documents: []                   # paths to contract PDFs (kept locally)
+notes: ""

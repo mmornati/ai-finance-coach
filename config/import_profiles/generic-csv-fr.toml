@@ -1,0 +1,24 @@
+# Generic French bank CSV: "Date;Libellé;Débit;Crédit" (semicolon, dd/mm/yyyy, decimal comma).
+# TEMPLATE, TO VERIFY WITH A REAL EXPORT: copy it, rename the columns to your bank's header line, or let
+#   coach import FILE --account new:Label --date-col Date --desc-col Libellé --debit-col Débit --credit-col Crédit \
+#       --save-profile my-bank
+# write the mapping for you. Column names are matched ignoring case and accents.
+name = "generic-csv-fr"
+description = "Generic French CSV: Date;Libellé;Débit;Crédit, dd/mm/yyyy, decimal comma (template, to verify)"
+
+[format]
+encoding = "auto"          # utf-8 first, then cp1252/latin-1
+delimiter = ";"
+skip_rows = 0              # lines before the header line (or use header_contains)
+header_contains = []
+date_format = ["%d/%m/%Y", "%d/%m/%y"]
+decimal = ","
+thousands = ""
+currency = "EUR"
+
+[columns]
+date = "Date"
+description = "Libellé"
+debit = "Débit"            # money out; sign ignored (always an outflow)
+credit = "Crédit"          # money in
+# amount = "Montant"       # use this instead of debit/credit when the file has one signed column

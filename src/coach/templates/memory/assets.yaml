@@ -1,0 +1,19 @@
+# Savings, investments and other assets NOT synced by the app (or not yet).
+# Used for net worth and for "can we afford X" questions. Update values when you check them;
+# `as_of` tells the coach how stale a figure is.
+#
+# A rental property (kind real_estate_rental), for example under a tax-incentive scheme: `coach rental add ID` writes it and docs/rental.md
+# explains every field. Every figure is YOURS (the deed, the scheme's own table): nothing is looked up, a missing one is asked for. Keep the id
+# free of an address or a town.
+#   - id: rental-flat-1
+#     kind: real_estate_rental
+#     account: <uid or label of its bank account, purpose rental>
+#     loan: <id of its loan file in liabilities/>
+#     scheme: <the scheme's name>
+#     value: 0                     # what you believe it is worth, with as_of
+#     as_of: 2026-01-01
+#     rent_monthly: 0
+#     purchase_price: 0
+#     purchase_date: 2020-01-01
+#     commitment: { start_date: 2020-02-01, years: 9, rent_cap_monthly: 0, tenant_income_limit: 0, reduction_rate_pct: 0 }
+assets: []

@@ -1,0 +1,5259 @@
+{
+ "bank": "Fortuneo",
+ "parser": "fortuneo",
+ "synthetic": true,
+ "generator": "coach eval fixtures synth",
+ "version": 1,
+ "seed": 12,
+ "account": {
+  "name": "M OU MME CLAUDIO JOEL",
+  "iban": "FR0035884274076849318661134",
+  "country": "FR",
+  "currency": "EUR"
+ },
+ "household": {
+  "holders": [
+   [
+    "CLAUDIO",
+    "JOEL"
+   ],
+   [
+    "CLAUDIO",
+    "LAETITIA"
+   ],
+   [
+    "CLAUDIO",
+    "ELENA"
+   ],
+   [
+    "CLAUDIO",
+    "PAOLO"
+   ],
+   [
+    "JOEL",
+    "PAOLO"
+   ]
+  ],
+  "family": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "first_names": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "own_banks": {
+   "FORTUNEO": "Fortuneo",
+   "CIC": "CIC",
+   "REVOLUT": "Revolut"
+  }
+ },
+ "transactions": [
+  {
+   "tx": {
+    "entry_reference": "2023-01-14T00:00:00-0",
+    "booking_date": "2023-01-14",
+    "value_date": "2023-01-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "683.93",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 13/01 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-01-17T00:00:00-0",
+    "booking_date": "2023-01-17",
+    "value_date": "2023-01-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "21.82",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/01 W6 VOBULOB BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-01-18T00:00:00-2",
+    "booking_date": "2023-01-18",
+    "value_date": "2023-01-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "99.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 17/01 LA MATIJO ELOHOL MALUPUJEK"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-01-22T00:00:00-1",
+    "booking_date": "2023-01-22",
+    "value_date": "2023-01-22",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "23.30",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/01 Lup Milen-Andre"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-01-25T00:00:00-0",
+    "booking_date": "2023-01-25",
+    "value_date": "2023-01-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/01 NYX*LOMIDABOP Buben"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-01-29T00:00:00-2",
+    "booking_date": "2023-01-29",
+    "value_date": "2023-01-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "536.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/01 Lup Milen-Andre"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-06T00:00:00-4",
+    "booking_date": "2023-02-06",
+    "value_date": "2023-02-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2910.58",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR MR OU MME CLAUDIO JOEL  VIREMENT DE MR OU MME CLAUDIO JOEL  VIREMENT DE MR OU MME CLAUDIO JOEL  4433180351270266"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-08T00:00:00-3",
+    "booking_date": "2023-02-08",
+    "value_date": "2023-02-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.58",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ANN CARTE Lup Milen-Andre"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card_refund"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-17T00:00:00-0",
+    "booking_date": "2023-02-17",
+    "value_date": "2023-02-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "123.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST Paylib Nathalie FORANE  PAYLIB PX0W1YXT37 Paylib avec Fortuneo  50704NJ9VD814892423"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-18T00:00:00-1",
+    "booking_date": "2023-02-18",
+    "value_date": "2023-02-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "70.70",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/02 UFOKUB GENIRUMU LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-21T00:00:00-0",
+    "booking_date": "2023-02-21",
+    "value_date": "2023-02-21",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "579.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/02 BAHETASE Letel"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-25T00:00:00-1",
+    "booking_date": "2023-02-25",
+    "value_date": "2023-02-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "99.13",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/02 VI OREPUJ'T URELI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-25T00:00:00-3",
+    "booking_date": "2023-02-25",
+    "value_date": "2023-02-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.46",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/02 SASI OPULESIDO LETEL 35"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-27T00:00:00-2",
+    "booking_date": "2023-02-27",
+    "value_date": "2023-02-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "39.06",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/02 MIPASIBA VOVARUS LETEL 1"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-27T00:00:00-4",
+    "booking_date": "2023-02-27",
+    "value_date": "2023-02-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "43.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/02 OJUHO IVAVEPO LETEL 5"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-02-28T00:00:00-3",
+    "booking_date": "2023-02-28",
+    "value_date": "2023-02-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "81.37",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/02 SARL JEB NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-04T00:00:00-4",
+    "booking_date": "2023-03-04",
+    "value_date": "2023-03-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.03",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/03 BOHOTIH URELI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-06T00:00:00-6",
+    "booking_date": "2023-03-06",
+    "value_date": "2023-03-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.92",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 04/03 VERANEDU FOH AHUNARUP LE VE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-06T00:00:00-8",
+    "booking_date": "2023-03-06",
+    "value_date": "2023-03-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "25.73",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/03 LILOT EZUR BOJUZ FEF TEZ KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-07T00:00:00-3",
+    "booking_date": "2023-03-07",
+    "value_date": "2023-03-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.81",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/03 LA MOBOREF BIJINEFUBI D'A"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-17T00:00:00-1",
+    "booking_date": "2023-03-17",
+    "value_date": "2023-03-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "420.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 13/03 UFOKUB VO SARL LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-21T00:00:00-3",
+    "booking_date": "2023-03-21",
+    "value_date": "2023-03-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "867.19",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/03 GOMEGIBEN VUFODE BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-29T00:00:00-0",
+    "booking_date": "2023-03-29",
+    "value_date": "2023-03-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.32",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/03 LA JOBEP PASAMU URELI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-03-31T00:00:00-2",
+    "booking_date": "2023-03-31",
+    "value_date": "2023-03-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.19",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 30/03 NUTETESIRO RULO EFIHEKUJ EN VU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-04-12T00:00:00-0",
+    "booking_date": "2023-04-12",
+    "value_date": "2023-04-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "11.41",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/04 VI EJ JUVUTU BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-04-25T00:00:00-0",
+    "booking_date": "2023-04-25",
+    "value_date": "2023-04-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "38.72",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/04 LE OBIVUL Dinajezike"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-04-28T00:00:00-0",
+    "booking_date": "2023-04-28",
+    "value_date": "2023-04-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "19113.03",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR DTO24777984 Claudio  JKP53173668 Claudio  9464559355516780"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-02T00:00:00-0",
+    "booking_date": "2023-05-02",
+    "value_date": "2023-05-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "56229.44",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR COB15909701 Claudio  NEI39631071 Claudio  2259402577604949"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-08T00:00:00-2",
+    "booking_date": "2023-05-08",
+    "value_date": "2023-05-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.59",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/05 HOPITAL OHUGE BIJINEFUBI D A"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-08T00:00:00-5",
+    "booking_date": "2023-05-08",
+    "value_date": "2023-05-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "43.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 07/05 Poguvug P970Z553 Kehuvukez"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-10T00:00:00-4",
+    "booking_date": "2023-05-10",
+    "value_date": "2023-05-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "60.48",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 09/05 SETAVO.HI BIJINEFUBI D A"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-14T00:00:00-1",
+    "booking_date": "2023-05-14",
+    "value_date": "2023-05-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "44.79",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 13/05 MERERID PI BUBEN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-16T00:00:00-1",
+    "booking_date": "2023-05-16",
+    "value_date": "2023-05-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.92",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 15/05 UFOKUB GENIRUMU YYDPD9104405/"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-22T00:00:00-6",
+    "booking_date": "2023-05-22",
+    "value_date": "2023-05-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "41.12",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/05 SETAVO.HI BIJINEFUBI D A"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-26T00:00:00-0",
+    "booking_date": "2023-05-26",
+    "value_date": "2023-05-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "353.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/05 7725-URIKUNANOV- TAGEJUB"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-26T00:00:00-1",
+    "booking_date": "2023-05-26",
+    "value_date": "2023-05-26",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "94.09",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/05 7386-URIKUNANOV- TAGEJUB"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-05-31T00:00:00-0",
+    "booking_date": "2023-05-31",
+    "value_date": "2023-05-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 30/05 NYX*LOMIDABOP Letel"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-04T00:00:00-0",
+    "booking_date": "2023-06-04",
+    "value_date": "2023-06-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.24",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/06 SEMOP LA DAZAP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-07T00:00:00-0",
+    "booking_date": "2023-06-07",
+    "value_date": "2023-06-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.25",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/06 SEMOP LA DAZAP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-07T00:00:00-1",
+    "booking_date": "2023-06-07",
+    "value_date": "2023-06-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "60.91",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/06 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-11T00:00:00-3",
+    "booking_date": "2023-06-11",
+    "value_date": "2023-06-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "74.52",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 10/06 SETAVO HIMUL NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-17T00:00:00-1",
+    "booking_date": "2023-06-17",
+    "value_date": "2023-06-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "931.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/06 BEZOMUBILUVE RIVOTAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-17T00:00:00-2",
+    "booking_date": "2023-06-17",
+    "value_date": "2023-06-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "98.69",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 15/06 IFAM RIVOTAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-23T00:00:00-1",
+    "booking_date": "2023-06-23",
+    "value_date": "2023-06-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "374.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 22/06 kegi uda LETEL 5"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-24T00:00:00-0",
+    "booking_date": "2023-06-24",
+    "value_date": "2023-06-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "32.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 23/06 GA AHAHUHI.TIJ TABOGO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-25T00:00:00-0",
+    "booking_date": "2023-06-25",
+    "value_date": "2023-06-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "51.09",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/06 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-25T00:00:00-5",
+    "booking_date": "2023-06-25",
+    "value_date": "2023-06-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "36.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/06 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-06-26T00:00:00-3",
+    "booking_date": "2023-06-26",
+    "value_date": "2023-06-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "681.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/06 LEREK VIHO DO LETEL 66"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-07-06T00:00:00-1",
+    "booking_date": "2023-07-06",
+    "value_date": "2023-07-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "11.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/07 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-07-08T00:00:00-3",
+    "booking_date": "2023-07-08",
+    "value_date": "2023-07-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 07/07 NYX*TUTUKOVAHEDU TUBAHUHARAKEF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-07-17T00:00:00-0",
+    "booking_date": "2023-07-17",
+    "value_date": "2023-07-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "446.71",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST 146 2634 30790 Claudio  273 0705 92696 Claudio Laetitia  06639XW7QO423123582"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-07-26T00:00:00-0",
+    "booking_date": "2023-07-26",
+    "value_date": "2023-07-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5827.11",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/07 SEJOB MIJUKA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-07-26T00:00:00-5",
+    "booking_date": "2023-07-26",
+    "value_date": "2023-07-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "858.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR M OU MME MOHAMED MANIVAF  MANIVAF (MU IJELEKIVO VEFOKE)  VK002016YK2UA503  1759912233369497"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-07-29T00:00:00-0",
+    "booking_date": "2023-07-29",
+    "value_date": "2023-07-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "78.99",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/07 PILO 5086 BIJINEFUBI D"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-02T00:00:00-4",
+    "booking_date": "2023-08-02",
+    "value_date": "2023-08-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "78.80",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 30/07 BORAKUFO VOHU LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-07T00:00:00-1",
+    "booking_date": "2023-08-07",
+    "value_date": "2023-08-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "99.58",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/08 ZADILALAH FEF LES ZISAGE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-19T00:00:00-1",
+    "booking_date": "2023-08-19",
+    "value_date": "2023-08-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "36.06",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 18/08 AKEN SAJUZ DINAJEZIKE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-19T00:00:00-2",
+    "booking_date": "2023-08-19",
+    "value_date": "2023-08-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "54.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 18/08 JEZOKOSU BINI FEF TEZ KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-19T00:00:00-3",
+    "booking_date": "2023-08-19",
+    "value_date": "2023-08-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "454.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/08 Revolut**1615* Letel"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-23T00:00:00-0",
+    "booking_date": "2023-08-23",
+    "value_date": "2023-08-23",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "53.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 22/08 FOSOM ANEZOL HAPEKE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-25T00:00:00-4",
+    "booking_date": "2023-08-25",
+    "value_date": "2023-08-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3.63",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/08 JEROV IPIJ 37 T. HUGUNEME"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-08-29T00:00:00-0",
+    "booking_date": "2023-08-29",
+    "value_date": "2023-08-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "84.97",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/08 ZIVIZOV TABOGO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-09-02T00:00:00-1",
+    "booking_date": "2023-09-02",
+    "value_date": "2023-09-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "155.69",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 01/09 SETAVO 2398Y EDINUR MUKANO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-09-06T00:00:00-0",
+    "booking_date": "2023-09-06",
+    "value_date": "2023-09-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "49.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/09 VEFES EHEJO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-09-27T00:00:00-2",
+    "booking_date": "2023-09-27",
+    "value_date": "2023-09-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "26.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 26/09 LA MOBOREF UNIME EN EHUH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-09-28T00:00:00-0",
+    "booking_date": "2023-09-28",
+    "value_date": "2023-09-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "47.39",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/09 JEZOKOSU BINI FEF TEZ KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-04T00:00:00-0",
+    "booking_date": "2023-10-04",
+    "value_date": "2023-10-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.10",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 04/10 SEMOP LA DAZAP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-06T00:00:00-1",
+    "booking_date": "2023-10-06",
+    "value_date": "2023-10-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "76.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/10 EDADIMEJ VEREVATEP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-09T00:00:00-3",
+    "booking_date": "2023-10-09",
+    "value_date": "2023-10-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "73.95",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 07/10 ABUJE ZA BIJINEFUBI D"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-10T00:00:00-2",
+    "booking_date": "2023-10-10",
+    "value_date": "2023-10-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 09/10 NYX*TUTUKOVAHEDU TUBAHUHARAKEF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-12T00:00:00-1",
+    "booking_date": "2023-10-12",
+    "value_date": "2023-10-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "73.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/10 PABOPAR GUT 040 ZISAGE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-15T00:00:00-2",
+    "booking_date": "2023-10-15",
+    "value_date": "2023-10-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "23.37",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 14/10 SETAVO HIMUL NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-17T00:00:00-0",
+    "booking_date": "2023-10-17",
+    "value_date": "2023-10-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "395.50",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/10 Migonuha Kokakavoku-le-"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-24T00:00:00-0",
+    "booking_date": "2023-10-24",
+    "value_date": "2023-10-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "449.29",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 20/10 UBINUR OJANOJIG EN M"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-25T00:00:00-0",
+    "booking_date": "2023-10-25",
+    "value_date": "2023-10-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "525.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/10 UZADO ZOGOSU BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-25T00:00:00-1",
+    "booking_date": "2023-10-25",
+    "value_date": "2023-10-25",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "36.24",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/10 LIGEDIFI UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-10-31T00:00:00-1",
+    "booking_date": "2023-10-31",
+    "value_date": "2023-10-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "27.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 30/10 KEBA RIKAS OZIRADOG 3 324,38 TRY  Taux de evegoj polusaru         +    71,91609  Taux de evegoj r\u00e9f\u00e9rence HIB    +    89,16450"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-03T00:00:00-0",
+    "booking_date": "2023-11-03",
+    "value_date": "2023-11-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "636.21",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 01/11 Rohazit Q Arosekutin 9 104,61 GIM  Taux de evegoj polusaru         +    96,79662  Taux de evegoj r\u00e9f\u00e9rence HIB    +    74,53728"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-03T00:00:00-2",
+    "booking_date": "2023-11-03",
+    "value_date": "2023-11-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "99.41",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 02/11 UZADO ZOGOSU BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-12T00:00:00-2",
+    "booking_date": "2023-11-12",
+    "value_date": "2023-11-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "341.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/11 ARUMA MARCHE HER OLOTUZOD ALAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-13T00:00:00-1",
+    "booking_date": "2023-11-13",
+    "value_date": "2023-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "97.17",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 12/11 asomi OLOTUZOD ALAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-15T00:00:00-2",
+    "booking_date": "2023-11-15",
+    "value_date": "2023-11-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.25",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 14/11 LIBRAIRIE USAHOK OLOTUZOD ALAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-17T00:00:00-1",
+    "booking_date": "2023-11-17",
+    "value_date": "2023-11-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "17.35",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/11 LINAFIFIZI OLOTUZOD ALAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-18T00:00:00-2",
+    "booking_date": "2023-11-18",
+    "value_date": "2023-11-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "397.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/11 ZAVAHED DIRURITE OLOTUZOD ALAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-20T00:00:00-12",
+    "booking_date": "2023-11-20",
+    "value_date": "2023-11-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "80.21",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 18/11 SISIK LUTEH SRL KOTUNEHA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-20T00:00:00-2",
+    "booking_date": "2023-11-20",
+    "value_date": "2023-11-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "98.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/11 NIHOJUF IRASINA' MAZI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-21T00:00:00-4",
+    "booking_date": "2023-11-21",
+    "value_date": "2023-11-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "64.77",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 20/11 LOTISA VOVILATA MAZI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-25T00:00:00-4",
+    "booking_date": "2023-11-25",
+    "value_date": "2023-11-25",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "9.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/11 ROFUMILO 40 MAZI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-29T00:00:00-1",
+    "booking_date": "2023-11-29",
+    "value_date": "2023-11-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.24",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/11 VOGOG IMEJONU M2 OKIDOB"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-11-30T00:00:00-4",
+    "booking_date": "2023-11-30",
+    "value_date": "2023-11-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "34.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 29/11 Mol*Hidamagojigo 49319118383"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-12-02T00:00:00-1",
+    "booking_date": "2023-12-02",
+    "value_date": "2023-12-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "67.16",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 01/12 EJIJAJU UJ GANIZO 16,47 EUR"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-12-12T00:00:00-0",
+    "booking_date": "2023-12-12",
+    "value_date": "2023-12-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/12 NYX*TUTUKOVAHEDU TUBAHUHARAKEF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-12-21T00:00:00-2",
+    "booking_date": "2023-12-21",
+    "value_date": "2023-12-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "94.11",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR DOZEPU SRL  SEMOP BI/u11seuz0-w2k4-56fo-r3w3-137x6e15925q  689457y6j13c8680a52z72m0km49fvx1  2157327982199254"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-12-25T00:00:00-2",
+    "booking_date": "2023-12-25",
+    "value_date": "2023-12-25",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "96.74",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/12 MIJA 219 GUBOKA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-12-26T00:00:00-1",
+    "booking_date": "2023-12-26",
+    "value_date": "2023-12-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.24",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/12 JO BUJILOJEGA DI NOJIKODI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2023-12-29T00:00:00-4",
+    "booking_date": "2023-12-29",
+    "value_date": "2023-12-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "98.92",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/12 PATIMO ZETETIVI GUBOKA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-08T00:00:00-2",
+    "booking_date": "2024-01-08",
+    "value_date": "2024-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "46.99",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/01 SARL KOS BIJINEFUBI D"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-08T00:00:00-3",
+    "booking_date": "2024-01-08",
+    "value_date": "2024-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "69.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/01 9I LA ZOHURITOB BIJINEFUBI D"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-08T00:00:00-7",
+    "booking_date": "2024-01-08",
+    "value_date": "2024-01-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "68.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR M OU MME MOHAMED MANIVAF  MANIVAF JITEL NUFEFENA VEFOKE  VK00341C4KP8KS05  7833557966569263"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-17T00:00:00-1",
+    "booking_date": "2024-01-17",
+    "value_date": "2024-01-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "82.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/01 JOFAN SUSIREMIM' FEF TEZ KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-19T00:00:00-0",
+    "booking_date": "2024-01-19",
+    "value_date": "2024-01-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "11.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 18/01 AKEN SAJUZ DINAJEZIKE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-19T00:00:00-2",
+    "booking_date": "2024-01-19",
+    "value_date": "2024-01-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "18.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 18/01 ZAZADILE VEREVATEP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-22T00:00:00-5",
+    "booking_date": "2024-01-22",
+    "value_date": "2024-01-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "83.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 20/01 NIDE*UZADO DUFIL SEZUBOPE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-23T00:00:00-3",
+    "booking_date": "2024-01-23",
+    "value_date": "2024-01-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.75",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 22/01 MEVUTI HAPE BUJO UNIME EN EHUH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-24T00:00:00-0",
+    "booking_date": "2024-01-24",
+    "value_date": "2024-01-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "42.81",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 23/01 BUSU RUD D'VOMO BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-25T00:00:00-1",
+    "booking_date": "2024-01-25",
+    "value_date": "2024-01-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "23.63",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/01 Sunday*OTESOH Nu Bijinefubi-d"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-25T00:00:00-3",
+    "booking_date": "2024-01-25",
+    "value_date": "2024-01-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7.09",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/01 Sunday*OTESOH Nu Bijinefubi-d"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-01-26T00:00:00-3",
+    "booking_date": "2024-01-26",
+    "value_date": "2024-01-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "61.21",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR DOZEPU SRL  SEMOP BI/64879pg8-270b-0q61-64fg-7968662v448y  z63f8031f8o61gmddhd1757007yvei74  0746105289547186"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-02-03T00:00:00-3",
+    "booking_date": "2024-02-03",
+    "value_date": "2024-02-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.19",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 02/02 uberobevoz Belefosame"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-02-05T00:00:00-7",
+    "booking_date": "2024-02-05",
+    "value_date": "2024-02-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "98.07",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 04/02 Poguvug Semifu LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-02-07T00:00:00-4",
+    "booking_date": "2024-02-07",
+    "value_date": "2024-02-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/02 DAJEJITIJ* K8419 50997 IBAMEVEJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-02-21T00:00:00-5",
+    "booking_date": "2024-02-21",
+    "value_date": "2024-02-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "10.65",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST WERO SAMIRA M  WERO 6567713l-f936-22q3-8iup-9xe136plg5om Zana ILAHEVEG - paolo  57uilc22384s5f60h2g8724l2a3hg512  64568FB8XD501472515"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "wero_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-04T00:00:00-2",
+    "booking_date": "2024-03-04",
+    "value_date": "2024-03-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 02/03 AKEN SAJUZ DINAJEZIKE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-05T00:00:00-0",
+    "booking_date": "2024-03-05",
+    "value_date": "2024-03-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8783.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL  VIREMENT DE MR OU MME CLAUDIO JOEL  VIREMENT DE MR OU MME CLAUDIO JOEL  01156YR6KV348419756"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-06T00:00:00-0",
+    "booking_date": "2024-03-06",
+    "value_date": "2024-03-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/03 KEDUKAT CAFE OJANOJIG EN SI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-12T00:00:00-2",
+    "booking_date": "2024-03-12",
+    "value_date": "2024-03-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/03 NYX*TUTUKOVAHEDU TUBAHUHARAKEF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-19T00:00:00-2",
+    "booking_date": "2024-03-19",
+    "value_date": "2024-03-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "35.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 17/03 HEHUFOH SEZONIL GAHOJEG"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-21T00:00:00-3",
+    "booking_date": "2024-03-21",
+    "value_date": "2024-03-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "46.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST WERO WERO MOHAMED K  WERO 61986050-ejur-4984-2bi3-v23rb0878u0g Tahevu  manivaf. Fufehope  7mm2te3t37018g2sm9s84n7ix8zz9683  50606PZ2MA884397005"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "wero_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-22T00:00:00-0",
+    "booking_date": "2024-03-22",
+    "value_date": "2024-03-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "90.73",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/03 AKEN SAJUZ DINAJEZIKE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-22T00:00:00-2",
+    "booking_date": "2024-03-22",
+    "value_date": "2024-03-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.38",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/03 EPUNI RUTIKOTU RIVOTAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-03-25T00:00:00-0",
+    "booking_date": "2024-03-25",
+    "value_date": "2024-03-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "71.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/03 Bisipet SA 03 Letel"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-05T00:00:00-4",
+    "booking_date": "2024-04-05",
+    "value_date": "2024-04-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.41",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/04 VIJIT KEHI INENUMUZAHEKE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-06T00:00:00-6",
+    "booking_date": "2024-04-06",
+    "value_date": "2024-04-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "98.07",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/04 Poguvug Semifu LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-08T00:00:00-3",
+    "booking_date": "2024-04-08",
+    "value_date": "2024-04-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.93",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/04 EFO SAS Operado"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-10T00:00:00-0",
+    "booking_date": "2024-04-10",
+    "value_date": "2024-04-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "80.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/04 UFOKUB GENIRUMU LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-16T00:00:00-4",
+    "booking_date": "2024-04-16",
+    "value_date": "2024-04-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "78.80",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST WERO WERO EMMANUEL B  WERO 4739lq38-6600-7990-gd81-3h94jo1vjc10  980b4g4c1566264947098c9p16k86o50  54600KU8GN249355934"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "wero_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-18T00:00:00-0",
+    "booking_date": "2024-04-18",
+    "value_date": "2024-04-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "88185.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR Virement avec Fortuneo Ferir  Virement avec Fortuneo Livret  8594280484370906"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-22T00:00:00-11",
+    "booking_date": "2024-04-22",
+    "value_date": "2024-04-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 20/04 Uvokavane NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-04-27T00:00:00-1",
+    "booking_date": "2024-04-27",
+    "value_date": "2024-04-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7.66",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 26/04 Divade_*GADEZO LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-01T00:00:00-0",
+    "booking_date": "2024-05-01",
+    "value_date": "2024-04-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "42.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "RET DAB 30/04/24 GOMEGIBEN SUHES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "atm"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-06T00:00:00-8",
+    "booking_date": "2024-05-06",
+    "value_date": "2024-05-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "40.88",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 04/05 LE JUVUT DU RULO URELI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-10T00:00:00-2",
+    "booking_date": "2024-05-10",
+    "value_date": "2024-05-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "57.39",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 08/05 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-15T00:00:00-2",
+    "booking_date": "2024-05-15",
+    "value_date": "2024-05-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.01",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 15/05 Gomegiben Semifu Bijinefubi d"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-20T00:00:00-0",
+    "booking_date": "2024-05-20",
+    "value_date": "2024-05-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.75",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/05 LE RUFIN POGIHUK ZIJALU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-21T00:00:00-0",
+    "booking_date": "2024-05-21",
+    "value_date": "2024-05-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.05",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/05 SOPUMO DEMAG IJE DIDU LE BUD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-22T00:00:00-1",
+    "booking_date": "2024-05-22",
+    "value_date": "2024-05-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "644.09",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/05 SETAVO HIMUL NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-05-27T00:00:00-4",
+    "booking_date": "2024-05-27",
+    "value_date": "2024-05-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "73.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/05 SUZUJ* W #65497 81636 FESAM"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-01T00:00:00-0",
+    "booking_date": "2024-06-01",
+    "value_date": "2024-06-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.29",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 31/05 JOFAN AU KIGAZA FEF TEZ KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-03T00:00:00-1",
+    "booking_date": "2024-06-03",
+    "value_date": "2024-06-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "96.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 02/06 Duveruman Uhavu"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-06T00:00:00-1",
+    "booking_date": "2024-06-06",
+    "value_date": "2024-06-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "888.25",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL  VIREMENT INSTANTANE  Virement instantane  25491QD5IU641987071"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-11T00:00:00-3",
+    "booking_date": "2024-06-11",
+    "value_date": "2024-06-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "32.91",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ANN CARTE Lup Milen-Andre"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card_refund"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-21T00:00:00-4",
+    "booking_date": "2024-06-21",
+    "value_date": "2024-06-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "23.30",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ANN CARTE Lama pon Her Ekeres"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card_refund"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-24T00:00:00-1",
+    "booking_date": "2024-06-24",
+    "value_date": "2024-06-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "872.05",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 23/06 AKAKORE GEORGE FEF TEZ ZISAGE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-28T00:00:00-0",
+    "booking_date": "2024-06-28",
+    "value_date": "2024-06-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "62.57",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/06 NIL*rofu.rinalev Ilapasuhe"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-06-28T00:00:00-1",
+    "booking_date": "2024-06-28",
+    "value_date": "2024-06-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "42.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR DOZEPU SRL  SEMOP BI/0d9yj088-x07n-8176-j73i-yi971ku6cm2w  4m655aqd382594yrp09gy0016f7px597  7116148578196955"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-01T00:00:00-1",
+    "booking_date": "2024-07-01",
+    "value_date": "2024-07-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "19.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/06 Nopudop.tij Ginukedir"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-01T00:00:00-3",
+    "booking_date": "2024-07-01",
+    "value_date": "2024-07-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "54.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR M OU MME MOHAMED MANIVAF  Manivaf Jap Lano  QD3C23702G465515  3503675043594017"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-03T00:00:00-0",
+    "booking_date": "2024-07-03",
+    "value_date": "2024-07-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "874.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 02/07 LEREK VIHO DO LETEL 64"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-04T00:00:00-4",
+    "booking_date": "2024-07-04",
+    "value_date": "2024-07-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "888.25",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL  VIREMENT INSTANTANE  Virement instantane  38152KA6LV788723052"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-05T00:00:00-1",
+    "booking_date": "2024-07-05",
+    "value_date": "2024-07-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "35.88",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 04/07 UFOKUB GENIRUMU LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-06T00:00:00-0",
+    "booking_date": "2024-07-06",
+    "value_date": "2024-07-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "757.95",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST WERO WERO SAMIRA M  WERO t7nr01b0-1c58-06h6-du48-2a2410v760fn W esad  oziradog  808y03n66m643398qa013198h3iz56ph  20204TI1DA874845995"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "wero_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-10T00:00:00-1",
+    "booking_date": "2024-07-10",
+    "value_date": "2024-07-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "55.19",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 09/07 LA MOBOREF UNIME EN EHUH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-16T00:00:00-0",
+    "booking_date": "2024-07-16",
+    "value_date": "2024-07-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "41.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "RET DAB 15/07/24 NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "atm"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-16T00:00:00-1",
+    "booking_date": "2024-07-16",
+    "value_date": "2024-07-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "17.66",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 14/07 JV2848 LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-07-16T00:00:00-3",
+    "booking_date": "2024-07-16",
+    "value_date": "2024-07-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "64.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 13/07 PHARMACIE EMUG EDEVEHIZULE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-01T00:00:00-2",
+    "booking_date": "2024-08-01",
+    "value_date": "2024-08-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "58.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 31/07 SumUp  *ROSOSUSU Pofufi-a-Ipok"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-05T00:00:00-6",
+    "booking_date": "2024-08-05",
+    "value_date": "2024-08-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3.05",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/08 LA POSTE.HI LETEL LOTIG 41"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-10T00:00:00-2",
+    "booking_date": "2024-08-10",
+    "value_date": "2024-08-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "283.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 08/08 ZAZADILE KOROLI NIZETEFAH TEZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-13T00:00:00-3",
+    "booking_date": "2024-08-13",
+    "value_date": "2024-08-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 12/08 LA MOBOREF BIJINEFUBI D'"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-14T00:00:00-0",
+    "booking_date": "2024-08-14",
+    "value_date": "2024-08-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "284.81",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 13/08 EKU*HITURIKEK Fovi"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-15T00:00:00-1",
+    "booking_date": "2024-08-15",
+    "value_date": "2024-08-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "58.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 14/08 GOMEGIBEN.HI BIJINEFUBI D'A"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-16T00:00:00-5",
+    "booking_date": "2024-08-16",
+    "value_date": "2024-08-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "32.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 14/08 UFOKUB GENIRUMU LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-17T00:00:00-0",
+    "booking_date": "2024-08-17",
+    "value_date": "2024-08-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "13.30",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/08 KEKUZU UJOKOSOD UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-28T00:00:00-2",
+    "booking_date": "2024-08-28",
+    "value_date": "2024-08-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/08 NYX*TUTUKOVAHEDU TUBAHUHARAKEF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-29T00:00:00-2",
+    "booking_date": "2024-08-29",
+    "value_date": "2024-08-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "93.91",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/08 OKUTOV 501812 URELI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-08-30T00:00:00-2",
+    "booking_date": "2024-08-30",
+    "value_date": "2024-08-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 30/08 SEMOP LA DAZAP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-09-04T00:00:00-3",
+    "booking_date": "2024-09-04",
+    "value_date": "2024-09-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.23",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/09 SIROFO NIDE VAR HALAFIK"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-09-09T00:00:00-1",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "159.49",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 07/09 SETAVO HIMUL NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-09-12T00:00:00-2",
+    "booking_date": "2024-09-12",
+    "value_date": "2024-09-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.95",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/09 PIFU   *RORE ROFU.PIFU.TIJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-09-18T00:00:00-0",
+    "booking_date": "2024-09-18",
+    "value_date": "2024-09-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "76.99",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 16/09 IFAM RIVOTAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-09-21T00:00:00-1",
+    "booking_date": "2024-09-21",
+    "value_date": "2024-09-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 20/09 NUTETESIRO RULO EFIHEKUJ EN F"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-09-28T00:00:00-0",
+    "booking_date": "2024-09-28",
+    "value_date": "2024-09-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "50.57",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/09 SARL JEB NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-04T00:00:00-0",
+    "booking_date": "2024-10-04",
+    "value_date": "2024-10-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "25.79",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 03/10 PABOPAR GUT 113 ZISAGE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-07T00:00:00-5",
+    "booking_date": "2024-10-07",
+    "value_date": "2024-10-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "50.89",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 04/10 LILOT EZUR BOJUZ FEF TEZ KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-08T00:00:00-0",
+    "booking_date": "2024-10-08",
+    "value_date": "2024-10-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "397.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "RET DAB 07/10/24 HALAFIK"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "atm"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-22T00:00:00-3",
+    "booking_date": "2024-10-22",
+    "value_date": "2024-10-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "64.16",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 21/10 GEBU-1405 JANEGUZE-EN-Q"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-23T00:00:00-2",
+    "booking_date": "2024-10-23",
+    "value_date": "2024-10-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "13.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 22/10 ANOVUPADIM TUM FANU 82,50 USD  Taux de evegoj polusaru         +     7,58192  Taux de evegoj r\u00e9f\u00e9rence HIB    +     5,05077"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-28T00:00:00-2",
+    "booking_date": "2024-10-28",
+    "value_date": "2024-10-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "72.28",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 27/10 ZADILALAH FEF LES KEZEH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-28T00:00:00-6",
+    "booking_date": "2024-10-28",
+    "value_date": "2024-10-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "67.13",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/10 PIFU   *RORE ROFU.PIFU.TIJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-10-31T00:00:00-2",
+    "booking_date": "2024-10-31",
+    "value_date": "2024-10-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "45.16",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 29/10 UFOKUB GENIRUMU LETEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-02T00:00:00-0",
+    "booking_date": "2024-11-02",
+    "value_date": "2024-11-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "97.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 01/11 JO TILUL GIBATI SUR SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-06T00:00:00-1",
+    "booking_date": "2024-11-06",
+    "value_date": "2024-11-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "84.97",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 05/11 KONOKE RIVOTAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-11T00:00:00-3",
+    "booking_date": "2024-11-11",
+    "value_date": "2024-11-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "34.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 08/11 ZILID TOK BIJINEFUBI D"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-12T00:00:00-9",
+    "booking_date": "2024-11-12",
+    "value_date": "2024-11-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.58",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/11 Etuvig Kij Tabogo"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-13T00:00:00-1",
+    "booking_date": "2024-11-13",
+    "value_date": "2024-11-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 12/11 MUMIZ LA KIDULIF SOGALUFOJO TU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-19T00:00:00-5",
+    "booking_date": "2024-11-19",
+    "value_date": "2024-11-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8783.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MR OU MME CLAUDIO JOEL  VIREMENT INSTANTANE  Virement instantane  85841TR0XG698828729"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-21T00:00:00-0",
+    "booking_date": "2024-11-21",
+    "value_date": "2024-11-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "47.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 20/11 SPORT KEJALI LIV JUPEJERO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-25T00:00:00-10",
+    "booking_date": "2024-11-25",
+    "value_date": "2024-11-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 23/11 NIDE*UZADO DUFIL SEZUBOPE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-25T00:00:00-3",
+    "booking_date": "2024-11-25",
+    "value_date": "2024-11-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "71.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 23/11 TEFOKEJ DE FUMAM PUJAGUDIK"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-11-29T00:00:00-2",
+    "booking_date": "2024-11-29",
+    "value_date": "2024-11-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "93.77",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/11 GOPAMOPENUZ BUBEN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-07T00:00:00-2",
+    "booking_date": "2024-12-07",
+    "value_date": "2024-12-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "13.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 06/12 KIK T.A. - GASAN KIKAJ DE FELU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-12T00:00:00-0",
+    "booking_date": "2024-12-12",
+    "value_date": "2024-12-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.51",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 11/12 AKAKORE GEORGE FEF TEZ ZISAGE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-13T00:00:00-1",
+    "booking_date": "2024-12-13",
+    "value_date": "2024-12-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 12/12 NINI IVANU GANIZO 32,49 EUR"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-16T00:00:00-6",
+    "booking_date": "2024-12-16",
+    "value_date": "2024-12-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "640.34",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 14/12 Lup Sog Elazap, Sa"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-20T00:00:00-2",
+    "booking_date": "2024-12-20",
+    "value_date": "2024-12-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "14.89",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 19/12 ANOVUPADIM TUM FANU 68,73 USD  Taux de evegoj polusaru         +     1,35078  Taux de evegoj r\u00e9f\u00e9rence HIB    +     0,85545"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-25T00:00:00-0",
+    "booking_date": "2024-12-25",
+    "value_date": "2024-12-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.61",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 25/12 KEDUKAT CAFE OJANOJIG EN SI"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-25T00:00:00-9",
+    "booking_date": "2024-12-25",
+    "value_date": "2024-12-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "19.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 24/12 OKUTOV 854367 UQQSR8871460/"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-27T00:00:00-1",
+    "booking_date": "2024-12-27",
+    "value_date": "2024-12-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "90.64",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 26/12 SETAVO 9175M NUTIF"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-30T00:00:00-20",
+    "booking_date": "2024-12-30",
+    "value_date": "2024-12-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "84.99",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 28/12 TIJETALUR UJOKOSOD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2024-12-31T00:00:00-0",
+    "booking_date": "2024-12-31",
+    "value_date": "2024-12-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "26.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CARTE 30/12 LA MOBOREF UNIME EN RUKEG"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  }
+ ]
+}

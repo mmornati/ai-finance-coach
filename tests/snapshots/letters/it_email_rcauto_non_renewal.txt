@@ -1,0 +1,28 @@
+Oggetto: disdetta del contratto n. AI-77
+
+Spett.le AutoItalia Test,
+
+In qualità di intestatario del contratto n. AI-77 (polizza RC auto), Vi comunico con la presente che non intendo rinnovarlo alla sua scadenza del 20 gennaio 2027.
+
+Come previsto dall'art. 22 del D.L. 179/2012 (convertito dalla L. 221/2012), il contratto di assicurazione RC auto non si rinnova tacitamente: la presente vale come comunicazione di mancato rinnovo.
+
+Vi prego di:
+- confermarmi per iscritto la presa in carico della richiesta e la data di efficacia;
+- interrompere ogni addebito a partire da tale data;
+- rimborsarmi, se del caso, la parte di premio pagata anticipatamente e non goduta.
+
+In attesa di un Vostro riscontro scritto, porgo distinti saluti.
+
+Jeanne Exemple
+12 rue de l'Exemple
+59000 Montfort-Test
+jeanne.exemple@example.org
+
+=== to complete ===
+
+=== notes ===
+L'RC auto non si rinnova tacitamente: questa lettera non è necessaria, serve solo se vuoi comunicare il mancato rinnovo; acquista la nuova polizza prima della scadenza (la copertura prosegue 15 giorni).
+Inviala dall'indirizzo e-mail del contratto (o via PEC), conserva la ricevuta e completa i [campi] tra parentesi quadre.
+Bozza generata localmente a partire da regole generali di diritto dei consumatori: verifica con il contratto e la fonte ufficiale prima dell'invio. Nulla è stato inviato.
+=== legal basis ===
+it-rcauto | D.L. 179/2012 art. 22, conv. L. 221/2012 | reviewed 2026-10

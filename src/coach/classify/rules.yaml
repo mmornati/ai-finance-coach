@@ -1,0 +1,71 @@
+# Deterministic rules, applied before memory and LLM. First match wins.
+# `type` matches the parsed operation type; `match` is a case-insensitive regex
+# on the normalised merchant key (or counterparty for transfers).
+type_rules:
+  atm: cash.atm_withdrawal
+  internal_transfer: transfer.internal
+  wero_out: transfer.to_people
+  wero_in: transfer.from_people
+  person_transfer_out: transfer.to_people
+  person_transfer_in: transfer.from_people
+  # moves between the user's own accounts / pockets / vaults and currencies
+  savings_internal: transfer.internal
+  topup: transfer.internal
+  fx_exchange: transfer.internal
+  bank_fee: fees.bank_fees
+  # A loan instalment is NOT a mortgage by default (the same bank can hold a home loan and an investment-property
+  # loan): neutral id, refined per account purpose below and by memory annotations.
+  loan_payment: debt.loan_repayment
+  # cheques carry no merchant: left for the user (override / memory), never sent to an LLM
+  cheque: other.uncategorized
+  cheque_deposit: other.uncategorized
+
+# Overrides of type_rules for accounts of a given purpose (accounts.purpose, `coach accounts set --purpose`)
+type_rules_by_account_purpose:
+  rental:
+    loan_payment: housing.rental_property_loan
+
+merchant_rules:
+  # rental property (E15-1): generic French words, never a brand. They come BEFORE the public-finance rule: a property tax is paid to the
+  # tax office but is a cost of the property
+  - match: '\bTAXE\s+FONCI(ERE|ERES)\b|\bTAXE\s+FONC\b'
+    category: housing.property_tax
+  # a bare "frais de gestion" is also a bank, life-insurance or PEA fee: the words need a rental context in the same label
+  - match: '\bGESTION\s+LOCATIVE\b|\bGERANCE\b|\b(HONORAIRES?|FRAIS)\s+(DE\s+)?GESTION\b(?=.*\b(LOCATIVE|LOYERS?|GERANCE|IMMOBILIER)\b)'
+    category: housing.property_management
+  - match: '\bPNO\b|\bPROPRIETAIRE\s+NON\s+OCCUPANT\b|\bGLI\b|\bGARANTIE\s+(DES\s+)?LOYERS?\s+IMPAYES?\b|\bLOYERS?\s+IMPAYES?\b'
+    category: housing.property_insurance
+  - match: '\bCOPROPRIETE\b|\bCHARGES\s+DE\s+COPRO\b'
+    category: housing.property_charges
+  # rent received (E15-1): a transfer that says LOYER and comes IN (what leaves under that word is the household's own rent, not matched here)
+  # (deposits and refunds are not rent)
+  - match: '^(?!.*\b(DEPOT|GARANTIE|CAUTION|REMBOURSEMENT|REMBT|RBT|REGULARISATION)\b).*\bLOYERS?\b'
+    direction: in
+    category: income.rental
+  # public finance / co-ownership: generic words, not brands
+  - match: '\bDGFIP\b|\bDRFIP\b|FINANCES PUBLIQUES|DIRECTION GENERALE DES FIN|\bTRESOR PUBLIC\b|\bIMPOTS?\b'
+    category: taxes.taxes
+  - match: '\bSYNDIC(AT)?\b'
+    category: housing.property_charges
+  # money received from a property manager = rent collected on a rental flat (direction-aware rule)
+  - match: '\b(FONCIA|CITYA|NEXITY|ORPI|LAFORET)\b'
+    direction: in
+    category: income.rental
+  - match: '^PRIME PARRAINAGE'
+    category: income.bonus
+  - match: '\bNETFLIX\b'
+    category: subscriptions.video_streaming
+  - match: '\bSPOTIFY\b'
+    category: subscriptions.music_streaming
+  - match: '\bAMAZON PRIME\b'
+    category: subscriptions.memberships
+  - match: '\bDISNEY\s?PLUS\b|\bDISNEYPLUS\b'
+    category: subscriptions.video_streaming
+  - match: '\b(\dX )?\dX ONEY\b|\bONEY\b|\bALMA\b|\bKLARNA\b|\bSCALAPAY\b|\bPAYPAL \dX\b'
+    category: debt.bnpl
+  - match: '\b(ELECTRA|MONTA|FRESHMILE|CHARGEMAP|IONITY|IZIVIA|ALLEGO|POWERDOT|ZUNDER|FASTNED|TESLA SUPERCHARG\w*)\b'
+    category: transport.fuel        # EV charging networks
+  - match: '\bOCTOPUS EL'
+    category: housing.energy
+  - match: '\bLEETCHI\b'
+    category: charity.donations

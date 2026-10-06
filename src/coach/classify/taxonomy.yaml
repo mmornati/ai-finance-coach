@@ -1,0 +1,104 @@
+# Two-level category taxonomy: <group>.<leaf>. Loosely based on Plaid PFC v2,
+# adapted for FR/IT households. The LLM may only answer with ids from this file.
+income:
+  salary: Salary, wages, pension
+  refund: Refunds, reimbursements (non card-refund), cashback
+  bonus: Referral bonus, rewards, prizes
+  gift: Gifts and donations received
+  interest: Interest, dividends
+  rental: Rent received on a rental property (net of agency fees)
+  other: Other income
+transfer:
+  internal: Between the user's own accounts (savings, livret, other banks)
+  to_people: Money sent to friends/family (Wero, Lydia, Satispay, Paypal friends)
+  from_people: Money received from friends/family
+housing:
+  mortgage: Mortgage / mutuo / prêt immobilier
+  rent: Rent
+  energy: Electricity, gas
+  water: Water
+  home_insurance: Home insurance
+  maintenance_diy: DIY, hardware, garden, repairs
+  renovation: Renovation / home improvement works by contractors (capital, usually one-off)
+  furniture: Furniture, home decor, appliances
+  property_charges: Co-ownership / syndic charges and upkeep of an owned property
+  rental_property_loan: Loan instalments on a rental / investment property (Pinel...)
+  property_tax: Property tax (taxe fonciere) of an owned property, notably a rental one
+  property_management: Letting agency / property management fees, rent collection and tenant search of a rental property
+  property_insurance: Landlord insurance of a rental property (PNO, unpaid-rent cover GLI)
+food:
+  groceries: Supermarkets, grocers, butchers, bakeries for home, grocery delivery & meal kits
+  restaurants: Restaurants, brasseries, pizzerias
+  fast_food: Fast food chains, takeaway
+  cafes_bars: Cafés, bars, coffee shops
+  food_delivery: Deliveroo, Uber Eats, Just Eat, Glovo
+  work_meals: Meals, coffee and snacks during the work day (company canteen, places near the office on weekdays)
+transport:
+  fuel: Fuel stations, EV charging
+  parking_tolls: Parking, motorway tolls (péage, Telepass)
+  public_transport: Metro, bus, tram, local transit passes
+  taxi_rideshare: Taxi, Uber, Bolt, Heetch
+  car_maintenance: Garage, tyres, car wash, inspection
+  car_loan_lease: Car loan, LOA/LLD, leasing
+  car_insurance: Car insurance
+shopping:
+  marketplace: Amazon, Cdiscount, eBay, AliExpress (general online)
+  clothing: Clothes, shoes, accessories
+  electronics: Electronics, computers, phones
+  sports_gear: Sports goods (Sportmax, Intersport)
+  books_media: Books, music, games (physical/digital purchases)
+  gifts_flowers: Florists, gift shops
+  tobacco_press: Tabac, presse, newsagents, lottery
+  department_general: Department stores, general retail, discount stores
+health:
+  pharmacy: Pharmacies
+  doctors: Doctors, dentists, hospitals, labs
+  health_insurance: Mutuelle, health insurance
+  optician: Opticians
+personal_care:
+  hair_beauty: Hairdresser, beauty, cosmetics, spa
+leisure:
+  cinema_events: Cinema, concerts, shows, museums, theme parks
+  sports_activities: Gym, sports clubs, leisure activities (escape game, laser game, trampoline)
+  hobbies: Hobbies, crafts, music lessons
+subscriptions:
+  video_streaming: Netflix, Disney+, Prime Video, Canal+
+  music_streaming: Spotify, Deezer, Apple Music
+  software_cloud: Apps, cloud storage, software, AI tools
+  telecom: Mobile, internet, landline
+  news_media: Newspapers, magazines
+  memberships: Amazon Prime, club memberships, other recurring memberships
+travel:
+  lodging: Hotels, Airbnb, holiday parks, campsites
+  flights: Airlines
+  trains: SNCF, Trenitalia, Eurostar, Italo
+  car_rental: Car rental, and fuel/charging for rental cars on trips
+  activities: Tours, tourist activities abroad
+kids:
+  childcare: Daycare, babysitting
+  school: School fees, canteen, supplies
+  activities_toys: Kids activities, toys
+education:
+  courses: Courses, training, university
+insurance:
+  life: Life insurance, death/disability cover
+  borrower: Borrower (loan) insurance
+  pet: Pet insurance
+  other: Other insurance (legal protection, accidents, phone...)
+pets:
+  pets: Vet, pet food, pet supplies
+debt:
+  bnpl: Buy-now-pay-later instalments (Oney 3x4x, Alma, Klarna, Scalapay, PayPal 4x)
+  personal_loan: Personal / consumer loan repayments
+  loan_repayment: Loan instalments whose purpose is not known yet (refine with a memory annotation)
+  credit_card: Deferred/credit card settlements
+cash:
+  atm_withdrawal: ATM withdrawals
+fees:
+  bank_fees: Bank and card fees, FX fees
+taxes:
+  taxes: Income tax, property tax, fines, administrative fees
+charity:
+  donations: Charities, online collections (Leetchi, cagnotte)
+other:
+  uncategorized: Cannot be determined

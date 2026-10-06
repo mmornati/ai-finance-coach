@@ -1,0 +1,5233 @@
+{
+ "bank": "Caisse d'Epargne Test",
+ "parser": "caisse_epargne",
+ "synthetic": true,
+ "generator": "coach eval fixtures synth",
+ "version": 1,
+ "seed": 12,
+ "account": {
+  "name": "M OU MME CLAUDIO JOEL",
+  "iban": "FR0052662728117644857804615",
+  "country": "FR",
+  "currency": "EUR"
+ },
+ "household": {
+  "holders": [
+   [
+    "CLAUDIO",
+    "JOEL"
+   ],
+   [
+    "CLAUDIO",
+    "LAETITIA"
+   ],
+   [
+    "CLAUDIO",
+    "ELENA"
+   ],
+   [
+    "CLAUDIO",
+    "PAOLO"
+   ],
+   [
+    "JOEL",
+    "PAOLO"
+   ]
+  ],
+  "family": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "first_names": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "own_banks": {
+   "FORTUNEO": "Fortuneo",
+   "CIC": "CIC",
+   "REVOLUT": "Revolut"
+  }
+ },
+ "transactions": [
+  {
+   "tx": {
+    "entry_reference": "119975532368035367-86-12-53.23.69.992258",
+    "booking_date": "2024-05-27",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "924.92",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GEZIZA AKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "191327537662923937018G29699846",
+    "booking_date": "2024-05-27",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "67.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "854984204323800878035L61822878",
+    "booking_date": "2024-05-27",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "853815250657887230526Y53335237",
+    "booking_date": "2024-05-28",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "444.57",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VOBELEFO FUMELIFO DAJEJ ORE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "076849318661134010162I78526995",
+    "booking_date": "2024-05-29",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9391.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST FORTUNEO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "421519424320767369794A52420935",
+    "booking_date": "2024-06-01",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "987.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "168431403469236625-38-48-86.51.56.442188",
+    "booking_date": "2024-06-06",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4804.66",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "634307902730705926960663978742312",
+    "booking_date": "2024-06-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "316.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA CIC JOEL ET PAOLO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "241590888058718621-44-57-14.21.49.472041",
+    "booking_date": "2024-06-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3674.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA CLUB TOT SAS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "592970854836508653079O35042088",
+    "booking_date": "2024-06-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "18.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV TUVOD ASSURANCE ULUM UJAGAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "680615662386549104618154162728817",
+    "booking_date": "2024-06-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3107.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA FORTUNEO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "271724848948674946758O96956988",
+    "booking_date": "2024-06-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "688.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV COMPAGNIE ORUTIKOL DE PODUL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "275961134508034785398J34005940",
+    "booking_date": "2024-06-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "53.53",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "369751135926360071783Y97364632",
+    "booking_date": "2024-06-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "513472642131329614-19-14-67.82.35.636228",
+    "booking_date": "2024-06-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6427.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET   934447I DU 13/06/24"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "854832398177542268796K18065155",
+    "booking_date": "2024-06-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "46.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV GUGIHIJ ASSURANCES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "349180692822144825323A36497979",
+    "booking_date": "2024-06-17",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "346.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV BI OTAPA DE ADOTUN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "071808036666643398800C31983345",
+    "booking_date": "2024-06-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV REGIE ZEJAHAM"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "857408344114157518635C08054951",
+    "booking_date": "2024-06-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "84.52",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Ja NOJIGIS Fukako"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "895601767170905328673Z53706253",
+    "booking_date": "2024-06-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV MEBENO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "519279166545115435477K01160237",
+    "booking_date": "2024-06-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Sofaj-Jonun labeposup"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "538024470752813945843N59832116",
+    "booking_date": "2024-06-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "41.44",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VEDEN-KIZANOGUJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "376560777743160059666A83438106",
+    "booking_date": "2024-06-21",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.11",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "299300759557194436407R02398120",
+    "booking_date": "2024-06-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "364112622183519644777Z36365874",
+    "booking_date": "2024-06-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "86.31",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "494709819716586750546B05836249",
+    "booking_date": "2024-06-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "529104912028243525165X57178187",
+    "booking_date": "2024-06-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "67.86",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "618110308502959221440R14020275",
+    "booking_date": "2024-06-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "832.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV ESADEVOP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "026834163889373096523B43036682",
+    "booking_date": "2024-06-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "871.77",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VOBELEFO FUMELIFO DAJEJ ORE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "110874845995049804739L83866007",
+    "booking_date": "2024-06-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "738.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "474074610528954718661V11920254",
+    "booking_date": "2024-06-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "435.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "282030005943212448769H10349117",
+    "booking_date": "2024-06-29",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST FORTUNEO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "364593587260212921980V09065152",
+    "booking_date": "2024-07-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST FORTUNEO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "365134611085379602126G27629261",
+    "booking_date": "2024-07-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "101.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV IHU isehozo jutujegalifi"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "725248888553940467-58-60-12.29.05.450096",
+    "booking_date": "2024-07-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA M CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "298104576324952395244Q33477931",
+    "booking_date": "2024-07-06",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5062.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST FORTUNEO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "138285556062990753-74-62-29.77.29.254111",
+    "booking_date": "2024-07-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5814.70",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "972477798445753173668946455935551",
+    "booking_date": "2024-07-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3107.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA FORTUNEO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "297935070391234993-76-12-79.50.72.871397",
+    "booking_date": "2024-07-11",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "77.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "098978917022473622577I45423759",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "28.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "151401419436693973747P15174305",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "39.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "269310077417112374885L65377264",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "58.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "326238366591419201-04-56-24.41.88.605254",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6427.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET   219053M DU 14/07/24"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "433604979623887959711G11129492",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.82",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "576671940084302272157U45122384",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "473.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "642694399779307042-92-46-33.14.49.900559",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.38",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA EPU DU URUT"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "741395923314241067844G63696876",
+    "booking_date": "2024-07-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "136.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "086401477708596147970Z55355328",
+    "booking_date": "2024-07-17",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "804.05",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UJELEKIV DE NUVEFO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "717982906407656118-87-88-68.08.56.205189",
+    "booking_date": "2024-07-17",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "* PARTICIP FRAIS TENUE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "269916851465249714899R63926094",
+    "booking_date": "2024-07-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV NINIGIVAN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "307463688566669686256T18150556",
+    "booking_date": "2024-07-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV REGIE ZEJAHAM"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "633441018845803630630I68227252",
+    "booking_date": "2024-07-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "84.52",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Ja NOJIGIS Fukako"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "699336775076613924002P81871335",
+    "booking_date": "2024-07-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV MEBENO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "968711040056221274392W47355039",
+    "booking_date": "2024-07-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "987.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "640301631653059568927P35571351",
+    "booking_date": "2024-07-22",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "44.73",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "203972247833448496362M45788583",
+    "booking_date": "2024-07-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.57",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "540392721454087905812P74929603",
+    "booking_date": "2024-07-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "832.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV ESADEVOP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "575842958248213580148C42832918",
+    "booking_date": "2024-07-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "464151343857624010-67-08-09.92.38.293622",
+    "booking_date": "2024-07-29",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "72.23",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "432543494870223237917L67903832",
+    "booking_date": "2024-08-06",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "441.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "941042148981764241-84-48-27.20.51.337252",
+    "booking_date": "2024-08-07",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1824.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "131923327658393851580186410767697",
+    "booking_date": "2024-08-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "316.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA CIC JOEL ET PAOLO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "914756473404358533196Q47599932",
+    "booking_date": "2024-08-12",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV GEZIZA AKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "194589592118053298337W90578883",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "58.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "385572343644348464542W80753468",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "688.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV COMPAGNIE ORUTIKOL DE PODUL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "419509971150143728295A67524694",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "439087285994042592078G04706992",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "136.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "705831101357841695505D41748437",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "28.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "785350079130185436788S88871460",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "39.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "834926691881357538491Y96090298",
+    "booking_date": "2024-08-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "473.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "198171230844581039307D55854725",
+    "booking_date": "2024-08-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3107.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST M OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "343028123912982610436R64524444",
+    "booking_date": "2024-08-15",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "346.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV BI OTAPA DE ADOTUN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "665692634952205599304N81312370",
+    "booking_date": "2024-08-15",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.82",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "162417493191183830-88-13-14.16.42.619336",
+    "booking_date": "2024-08-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "69.19",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "174997226345476478814M10371511",
+    "booking_date": "2024-08-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "73.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SONEHABIVUB SERVICE . HET"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "279920098217787199345H92467736",
+    "booking_date": "2024-08-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Sofaj-Jonun labeposup"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "379454253550454032328C72686376",
+    "booking_date": "2024-08-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "391.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Fefotez"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "463766602501538347489T66143608",
+    "booking_date": "2024-08-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "41.44",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VEDEN-KIZANOGUJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "475576602172225820283N98216473",
+    "booking_date": "2024-08-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV NINIGIVAN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "399241443219857301662P61085560",
+    "booking_date": "2024-08-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "860297054023749329702V62812175",
+    "booking_date": "2024-08-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "21.61",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "918434363875749767879P26499845",
+    "booking_date": "2024-08-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "966225875272081394694O57619018",
+    "booking_date": "2024-08-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "987.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "032698414352642621240Z52026927",
+    "booking_date": "2024-08-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "807.09",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VOBELEFO FUMELIFO DAJEJ ORE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "584132736593050996882E84283301",
+    "booking_date": "2024-08-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "435.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "830695139179176294063C63329194",
+    "booking_date": "2024-09-03",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "101.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV IHU isehozo jutujegalifi"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "598768693797022082-68-90-12.92.15.033103",
+    "booking_date": "2024-09-05",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5141.14",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "896835060672608843-97-00-56.08.28.857219",
+    "booking_date": "2024-09-05",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8704.67",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "654978163613604524456D98605022",
+    "booking_date": "2024-09-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5062.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST M OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "880238001667909760250G61484683",
+    "booking_date": "2024-09-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "802.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "135078085545469058843796552052980",
+    "booking_date": "2024-09-09",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "316.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA CIC JOEL ET PAOLO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "172412841585572289111G34551615",
+    "booking_date": "2024-09-09",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV GEZIZA AKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "409333400255081778474R91096265",
+    "booking_date": "2024-09-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "18.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV TUVOD ASSURANCE ULUM UJAGAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "095417899995693007064V09112610",
+    "booking_date": "2024-09-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "462787418800968966005E88392294",
+    "booking_date": "2024-09-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "473.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "979327816331545022199P10690815",
+    "booking_date": "2024-09-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "58.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "803512702662570841894Y47016482",
+    "booking_date": "2024-09-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "804.05",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UJELEKIV DE NUVEFO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "698804710331003776179N08652386",
+    "booking_date": "2024-09-17",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV NINIGIVAN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "137935449462015507495E04224937",
+    "booking_date": "2024-09-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV MEBENO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "937489131340341145785S05783355",
+    "booking_date": "2024-09-19",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "68.81",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "346278065290302573237M36694048",
+    "booking_date": "2024-09-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "374.39",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Fefotez"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "369474810778886460400F79775475",
+    "booking_date": "2024-09-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "832.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV ESADEVOP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "607460092399871955905S61273025",
+    "booking_date": "2024-09-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "29.55",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "992619792762599956207P97795751",
+    "booking_date": "2024-09-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.57",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "792241495191394938144G80855887",
+    "booking_date": "2024-09-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "435.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "260764491650760837080Y52253392",
+    "booking_date": "2024-09-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "406.88",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VOBELEFO FUMELIFO DAJEJ ORE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "827126740673596963469K04648797",
+    "booking_date": "2024-09-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "75.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOBA OFONEKOS SERVICES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "577701588817674409427N38208533",
+    "booking_date": "2024-09-27",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "670228891169644732860A48583315",
+    "booking_date": "2024-09-27",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Zusibefito du Dap de la Mot"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "752571844982446282634K71735653",
+    "booking_date": "2024-09-28",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9391.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST M OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "903346486498020908497C28218554",
+    "booking_date": "2024-10-02",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "439.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST LA MOSA D NATHALIE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "930293143903597630749E82842776",
+    "booking_date": "2024-10-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "101.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV IHU isehozo jutujegalifi"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "820323823413041549-92-73-76.60.54.359250",
+    "booking_date": "2024-10-07",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1403.83",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "559344806567713593622838479213675",
+    "booking_date": "2024-10-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3107.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA M OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "729121980825362310347243680569562",
+    "booking_date": "2024-10-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "316.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA CIC JOEL ET PAOLO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "749992143788318317739X45894592",
+    "booking_date": "2024-10-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "18.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV TUVOD ASSURANCE ULUM UJAGAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "522951896324948601-38-67-41.36.74.759381",
+    "booking_date": "2024-10-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST M. PUFEVAT MOHAMED"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "064733493086734355981F71725253",
+    "booking_date": "2024-10-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "136.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "140447257757029897616K57888029",
+    "booking_date": "2024-10-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "142339254389297862852Z83441762",
+    "booking_date": "2024-10-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "473.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "221621956057451455015N34306239",
+    "booking_date": "2024-10-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "39.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "927125526740738872089H37103116",
+    "booking_date": "2024-10-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.82",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "153269111857222756122J71007008",
+    "booking_date": "2024-10-15",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "346.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV BI OTAPA DE ADOTUN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "577604949603074165043P01937507",
+    "booking_date": "2024-10-15",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "46.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV GUGIHIJ ASSURANCES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "648681045451101219-22-88-22.85.36.024797",
+    "booking_date": "2024-10-15",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "* PARTICIP FRAIS TENUE COMPTE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "113454775623354095629Y31219934",
+    "booking_date": "2024-10-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV MEBENO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "781663292921825920-37-72-21.79.88.327248",
+    "booking_date": "2024-10-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "708.71",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CHEQUE N\u00b03844162"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "cheque"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "984056171628921750889B10927545",
+    "booking_date": "2024-10-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Sofaj-Jonun labeposup"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "906483254918154641987B71714433",
+    "booking_date": "2024-10-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5062.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST M OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "955907764711334175340X46737332",
+    "booking_date": "2024-10-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "29.55",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "976801001158063614820X24107602",
+    "booking_date": "2024-10-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "832.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV ESADEVOP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "082776963338749649981Y66503104",
+    "booking_date": "2024-10-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "191.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST MME F CLAUDIO ET M M LU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "428484169891208140592V04391873",
+    "booking_date": "2024-10-28",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "777682589493125400715I22090356",
+    "booking_date": "2024-10-28",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "289.03",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VOBELEFO FUMELIFO DAJEJ ORE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "993326412962892867-62-72-05.08.20.534672",
+    "booking_date": "2024-10-31",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "410.34",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "120810713277043510-40-24-18.30.91.411451",
+    "booking_date": "2024-11-01",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "129.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA KEDEF FINANCES EBEPIDE"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "350794649762954670540D27937573",
+    "booking_date": "2024-11-02",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "385699449134074150043U10573738",
+    "booking_date": "2024-11-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "101.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV IHU isehozo jutujegalifi"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "580635954227978768749P32093066",
+    "booking_date": "2024-11-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "75.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UJELEKIV DE NUVEFO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "890690782368200018-26-48-31.78.18.241260",
+    "booking_date": "2024-11-05",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "11.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "REMISE CHEQUES N\u00b0 2110454"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "cheque_deposit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "551048825075819250-50-77-40.66.24.402032",
+    "booking_date": "2024-11-07",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8050.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "945736211289897071-23-08-40.48.58.546306",
+    "booking_date": "2024-11-07",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8451.67",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "088571979197136862662190454998385",
+    "booking_date": "2024-11-08",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "316.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA CIC JOEL ET PAOLO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "719539805796968744122G58342784",
+    "booking_date": "2024-11-11",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV GEZIZA AKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "726035851614894337637R37450006",
+    "booking_date": "2024-11-11",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "18.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV TUVOD ASSURANCE ULUM UJAGAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "210608443200979970-51-02-49.99.72.275990",
+    "booking_date": "2024-11-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6427.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET   175563Z DU 13/11/24"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "414564122504232536601T69135595",
+    "booking_date": "2024-11-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "451.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "436696101156865348419O56941188",
+    "booking_date": "2024-11-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "688.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV COMPAGNIE ORUTIKOL DE PODUL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "581989238030467367-59-72-29.40.45.892248",
+    "booking_date": "2024-11-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "42.70",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA EPU DU URUT"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "585167717163923140348A78104261",
+    "booking_date": "2024-11-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "871533247870409776560X77231463",
+    "booking_date": "2024-11-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "276.66",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "040968090486897616-86-93-24.19.76.734438",
+    "booking_date": "2024-11-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "627.66",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "275057956129853445-18-62-76.53.06.100426",
+    "booking_date": "2024-11-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "68.52",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "531550669178356037206L39496497",
+    "booking_date": "2024-11-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.82",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "964944783508341936710U39172770",
+    "booking_date": "2024-11-15",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "346.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV BI OTAPA DE ADOTUN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "201934520219918073061O68541883",
+    "booking_date": "2024-11-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Sofaj-Jonun labeposup"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "913333200178453018404H88828757",
+    "booking_date": "2024-11-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "80.63",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV REGIE ZEJAHAM"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "947590759652511549832X05550496",
+    "booking_date": "2024-11-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV NINIGIVAN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "191748015282658487511R98450571",
+    "booking_date": "2024-11-21",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "41.44",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VEDEN-KIZANOGUJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "449715616246655081382Z59487093",
+    "booking_date": "2024-11-22",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.43",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "234655153503675043594A17118514",
+    "booking_date": "2024-11-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "29.55",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "316294369406859898939I69829835",
+    "booking_date": "2024-11-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.57",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "506656595088822733174Z42692604",
+    "booking_date": "2024-11-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "832.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV ESADEVOP"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "640475383790759572079M29325653",
+    "booking_date": "2024-11-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "738.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "801373866750181214017H86961131",
+    "booking_date": "2024-11-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "435.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "804551701590970162439M31071225",
+    "booking_date": "2024-11-26",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.75",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOBA OFONEKOS SERVICES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "487208817380968134595Q49045432",
+    "booking_date": "2024-11-28",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "292.76",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Zusibefito du Dap de la Mot"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "820428001698292089028T41358842",
+    "booking_date": "2024-11-28",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "73.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SONEHABIVUB SERVICE . HET"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "171910440521525297617D22543274",
+    "booking_date": "2024-12-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "101.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV IHU isehozo jutujegalifi"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "032387245203335126-45-68-20.81.50.147251",
+    "booking_date": "2024-12-06",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6287.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "948554930846623747-00-53-18.31.92.834820",
+    "booking_date": "2024-12-06",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7920.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "562901935786107023237O79778554",
+    "booking_date": "2024-12-07",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "176389040316270749846965090880204",
+    "booking_date": "2024-12-09",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3107.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA M OU MME CLAUDIO JOEL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "240466320955419756-55-09-48.89.80.498520",
+    "booking_date": "2024-12-09",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "425.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CHEQUE N\u00b03831119"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "cheque"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "522468854245512641-73-96-53.17.43.215401",
+    "booking_date": "2024-12-12",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.28",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "945764131868005272-60-56-49.21.21.573279",
+    "booking_date": "2024-12-12",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA JAHI OMAGUNA-DOTUGOTIZ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "894913621082372017-37-82-61.22.55.301825",
+    "booking_date": "2024-12-13",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "897.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA AUTO-ECOLE DE MEHALEV"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "531237973218019266-51-86-98.79.60.324771",
+    "booking_date": "2024-12-14",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6427.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "ECH PRET   403386T DU 14/12/24"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "loan_payment"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "184815358465545446722R27670015",
+    "booking_date": "2024-12-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "688.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV COMPAGNIE ORUTIKOL DE PODUL"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "242938038917299726724T93665606",
+    "booking_date": "2024-12-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "282433321348347092952V22568818",
+    "booking_date": "2024-12-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "28.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "328897229844467737858I19803698",
+    "booking_date": "2024-12-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "276.66",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV Judime Adotun"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "604020019466584790241Z98117522",
+    "booking_date": "2024-12-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.82",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA-UFOMES"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "654063555057339117-72-83-78.65.32.928772",
+    "booking_date": "2024-12-16",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "CHEQUE N\u00b03632491"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "cheque"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "254672913602222274-54-88-16.78.13.029307",
+    "booking_date": "2024-12-17",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GEZIZA AKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "279563860589679662824A74537280",
+    "booking_date": "2024-12-18",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV NINIGIVAN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "662448632803128761361D31175700",
+    "booking_date": "2024-12-20",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "97.63",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UFOMES SA"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "107938480406593805850V05677097",
+    "booking_date": "2024-12-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST ANDRE Q"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "903181339447141109800J34115662",
+    "booking_date": "2024-12-23",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "41.44",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV VEDEN-KIZANOGUJ"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "965814445714288374203S66133481",
+    "booking_date": "2024-12-24",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "29.55",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV AHAR ASSURANCES IARD"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "550490787687022017056Q68261481",
+    "booking_date": "2024-12-25",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "738.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV JOLEFEVOH ORUTIKOL DES IJIS"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "016277597711614857819M95590011",
+    "booking_date": "2025-01-01",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "941.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV UJELEKIV DE NUVEFO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "555027748043872280965M53139862",
+    "booking_date": "2025-01-01",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "73.18",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV SONEHABIVUB SERVICE . HET"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "281214516441704175-05-86-26.18.64.375933",
+    "booking_date": "2025-01-02",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "940.77",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "428383399500998177-25-79-91.48.28.666795",
+    "booking_date": "2025-01-04",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "56.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST M OU MME NURUBOJUMO UHO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "776938762390752374891G22902786",
+    "booking_date": "2025-01-05",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "992.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR INST JOEL CLAUDIO"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "220165205031759912-23-33-69.49.76.573992",
+    "booking_date": "2025-01-07",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8121.48",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "VIR SEPA GIGUBEPIN"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "007598741532928786855H78004645",
+    "booking_date": "2025-01-09",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV GEZIZA AKU"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "558830633243871916098T16450782",
+    "booking_date": "2025-01-10",
+    "value_date": null,
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "18.56",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "PRLV TUVOD ASSURANCE ULUM UJAGAH"
+    ]
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "direct_debit"
+   }
+  }
+ ]
+}

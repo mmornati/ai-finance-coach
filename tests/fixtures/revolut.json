@@ -1,0 +1,6291 @@
+{
+ "bank": "Revolut",
+ "parser": "revolut",
+ "synthetic": true,
+ "generator": "coach eval fixtures synth",
+ "version": 1,
+ "seed": 12,
+ "account": {
+  "name": "M OU MME CLAUDIO JOEL",
+  "iban": "LT006038214359062329",
+  "country": "LT",
+  "currency": "EUR"
+ },
+ "household": {
+  "holders": [
+   [
+    "CLAUDIO",
+    "JOEL"
+   ],
+   [
+    "CLAUDIO",
+    "LAETITIA"
+   ],
+   [
+    "CLAUDIO",
+    "ELENA"
+   ],
+   [
+    "CLAUDIO",
+    "PAOLO"
+   ],
+   [
+    "JOEL",
+    "PAOLO"
+   ]
+  ],
+  "family": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "first_names": [
+   "CLAUDIO",
+   "ELENA",
+   "JOEL",
+   "LAETITIA",
+   "PAOLO"
+  ],
+  "own_banks": {
+   "FORTUNEO": "Fortuneo",
+   "CIC": "CIC",
+   "REVOLUT": "Revolut"
+  }
+ },
+ "transactions": [
+  {
+   "tx": {
+    "entry_reference": "82729469-9rdi-b838-17t6-pl5st56pw0h6",
+    "booking_date": "2023-01-14",
+    "value_date": "2023-01-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "334c7l34-04w6-o3p3-3282-a32382341304",
+    "booking_date": "2023-01-21",
+    "value_date": "2023-01-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "178.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Jokoso dimeruhidama emazika ",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5202h088-hrc8-k44e-fpy5-s4923h3wr480",
+    "booking_date": "2023-01-21",
+    "value_date": "2023-01-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9181iq9v-2if3-i976-ra10-011l80nhn1u4",
+    "booking_date": "2023-01-28",
+    "value_date": "2023-01-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "81.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "142r837j-f039-mnd3-3481-0203so224783",
+    "booking_date": "2023-02-04",
+    "value_date": "2023-02-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "455126i1-73z9-ml31-7j32-dl40d320wq34",
+    "booking_date": "2023-02-10",
+    "value_date": "2023-02-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6894n45l-93k5-kdno-q04k-517015909701",
+    "booking_date": "2023-02-10",
+    "value_date": "2023-02-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.53",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Usegavaj Jinajiv"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Usegavaj Jinajiv"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "855378b0-y464-k26b-gzwl-z5k0e77480ih",
+    "booking_date": "2023-02-10",
+    "value_date": "2023-02-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.53",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement veju ",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "871533f4-ov87-a409-xp76-56ax7pfgzxcj",
+    "booking_date": "2023-02-10",
+    "value_date": "2023-02-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "76869g7z-s7be-fb82-x689-01e92cl03g10",
+    "booking_date": "2023-02-11",
+    "value_date": "2023-02-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "237m36mt-4a48-j4tu-c29q-s1n96y2pk73f",
+    "booking_date": "2023-02-15",
+    "value_date": "2023-02-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "81.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Jokoso Zehun et Ovolo",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "653xv772-6426-i120-810p-1g2ppz0jg5c0",
+    "booking_date": "2023-02-18",
+    "value_date": "2023-02-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0663t787-423d-ze35-82pc-2m74bm73z5sn",
+    "booking_date": "2023-02-19",
+    "value_date": "2023-02-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "61.78",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Joel Claudio"
+    },
+    "debtor": {
+     "name": "Elena Claudio"
+    },
+    "remittance_information": [
+     "Remboursement Mopamom",
+     "Junior account withdrawal (Elena Claudio)"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2529x76d-o12e-ki3f-oj82-29p93l07039d",
+    "booking_date": "2023-02-25",
+    "value_date": "2023-02-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "98047395-8386-v6a0-799b-3dr1h3t447d4",
+    "booking_date": "2023-03-18",
+    "value_date": "2023-03-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6735hz7b-n25h-u035-b794-m497me9lin70",
+    "booking_date": "2023-03-19",
+    "value_date": "2023-03-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "16.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Joel Claudio"
+    },
+    "debtor": {
+     "name": "Laetitia Claudio"
+    },
+    "remittance_information": [
+     "Remboursement Nagezuk Venuni",
+     "Withdrawal by Joel Claudio"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "980926s9-1685-yc46-5xw2-4uysp14w8998",
+    "booking_date": "2023-03-21",
+    "value_date": "2023-03-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.91",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7022i736-fel7-oi45-y42h-vzo5x92918j3",
+    "booking_date": "2023-03-29",
+    "value_date": "2023-03-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "4.92",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Ezivi Zo"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Ezivi Zo"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3725819q-t2hq-b304-67h6-7188y22940i5",
+    "booking_date": "2023-03-30",
+    "value_date": "2023-03-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "82.70",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement imupo ",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "113h45l1-6d56-kf82-j333-21hi8u347a92",
+    "booking_date": "2023-04-16",
+    "value_date": "2023-04-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Cadeaux Jeji Fuhavu",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7171443h-1q03-k1eo-b266-el708wi1r9j4",
+    "booking_date": "2023-04-21",
+    "value_date": "2023-04-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "17.58",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "23611997-llh2-hx68-0353-6786x1253e36",
+    "booking_date": "2023-05-03",
+    "value_date": "2023-05-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.75",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "95018l9b-k251-kp2j-c676-z129i4113882",
+    "booking_date": "2023-05-04",
+    "value_date": "2023-05-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.38",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement Hojevip et memam ",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "298137th-5iiy-s46e-b1vl-5u0p4skeyb42",
+    "booking_date": "2023-05-06",
+    "value_date": "2023-05-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "58872t27-1z25-ke67-v4b7-3rqw7f0893hp",
+    "booking_date": "2023-05-06",
+    "value_date": "2023-05-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "609338s2-0wfm-u3bi-01k1-87hh49577800",
+    "booking_date": "2023-05-06",
+    "value_date": "2023-05-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR 9826y19l-uli4-096k-p45s-3h377m53tkai"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "78999956-9g0b-p0mi-v091-12md0j531550",
+    "booking_date": "2023-05-09",
+    "value_date": "2023-05-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.96",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "91s419i5-8tk9-x21d-8053-f9ryh3vpw905",
+    "booking_date": "2023-06-03",
+    "value_date": "2023-06-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "31i4990b-ll94-n04w-e85t-45858nw43mn9",
+    "booking_date": "2023-06-08",
+    "value_date": "2023-06-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.54",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Aposikimav"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Aposikimav"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "59fh3cje-410m-w7y8-i436-hm9z68p60c13",
+    "booking_date": "2023-06-17",
+    "value_date": "2023-06-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "02uu2285-4t8w-j20i-323r-b08pr0g5l618",
+    "booking_date": "2023-07-01",
+    "value_date": "2023-07-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "28ft506w-o524-n9i3-gue4-he5j34948702",
+    "booking_date": "2023-07-01",
+    "value_date": "2023-07-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "97tj0524-vebs-h5cb-385z-kp23i36iv4x3",
+    "booking_date": "2023-07-11",
+    "value_date": "2023-07-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.35",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Andre Mejavoz"
+    },
+    "debtor": {
+     "name": "Laetitia Claudio"
+    },
+    "remittance_information": [
+     "To Andre Mejavoz"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "57m6b2wu-1y72-ff58-2bv2-836982dmjoh8",
+    "booking_date": "2023-07-19",
+    "value_date": "2023-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Cin\u00e9ma Oniha",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "60k4n1mq-43v1-i03j-6923-m625h8j8865y",
+    "booking_date": "2023-07-19",
+    "value_date": "2023-07-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Cin\u00e9ma Oniha",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "39b54b3s-w2p2-cil4-087s-a581xfp749e9",
+    "booking_date": "2023-07-20",
+    "value_date": "2023-07-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.52",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Ol Sumige'w"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Ol Sumige'w"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61t8c712-g08j-i5rv-w103-9hzb715kq547",
+    "booking_date": "2023-07-20",
+    "value_date": "2023-07-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "91.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Andre Mejavoz"
+    },
+    "debtor": {
+     "name": "Laetitia Claudio"
+    },
+    "remittance_information": [
+     "Remboursement Andre",
+     "To Andre Mejavoz"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2093066k-q654-h9vz-0wxq-72r59t404f59",
+    "booking_date": "2023-07-31",
+    "value_date": "2023-07-31",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "956.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": "MR OU MME CLAUDIO JOEL"
+    },
+    "remittance_information": [
+     "VIREMENT DE MR OU MME CLAUDIO JOEL",
+     "Payment from Mr Ou Mme Claudio Joel"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "73147l46-0241-wg89-y4qx-v4v293vl39h5",
+    "booking_date": "2023-08-03",
+    "value_date": "2023-08-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "16.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "Gage Zipomemeg 1 kuju pob"
+    ],
+    "bank_transaction_code": {
+     "code": "FEE",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "645i2w8b-7534-m83s-406l-9n48r3n3mu85",
+    "booking_date": "2023-08-04",
+    "value_date": "2023-08-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "14.63",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Andre Mejavoz"
+    },
+    "debtor": {
+     "name": "Laetitia Claudio"
+    },
+    "remittance_information": [
+     "To Andre Mejavoz"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "804v28i8-i169-uqs1-208c-405sfvz0j391",
+    "booking_date": "2023-08-05",
+    "value_date": "2023-08-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "271725z2-5u30-qhw1-ymfs-j3zm9j068k98",
+    "booking_date": "2023-08-09",
+    "value_date": "2023-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "956.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "Lumoju Nun Top-Up by *8352"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "94558x34-97a8-y166-27n2-yep884993lk1",
+    "booking_date": "2023-08-09",
+    "value_date": "2023-08-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "19.90",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3135078a-q5v5-w454-m9b5-r8437v9nlk2a",
+    "booking_date": "2023-08-11",
+    "value_date": "2023-08-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "50.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement mugese",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "007d5ie2-0s03-l6a2-v7xo-7t033f81661q",
+    "booking_date": "2023-08-19",
+    "value_date": "2023-08-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1783k60g-7f06-l394-9m4x-97ivmt9gg677",
+    "booking_date": "2023-08-24",
+    "value_date": "2023-08-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Hiturikekuf"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Hiturikekuf"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9266t188-1357-l3rv-ju91-9609be9r07wd",
+    "booking_date": "2023-08-26",
+    "value_date": "2023-08-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "796402q1-4n79-k0b5-4669-4lk104882xk0",
+    "booking_date": "2023-09-07",
+    "value_date": "2023-09-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "198.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Jokoso guhibiboz",
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "655717r1-8u71-q95n-bv17-my7c70z90z53",
+    "booking_date": "2023-09-16",
+    "value_date": "2023-09-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "726bf1v2-y9e1-s80v-b906-51l234vj2ck1",
+    "booking_date": "2023-09-21",
+    "value_date": "2023-09-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Andre Mejavoz"
+    },
+    "remittance_information": [
+     "From Andre Mejavoz"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_in"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4997e263-iv54-p6ip-u8r1-46103z7dlddz",
+    "booking_date": "2023-10-10",
+    "value_date": "2023-10-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Jen Uragen Fimeb"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Jen Uragen Fimeb"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "34547p56-2hx3-zki0-95vn-29yg121993i8",
+    "booking_date": "2023-10-14",
+    "value_date": "2023-10-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "198.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": "MR OU MME CLAUDIO JOEL"
+    },
+    "remittance_information": [
+     "VIREMENT DE MR OU MME CLAUDIO JOEL",
+     "Payment from Mr Ou Mme Claudio Joel"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "79265xis-7816-h6cg-ma45-f4456d98wvm0",
+    "booking_date": "2023-10-14",
+    "value_date": "2023-10-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From JOEL CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "140v1i19-436m-us39-p3pj-ppvc5y174305",
+    "booking_date": "2023-10-16",
+    "value_date": "2023-10-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "43.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR 6415d34g-vqw5-762j-b10z-6p080y99fgre"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "088z96rp-11b4-a0l6-xue2-1274g9247h55",
+    "booking_date": "2023-10-27",
+    "value_date": "2023-10-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "264u56zq-20q1-y5y0-djo2-5154b9658c44",
+    "booking_date": "2023-10-27",
+    "value_date": "2023-10-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "409mr090-j868-s76d-n869-vge4uc97y673",
+    "booking_date": "2023-10-28",
+    "value_date": "2023-10-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2615x5ai-90o8-om87-a2wf-0d7bw5vmq6r2",
+    "booking_date": "2023-11-07",
+    "value_date": "2023-11-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.92",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Andre Mejavoz"
+    },
+    "debtor": {
+     "name": "Laetitia Claudio"
+    },
+    "remittance_information": [
+     "\ud83d\ude0f",
+     "To Andre D"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "person_transfer_out"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5318481v-53l8-j6l5-4544-6y72er2on7b0",
+    "booking_date": "2023-11-18",
+    "value_date": "2023-11-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7955164r-852m-m272-8z11-76448ky7qv04",
+    "booking_date": "2023-11-18",
+    "value_date": "2023-11-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "360evf22-274l-i881-6w78-d3be9307csk5",
+    "booking_date": "2023-11-25",
+    "value_date": "2023-11-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "64qebwi9-2333-u347-6y49-731p3e201ymy",
+    "booking_date": "2023-12-04",
+    "value_date": "2023-12-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "425.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Joel Claudio"
+    },
+    "debtor": {
+     "name": "Laetitia Claudio"
+    },
+    "remittance_information": [
+     "From Laetitia M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "48wl651s-9585-w8cu-2717-204884y34885",
+    "booking_date": "2023-12-06",
+    "value_date": "2023-12-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7.32",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "26a94i2v-s930-a7k9-l5w7-1six4hu640p8",
+    "booking_date": "2023-12-07",
+    "value_date": "2023-12-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "33.07",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Origik Betopane"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Origik Betopane"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "87p11b9d-w86s-q23f-5cb9-idtqm82p524i",
+    "booking_date": "2023-12-07",
+    "value_date": "2023-12-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "61.07",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Heje Bovik Igov"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Heje Bovik Igov"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "31a44s54-3181-xh1j-m071-hu094f54b1i5",
+    "booking_date": "2023-12-20",
+    "value_date": "2023-12-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "53.25",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "92v19d16-d178-q43y-pa34-xm8sj5806h2r",
+    "booking_date": "2023-12-23",
+    "value_date": "2023-12-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "0.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Vepip Dasufolesori"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Vepip Dasufolesori"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "89ft7y86-285v-ye83-4417-ym26aoo768el",
+    "booking_date": "2023-12-29",
+    "value_date": "2023-12-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "93.95",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Boulangerie Mulajim"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Boulangerie Mulajim"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "54oos8da-1454-h0t9-u27c-77i9b6k44hg4",
+    "booking_date": "2023-12-30",
+    "value_date": "2023-12-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "32o9920a-9821-o7r7-1t93-v453tf46p7z3",
+    "booking_date": "2024-01-06",
+    "value_date": "2024-01-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR k5271724-848t-4867-i946-o587s6956988"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "42qb4ri3-oa90-y6jr-32lj-9vz1qd546j1t",
+    "booking_date": "2024-01-10",
+    "value_date": "2024-01-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7.68",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "79pe6j9v-vsqi-l174-t9te-143ou883183d",
+    "booking_date": "2024-01-10",
+    "value_date": "2024-01-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "77.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "22b1542z-3ta5-l200-06ec-a43jz4dlid73",
+    "booking_date": "2024-01-19",
+    "value_date": "2024-01-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7.54",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "56sicw1q-q6v0-x746-0au9-239s8p1s5k90",
+    "booking_date": "2024-01-21",
+    "value_date": "2024-01-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "82.41",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR m1273025-630p-4636-y885-z666m9686256"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "59o98q34-zf2c-yv43-76lw-8504a15x4ty5",
+    "booking_date": "2024-01-26",
+    "value_date": "2024-01-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "16.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1968j7l9-99gf-s006-47hg-49h0q673igl5",
+    "booking_date": "2024-02-06",
+    "value_date": "2024-02-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "75.78",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Ezivi Zo"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Ezivi Zo"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7058h1c0-1glo-q4c6-s550-xukd4174z8jg",
+    "booking_date": "2024-02-12",
+    "value_date": "2024-02-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR o0326984-143k-2642-v621-e405e0269271"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "394wl89j-k92o-v28c-e14l-164417b417k0",
+    "booking_date": "2024-02-26",
+    "value_date": "2024-02-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.46",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "883c2q20-300y-b5t4-32c2-4i8o69hd0349",
+    "booking_date": "2024-02-26",
+    "value_date": "2024-02-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR d1719649-447r-3508-h419-h671u0391727"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "034zir0j-3121-ld56-7l6p-26e7x42tg3sf",
+    "booking_date": "2024-03-22",
+    "value_date": "2024-03-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "91.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "024vd0vp-60fn-wh3v-960b-387755b071y8",
+    "booking_date": "2024-03-23",
+    "value_date": "2024-03-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "694pv4rv-c077-q886-4m0w-4002797o54p5",
+    "booking_date": "2024-03-23",
+    "value_date": "2024-03-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "036g063a-4y68-vf2o-25fr-m40hb1n31653",
+    "booking_date": "2024-04-03",
+    "value_date": "2024-04-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Pohoze_*le Pogepam Du"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Pohoze_*le Pogepam Du"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "252z6c31-10vh-xhb3-e487-n7l069k4nty8",
+    "booking_date": "2024-04-05",
+    "value_date": "2024-04-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "16.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Jokoso d\u2019dimeruhidama ",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0768it31-rnxn-cd34-01a1-62i78zwk2m99",
+    "booking_date": "2024-04-08",
+    "value_date": "2024-04-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR k4140447-257o-5702-x989-p616k5788802"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6656926z-3jt5-f205-5t93-04nqd3c2g702",
+    "booking_date": "2024-04-08",
+    "value_date": "2024-04-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "37.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Origik Betopane"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Origik Betopane"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "721574lc-2238-xi95-f603-2g87245e033g",
+    "booking_date": "2024-04-08",
+    "value_date": "2024-04-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "14670z2f-8r9c-dn9m-i473-2w8wm0a4858h",
+    "booking_date": "2024-04-10",
+    "value_date": "2024-04-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "36.99",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "90769s15-47y9-f3s7-rq7j-5dk07c9864m1",
+    "booking_date": "2024-04-20",
+    "value_date": "2024-04-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "97.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Umapuv",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "968ix68l-6em0-lub5-s189-8188825xr901",
+    "booking_date": "2024-04-27",
+    "value_date": "2024-04-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "66139ej0-a2pw-r187-1h35-k913hhgu2001",
+    "booking_date": "2024-05-01",
+    "value_date": "2024-05-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "7.87",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "30247qr1-o6uu-g89b-4031-627074t8j696",
+    "booking_date": "2024-05-04",
+    "value_date": "2024-05-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6902xc5a-9239-wwwn-p20x-ff6m85iqz92w",
+    "booking_date": "2024-05-13",
+    "value_date": "2024-05-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR p8243509-643f-0963-z719-u015h5550137"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "923327z6-5q3s-h851-w580-z186i1a76pw6",
+    "booking_date": "2024-05-18",
+    "value_date": "2024-05-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "05272m05-m4t2-vx12-d573-f7982cs92546",
+    "booking_date": "2024-05-20",
+    "value_date": "2024-05-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR i0194088-076q-1764-p344-t715u6162466"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "584gib84-k82u-f785-xt6a-585nw292kkld",
+    "booking_date": "2024-05-25",
+    "value_date": "2024-05-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9019g5z7-86c0-pb23-f3o7-797pq55jg09k",
+    "booking_date": "2024-06-01",
+    "value_date": "2024-06-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "334sc80n-s28e-fd44-8u25-32303z6j9pwt",
+    "booking_date": "2024-06-06",
+    "value_date": "2024-06-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.60",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement Edikis",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "86cbw234-6o61-h144-972p-3569h0639769",
+    "booking_date": "2024-06-14",
+    "value_date": "2024-06-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "70.69",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "54e26q7t-65dv-u806-515v-k19604020019",
+    "booking_date": "2024-06-21",
+    "value_date": "2024-06-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "6.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Pe N5847 Demaga"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Pe P5223 Demaga"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "65s50888-2wx2-o33d-7yi4-e692nbi52pu5",
+    "booking_date": "2024-06-21",
+    "value_date": "2024-06-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "15.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Rofepe"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Rofepe"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "71t539r0-5796-s6r7-4j12-2g583427wrij",
+    "booking_date": "2024-06-21",
+    "value_date": "2024-06-23",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "9.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Fi.pomokidi.ire"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Fi.pomokidi.ire"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99v4m37n-n602-la15-w383-jp4r9966uy14",
+    "booking_date": "2024-06-22",
+    "value_date": "2024-06-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "65hnd8dd-a3bu-z85b-ex95-92fc44b81402",
+    "booking_date": "2024-06-28",
+    "value_date": "2024-06-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Boulangerie Mulajim"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Boulangerie Mulajim"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "19vcn0tr-9164-lzw0-7qw2-1583c044b5we",
+    "booking_date": "2024-06-29",
+    "value_date": "2024-06-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "79p38270-b08y-mc64-f379-6r66244q6h28",
+    "booking_date": "2024-07-01",
+    "value_date": "2024-07-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR y0312876-136d-1311-u757-a072i7407461"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "77k2607n-4j91-wu6k-0on0-r370qyby522k",
+    "booking_date": "2024-07-05",
+    "value_date": "2024-07-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3.30",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Hiturikekuf"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Hiturikekuf"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "98y40561-7d62-zq92-c7ka-q8t0u1a927kj",
+    "booking_date": "2024-07-05",
+    "value_date": "2024-07-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "1.41",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Hiturikekuf"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Hiturikekuf"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "36ec1289-897a-o12h-0ri0-4ql8lx463068",
+    "booking_date": "2024-07-10",
+    "value_date": "2024-07-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "31z376e1-uv5v-zs25-86x8-94576j13cqn8",
+    "booking_date": "2024-07-13",
+    "value_date": "2024-07-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "51rmfpyn-uk3a-mc00-j26m-79926x197927",
+    "booking_date": "2024-07-22",
+    "value_date": "2024-07-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "77.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "96km5313-tr62-z2p3-z66q-4h21a4780z02",
+    "booking_date": "2024-07-22",
+    "value_date": "2024-07-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR f6162019-345f-0219-s180-o306d7685418"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "23pu917l-mp90-h832-5vr3-z26238h66591",
+    "booking_date": "2024-07-24",
+    "value_date": "2024-07-24",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "61r2p6m1-10wy-y39e-6afe-vp5696794l6x",
+    "booking_date": "2024-07-25",
+    "value_date": "2024-07-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "35.97",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Gobi Ked Seha"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Gobi Ked Seha"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "91s7d3z6-862z-mme1-90il-4998w38kc1i7",
+    "booking_date": "2024-07-25",
+    "value_date": "2024-07-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "81.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "28n1tye3-2g69-f5hf-en85-9y311w2n886l",
+    "booking_date": "2024-07-27",
+    "value_date": "2024-07-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "94x7eai1-2q16-o620-t03w-x3464qm4t8b2",
+    "booking_date": "2024-07-27",
+    "value_date": "2024-07-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "99bpl3o4-62es-py72-9wf5-411d8z497r15",
+    "booking_date": "2024-08-02",
+    "value_date": "2024-08-02",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "16.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "Gage Zipomemeg 1 kuju pob"
+    ],
+    "bank_transaction_code": {
+     "code": "CHARGE",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "bank_fee"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "73qk3v8d-5ek0-m5v7-88oz-2305f65h33le",
+    "booking_date": "2024-08-03",
+    "value_date": "2024-08-03",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "27dntf43-k834-os3o-670c-01r015g1i670",
+    "booking_date": "2024-08-05",
+    "value_date": "2024-08-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR d0453728-327z-1204-r653-z769x6759858"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "84l0k7dk-h73q-tq0e-4w3z-58z7146192m6",
+    "booking_date": "2024-08-06",
+    "value_date": "2024-08-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "198.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": "MR OU MME CLAUDIO JOEL"
+    },
+    "remittance_information": [
+     "VIREMENT INSTANTANE",
+     "Payment from Mr Ou Mme Claudio Joel"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "88h1c5g8-0exi-i707-zl28-13x94584gn5t",
+    "booking_date": "2024-08-06",
+    "value_date": "2024-08-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "956.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "09w0qr0e-04s2-m931-bwb7-7i171v12g748",
+    "booking_date": "2024-08-09",
+    "value_date": "2024-08-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "77.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "48x496h6-2645-p8r5-q37g-dh14yeh3s25j",
+    "booking_date": "2024-08-10",
+    "value_date": "2024-08-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "66f386l4-910i-nz18-154c-m27288d727ty",
+    "booking_date": "2024-08-10",
+    "value_date": "2024-08-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "22l8w381-x27i-pdbl-1g88-jbt3g34002l5",
+    "booking_date": "2024-08-12",
+    "value_date": "2024-08-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR x0817784-748u-9109-n265-n168s6876049"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "18cez140-1y7h-zuq6-s611-316078535007",
+    "booking_date": "2024-08-16",
+    "value_date": "2024-08-16",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "55hbyfmr-34x1-mg8r-tg73-b9m5e304303m",
+    "booking_date": "2024-08-16",
+    "value_date": "2024-08-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "91.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Mugese"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Mugese"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "58ic9ra3-69u8-q28p-es1f-1t808f53m23d",
+    "booking_date": "2024-08-16",
+    "value_date": "2024-08-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "3.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0g666664-3h9q-q001-hc98-h3i56ph202wa",
+    "booking_date": "2024-08-21",
+    "value_date": "2024-08-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "956.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "Magav Nun Top-Up by *5995"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0r2372v0-c737-rf61-22l5-3a1r2l56z42y",
+    "booking_date": "2024-08-21",
+    "value_date": "2024-08-22",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "91.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Edikis Vemifuna"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Edikis Vemifuna"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4l30c840-wjh8-qw82-q7x5-p7x805ee46q8",
+    "booking_date": "2024-08-21",
+    "value_date": "2024-08-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5y999562-0779-oosk-o518-65rms2f08949",
+    "booking_date": "2024-08-21",
+    "value_date": "2024-08-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "91.20",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0w6cj833-i30v-fr1e-h912-982610j3ym86",
+    "booking_date": "2024-08-26",
+    "value_date": "2024-08-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.34",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Boulangerie Mulajim"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Boulangerie Mulajim"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1h018l4g-678q-s88q-7146-0cbz8857dy97",
+    "booking_date": "2024-09-05",
+    "value_date": "2024-09-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "81.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2x5549j9-ut3g-fnjd-ex9n-z289fqm762pe",
+    "booking_date": "2024-09-05",
+    "value_date": "2024-09-06",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.02",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Edikis Vemifuna"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Edikis Vemifuna"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7q30470m-9927-n4e6-943s-s779307b429e",
+    "booking_date": "2024-09-05",
+    "value_date": "2024-09-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "65.35",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0h11n6g6-ibio-l383-79v0-759lyo207t6f",
+    "booking_date": "2024-09-06",
+    "value_date": "2024-09-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "36.75",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Sumup  *rorepaso"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Sumup *rorepaso"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3z1z0yx9-44t0-d799-9950-3mzj74w71g85",
+    "booking_date": "2024-09-07",
+    "value_date": "2024-09-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2h1d3k1j-461t-d748-015u-2qf65qj87511",
+    "booking_date": "2024-09-08",
+    "value_date": "2024-09-08",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "666.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": "MR OU MME CLAUDIO JOEL"
+    },
+    "remittance_information": [
+     "VIREMENT INSTANTANE",
+     "Payment from Mr Ou Mme Claudio Joel"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4h8q855r-41hy-fo36-z5th-b50996yrr228",
+    "booking_date": "2024-09-08",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "240.36",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Keba*rikas Lejiku"
+    },
+    "debtor": {
+     "name": "JOEL CLAUDIO"
+    },
+    "remittance_information": [
+     "Keba*rikas Lejiku"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "8z5bd4aq-219t-h4e4-kj30-5qh0757q4sc9",
+    "booking_date": "2024-09-09",
+    "value_date": "2024-09-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR c2173990-273q-8915-k423-a363b6840724"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2a881738-096r-d345-xs58-4sby4lw4ges3",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4z675860-df29-auk4-5009-6955s0u77m47",
+    "booking_date": "2024-09-14",
+    "value_date": "2024-09-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "8c7em8m3-pn4w-ihn4-11e6-221r351s644w",
+    "booking_date": "2024-09-19",
+    "value_date": "2024-09-19",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "95.63",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0q1gr259-48p0-t30b-zv16-2p75t7pdc614",
+    "booking_date": "2024-09-20",
+    "value_date": "2024-09-20",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "77.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3g6b49p9-6e3q-qo95-97c1-g1dc2t4sfub4",
+    "booking_date": "2024-09-21",
+    "value_date": "2024-09-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.33",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Umes"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Umes"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4c4wk6j1-2f50-i232-lg66-019691355958",
+    "booking_date": "2024-09-21",
+    "value_date": "2024-09-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "8q1om7i4-0sj2-p6w3-zrye-08533wf54n72",
+    "booking_date": "2024-09-21",
+    "value_date": "2024-09-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0i96r944-45du-jw71-4q2s-q10jvk76hv24",
+    "booking_date": "2024-09-26",
+    "value_date": "2024-09-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Pe U3952 Uleno"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Pe O9313 Uleno"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3h72ui1l-9zu0-r880-ky8x-7186eciil7dj",
+    "booking_date": "2024-09-26",
+    "value_date": "2024-09-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "24.22",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3m222714-6e78-o418-qy0b-9m8snnba52vr",
+    "booking_date": "2024-09-26",
+    "value_date": "2024-09-26",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "81.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Jenapuratoza sehefid \u00e0 la maison ! Nubog \ud83e\udd70",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2e8384up-9x2z-cg6p-5357-m6wpct40084h",
+    "booking_date": "2024-09-27",
+    "value_date": "2024-09-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "28.07",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1y44kb86-4a14-o770-ql9m-z14pt70z5535",
+    "booking_date": "2024-09-28",
+    "value_date": "2024-09-28",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3j993p6c-2795-a7f8-p139-o8l2592t7085",
+    "booking_date": "2024-09-29",
+    "value_date": "2024-09-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "44.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement Lopatil",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6z186jg7-59h3-t6u5-rb63-x5954e27to8p",
+    "booking_date": "2024-09-29",
+    "value_date": "2024-09-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "44.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "La Zize Mobile"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "La Zize Mobile"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6m244020-3fj6-u986-auf9-u7uv0l4b23x7",
+    "booking_date": "2024-09-30",
+    "value_date": "2024-09-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR j9329702-628d-2175-p123-r013p3866750"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5o5e5oc8-j498-xf44-yn28-e6h4571o3k65",
+    "booking_date": "2024-10-03",
+    "value_date": "2024-10-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.26",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Sudivadek Sct"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Sudivadek Sct"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1y8c50v5-56g7-t454-u253-zl5b454032h2",
+    "booking_date": "2024-10-05",
+    "value_date": "2024-10-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1x920v1a-45ym-e4i1-88n0-l2542190z536",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "70.32",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Penurikun"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Penurikun"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5p584295-q24q-e13k-8014-8cv4283e918g",
+    "booking_date": "2024-10-10",
+    "value_date": "2024-10-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "67.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Remboursement",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4i458306-951z-g91o-9c7m-e9j0n3163h2x",
+    "booking_date": "2024-10-12",
+    "value_date": "2024-10-12",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3s0sh02s-3143-t0z3-59o6-307492z82r42",
+    "booking_date": "2024-10-14",
+    "value_date": "2024-10-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "53.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Cin\u00e9ma,gakij, tabogolu,konokej...",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3v4vk08a-g478-l398-j34a-05s406543697",
+    "booking_date": "2024-10-14",
+    "value_date": "2024-10-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "53.94",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Cin\u00e9ma,gakij, tabogolu,konokej...",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6f3rq1uo-s504-q930-4096-sa92b7r427d2",
+    "booking_date": "2024-10-14",
+    "value_date": "2024-10-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR ekxm5751-f121-69fx-a285-7363w296x225"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0x7to350-4e0q-r17e-izc2-x8jd5r5572fq",
+    "booking_date": "2024-10-15",
+    "value_date": "2024-10-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "48.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1s0c3q72-l11c-w1pb-0l1j-5296qz85p80d",
+    "booking_date": "2024-10-15",
+    "value_date": "2024-10-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "91.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "8y1w2b5s-4r5k-i9g0-q46n-fgp4700l3183",
+    "booking_date": "2024-10-15",
+    "value_date": "2024-10-15",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "94.15",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0b3po6c7-9608-nu5u-23wr-na385ou40r34",
+    "booking_date": "2024-10-17",
+    "value_date": "2024-10-17",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "77.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7f4gy68b-5n95-m265-00v7-5t87i1lh2t28",
+    "booking_date": "2024-10-17",
+    "value_date": "2024-10-18",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "67.81",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Edikis Vemifuna"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Edikis Vemifuna"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2d48sq17-6424-cqj4-qfof-ak13u3ype52v",
+    "booking_date": "2024-10-18",
+    "value_date": "2024-10-19",
+    "status": "PDNG",
+    "transaction_amount": {
+     "amount": "16.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Mugese"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Mugese"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0v4733e9-je10-l2gq-zj69-31i256m8wza2",
+    "booking_date": "2024-11-03",
+    "value_date": "2024-11-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Jimub Dopos"
+    },
+    "debtor": {
+     "name": "JOEL CLAUDIO"
+    },
+    "remittance_information": [
+     "Jimub Dopos"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "4c1j1575-1863-kc0q-0lj9-5c6z9x21j62l",
+    "booking_date": "2024-11-09",
+    "value_date": "2024-11-09",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.16",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Sifuka _urezisa"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Sifuka _urezisa"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0d0a7149-lc7k-k607-zn10-1xf218cx5246",
+    "booking_date": "2024-11-10",
+    "value_date": "2024-11-10",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR Fuh"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0p4y15b0-43u1-v0ko-37h8-4m3hj4d01q8i",
+    "booking_date": "2024-11-21",
+    "value_date": "2024-11-21",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "93.47",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3i1op002-3f4z-nl25-q419-50x99711la1i",
+    "booking_date": "2024-11-23",
+    "value_date": "2024-11-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6h8mb589-6796-zw6f-82ja-x745372qa3q4",
+    "booking_date": "2024-11-23",
+    "value_date": "2024-11-23",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2r34r206-96s3-p656-ap7z-77j3z16a05sm",
+    "booking_date": "2024-11-25",
+    "value_date": "2024-11-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "85.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Sakiku Mohamed et Samira",
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2u878p1x-tv13-we7k-37mm-2t2g937az1wq",
+    "booking_date": "2024-11-26",
+    "value_date": "2024-11-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "26.28",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Origik Betopane"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Origik Betopane"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9s8467i8-z9m8-h506-0mp2-6a8x8i39p0a5",
+    "booking_date": "2024-11-26",
+    "value_date": "2024-11-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "17.49",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Jurohazitudo"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Jurohazitudo"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "8t41d982-0112-r936-5134-6cdb8537u960",
+    "booking_date": "2024-11-29",
+    "value_date": "2024-11-29",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "30.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR 12ng2p6f-hofe-0ga4-e914-6gr277m72v86"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "SVGS",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9j01711r-5di6-e634-y307-9a273070kt26",
+    "booking_date": "2024-11-29",
+    "value_date": "2024-11-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Edikis Vemifuna"
+    },
+    "debtor": {
+     "name": "ELENA CLAUDIO"
+    },
+    "remittance_information": [
+     "Edikis Vemifuna"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2w82w97t-32p8-y163-gd54-5bfe19971069",
+    "booking_date": "2024-11-30",
+    "value_date": "2024-12-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "8.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Fili Joboped Ero"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Fili Joboped Ero"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3t924y1j-432c-z98k-o3b1-znym27zmv10q",
+    "booking_date": "2024-11-30",
+    "value_date": "2024-11-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "5.42",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "3u211m6c-9v47-k9bx-p59n-52lc15jt8gex",
+    "booking_date": "2024-11-30",
+    "value_date": "2024-11-30",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "57.08",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "6w82a4e8-vbb1-v6s8-f9ea-q9b2894c3588",
+    "booking_date": "2024-11-30",
+    "value_date": "2024-12-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "2.40",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Edikis Vemifuna"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Edikis Vemifuna"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2z60h58z-5161-y4r9-43g7-m3wp83o4kb00",
+    "booking_date": "2024-12-07",
+    "value_date": "2024-12-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "60.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "Povobapu",
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5f895471-8661-vu1c-s20w-yf54562o8v3w",
+    "booking_date": "2024-12-07",
+    "value_date": "2024-12-07",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9h7j8913-1h4b-g411-i5pu-r59a578h35l7",
+    "booking_date": "2024-12-13",
+    "value_date": "2024-12-13",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "425.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": null
+    },
+    "remittance_information": [
+     "To EUR"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "savings_internal"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7z3n3nlz-r7i3-t529-1049-c202rei3lf51",
+    "booking_date": "2024-12-14",
+    "value_date": "2024-12-14",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "9qk02s58-8wdi-pe78-z072-o84p8696j0s9",
+    "booking_date": "2024-12-24",
+    "value_date": "2024-12-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "16.48",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Edikis Vemifuna"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Edikis Vemifuna"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7quv19mt-5590-acd9-o24p-p798j4k7lh17",
+    "booking_date": "2024-12-25",
+    "value_date": "2024-12-25",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "990.29",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "0eiwc830-t141-c4w5-d053-fb21g30x25l0",
+    "booking_date": "2024-12-27",
+    "value_date": "2024-12-27",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "44.27",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Joel Claudio"
+    },
+    "debtor": {
+     "name": "Elena Claudio"
+    },
+    "remittance_information": [
+     "From Elena M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "7nw049u4-9na3-ao41-6zlb-4gp019gp5b7a",
+    "booking_date": "2025-01-01",
+    "value_date": "2025-01-01",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "62.37",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1as80b4g-4c15-m6f6-4947-y098c9pcnkq6",
+    "booking_date": "2025-01-04",
+    "value_date": "2025-01-04",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To ELENA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "5ak4m005-u836-e49g-559g-44zq0n567p1g",
+    "booking_date": "2025-01-04",
+    "value_date": "2025-01-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "9.45",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Commune De Uleno"
+    },
+    "debtor": {
+     "name": "LAETITIA CLAUDIO"
+    },
+    "remittance_information": [
+     "Commune De Uleno"
+    ],
+    "bank_transaction_code": {
+     "code": "CARD_PAYMENT",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "card"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2ua5031p-kss1-fez3-g36s-49onk7hst259",
+    "booking_date": "2025-01-05",
+    "value_date": "2025-01-05",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "545.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": null
+    },
+    "debtor": {
+     "name": "MR OU MME CLAUDIO JOEL"
+    },
+    "remittance_information": [
+     "VIR. DE MR OU MME CLAUDIO JOEL",
+     "Payment from Mr Ou Mme Claudio Joel"
+    ],
+    "bank_transaction_code": {
+     "code": "TOPUP",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "topup"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "1qh830q8-1314-d642-6dsy-3hw627hx7413",
+    "booking_date": "2025-01-11",
+    "value_date": "2025-01-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Elena Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "2sg803q9-1ove-tvs7-e6w7-2499g6v65x6a",
+    "booking_date": "2025-01-11",
+    "value_date": "2025-01-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "DBIT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "To LAETITIA CLAUDIO"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  },
+  {
+   "tx": {
+    "entry_reference": "8ju971e8-2185-lik9-u946-6dj36459uhlz",
+    "booking_date": "2025-01-11",
+    "value_date": "2025-01-11",
+    "status": "BOOK",
+    "transaction_amount": {
+     "amount": "12.00",
+     "currency": "EUR"
+    },
+    "credit_debit_indicator": "CRDT",
+    "creditor": {
+     "name": "Laetitia Claudio"
+    },
+    "debtor": {
+     "name": "Joel Claudio"
+    },
+    "remittance_information": [
+     "From Joel M"
+    ],
+    "bank_transaction_code": {
+     "code": "TRANSFER",
+     "description": null,
+     "sub_code": null
+    }
+   },
+   "account_type": "CACC",
+   "expect": {
+    "tx_type": "internal_transfer"
+   }
+  }
+ ]
+}

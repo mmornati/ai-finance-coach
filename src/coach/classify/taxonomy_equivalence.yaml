@@ -1,0 +1,6 @@
+# Categories that mean the same thing for the evaluation (E12): a prediction equivalent to the gold label is counted at the "equivalent" level
+# (the leaf-level figure stays strict). Pairs are NOT transitive: housing.mortgage and housing.rental_property_loan are not equivalent to each other.
+# Your own copy, if you want to change it: config/taxonomy_equivalence.yaml (it replaces this one).
+equivalent:
+  - [housing.mortgage, debt.loan_repayment]
+  - [housing.rental_property_loan, debt.loan_repayment]

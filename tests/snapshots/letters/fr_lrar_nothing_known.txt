@@ -1,0 +1,42 @@
+[titulaire du contrat]
+[adresse postale]
+
+[nom du prestataire]
+Service résiliation
+[adresse postale du service résiliation]
+
+[ville], le 5 octobre 2026
+
+Lettre recommandée avec accusé de réception n° [numéro de l'envoi recommandé]
+
+Objet : résiliation du contrat n° [numéro de contrat]
+
+Madame, Monsieur,
+
+Titulaire du contrat n° [numéro de contrat], je vous notifie par la présente ma décision de le résilier dans les meilleurs délais permis par le contrat.
+
+Je vous prie de bien vouloir :
+- me confirmer par écrit la prise en compte de cette demande et sa date d'effet ;
+- cesser tout prélèvement à compter de cette date ;
+- me rembourser, le cas échéant, la part d'abonnement ou de facturation payée d'avance et non consommée.
+
+Dans l'attente de votre confirmation écrite, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+Signature :
+
+[titulaire du contrat]
+
+=== to complete ===
+holder name (a household member, or --holder)
+provider
+contract_number
+household.yaml contact.address
+town / city
+provider's cancellation address
+registered mail number
+=== notes ===
+Il manque dans le contrat : renewal or commitment_end. Complétez-les avant d'envoyer.
+Envoyez-la en recommandé avec accusé de réception et gardez le justificatif de dépôt ; complétez les [champs] entre crochets.
+Brouillon généré localement à partir des règles générales du droit de la consommation : vérifiez avec votre contrat et la source officielle avant l'envoi. Aucun envoi n'a été fait.
+=== legal basis ===
+

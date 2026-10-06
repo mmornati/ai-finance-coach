@@ -1,0 +1,12 @@
+# gitleaks configuration (run `gitleaks git .` before a release; docs/release.md). The default rules apply; the allowlist below covers
+# invented values of the test suite that look like keys. A real secret never belongs here: fix the file instead of adding a rule.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "invented test values that match the generic-api-key rule"
+regexes = [
+    '''in-key-654321''',
+    '''out-key-123456''',
+    '''Zx9Qw8Er7Ty6Ui5Op4As3Df2Gh1Jk0Lm''',
+]

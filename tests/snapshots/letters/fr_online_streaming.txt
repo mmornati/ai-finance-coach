@@ -1,0 +1,19 @@
+Message à coller dans le formulaire ou le chat de résiliation:
+
+Bonjour, je souhaite résilier mon contrat n° [numéro de contrat] (abonnement de streaming) dans les meilleurs délais permis par le contrat. Merci de me confirmer par écrit la date de fin du contrat.
+
+Je vous rappelle que, pour un contrat pouvant être conclu en ligne, l'article L215-1-1 du Code de la consommation (loi n° 2022-1158 du 16 août 2022) impose de permettre sa résiliation en ligne et de confirmer au consommateur la date de fin du contrat.
+
+Étapes:
+1. Connectez-vous à votre espace client et utilisez le bouton ou le formulaire de résiliation (la résiliation en ligne est obligatoire pour un contrat qui peut être souscrit en ligne).
+2. Conservez la confirmation (capture d'écran et e-mail) avec la date de fin annoncée.
+3. Vérifiez que les prélèvements s'arrêtent à cette date.
+
+=== to complete ===
+contract_number
+town / city
+=== notes ===
+Utilisez le formulaire ou le bouton de résiliation en ligne, gardez la confirmation.
+Brouillon généré localement à partir des règles générales du droit de la consommation : vérifiez avec votre contrat et la source officielle avant l'envoi. Aucun envoi n'a été fait.
+=== legal basis ===
+fr-3-clics | loi n° 2022-1158 du 16 aout 2022 (pouvoir d'achat), art. L215-1-1 Code de la consommation, in force since 1 June 2023 | reviewed 2026-10

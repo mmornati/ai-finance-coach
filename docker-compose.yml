@@ -1,0 +1,67 @@
+# AI finance coach in Docker (E13-1). Read docs/docker.md first: the secrets must exist BEFORE `docker compose up`.
+#
+#   mkdir -p coach-home/data coach-home/memory coach-home/config secrets && chmod 700 secrets
+#   (create the three secret files: see docs/docker.md)
+#   export COACH_UID=$(id -u) COACH_GID=$(id -g)
+#   docker compose build
+#   docker compose run --rm coach setup enablebanking      # then: docker compose run --rm coach setup
+#   docker compose up -d                                   # the web app on http://127.0.0.1:8765 only
+#   docker compose run --rm -p 127.0.0.1:8443:8443 coach connect --bank "<bank>" --country FR   # link a bank: the redirect port, on 127.0.0.1 only
+#   docker compose --profile scheduler up -d              # + the daily job (sync, normalize, classify...), opt-in
+#
+# The web app is published on the host's loopback ONLY. It is not reachable from other machines; for remote use see docs/ui.md (Tailscale).
+
+x-coach: &coach
+  image: ai-finance-coach:local
+  build:
+    context: .
+  # the files of the volumes belong to the user who runs compose: export COACH_UID / COACH_GID (never root)
+  user: "${COACH_UID:-10001}:${COACH_GID:-10001}"
+  init: true          # a real PID 1: `docker stop` reaches the app (the scheduler loop would otherwise ignore SIGTERM)
+  read_only: true
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  tmpfs:
+    - /tmp
+  volumes:
+    - ./coach-home/data:/data
+    - ./coach-home/memory:/memory
+    - ./coach-home/config:/config
+  secrets:
+    - db_key
+    - backup_key
+    - proposal_key
+  environment:
+    # Optional: the Anthropic API key (llm.backend = anthropic-api) can be passed as an environment variable or as a fourth secret
+    # file named anthropic_api_key (docs/docker.md). Do not write a key in this file.
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  restart: unless-stopped
+
+services:
+  coach:
+    <<: *coach
+    command: ["ui", "--no-browser"]
+    ports:
+      - "127.0.0.1:8765:8765"
+
+  scheduler:
+    <<: *coach
+    command: ["schedule", "loop"]
+    profiles: ["scheduler"]
+    healthcheck:
+      disable: true
+    depends_on:
+      coach:
+        condition: service_healthy
+
+# The secrets are bind mounts of your host files: keep them `chmod 600` and run as the same user (COACH_UID). /run/secrets itself is root-owned 0755 in
+# the container, which the file backend accepts (docs/docker.md). With swarm / Kubernetes use the long syntax with `mode: 0400` and `uid`.
+secrets:
+  db_key:
+    file: ./secrets/db_key
+  backup_key:
+    file: ./secrets/backup_key
+  proposal_key:
+    file: ./secrets/proposal_key
