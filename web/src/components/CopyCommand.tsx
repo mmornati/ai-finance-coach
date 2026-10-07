@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGet } from "@/api/hooks";
@@ -13,6 +14,7 @@ export function CopyCommand({ command: given, className }: { command: string; cl
 
 /** The box itself: no data fetching (the sign-in page has no session and no query client). */
 export function CommandBox({ command, className }: { command: string; className?: string }) {
+  const { t } = useTranslation();
   const [done, setDone] = useState(false);
   async function copy() {
     try {
@@ -26,9 +28,9 @@ export function CommandBox({ command, className }: { command: string; className?
   return (
     <div className={cn("flex items-center gap-2 rounded-lg border border-border bg-surface-2 py-1 pl-3 pr-1", className)}>
       <code className="min-w-0 flex-1 select-all overflow-x-auto whitespace-nowrap font-mono text-[13px]">{command}</code>
-      <button type="button" onClick={copy} aria-label={`Copy command: ${command}`} className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-muted hover:bg-surface hover:text-text">
+      <button type="button" onClick={copy} aria-label={t("copy.aria", { command })} className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-muted hover:bg-surface hover:text-text">
         {done ? <Check className="size-3.5 text-pos" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
-        {done ? "Copied" : "Copy"}
+        {done ? t("copy.copied") : t("copy.copy")}
       </button>
     </div>
   );

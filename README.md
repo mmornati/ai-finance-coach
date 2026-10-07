@@ -155,6 +155,7 @@ Permission rules mitigate; they do not prevent. The residual risks are listed ho
 | [docs/privacy.md](docs/privacy.md), [docs/security.md](docs/security.md) | Data flows, threat model, permission rules |
 | [docs/coach.md](docs/coach.md), [docs/skills.md](docs/skills.md) | The coach runtime and its skills |
 | [docs/memory.md](docs/memory.md), [docs/analytics.md](docs/analytics.md), [docs/subscriptions.md](docs/subscriptions.md), [docs/loans.md](docs/loans.md), [docs/alerts.md](docs/alerts.md), [docs/household.md](docs/household.md), [docs/ui.md](docs/ui.md), [docs/quality.md](docs/quality.md) | The parts |
+| [docs/i18n.md](docs/i18n.md) | Translations of the web app: adding a string or a language |
 | [docs/release.md](docs/release.md) | The release checklist |
 | [docs/research/](docs/research/) | The market and legal research behind the project |
 | [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [CHANGELOG.md](CHANGELOG.md) | Project |

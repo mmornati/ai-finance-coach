@@ -314,6 +314,7 @@ function Preferences() {
               <option value="">Unchanged</option>
               <option value="fr-FR">Français</option>
               <option value="en-GB">English</option>
+              <option value="it-IT">Italiano</option>
             </Select>
           )}
         </Field>

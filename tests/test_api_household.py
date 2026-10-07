@@ -338,6 +338,7 @@ def test_a_child_cannot_write_without_csrf_and_the_snapshot_dependency_forces_th
 def test_preferences_are_per_login_and_whitelisted(hh, mia, papa, owner):
     assert mia.client.put(api("/me/preferences"), json={"prefs": {"theme": "dark", "locale": "en-GB"}}, headers={"X-CSRF-Token": mia.csrf}).json()["prefs"] == {"locale": "en-GB", "theme": "dark"}
     assert mia.get("/me/preferences").json()["prefs"]["theme"] == "dark"
+    assert mia.client.put(api("/me/preferences"), json={"prefs": {"locale": "it-IT"}}, headers={"X-CSRF-Token": mia.csrf}).json()["prefs"]["locale"] == "it-IT"
     assert papa.get("/me/preferences").json()["prefs"] == {}                         # another login's preferences are its own
     for bad in ({"colour": "red"}, {"theme": "neon"}, {"default_member": "ghost"}):
         assert mia.client.put(api("/me/preferences"), json={"prefs": bad}, headers={"X-CSRF-Token": mia.csrf}).status_code == 400

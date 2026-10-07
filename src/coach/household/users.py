@@ -29,7 +29,7 @@ LEGACY_ID = "owner"
 # ids a login may never take: the owner session, and the sources / actors that already mean something in the audit and the memory history
 RESERVED = frozenset({LEGACY_ID, "admin", "root", "system", "cli", "ui", "coach", "coach-llm", "external", "joint", "me", "anonymous"})
 # preference key -> allowed values (None = a member id or '')
-PREFERENCES = {"locale": ("fr-FR", "en-GB"), "theme": ("system", "light", "dark"), "default_member": None,
+PREFERENCES = {"locale": ("fr-FR", "en-GB", "it-IT"), "theme": ("system", "light", "dark"), "default_member": None,
                "landing": ("dashboard", "transactions", "kids")}
 
 

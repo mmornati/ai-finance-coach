@@ -1,4 +1,6 @@
 import { ReactNode, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { fmtDate, fmtMoney, fmtMonth, fmtPct, parseMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -9,6 +11,7 @@ const AXIS = { stroke: "var(--grid)", tick: { fill: "var(--muted)", fontSize: 11
 
 /** Chart + a "table" view of the same numbers (identity is never colour alone; the data is always reachable). */
 export function ChartFrame({ label, children, table, legend }: { label: string; children: ReactNode; table: { head: string[]; rows: ReactNode[][] }; legend?: { color: string; text: string; hatched?: boolean }[] }) {
+  const { t } = useTranslation();
   const [asTable, setAsTable] = useState(false);
   return (
     <figure aria-label={label} className="m-0">
@@ -22,7 +25,7 @@ export function ChartFrame({ label, children, table, legend }: { label: string; 
           ))}
         </div>
         <button type="button" onClick={() => setAsTable((v) => !v)} aria-pressed={asTable} className="rounded px-2 py-1 text-xs text-muted hover:bg-surface-2 hover:text-text">
-          {asTable ? "Chart" : "Table"}
+          {asTable ? t("charts.chart") : t("charts.table")}
         </button>
       </div>
       {asTable ? (
@@ -77,20 +80,21 @@ function TipBox({ title, rows, note }: { title: string; rows: { color?: string; 
 
 /* ------------------------------------------------------------------ cash flow: income vs spending per month */
 export function CashflowChart({ months }: { months: MonthFlow[] }) {
+  const { t } = useTranslation();
   const data = months.map((m) => ({ ...m, key: m.month, income_n: n(m.income), spending_n: n(m.spending), saved_n: n(m.saved) }));
   return (
     <ChartFrame
-      label="Income and spending per month"
+      label={t("charts.cashflow.label")}
       legend={[
-        { color: "var(--s1)", text: "Income" },
-        { color: "var(--s2)", text: "Spending" },
+        { color: "var(--s1)", text: t("charts.income") },
+        { color: "var(--s2)", text: t("charts.spending") },
       ]}
       table={{
-        head: ["Month", "Income", "Spending", "Saved", "Net", "Savings rate"],
+        head: [t("charts.month"), t("charts.income"), t("charts.spending"), t("charts.saved"), t("charts.net"), t("charts.savingsRate")],
         rows: months.map((m) => [fmtMonth(m.month) + (m.complete ? "" : " *"), fmtMoney(m.income), fmtMoney(m.spending), fmtMoney(m.saved), fmtMoney(m.net, { signed: true }), fmtPct(m.savings_rate)]),
       }}
     >
-      <div style={{ height: 220 }} role="img" aria-label="Bar chart of income and spending for the last months; open the table view for the numbers">
+      <div style={{ height: 220 }} role="img" aria-label={t("charts.cashflow.aria")}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barGap={2} barCategoryGap="22%">
             <CartesianGrid vertical={false} stroke="var(--grid)" />
@@ -105,13 +109,13 @@ export function CashflowChart({ months }: { months: MonthFlow[] }) {
                   <TipBox
                     title={fmtMonth(m.month, "long")}
                     rows={[
-                      { color: "var(--s1)", label: "Income", value: fmtMoney(m.income) },
-                      { color: "var(--s2)", label: "Spending", value: fmtMoney(m.spending) },
-                      { label: "Saved", value: fmtMoney(m.saved) },
-                      { label: "Net", value: fmtMoney(m.net, { signed: true }) },
-                      { label: "Savings rate", value: fmtPct(m.savings_rate) },
+                      { color: "var(--s1)", label: t("charts.income"), value: fmtMoney(m.income) },
+                      { color: "var(--s2)", label: t("charts.spending"), value: fmtMoney(m.spending) },
+                      { label: t("charts.saved"), value: fmtMoney(m.saved) },
+                      { label: t("charts.net"), value: fmtMoney(m.net, { signed: true }) },
+                      { label: t("charts.savingsRate"), value: fmtPct(m.savings_rate) },
                     ]}
-                    note={m.complete ? undefined : `Incomplete: ${m.missing_accounts.join(", ") || "partial month"}`}
+                    note={m.complete ? undefined : t("charts.cashflow.incomplete", { accounts: m.missing_accounts.join(", ") || t("charts.cashflow.partialMonth") })}
                   />
                 );
               }}
@@ -127,20 +131,21 @@ export function CashflowChart({ months }: { months: MonthFlow[] }) {
 
 /* ------------------------------------------------------------------ E15: rent received vs the property's costs per month */
 export function RentalChart({ months }: { months: RentalMonth[] }) {
+  const { t } = useTranslation();
   const data = months.map((m) => ({ ...m, key: m.month, rent_n: n(m.rent), costs_n: n(m.costs) }));
   return (
     <ChartFrame
-      label="Rent and costs of the property per month"
+      label={t("charts.rental.label")}
       legend={[
-        { color: "var(--s1)", text: "Rent received" },
-        { color: "var(--s2)", text: "Costs (loan included)" },
+        { color: "var(--s1)", text: t("charts.rental.rentReceived") },
+        { color: "var(--s2)", text: t("charts.rental.costsWithLoan") },
       ]}
       table={{
-        head: ["Month", "Rent", "Costs", "Net", "Effort d'épargne", "Rent"],
+        head: [t("charts.month"), t("charts.rental.rent"), t("charts.rental.costs"), t("charts.net"), t("charts.rental.effort"), t("charts.rental.rentStatus")],
         rows: months.map((m) => [fmtMonth(m.month) + (m.complete ? "" : " *"), fmtMoney(m.rent), fmtMoney(m.costs), fmtMoney(m.net, { signed: true }), fmtMoney(m.effort), m.rent_status.replace(/_/g, " ")]),
       }}
     >
-      <div style={{ height: 220 }} role="img" aria-label="Bar chart of the rent received and the costs of the property for the last months; open the table view for the numbers">
+      <div style={{ height: 220 }} role="img" aria-label={t("charts.rental.aria")}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barGap={2} barCategoryGap="22%">
             <CartesianGrid vertical={false} stroke="var(--grid)" />
@@ -155,12 +160,12 @@ export function RentalChart({ months }: { months: RentalMonth[] }) {
                   <TipBox
                     title={fmtMonth(m.month, "long")}
                     rows={[
-                      { color: "var(--s1)", label: "Rent", value: fmtMoney(m.rent) },
-                      { color: "var(--s2)", label: "Costs", value: fmtMoney(m.costs) },
-                      { label: "Net", value: fmtMoney(m.net, { signed: true }) },
-                      { label: "Effort d'épargne", value: fmtMoney(m.effort) },
+                      { color: "var(--s1)", label: t("charts.rental.rent"), value: fmtMoney(m.rent) },
+                      { color: "var(--s2)", label: t("charts.rental.costs"), value: fmtMoney(m.costs) },
+                      { label: t("charts.net"), value: fmtMoney(m.net, { signed: true }) },
+                      { label: t("charts.rental.effort"), value: fmtMoney(m.effort) },
                     ]}
-                    note={m.complete ? undefined : "The account data do not cover the whole month"}
+                    note={m.complete ? undefined : t("charts.rental.partialData")}
                   />
                 );
               }}
@@ -183,22 +188,23 @@ function Rect({ x, y, width, height, fill, dim }: any) {
 
 /* ------------------------------------------------------------------ forecast with the ~80 % band */
 export function ForecastChart({ f, height = 240 }: { f: Forecast["household"]; height?: number }) {
+  const { t } = useTranslation();
   const data = f.points.map((p) => ({ date: p.date, balance: n(p.balance), low: n(p.low), high: n(p.high), band: [n(p.low), n(p.high)] as [number, number] }));
   const min = Math.min(0, ...data.map((d) => d.low));
   const first = f.first_negative ?? f.first_at_risk;
   return (
     <ChartFrame
-      label="Projected balance for the next 90 days"
+      label={t("charts.forecast.label")}
       legend={[
-        { color: "var(--s1)", text: "Expected balance" },
-        { color: "var(--s1)", text: "Likely range (about 80 %)", hatched: true },
+        { color: "var(--s1)", text: t("charts.forecast.expected") },
+        { color: "var(--s1)", text: t("charts.forecast.range"), hatched: true },
       ]}
       table={{
-        head: ["Date", "Expected", "Low", "High"],
+        head: [t("charts.forecast.date"), t("charts.forecast.expectedShort"), t("charts.forecast.low"), t("charts.forecast.high")],
         rows: data.filter((_, i) => i % 7 === 0 || i === data.length - 1).map((d) => [fmtDate(d.date), fmtMoney(d.balance), fmtMoney(d.low), fmtMoney(d.high)]),
       }}
     >
-      <div style={{ height }} role="img" aria-label={`Projected balance; lowest expected ${fmtMoney(f.min_balance)} on ${fmtDate(f.min_date)}`}>
+      <div style={{ height }} role="img" aria-label={t("charts.forecast.aria", { amount: fmtMoney(f.min_balance), date: fmtDate(f.min_date) })}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke="var(--grid)" />
@@ -206,7 +212,7 @@ export function ForecastChart({ f, height = 240 }: { f: Forecast["household"]; h
             <XAxis dataKey="date" tickFormatter={(d) => fmtDate(d, "dayMonth")} minTickGap={42} {...AXIS} axisLine={{ stroke: "var(--grid)" }} />
             <YAxis tickFormatter={(v) => fmtMoney(v, { compact: true, round: true })} width={56} {...AXIS} axisLine={false} domain={["auto", "auto"]} />
             <ReferenceLine y={0} stroke="var(--neg)" strokeDasharray="4 3" strokeOpacity={0.6} />
-            {first && <ReferenceLine x={first} stroke="var(--warn)" strokeDasharray="2 3" label={{ value: f.first_negative ? "below 0" : "at risk", fill: "var(--warn)", fontSize: 11, position: "insideTopRight" }} />}
+            {first && <ReferenceLine x={first} stroke="var(--warn)" strokeDasharray="2 3" label={{ value: f.first_negative ? t("charts.forecast.belowZero") : t("charts.forecast.atRisk"), fill: "var(--warn)", fontSize: 11, position: "insideTopRight" }} />}
             <Tooltip
               content={({ active, payload }: any) => {
                 if (!active || !payload?.length) return null;
@@ -215,9 +221,9 @@ export function ForecastChart({ f, height = 240 }: { f: Forecast["household"]; h
                   <TipBox
                     title={fmtDate(d.date, "weekday")}
                     rows={[
-                      { color: "var(--s1)", label: "Expected", value: fmtMoney(d.balance) },
-                      { label: "Low end", value: fmtMoney(d.low) },
-                      { label: "High end", value: fmtMoney(d.high) },
+                      { color: "var(--s1)", label: t("charts.forecast.expectedShort"), value: fmtMoney(d.balance) },
+                      { label: t("charts.forecast.lowEnd"), value: fmtMoney(d.low) },
+                      { label: t("charts.forecast.highEnd"), value: fmtMoney(d.high) },
                     ]}
                   />
                 );
@@ -234,21 +240,22 @@ export function ForecastChart({ f, height = 240 }: { f: Forecast["household"]; h
 
 /* ------------------------------------------------------------------ category: monthly bars, one-offs stacked, average line */
 export function MonthlyBars({ series, average, height = 240 }: { series: CategoryDetail["series"]; average: number | null; height?: number }) {
+  const { t } = useTranslation();
   const data = series.map((s) => ({ ...s, run: n(s.run_rate), one: n(s.one_off) }));
   return (
     <ChartFrame
-      label="Monthly amount"
+      label={t("charts.monthly.label")}
       legend={[
-        { color: "var(--s1)", text: "Regular" },
-        { color: "var(--s2)", text: "One-offs" },
-        ...(average !== null ? [{ color: "var(--text)", text: "Monthly average" }] : []),
+        { color: "var(--s1)", text: t("charts.monthly.regular") },
+        { color: "var(--s2)", text: t("charts.monthly.oneOffs") },
+        ...(average !== null ? [{ color: "var(--text)", text: t("charts.monthly.average") }] : []),
       ]}
       table={{
-        head: ["Month", "Regular", "One-offs", "Transactions", "Coverage"],
-        rows: series.map((s) => [fmtMonth(s.month), fmtMoney(s.run_rate), fmtMoney(s.one_off), s.n_tx, s.partial ? "month in progress" : s.covered ? "complete" : "incomplete"]),
+        head: [t("charts.month"), t("charts.monthly.regular"), t("charts.monthly.oneOffs"), t("charts.monthly.transactions"), t("charts.monthly.coverage")],
+        rows: series.map((s) => [fmtMonth(s.month), fmtMoney(s.run_rate), fmtMoney(s.one_off), s.n_tx, s.partial ? t("charts.monthly.inProgress") : s.covered ? t("charts.monthly.complete") : t("charts.monthly.incomplete")]),
       }}
     >
-      <div style={{ height }} role="img" aria-label="Monthly amounts; open the table view for the numbers">
+      <div style={{ height }} role="img" aria-label={t("charts.monthly.aria")}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barCategoryGap="18%">
             <CartesianGrid vertical={false} stroke="var(--grid)" />
@@ -264,11 +271,11 @@ export function MonthlyBars({ series, average, height = 240 }: { series: Categor
                   <TipBox
                     title={fmtMonth(s.month, "long")}
                     rows={[
-                      { color: "var(--s1)", label: "Regular", value: fmtMoney(s.run_rate) },
-                      { color: "var(--s2)", label: "One-offs", value: fmtMoney(s.one_off) },
-                      { label: "Transactions", value: String(s.n_tx) },
+                      { color: "var(--s1)", label: t("charts.monthly.regular"), value: fmtMoney(s.run_rate) },
+                      { color: "var(--s2)", label: t("charts.monthly.oneOffs"), value: fmtMoney(s.one_off) },
+                      { label: t("charts.monthly.transactions"), value: String(s.n_tx) },
                     ]}
-                    note={s.partial ? "Month in progress" : s.covered ? undefined : "Not fully covered by the accounts that carry this category"}
+                    note={s.partial ? t("charts.monthly.monthInProgress") : s.covered ? undefined : t("charts.monthly.notCovered")}
                   />
                 );
               }}
@@ -315,18 +322,19 @@ export function ShareBar({ value, max, color = "var(--s1)", marker }: { value: n
 }
 
 /* ------------------------------------------------------------------ net worth history (E9-4) */
-const NW_CATS: { key: "cash" | "savings" | "investments" | "real_estate" | "vehicles" | "other"; label: string; color: string }[] = [
-  { key: "cash", label: "Cash", color: "var(--s1)" },
-  { key: "savings", label: "Savings", color: "var(--s3)" },
-  { key: "investments", label: "Investments", color: "var(--s7)" },
-  { key: "real_estate", label: "Real estate", color: "var(--s4)" },
-  { key: "vehicles", label: "Vehicles", color: "var(--s5)" },
-  { key: "other", label: "Other", color: "var(--s6)" },
+const NW_CATS: { key: "cash" | "savings" | "investments" | "real_estate" | "vehicles" | "other"; label: ParseKeys; color: string }[] = [
+  { key: "cash", label: "charts.netWorth.category.cash", color: "var(--s1)" },
+  { key: "savings", label: "charts.netWorth.category.savings", color: "var(--s3)" },
+  { key: "investments", label: "charts.netWorth.category.investments", color: "var(--s7)" },
+  { key: "real_estate", label: "charts.netWorth.category.real_estate", color: "var(--s4)" },
+  { key: "vehicles", label: "charts.netWorth.category.vehicles", color: "var(--s5)" },
+  { key: "other", label: "charts.netWorth.category.other", color: "var(--s6)" },
 ];
 
 /** Monthly net worth: assets stacked by category above the axis, what is owed below it, the net worth as a line. A month with items whose
  *  value is unknown that month is drawn lighter and says how many (it is "the known part only"), never as a complete figure. */
 export function NetWorthChart({ points }: { points: NetWorthPoint[] }) {
+  const { t } = useTranslation();
   const data = points.map((p) => ({
     ...p, key: p.month, owed: -n(p.liabilities), net: n(p.net_worth),
     ...Object.fromEntries(NW_CATS.map((c) => [c.key, n(p.by_category[c.key])])),
@@ -334,14 +342,14 @@ export function NetWorthChart({ points }: { points: NetWorthPoint[] }) {
   const dim = (p: any) => (p.complete ? 1 : 0.42);
   return (
     <ChartFrame
-      label="Net worth by month"
-      legend={[...NW_CATS.map((c) => ({ color: c.color, text: c.label })), { color: "var(--neg)", text: "Owed" }, { color: "var(--text)", text: "Net worth" }, { color: "var(--muted)", text: "Lighter bars: known part only", hatched: true }]}
+      label={t("charts.netWorth.label")}
+      legend={[...NW_CATS.map((c) => ({ color: c.color, text: t(c.label) })), { color: "var(--neg)", text: t("charts.netWorth.owed") }, { color: "var(--text)", text: t("charts.netWorth.title") }, { color: "var(--muted)", text: t("charts.netWorth.lighter"), hatched: true }]}
       table={{
-        head: ["Month", "Net worth", "Assets", "Owed", "Unknown items", "Source"],
-        rows: points.map((p) => [fmtMonth(p.month), fmtMoney(p.net_worth, { round: true }), fmtMoney(p.assets, { round: true }), fmtMoney(p.liabilities, { round: true }), p.n_unknown ? `${p.n_unknown} not counted` : "none", (p.source === "snapshot" ? "recorded" : "rebuilt") + ((p.newly_counted ?? []).length ? " (new value counted)" : "")]),
+        head: [t("charts.month"), t("charts.netWorth.title"), t("charts.netWorth.assets"), t("charts.netWorth.owed"), t("charts.netWorth.unknownItems"), t("charts.netWorth.source")],
+        rows: points.map((p) => [fmtMonth(p.month), fmtMoney(p.net_worth, { round: true }), fmtMoney(p.assets, { round: true }), fmtMoney(p.liabilities, { round: true }), p.n_unknown ? t("charts.netWorth.notCounted", { count: p.n_unknown }) : t("charts.netWorth.none"), (p.source === "snapshot" ? t("charts.netWorth.recorded") : t("charts.netWorth.rebuilt")) + ((p.newly_counted ?? []).length ? t("charts.netWorth.newValueCounted") : "")]),
       }}
     >
-      <div style={{ height: 260 }} role="img" aria-label="Stacked bars of assets by category and what is owed for each month, with the net worth line; months with unknown items are lighter. Open the table view for the numbers">
+      <div style={{ height: 260 }} role="img" aria-label={t("charts.netWorth.aria")}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} stackOffset="sign" margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barCategoryGap="22%">
             <CartesianGrid vertical={false} stroke="var(--grid)" />
@@ -349,7 +357,7 @@ export function NetWorthChart({ points }: { points: NetWorthPoint[] }) {
             <YAxis tickFormatter={(v) => fmtMoney(v, { compact: true, round: true })} width={56} {...AXIS} axisLine={false} />
             <ReferenceLine y={0} stroke="var(--border-strong)" />
             {data.filter((p) => (p.newly_counted ?? []).length > 0).map((p) => (
-              <ReferenceLine key={`nc-${p.key}`} x={p.key} stroke="var(--warn)" strokeDasharray="4 3" label={{ value: "value known from here", position: "insideTopLeft", fill: "var(--warn)", fontSize: 10 }} />
+              <ReferenceLine key={`nc-${p.key}`} x={p.key} stroke="var(--warn)" strokeDasharray="4 3" label={{ value: t("charts.netWorth.valueKnownFromHere"), position: "insideTopLeft", fill: "var(--warn)", fontSize: 10 }} />
             ))}
             <Tooltip
               cursor={{ fill: "var(--surface-2)", opacity: 0.6 }}
@@ -358,15 +366,15 @@ export function NetWorthChart({ points }: { points: NetWorthPoint[] }) {
                 const p: NetWorthPoint = payload[0].payload;
                 return (
                   <TipBox
-                    title={`${fmtMonth(p.month, "long")} (${p.source === "snapshot" ? "recorded " + fmtDate(p.as_of, "dayMonth") : "rebuilt from the data"})`}
+                    title={p.source === "snapshot" ? t("charts.netWorth.tipSnapshot", { month: fmtMonth(p.month, "long"), date: fmtDate(p.as_of, "dayMonth") }) : t("charts.netWorth.tipRebuilt", { month: fmtMonth(p.month, "long") })}
                     rows={[
-                      { color: "var(--text)", label: "Net worth", value: fmtMoney(p.net_worth, { round: true }) },
-                      ...NW_CATS.filter((c) => n(p.by_category[c.key]) !== 0).map((c) => ({ color: c.color, label: c.label, value: fmtMoney(p.by_category[c.key], { round: true }) })),
-                      { color: "var(--neg)", label: "Owed", value: fmtMoney(p.liabilities, { round: true }) },
+                      { color: "var(--text)", label: t("charts.netWorth.title"), value: fmtMoney(p.net_worth, { round: true }) },
+                      ...NW_CATS.filter((c) => n(p.by_category[c.key]) !== 0).map((c) => ({ color: c.color, label: t(c.label), value: fmtMoney(p.by_category[c.key], { round: true }) })),
+                      { color: "var(--neg)", label: t("charts.netWorth.owed"), value: fmtMoney(p.liabilities, { round: true }) },
                     ]}
                     note={[
-                      p.complete ? "" : `${p.n_unknown} item${p.n_unknown > 1 ? "s" : ""} not known this month and NOT counted: ${p.unknown.map((u) => u.reason).filter((x, i, a) => a.indexOf(x) === i).join("; ")}`,
-                      (p.newly_counted ?? []).length ? `Counted from this month: ${(p.newly_counted ?? []).map((x) => x.label).join(", ")} (first recorded value). The jump is not a change in wealth.` : "",
+                      p.complete ? "" : t("charts.netWorth.unknownNote", { count: p.n_unknown, reasons: p.unknown.map((u) => u.reason).filter((x, i, a) => a.indexOf(x) === i).join("; ") }),
+                      (p.newly_counted ?? []).length ? t("charts.netWorth.countedFrom", { items: (p.newly_counted ?? []).map((x) => x.label).join(", ") }) : "",
                       p.caveat ?? "",
                     ].filter(Boolean).join(" ") || undefined}
                   />

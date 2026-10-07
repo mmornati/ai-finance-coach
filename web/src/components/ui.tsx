@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes, useEffect, useId, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, CheckCircle2, Info, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fmtMoney, tone as toneOf, type MoneyOpts } from "@/lib/format";
@@ -228,25 +229,27 @@ export function EmptyState({ title, children, action, icon }: { title: string; c
 }
 
 export function ErrorState({ error, retry }: { error: unknown; retry?: () => void }) {
-  const msg = error instanceof ApiError ? error.message : error instanceof Error ? error.message : "Something went wrong";
+  const { t } = useTranslation();
+  const msg = error instanceof ApiError ? error.message : error instanceof Error ? error.message : t("ui.error.generic");
   const offline = error instanceof TypeError;
   return (
     <div role="alert" className="flex flex-col items-start gap-2 rounded-lg border border-neg/30 bg-neg-soft px-4 py-3 text-sm text-neg">
-      <div className="font-semibold">{offline ? "The app server is not reachable" : "Could not load this"}</div>
-      <div className="text-[13px] opacity-90">{offline ? "Is `coach ui` still running? Reload the page once it is back." : msg}</div>
+      <div className="font-semibold">{offline ? t("ui.error.offlineTitle") : t("ui.error.loadTitle")}</div>
+      <div className="text-[13px] opacity-90">{offline ? t("ui.error.offlineBody") : msg}</div>
       {retry && (
         <Button size="sm" onClick={retry}>
-          Try again
+          {t("ui.error.retry")}
         </Button>
       )}
     </div>
   );
 }
 
-export function Spinner({ label = "Loading" }: { label?: string }) {
+export function Spinner({ label }: { label?: string }) {
+  const { t } = useTranslation();
   return (
     <span role="status" className="inline-flex items-center gap-2 text-sm text-muted">
-      <Loader2 className="size-4 animate-spin" aria-hidden /> {label}
+      <Loader2 className="size-4 animate-spin" aria-hidden /> {label ?? t("ui.loading")}
     </span>
   );
 }
@@ -255,6 +258,7 @@ export function Spinner({ label = "Loading" }: { label?: string }) {
 export function Dialog({ open, onClose, title, children, footer, size = "md", side = false, description }: {
   open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; footer?: ReactNode; size?: "sm" | "md" | "lg"; side?: boolean; description?: ReactNode;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {
@@ -289,7 +293,7 @@ export function Dialog({ open, onClose, title, children, footer, size = "md", si
           </h2>
           {description && <p className="mt-0.5 text-[13px] text-muted">{description}</p>}
         </div>
-        <IconButton label="Close" onClick={onClose} className="-mr-2 -mt-1 size-9">
+        <IconButton label={t("ui.close")} onClick={onClose} className="-mr-2 -mt-1 size-9">
           <X className="size-5" />
         </IconButton>
       </div>
@@ -300,10 +304,11 @@ export function Dialog({ open, onClose, title, children, footer, size = "md", si
 }
 
 /* ------------------------------------------------------------------ diff */
-export function DiffView({ diff, empty = "No change." }: { diff: string; empty?: string }) {
-  if (!diff.trim()) return <p className="text-[13px] text-muted">{empty}</p>;
+export function DiffView({ diff, empty }: { diff: string; empty?: string }) {
+  const { t } = useTranslation();
+  if (!diff.trim()) return <p className="text-[13px] text-muted">{empty ?? t("ui.diff.empty")}</p>;
   return (
-    <pre aria-label="Proposed change" className="max-h-72 overflow-auto rounded-lg border border-border bg-surface-2 p-3 font-mono text-xs leading-5">
+    <pre aria-label={t("ui.diff.label")} className="max-h-72 overflow-auto rounded-lg border border-border bg-surface-2 p-3 font-mono text-xs leading-5">
       {diff.split("\n").map((l, i) => (
         <div key={i} className={cn("whitespace-pre-wrap break-all", l.startsWith("+") && !l.startsWith("+++") && "bg-pos-soft text-pos", l.startsWith("-") && !l.startsWith("---") && "bg-neg-soft text-neg", (l.startsWith("@@") || l.startsWith("+++") || l.startsWith("---")) && "text-faint")}>
           {l || " "}

@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Button, Dialog, DiffView, Field, Input, Notice, Select, Spinner, Textarea } from "./ui";
 import { useDryRun, useFilters, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
@@ -13,93 +15,96 @@ const isLease = (v: Record<string, string>) => v.kind === "loa" || v.kind === "l
 const notLease = (v: Record<string, string>) => !isLease(v);
 const isVariable = (v: Record<string, string>) => v["rate.type"] === "variable" || v["rate.type"] === "mixed";
 
-const LIAB_KINDS: [string, string][] = [["mortgage", "Mortgage"], ["car_loan", "Car loan"], ["loa", "Long-term lease with option (LOA)"], ["lld", "Long-term lease (LLD)"], ["consumer_loan", "Consumer loan"], ["bnpl", "Buy now, pay later"]];
-const ASSET_KINDS = ["regulated_savings", "savings_account", "employee_savings_plan", "life_insurance_savings", "vehicle", "real_estate", "real_estate_rental", "securities", "pension", "cash", "crypto", "other"].map((k) => [k, k.replace(/_/g, " ")] as [string, string]);
+const LIAB_KINDS = ["mortgage", "car_loan", "loa", "lld", "consumer_loan", "bnpl"] as const;
+// [the code stored in the contract file, the i18n key of its label]: the code `insurance_other` must not be a key (a `_other` suffix means "plural form")
+const CONTRACT_KINDS = [["energy", "energy"], ["telecom", "telecom"], ["insurance_home", "insuranceHome"], ["insurance_car", "insuranceCar"], ["insurance_health", "insuranceHealth"], ["health", "health"], ["streaming", "streaming"], ["software", "software"], ["membership", "membership"], ["insurance_other", "insuranceOther"], ["water", "water"], ["other", "other"]] as const;
+const ASSET_KINDS = ["regulated_savings", "savings_account", "employee_savings_plan", "life_insurance_savings", "vehicle", "real_estate", "real_estate_rental", "securities", "pension", "cash", "crypto", "other"] as const;
 
-const SPECS: Record<Kind, Spec[]> = {
+/** The form fields of each kind of item. Built per render with `t` so the labels follow the language; the keys (`key`) are the memory schema's. */
+function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
+  return {
   liabilities: [
-    { key: "kind", label: "Kind", type: "select", options: LIAB_KINDS },
-    { key: "lender", label: "Lender", type: "text" },
-    { key: "asset", label: "Financed asset", type: "text" },
-    { key: "holder", label: "Borrower", type: "text", hint: "Household member id, or joint (for the net worth by person)" },
-    { key: "start_date", label: "Start date", type: "date" },
-    { key: "first_payment_date", label: "First instalment on", type: "date", hint: "Blank = one month after the start", when: notLease },
-    { key: "end_date", label: "End date", type: "date" },
-    { key: "term_months", label: "Number of instalments (months)", type: "int", hint: "Blank = from the start to the end date" },
-    { key: "payment_day", label: "Debit day of the month", type: "int" },
-    { key: "principal", label: "Amount borrowed (EUR)", type: "number", when: notLease },
-    { key: "monthly_payment", label: "Monthly payment (EUR)", type: "number", hint: "Debited per month, insurance included (lease: the monthly rent)" },
-    { key: "rate.type", label: "Rate type", type: "select", options: [["fixed", "Fixed"], ["variable", "Variable"], ["mixed", "Mixed"]], when: notLease },
-    { key: "rate.nominal", label: "Nominal rate (%)", type: "number", when: notLease },
-    { key: "rate.taeg", label: "TAEG (%)", type: "number", when: notLease },
-    { key: "rate.index", label: "Variable rate: index", type: "text", hint: "Stored only: the schedule uses the nominal rate above", when: (v) => notLease(v) && isVariable(v) },
-    { key: "rate.margin", label: "Variable rate: margin (points)", type: "number", when: (v) => notLease(v) && isVariable(v) },
-    { key: "rate.cap", label: "Variable rate: cap (%)", type: "number", when: (v) => notLease(v) && isVariable(v) },
-    { key: "insurance.provider", label: "Borrower insurance: provider", type: "text" },
-    { key: "insurance.monthly", label: "Borrower insurance: EUR per month", type: "number", hint: "A flat premium" },
-    { key: "insurance.rate_pct", label: "Borrower insurance: % per year", type: "number", hint: "Instead of a flat amount", when: notLease },
-    { key: "insurance.basis", label: "That % applies to", type: "select", options: [["initial", "The initial capital"], ["outstanding", "The capital still due"]], when: notLease },
-    { key: "insurance.delegated", label: "Insurance delegated to another insurer", type: "bool", when: notLease },
-    { key: "deferral.months", label: "Deferral at the start (months)", type: "int", when: notLease },
-    { key: "deferral.kind", label: "Deferral kind", type: "select", options: [["partial", "Partial: interest only"], ["total", "Total: nothing paid, interest added"]], when: notLease },
-    { key: "outstanding", label: "Outstanding capital (EUR)", type: "number", hint: "From your latest statement", when: notLease },
-    { key: "outstanding_as_of", label: "Outstanding capital as of", type: "date", when: notLease },
-    { key: "debited_account", label: "Debited from", type: "account", hint: "The account the instalment leaves" },
-    { key: "payment_match", label: "Bank label of the payment (regex)", type: "text", hint: "e.g. ^HOMEBANK ECH PRET" },
-    { key: "first_payment", label: "First rent / down payment (EUR)", type: "number", when: isLease },
-    { key: "residual_value", label: "Residual value: purchase-option price (EUR)", type: "number", when: isLease },
-    { key: "mileage_limit_km", label: "Mileage limit over the contract (km)", type: "int", when: isLease },
-    { key: "excess_km_fee", label: "Fee per excess km (EUR)", type: "number", when: isLease },
-    { key: "initial_km", label: "Odometer at the start (km)", type: "int", hint: "0 for a new car", when: isLease },
-    { key: "notes", label: "Notes", type: "textarea", wide: true },
+    { key: "kind", label: t("itemForm.field.kind"), type: "select", options: LIAB_KINDS.map((k): [string, string] => [k, t(`itemForm.option.liabilityKind.${k}`)]) },
+    { key: "lender", label: t("itemForm.field.lender"), type: "text" },
+    { key: "asset", label: t("itemForm.field.asset"), type: "text" },
+    { key: "holder", label: t("itemForm.field.borrower"), type: "text", hint: t("itemForm.field.borrowerHint") },
+    { key: "start_date", label: t("itemForm.field.startDate"), type: "date" },
+    { key: "first_payment_date", label: t("itemForm.field.firstPaymentDate"), type: "date", hint: t("itemForm.field.firstPaymentDateHint"), when: notLease },
+    { key: "end_date", label: t("itemForm.field.endDate"), type: "date" },
+    { key: "term_months", label: t("itemForm.field.termMonths"), type: "int", hint: t("itemForm.field.termMonthsHint") },
+    { key: "payment_day", label: t("itemForm.field.paymentDay"), type: "int" },
+    { key: "principal", label: t("itemForm.field.principal"), type: "number", when: notLease },
+    { key: "monthly_payment", label: t("itemForm.field.monthlyPayment"), type: "number", hint: t("itemForm.field.monthlyPaymentHint") },
+    { key: "rate.type", label: t("itemForm.field.rateType"), type: "select", options: [["fixed", t("itemForm.option.rateType.fixed")], ["variable", t("itemForm.option.rateType.variable")], ["mixed", t("itemForm.option.rateType.mixed")]], when: notLease },
+    { key: "rate.nominal", label: t("itemForm.field.nominalRate"), type: "number", when: notLease },
+    { key: "rate.taeg", label: t("itemForm.field.taeg"), type: "number", when: notLease },
+    { key: "rate.index", label: t("itemForm.field.rateIndex"), type: "text", hint: t("itemForm.field.rateIndexHint"), when: (v) => notLease(v) && isVariable(v) },
+    { key: "rate.margin", label: t("itemForm.field.rateMargin"), type: "number", when: (v) => notLease(v) && isVariable(v) },
+    { key: "rate.cap", label: t("itemForm.field.rateCap"), type: "number", when: (v) => notLease(v) && isVariable(v) },
+    { key: "insurance.provider", label: t("itemForm.field.insuranceProvider"), type: "text" },
+    { key: "insurance.monthly", label: t("itemForm.field.insuranceMonthly"), type: "number", hint: t("itemForm.field.insuranceMonthlyHint") },
+    { key: "insurance.rate_pct", label: t("itemForm.field.insuranceRate"), type: "number", hint: t("itemForm.field.insuranceRateHint"), when: notLease },
+    { key: "insurance.basis", label: t("itemForm.field.insuranceBasis"), type: "select", options: [["initial", t("itemForm.option.insuranceBasis.initial")], ["outstanding", t("itemForm.option.insuranceBasis.outstanding")]], when: notLease },
+    { key: "insurance.delegated", label: t("itemForm.field.insuranceDelegated"), type: "bool", when: notLease },
+    { key: "deferral.months", label: t("itemForm.field.deferralMonths"), type: "int", when: notLease },
+    { key: "deferral.kind", label: t("itemForm.field.deferralKind"), type: "select", options: [["partial", t("itemForm.option.deferralKind.partial")], ["total", t("itemForm.option.deferralKind.total")]], when: notLease },
+    { key: "outstanding", label: t("itemForm.field.outstanding"), type: "number", hint: t("itemForm.field.outstandingHint"), when: notLease },
+    { key: "outstanding_as_of", label: t("itemForm.field.outstandingAsOf"), type: "date", when: notLease },
+    { key: "debited_account", label: t("itemForm.field.debitedAccount"), type: "account", hint: t("itemForm.field.debitedAccountHint") },
+    { key: "payment_match", label: t("itemForm.field.bankLabel"), type: "text", hint: t("itemForm.field.paymentMatchHint") },
+    { key: "first_payment", label: t("itemForm.field.firstRent"), type: "number", when: isLease },
+    { key: "residual_value", label: t("itemForm.field.residualValue"), type: "number", when: isLease },
+    { key: "mileage_limit_km", label: t("itemForm.field.mileageLimit"), type: "int", when: isLease },
+    { key: "excess_km_fee", label: t("itemForm.field.excessKmFee"), type: "number", when: isLease },
+    { key: "initial_km", label: t("itemForm.field.initialKm"), type: "int", hint: t("itemForm.field.initialKmHint"), when: isLease },
+    { key: "notes", label: t("itemForm.field.notes"), type: "textarea", wide: true },
   ],
   contracts: [
-    { key: "provider", label: "Provider", type: "text" },
-    { key: "kind", label: "Kind", type: "select", options: ["energy", "telecom", "insurance_home", "insurance_car", "insurance_health", "health", "streaming", "software", "membership", "insurance_other", "water", "other"].map((k) => [k, k.replace(/_/g, " ")] as [string, string]) },
-    { key: "merchant_match", label: "Bank label of the payment (regex)", type: "text" },
-    { key: "start_date", label: "Start date", type: "date" },
-    { key: "renewal", label: "Next renewal", type: "date" },
-    { key: "billing.amount", label: "Amount (EUR)", type: "number" },
-    { key: "billing.period", label: "Billed", type: "select", options: [["monthly", "Monthly"], ["bimonthly", "Every 2 months"], ["quarterly", "Quarterly"], ["yearly", "Yearly"]] },
-    { key: "commitment_end", label: "Commitment ends", type: "date" },
-    { key: "notice_period_days", label: "Notice (days)", type: "int" },
-    { key: "holder", label: "Holder", type: "text", hint: "Household member id, or joint: who signs cancellation letters" },
-    { key: "contract_number", label: "Contract number", type: "text", hint: "Printed on cancellation letters; stays on this machine" },
-    { key: "usage.frequency", label: "How often you use it", type: "select", options: [["daily", "Daily"], ["weekly", "Weekly"], ["monthly", "Monthly"], ["rarely", "Rarely"], ["never", "Never"], ["unknown", "I don't know"]] },
-    { key: "usage.last_used", label: "Last used", type: "date" },
-    { key: "usage.note", label: "Usage note", type: "text" },
-    { key: "keep", label: "Decision", type: "select", options: [["true", "Keep"], ["review", "Review"], ["false", "Cancel"]] },
-    { key: "notes", label: "Notes", type: "textarea", wide: true },
+    { key: "provider", label: t("itemForm.field.provider"), type: "text" },
+    { key: "kind", label: t("itemForm.field.kind"), type: "select", options: CONTRACT_KINDS.map(([code, key]): [string, string] => [code, t(`itemForm.option.contractKind.${key}`)]) },
+    { key: "merchant_match", label: t("itemForm.field.bankLabel"), type: "text" },
+    { key: "start_date", label: t("itemForm.field.startDate"), type: "date" },
+    { key: "renewal", label: t("itemForm.field.renewal"), type: "date" },
+    { key: "billing.amount", label: t("itemForm.field.amount"), type: "number" },
+    { key: "billing.period", label: t("itemForm.field.billed"), type: "select", options: [["monthly", t("itemForm.option.billingPeriod.monthly")], ["bimonthly", t("itemForm.option.billingPeriod.bimonthly")], ["quarterly", t("itemForm.option.billingPeriod.quarterly")], ["yearly", t("itemForm.option.billingPeriod.yearly")]] },
+    { key: "commitment_end", label: t("itemForm.field.commitmentEnd"), type: "date" },
+    { key: "notice_period_days", label: t("itemForm.field.noticeDays"), type: "int" },
+    { key: "holder", label: t("itemForm.field.holder"), type: "text", hint: t("itemForm.field.holderContractHint") },
+    { key: "contract_number", label: t("itemForm.field.contractNumber"), type: "text", hint: t("itemForm.field.contractNumberHint") },
+    { key: "usage.frequency", label: t("itemForm.field.usageFrequency"), type: "select", options: [["daily", t("itemForm.option.usageFrequency.daily")], ["weekly", t("itemForm.option.usageFrequency.weekly")], ["monthly", t("itemForm.option.usageFrequency.monthly")], ["rarely", t("itemForm.option.usageFrequency.rarely")], ["never", t("itemForm.option.usageFrequency.never")], ["unknown", t("itemForm.option.usageFrequency.unknown")]] },
+    { key: "usage.last_used", label: t("itemForm.field.lastUsed"), type: "date" },
+    { key: "usage.note", label: t("itemForm.field.usageNote"), type: "text" },
+    { key: "keep", label: t("itemForm.field.decision"), type: "select", options: [["true", t("itemForm.option.keep.true")], ["review", t("itemForm.option.keep.review")], ["false", t("itemForm.option.keep.false")]] },
+    { key: "notes", label: t("itemForm.field.notes"), type: "textarea", wide: true },
   ],
   assets: [
-    { key: "kind", label: "Kind", type: "select", options: ASSET_KINDS },
-    { key: "provider", label: "Provider", type: "text" },
-    { key: "holder", label: "Holder", type: "text" },
-    { key: "@value", label: "Current value (EUR)", type: "number" },
-    { key: "as_of", label: "Value as of", type: "date" },
-    { key: "liquidity", label: "Liquidity", type: "select", options: [["immediate", "Immediate"], ["short", "Short term"], ["locked", "Locked"]] },
-    { key: "connected", label: "Synced from a bank (counted through its balance)", type: "bool", wide: true },
-    { key: "contribution_monthly", label: "Monthly contribution (EUR)", type: "number" },
-    { key: "description", label: "Description", type: "text" },
-    { key: "notes", label: "Notes", type: "textarea", wide: true },
+    { key: "kind", label: t("itemForm.field.kind"), type: "select", options: ASSET_KINDS.map((k): [string, string] => [k, t(`itemForm.option.assetKind.${k}`)]) },
+    { key: "provider", label: t("itemForm.field.provider"), type: "text" },
+    { key: "holder", label: t("itemForm.field.holder"), type: "text" },
+    { key: "@value", label: t("itemForm.field.currentValue"), type: "number" },
+    { key: "as_of", label: t("itemForm.field.valueAsOf"), type: "date" },
+    { key: "liquidity", label: t("itemForm.field.liquidity"), type: "select", options: [["immediate", t("itemForm.option.liquidity.immediate")], ["short", t("itemForm.option.liquidity.short")], ["locked", t("itemForm.option.liquidity.locked")]] },
+    { key: "connected", label: t("itemForm.field.connected"), type: "bool", wide: true },
+    { key: "contribution_monthly", label: t("itemForm.field.contribution"), type: "number" },
+    { key: "description", label: t("itemForm.field.descriptionField"), type: "text" },
+    { key: "notes", label: t("itemForm.field.notes"), type: "textarea", wide: true },
   ],
   members: [
-    { key: "name", label: "Name", type: "text", hint: "Stays on this machine" },
-    { key: "role", label: "Role", type: "select", options: [["adult", "Adult"], ["child", "Child"]] },
-    { key: "birth_year", label: "Birth year", type: "int" },
-    { key: "aliases", label: "Names seen in bank data", type: "list", hint: "Comma separated" },
+    { key: "name", label: t("itemForm.field.name"), type: "text", hint: t("itemForm.field.nameHint") },
+    { key: "role", label: t("itemForm.field.role"), type: "select", options: [["adult", t("itemForm.option.role.adult")], ["child", t("itemForm.option.role.child")]] },
+    { key: "birth_year", label: t("itemForm.field.birthYear"), type: "int" },
+    { key: "aliases", label: t("itemForm.field.aliases"), type: "list", hint: t("itemForm.field.aliasesHint") },
   ],
   events: [
-    { key: "title", label: "Title", type: "text" },
-    { key: "start", label: "Start", type: "date" },
-    { key: "end", label: "End", type: "date" },
-    { key: "budget", label: "Budget (EUR)", type: "number" },
-    { key: "status", label: "Status", type: "select", options: [["planned", "Planned"], ["ongoing", "Ongoing"], ["done", "Done"]] },
-    { key: "note", label: "Note", type: "textarea", wide: true },
+    { key: "title", label: t("itemForm.field.title"), type: "text" },
+    { key: "start", label: t("itemForm.field.start"), type: "date" },
+    { key: "end", label: t("itemForm.field.end"), type: "date" },
+    { key: "budget", label: t("itemForm.field.budget"), type: "number" },
+    { key: "status", label: t("itemForm.field.status"), type: "select", options: [["planned", t("itemForm.option.eventStatus.planned")], ["ongoing", t("itemForm.option.eventStatus.ongoing")], ["done", t("itemForm.option.eventStatus.done")]] },
+    { key: "note", label: t("itemForm.field.note"), type: "textarea", wide: true },
   ],
-};
-
-export const KIND_LABEL: Record<Kind, string> = { liabilities: "loan", contracts: "contract", assets: "asset", members: "household member", events: "event" };
+  };
+}
 
 function flatten(o: Record<string, any>, prefix = ""): Record<string, any> {
   const out: Record<string, any> = {};
@@ -142,8 +147,9 @@ function convert(spec: Spec, raw: string): unknown {
 
 /** A validated form for one memory item: the server validates (schema + semantics), previews the diff and records it. */
 export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Kind; id?: string; initial?: Record<string, any>; onClose: () => void }) {
+  const { t } = useTranslation();
   const filters = useFilters();
-  const specs = SPECS[kind];
+  const specs = useMemo(() => buildSpecs(t)[kind], [kind, t]);
   const isNew = !initialId;
   const base = useMemo(() => {
     const f = flatten(initial ?? {});
@@ -171,21 +177,21 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
   const enabled = idOk && has;
   const path = `/memory/${kind}/${id}`;
   const pv = useDryRun<EditResult>(path, { fields }, enabled, "put");
-  const save = useWrite(() => api.put<EditResult>(path, { fields }, { dry_run: false }), { success: "Saved to memory", onSuccess: onClose });
+  const save = useWrite(() => api.put<EditResult>(path, { fields }, { dry_run: false }), { success: t("itemForm.saved"), onSuccess: onClose });
   const missingKind = kind === "liabilities" && isNew && !vals.kind;
 
   return (
-    <Dialog open onClose={onClose} size="lg" title={isNew ? `New ${KIND_LABEL[kind]}` : `Edit ${KIND_LABEL[kind]}: ${initialId}`} description="Validated against the memory schema; the change is recorded in the history with a diff."
-      footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button variant="primary" busy={save.isPending} disabled={!enabled || !pv.data || !!pv.error || pv.loading || missingKind} onClick={() => save.mutate(undefined as never)}>Save</Button></>}>
+    <Dialog open onClose={onClose} size="lg" title={isNew ? t(`itemForm.new.${kind}`) : t(`itemForm.edit.${kind}`, { id: initialId })} description={t("itemForm.description")}
+      footer={<><Button variant="ghost" onClick={onClose}>{t("itemForm.cancel")}</Button><Button variant="primary" busy={save.isPending} disabled={!enabled || !pv.data || !!pv.error || pv.loading || missingKind} onClick={() => save.mutate(undefined as never)}>{t("itemForm.save")}</Button></>}>
       <div className="grid gap-4 sm:grid-cols-2">
-        {isNew && <Field label="Id" hint="Lowercase letters, digits, - or _. It cannot be changed later." error={id && !idOk ? "Use lowercase letters, digits, - or _" : undefined}>{(i) => <Input id={i} value={id} onChange={(e) => setId(e.target.value.toLowerCase())} placeholder={kind === "members" ? "anna" : "home-loan"} />}</Field>}
+        {isNew && <Field label={t("itemForm.id")} hint={t("itemForm.idHint")} error={id && !idOk ? t("itemForm.idError") : undefined}>{(i) => <Input id={i} value={id} onChange={(e) => setId(e.target.value.toLowerCase())} placeholder={kind === "members" ? "anna" : "home-loan"} />}</Field>}
         {specs.filter((s) => !s.when || s.when(vals)).map((s) => (
           <Field key={s.key} label={s.label} hint={s.hint} className={s.wide ? "sm:col-span-2" : undefined}>
             {(i) => {
               const v = vals[s.key] ?? "";
               const set = (x: string) => setVals((c) => ({ ...c, [s.key]: x }));
-              if (s.type === "select") return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">–</option>{s.options!.map(([a, b]) => <option key={a} value={a}>{b}</option>)}</Select>;
-              if (s.type === "account") return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">–</option>{filters.data?.accounts.map((a) => <option key={a.uid} value={a.uid}>{a.label}</option>)}</Select>;
+              if (s.type === "select") return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">{t("itemForm.none")}</option>{s.options!.map(([a, b]) => <option key={a} value={a}>{b}</option>)}</Select>;
+              if (s.type === "account") return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">{t("itemForm.none")}</option>{filters.data?.accounts.map((a) => <option key={a.uid} value={a.uid}>{a.label}</option>)}</Select>;
               if (s.type === "bool") return <label className="flex min-h-10 items-center gap-2 text-sm"><input id={i} type="checkbox" checked={v === "true"} onChange={(e) => set(e.target.checked ? "true" : "false")} /> {s.label}</label>;
               if (s.type === "textarea") return <Textarea id={i} value={v} onChange={(e) => set(e.target.value)} />;
               return <Input id={i} type={s.type === "date" ? "date" : "text"} inputMode={s.type === "number" || s.type === "int" ? "decimal" : undefined} value={v} onChange={(e) => set(e.target.value)} />;
@@ -194,10 +200,10 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
         ))}
       </div>
       <div className="mt-4 grid gap-2">
-        {missingKind && <Notice tone="warn">Choose the kind of loan first.</Notice>}
-        {pv.loading && <Spinner label="Validating" />}
-        {pv.error && <Notice tone="neg" title="Not valid">{pv.error}</Notice>}
-        {pv.data && <>{pv.data.warnings.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}<DiffView diff={pv.data.diff} empty="Nothing changes." /></>}
+        {missingKind && <Notice tone="warn">{t("itemForm.chooseKind")}</Notice>}
+        {pv.loading && <Spinner label={t("itemForm.validating")} />}
+        {pv.error && <Notice tone="neg" title={t("itemForm.notValid")}>{pv.error}</Notice>}
+        {pv.data && <>{pv.data.warnings.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}<DiffView diff={pv.data.diff} empty={t("itemForm.nothingChanges")} /></>}
       </div>
     </Dialog>
   );

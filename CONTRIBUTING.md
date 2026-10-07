@@ -109,6 +109,7 @@ Quality
 - [ ] Numbers come from tested code; rounding and currency handled; coverage-aware where an average is involved.
 - [ ] Tests are synthetic, fast, deterministic, and fail without the change; no test touches the network, the Keychain or `data/`.
 - [ ] Docs and `CHANGELOG.md` updated; the CLI help (`EPILOG` in `cli.py`) lists a new command; a UI change is rebuilt (`pnpm build`) and tested.
+- [ ] Text a person reads in the web app goes through `t()` with a key in every language (`web/src/locales/`): see [docs/i18n.md](docs/i18n.md).
 - [ ] Migrations are new numbered files and keep existing data.
 
 ## Pull requests

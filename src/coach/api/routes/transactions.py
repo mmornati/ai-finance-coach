@@ -167,13 +167,13 @@ def _csv_cell(v) -> str:
     return "'" + s if s[:1] in ("=", "+", "-", "@", "\t", "\r") else s
 
 
-@router.get("/transactions/export.csv", summary="CSV export of the filtered set (same filters as the list); locale=fr-FR gives Excel-friendly ; and , decimals")
-def export_csv(f: TxFilter = Depends(), locale: str = Query("en-GB", pattern="^(fr-FR|en-GB)$"),
+@router.get("/transactions/export.csv", summary="CSV export of the filtered set (same filters as the list); locale=fr-FR / it-IT gives Excel-friendly ; and , decimals")
+def export_csv(f: TxFilter = Depends(), locale: str = Query("en-GB", pattern="^(fr-FR|it-IT|en-GB)$"),
                snap: Snapshot = Depends(get_member_snapshot), state: AppState = Depends(get_state)):
     ds = snap.ds
     rows = _select(ds, f)
     flags = _flags(snap, state)
-    fr = locale == "fr-FR"
+    fr = locale in ("fr-FR", "it-IT")                  # both write 1,50 and separate columns with ;
     delim = ";" if fr else ","
 
     def gen() -> Iterator[str]:

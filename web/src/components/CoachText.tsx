@@ -1,4 +1,5 @@
 import { Fragment, ReactNode, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { FileText, Receipt, Repeat } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -27,28 +28,29 @@ export function useResolved(refs: string[]) {
 }
 
 export function RefChip({ id, info }: { id: string; info?: ResolvedRef | null }) {
+  const { t } = useTranslation();
   const base = "inline-flex items-center gap-1 rounded-full border border-border-strong bg-surface px-2 py-0.5 align-baseline text-[12px] font-medium hover:bg-surface-2";
   if (id.startsWith("p-")) {
     return (
-      <Link to="/memory" className={base} title={`Memory proposal ${id}: review it in Memory`}>
+      <Link to="/memory" className={base} title={t("coachText.proposal", { id })}>
         <FileText className="size-3" aria-hidden />
         {id}
       </Link>
     );
   }
-  if (!info) return <span className={`${base} text-faint`} title="This reference could not be resolved (it may have been removed)">{id.slice(0, 8)}…</span>;
+  if (!info) return <span className={`${base} text-faint`} title={t("coachText.unresolved")}>{id.slice(0, 8)}…</span>;
   if (info.kind === "transaction") {
     return (
       <Link to={`/transactions?tx=${encodeURIComponent(info.tx_key ?? "")}`} className={base} title={`${info.merchant ?? ""} · ${info.category ?? ""}`}>
         <Receipt className="size-3" aria-hidden />
-        {info.date ? fmtDate(info.date, "dayMonth") : "Transaction"} <Money v={info.amount} signed />
+        {info.date ? fmtDate(info.date, "dayMonth") : t("coachText.transaction")} <Money v={info.amount} signed />
       </Link>
     );
   }
   return (
     <Link to={info.link ?? "/insights"} className={base} title={id}>
       <Repeat className="size-3" aria-hidden />
-      {info.kind === "series" ? "Recurring payment" : info.kind === "anomaly" ? "Unusual payment" : "Price change"}
+      {info.kind === "series" ? t("coachText.series") : info.kind === "anomaly" ? t("coachText.anomaly") : t("coachText.priceChange")}
     </Link>
   );
 }

@@ -828,6 +828,8 @@ def test_csv_locale_fr_has_bom_semicolons_and_decimal_commas(ctx):
     assert fr.startswith(b"\xef\xbb\xbf")                                                    # UTF-8 BOM for Excel
     head, row = fr.decode("utf-8-sig").strip().splitlines()
     assert head.startswith("date;account;owner;purpose;amount_eur") and ";-12,50;" in row and "'=cmd" in row   # formula neutralised
+    it = ctx.get("/transactions/export.csv", q="cmd", locale="it-IT").content                # Italian: same Excel conventions
+    assert it.startswith(b"\xef\xbb\xbf") and ";-12,50;" in it.decode("utf-8-sig")
     assert ctx.get("/transactions/export.csv", locale="de-DE").status_code == 422
 
 
