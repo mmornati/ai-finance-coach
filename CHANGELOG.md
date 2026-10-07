@@ -5,6 +5,11 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Security
+- The classification backend `claude-code` (`claude -p` for labelling and `classify enrich`) no longer inherits the whole process environment: it gets the
+  same minimal environment as the coach runtime (`PATH`, `HOME`, `USER`, `LANG`, `LC_*` ... plus the names listed in `[coach] claude_env`), so `COACH_DB_KEY`, `COACH_BACKUP_KEY`,
+  `COACH_PROPOSAL_KEY`, `ANTHROPIC_API_KEY` and `ANTHROPIC_AUTH_TOKEN` are never passed to it. The allowlist moved to `coach.claude_cli`, shared by both.
+
 ### Added: multi-language web app, part 4b (see `docs/i18n.md`, "Server text")
 - The coverage notes of the analytics results (incomplete months, non-EUR transactions left out, low confidence of a category, partial year, ...) carry `notes_msg` next to `notes`
   and are shown in the interface language on the Dashboard, Categories, a category's page and Subscriptions. The MCP finance tools and the CLI `--json` output never contain a `*_msg` key.

@@ -326,7 +326,7 @@ never overwritten by a different one: if an incoming row with a known key has ot
 conflict is logged. A bank that re-words the same transaction (same reference, same amount, date within a day) just
 gets its text refreshed; `coach health` flags syncs that kept both rows.
 
-**LLM backends (`[llm]`).** `claude-code` (headless `claude -p`, unchanged), `anthropic-api` (official SDK, key from the
+**LLM backends (`[llm]`).** `claude-code` (headless `claude -p`, started with the coach runtime's minimal environment: no `COACH_*` key, no API key), `anthropic-api` (official SDK, key from the
 `anthropic_api_key` secret, JSON-schema output, cached static prompt, optional `batch_api = true` Message Batches run)
 and `ollama` (local server, `format` = JSON schema). Same prompt and output contract; every call is recorded in
 `llm_usage` (backend, model, tokens in/out/cache, cost estimate, duration, purpose). Every item is redacted first

@@ -83,7 +83,7 @@ def test_cli_dry_run_does_not_touch_launchagents(cfg, tmp_path, capsys, monkeypa
 # ---- the job: sync -> normalize -> classify run, with HTTP and LLM mocked
 
 def fake_claude(captured):
-    def run(cmd, input=None, capture_output=None, text=None, timeout=None):
+    def run(cmd, input=None, capture_output=None, text=None, timeout=None, env=None):
         captured.append((cmd, input))
         items = json.loads(input.strip().splitlines()[-1])
         results = [{"id": it["id"], "merchant": it["key"].title(), "category": "food.groceries",
