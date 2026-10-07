@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import i18n, { setLanguage } from "@/i18n";
 import { ApiError } from "@/lib/api";
-import { errorText, flagLabel, forecastLabel, formatParams, holdingKindLabel, purposeLabel, serverLabel, tServer, tServerList, type ServerMsg } from "./server";
+import { cardText, errorText, flagLabel, forecastLabel, formatParams, holdingKindLabel, purposeLabel, serverLabel, tServer, tServerList, tServerOr, type ServerMsg } from "./server";
 
 const nb = (s: string) => s.replace(/[  ]/g, " ");
 
@@ -96,5 +96,46 @@ describe("API errors by code", () => {
     expect(errorText("weird", "fallback")).toBe("fallback");
     await setLanguage("it", { persist: false });
     expect(errorText(new ApiError(429, "rate_limited", "too many changes in a short time: wait a moment"))).toBe("Troppi tentativi in poco tempo: aspetta un momento e riprova.");
+  });
+});
+
+describe("insight cards and alert events (title_msg / body_msg)", () => {
+  const card = {
+    title: "StreamBox: price up 13%",
+    body: "12.99 -> 14.99 EUR per monthly payment, about 24.00 EUR a year.",
+    title_msg: { code: "insight.priceChange.up", params: { service: "StreamBox", change_pct: 0.13 }, text: "StreamBox: price up 13%" },
+    body_msg: { code: "insight.priceChange.body", params: { old_amount: "12.99", new_amount: "14.99", cadence: "monthly", yearly_amount: "24.00" }, text: "x" },
+  };
+
+  it("translates a card's title and body, the cadence by its label and the merchant as it is", async () => {
+    await setLanguage("fr", { persist: false });
+    const t = cardText(card);
+    expect(nb(t.title)).toBe("StreamBox : prix en hausse de 13 %");
+    expect(nb(t.body)).toBe("12,99 € → 14,99 € par paiement (mensuel), environ 24,00 € par an.");
+  });
+
+  it("keeps an older English-only card through the legacy renderer (humanize)", () => {
+    const old = { title: "Budget food.groceries: over", body: "1.00 EUR spent" };
+    expect(cardText(old, { legacy: (s) => `[${s}]` })).toEqual({ title: "[Budget food.groceries: over]", body: "[1.00 EUR spent]" });
+    expect(tServerOr({ code: "not.known", params: {}, text: "English" }, "English", (s) => s.toUpperCase())).toBe("ENGLISH");
+  });
+
+  it("adds the disclaimer of the card in the interface language, never drops it", async () => {
+    await setLanguage("it", { persist: false });
+    const scheme = { title: "rental-flat-1: x", body: "No decision... General information, not tax advice.",
+      body_msg: { code: "rentalAlert.schemeEnd.body", params: {}, text: "No decision..." } };
+    const tr = cardText(scheme, { disclaimer: "tax_short", disclaimers: { tax_short: "Informazione generale, non consulenza fiscale." } });
+    expect(tr.body.startsWith("Nessuna decisione sulla proroga")).toBe(true);
+    expect(tr.body.endsWith("Informazione generale, non consulenza fiscale.")).toBe(true);
+    expect(cardText(scheme, { disclaimer: "tax_short", disclaimers: undefined }).body).toBe(scheme.body);     // not loaded yet: the English
+  });
+
+  it("formats the plural forms and the numbers a key formats itself", async () => {
+    await setLanguage("fr", { persist: false });
+    expect(tServer({ code: "alert.syncFailing.title", params: { account: "Card B", count: 3 }, text: "x" })).toBe("Card B : les 3 dernières synchronisations ont échoué");
+    expect(nb(tServer({ code: "loanAlert.loaMileage.title", params: { lender: "LeaseCo", excess_km: 12500 }, text: "x" }))).toBe("LeaseCo : environ 12 500 km au-delà de la limite à la fin");
+    await setLanguage("en", { persist: false });
+    expect(tServer({ code: "anomaly.duplicateCharge", params: { payments: 2, payment_amount: "45.00", merchant: "CINEMAX", count: 1, first_date: "2026-09-20", last_date: "2026-09-21" }, text: "x" }))
+      .toMatch(/^2 payments of .*45\.00 to CINEMAX within 1 day \(/);
   });
 });

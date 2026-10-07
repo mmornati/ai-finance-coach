@@ -1,4 +1,59 @@
 {
+  "alert": {
+    "consent": {
+      "revoked": "{{bank}} ({{country}}): consent REVOKED",
+      "expired": "{{bank}} ({{country}}): consent EXPIRED",
+      "unknown_one": "{{bank}} ({{country}}): consent status UNKNOWN (bank says {{live_status}}), {{count}} day left by date: run `coach consents --refresh`",
+      "unknown_other": "{{bank}} ({{country}}): consent status UNKNOWN (bank says {{live_status}}), {{count}} days left by date: run `coach consents --refresh`",
+      "expiring_one": "{{bank}} ({{country}}): consent EXPIRING, {{count}} day left (until {{until_date}})",
+      "expiring_other": "{{bank}} ({{country}}): consent EXPIRING, {{count}} days left (until {{until_date}})",
+      "urgent_one": "{{bank}} ({{country}}): consent URGENT, {{count}} day left (until {{until_date}})",
+      "urgent_other": "{{bank}} ({{country}}): consent URGENT, {{count}} days left (until {{until_date}})",
+      "reconnect": "Reconnect the bank from the app (Connections) or with `coach reconnect`. Until then the data goes stale."
+    },
+    "kidBudget": {
+      "overWeeklyCategory": "{{name}} went over the weekly limit ({{limit_category}})",
+      "overWeeklyGroup": "{{name}} went over the weekly limit ({{limit_group}})",
+      "overWeeklyAll": "{{name}} went over the weekly limit (all spending)",
+      "overMonthlyCategory": "{{name}} went over the monthly limit ({{limit_category}})",
+      "overMonthlyGroup": "{{name}} went over the monthly limit ({{limit_group}})",
+      "overMonthlyAll": "{{name}} went over the monthly limit (all spending)",
+      "closeWeeklyCategory": "{{name}} is close to the weekly limit ({{limit_category}})",
+      "closeWeeklyGroup": "{{name}} is close to the weekly limit ({{limit_group}})",
+      "closeWeeklyAll": "{{name}} is close to the weekly limit (all spending)",
+      "closeMonthlyCategory": "{{name}} is close to the monthly limit ({{limit_category}})",
+      "closeMonthlyGroup": "{{name}} is close to the monthly limit ({{limit_group}})",
+      "closeMonthlyAll": "{{name}} is close to the monthly limit (all spending)",
+      "overBodyWeekly": "{{spent_amount}} spent this week against a limit of {{limit_amount}}. A friendly chat, not a telling-off: look at it together.",
+      "overBodyMonthly": "{{spent_amount}} spent this month against a limit of {{limit_amount}}. A friendly chat, not a telling-off: look at it together.",
+      "closeBodyWeekly_one": "{{spent_amount}} of {{limit_amount}} used this week, {{count}} day left.",
+      "closeBodyWeekly_other": "{{spent_amount}} of {{limit_amount}} used this week, {{count}} days left.",
+      "closeBodyMonthly_one": "{{spent_amount}} of {{limit_amount}} used this month, {{count}} day left.",
+      "closeBodyMonthly_other": "{{spent_amount}} of {{limit_amount}} used this month, {{count}} days left.",
+      "unusualTitle": "{{name}}: an unusually large payment",
+      "unusualBody": "{{payment_amount}} on {{payment_date}}, well above {{name}}'s usual payments. Maybe worth a quiet word."
+    },
+    "llmUsage": {
+      "title": "LLM usage this month: {{cost_usd}} USD, over the {{threshold_usd}} USD threshold",
+      "body": "Open the Usage page or run `coach usage` to see which job costs the most. Subscription calls count at their notional API price. This alert is shown here only; it is never sent to a channel.",
+      "bodyNotionalOff": "Open the Usage page or run `coach usage` to see which job costs the most. Subscription calls count at their notional API price (not counted: [usage] include_notional = false). This alert is shown here only; it is never sent to a channel."
+    },
+    "syncFailing": {
+      "title_one": "{{account}}: the last sync failed",
+      "title_other": "{{account}}: the last {{count}} syncs failed",
+      "body": "The transactions of this account are not up to date. Run `coach health` to see the error; an expired consent needs `coach reconnect`."
+    }
+  },
+  "anomaly": {
+    "categorySpike_one": "Spending in {{spike_category}} in {{spike_month}} is {{spent_amount}}, versus a typical {{typical_amount}} per month (robust z-score {{z}}, {{count}} earlier month).",
+    "categorySpike_other": "Spending in {{spike_category}} in {{spike_month}} is {{spent_amount}}, versus a typical {{typical_amount}} per month (robust z-score {{z}}, {{count}} earlier months).",
+    "categorySpikeUsuallyNothing_one": "Spending in {{spike_category}} in {{spike_month}} is {{spent_amount}}, versus a typical {{typical_amount}} per month (usually nothing in this category; {{count}} earlier month).",
+    "categorySpikeUsuallyNothing_other": "Spending in {{spike_category}} in {{spike_month}} is {{spent_amount}}, versus a typical {{typical_amount}} per month (usually nothing in this category; {{count}} earlier months).",
+    "duplicateCharge_one": "{{payments}} payments of {{payment_amount}} to {{merchant}} within {{count}} day ({{first_date}} to {{last_date}}).",
+    "duplicateCharge_other": "{{payments}} payments of {{payment_amount}} to {{merchant}} within {{count}} days ({{first_date}} to {{last_date}}).",
+    "newMerchant": "New merchant {{merchant}} (first seen {{first_date}}) with a payment of {{payment_amount}}.",
+    "largeTransaction": "A payment of {{payment_amount}} to {{merchant}} on {{payment_date}} is far above the usual {{usual_category}} payments (median {{median_amount}}, threshold {{threshold_amount}})."
+  },
   "balances": {
     "oneBalance": "One balance per account, the most booked type the bank provides.",
     "mixedTypes_one": "One balance per account, the most booked type the bank provides. {{count}} account only gives a non-booked balance ({{accounts}}): the total mixes types.",
@@ -143,6 +198,38 @@
     "yearPartialOngoing_one": "{{year}} is partial: {{count}} complete month of {{listed}} listed, the year is not over (data to {{end_month}}).",
     "yearPartialOngoing_other": "{{year}} is partial: {{count}} complete months of {{listed}} listed, the year is not over (data to {{end_month}})."
   },
+  "insight": {
+    "anomaly": {
+      "categorySpike": "Spending spike",
+      "duplicateCharge": "Possible duplicate charge",
+      "newMerchant": "New merchant",
+      "largeTransaction": "Large payment"
+    },
+    "budget": {
+      "overCategory": "Budget {{budget_category}}: over",
+      "overGroup": "Budget {{budget_group}} (whole group): over",
+      "atRiskCategory": "Budget {{budget_category}}: on track to overrun",
+      "atRiskGroup": "Budget {{budget_group}} (whole group): on track to overrun",
+      "body": "{{spent_amount}} spent of {{available_amount}} in {{budget_month}}; projected {{projected_amount}} by month end."
+    },
+    "forecast": {
+      "negative": "{{account}}: balance projected negative",
+      "negativeHousehold": "Household: balance projected negative",
+      "atRisk": "{{account}}: balance at risk",
+      "atRiskHousehold": "Household: balance at risk",
+      "bodyNegative": "Projected below zero from {{negative_date}}.",
+      "bodyNegativeLowest": "Projected below zero from {{negative_date}}. Lowest expected {{low_amount}} on {{low_date}}.",
+      "bodyAtRisk": "Could run short around {{risk_date}} (low end of the band).",
+      "bodyAtRiskLowest": "Could run short around {{risk_date}} (low end of the band). Lowest expected {{low_amount}} on {{low_date}}.",
+      "bodyLowest": "Lowest expected {{low_amount}} on {{low_date}}."
+    },
+    "priceChange": {
+      "up": "{{service}}: price up {{change_pct}}",
+      "down": "{{service}}: price down {{change_pct}}",
+      "body": "{{old_amount}} → {{new_amount}} per payment ({{cadence}}), about {{yearly_amount}} a year.",
+      "bodyUnconfirmed": "{{old_amount}} → {{new_amount}} per payment ({{cadence}}), about {{yearly_amount}} a year (not yet confirmed by a second payment)."
+    }
+  },
   "labels": {
     "alertKind": {
       "consent": "Bank consent expiring or expired",
@@ -218,6 +305,15 @@
       "rental": "Rental",
       "kids": "Kids",
       "savings": "Savings"
+    },
+    "cadence": {
+      "weekly": "weekly",
+      "biweekly": "every 2 weeks",
+      "monthly": "monthly",
+      "bimonthly": "every 2 months",
+      "quarterly": "quarterly",
+      "semiannual": "every 6 months",
+      "yearly": "yearly"
     }
   },
   "subs": {
@@ -279,5 +375,117 @@
     "alerts_disabled": "Alerts are turned off ([alerts] enabled = false in config.toml).",
     "coach_busy": "The coach is already answering a question: wait for it to finish.",
     "internal_error": "Unexpected error: see the terminal running `coach ui`."
+  },
+  "loanAlert": {
+    "missed": {
+      "title": "{{lender}}: expected payment of {{due_date}} not seen",
+      "bodySchedule_one": "The instalment due on {{due_date}} (schedule) was not found within {{count}} day in the data of the account it leaves. Check the account or ask the lender: nothing is assumed about why.",
+      "bodySchedule_other": "The instalment due on {{due_date}} (schedule) was not found within {{count}} days in the data of the account it leaves. Check the account or ask the lender: nothing is assumed about why.",
+      "bodyScheduleLater_one": "The instalment due on {{due_date}} (schedule) was not found within {{count}} day in the data of the account it leaves; a later matching debit was seen on {{later_date}}. Check the account or ask the lender: nothing is assumed about why.",
+      "bodyScheduleLater_other": "The instalment due on {{due_date}} (schedule) was not found within {{count}} days in the data of the account it leaves; a later matching debit was seen on {{later_date}}. Check the account or ask the lender: nothing is assumed about why.",
+      "bodyUsualDay_one": "The instalment due on {{due_date}} (usual day of the month) was not found within {{count}} day in the data of the account it leaves. Check the account or ask the lender: nothing is assumed about why.",
+      "bodyUsualDay_other": "The instalment due on {{due_date}} (usual day of the month) was not found within {{count}} days in the data of the account it leaves. Check the account or ask the lender: nothing is assumed about why.",
+      "bodyUsualDayLater_one": "The instalment due on {{due_date}} (usual day of the month) was not found within {{count}} day in the data of the account it leaves; a later matching debit was seen on {{later_date}}. Check the account or ask the lender: nothing is assumed about why.",
+      "bodyUsualDayLater_other": "The instalment due on {{due_date}} (usual day of the month) was not found within {{count}} days in the data of the account it leaves; a later matching debit was seen on {{later_date}}. Check the account or ask the lender: nothing is assumed about why."
+    },
+    "amountChanged": {
+      "title": "{{lender}}: payment changed to {{payment_amount}}",
+      "body": "The payment of {{payment_date}} is {{payment_amount}}, the one before ({{previous_date}}) was {{previous_amount}}. A variable rate, a new insurance or a modulation can explain it; nothing is assumed."
+    },
+    "amountExpected": {
+      "title": "{{lender}}: payment differs from the expected amount",
+      "body": "The payment of {{payment_date}} is {{payment_amount}}; the loan file / schedule expects {{expected_amount}}.",
+      "bodyTwo": "The payment of {{payment_date}} is {{payment_amount}}; the loan file / schedule expects {{expected_amount}} or {{other_amount}}."
+    },
+    "amountSchedule": {
+      "title": "{{lender}}: payments differ from the schedule",
+      "body": "The last payments are {{payment_amount}}; the computed schedule expects {{expected_amount}} (rate, insurance or term in the file may differ from the contract).",
+      "bodyTwo": "The last payments are {{payment_amount}}; the computed schedule expects {{expected_amount}} or {{other_amount}} (rate, insurance or term in the file may differ from the contract)."
+    },
+    "extra": {
+      "title": "{{lender}}: unexpected payment of {{payment_amount}}",
+      "bodyLarger": "A debit of {{payment_amount}} on {{payment_date}} matches this loan but is much larger than the usual instalment. It may be a partial early repayment: if so, ask the lender for the new schedule and update the capital still due.",
+      "bodyOffDayPaidMonth": "A debit of {{payment_amount}} on {{payment_date}} matches this loan but is away from the usual payment day, in a month that already has its instalment. It may be a partial early repayment: if so, ask the lender for the new schedule and update the capital still due.",
+      "bodyOffDayOtherSize": "A debit of {{payment_amount}} on {{payment_date}} matches this loan but is away from the usual payment day and of another size. It may be a partial early repayment: if so, ask the lender for the new schedule and update the capital still due."
+    },
+    "wrongAccount": {
+      "title": "{{lender}}: paid from another account",
+      "body": "The payment of {{payment_date}} ({{payment_amount}}) left {{account}}, not {{expected_account}}, the account the loan is recorded to be debited from."
+    },
+    "capital": {
+      "title": "{{lender}}: the schedule differs from the declared capital",
+      "body": "Your statement of {{statement_date}} says {{declared_amount}} is due; the theoretical table says {{computed_amount}} on that date. The declared figure is used (rolled forward). Was there an early repayment or a renegotiation? Update the loan (rate, term, capital)."
+    },
+    "loaEnd": {
+      "title_one": "{{lender}} ends in {{count}} day: buy or return?",
+      "title_other": "{{lender}} ends in {{count}} days: buy or return?",
+      "body": "The contract ends on {{end_date}}. Decide between buying the car (option price {{option_amount}}) and returning it; the return checklist and the mileage projection are on the loan page. Verify the notice period in your contract.",
+      "bodyNoOptionPrice": "The contract ends on {{end_date}}. Decide between buying the car (option price unknown: record residual_value) and returning it; the return checklist and the mileage projection are on the loan page. Verify the notice period in your contract."
+    },
+    "loaMileage": {
+      "title": "{{lender}}: about {{excess_km, number}} km over the limit at the end",
+      "body": "At the current pace the projected mileage is {{projected_km, number}} km against a limit of {{limit_km, number}} km, an estimated {{fee_amount}} of excess-mileage fees.",
+      "bodyNoFee": "At the current pace the projected mileage is {{projected_km, number}} km against a limit of {{limit_km, number}} km. Record the excess fee to price it."
+    },
+    "loaMileageMissing": {
+      "title": "{{lender}}: record the current mileage",
+      "body": "Within 6 months of the end of the contract the mileage matters: record the odometer (date and km) so the coach can project the excess-mileage cost."
+    }
+  },
+  "reminder": {
+    "unused": {
+      "title_one": "{{service}}: unused for {{count}} day",
+      "title_other": "{{service}}: unused for {{count}} days",
+      "body_one": "You recorded {{last_used_date}} as the last time you used it ({{count}} day ago). This comes from your own record, not from the bank data. Worth reviewing whether to keep it.",
+      "body_other": "You recorded {{last_used_date}} as the last time you used it ({{count}} days ago). This comes from your own record, not from the bank data. Worth reviewing whether to keep it."
+    },
+    "neverUsed": {
+      "title": "{{service}}: marked 'never used' but still paid",
+      "body": "You recorded that you never use it, and the last payment was {{last_date}}. Worth reviewing whether to keep it."
+    },
+    "notice": {
+      "title_one": "{{service}}: last day to give notice in {{count}} day",
+      "title_other": "{{service}}: last day to give notice in {{count}} days",
+      "bodyRenews": "{{notice_date}} is the last day to give notice before it renews ({{reference_date}}). Verify with your contract; nothing is cancelled by the coach.",
+      "bodyCommitmentEnds": "{{notice_date}} is the last day to give notice before the commitment ends ({{reference_date}}). Verify with your contract; nothing is cancelled by the coach.",
+      "bodyAnniversary": "{{notice_date}} is the last day to give notice before it renews on {{reference_date}}. Verify with your contract; nothing is cancelled by the coach."
+    },
+    "decision": {
+      "check": "{{service}}: check that it really changed",
+      "stillCharged": {
+        "cancelled": "{{service}}: still charged after you cancelled",
+        "renegotiated": "{{service}}: still charged the old price after you renegotiated",
+        "switched": "{{service}}: still charged after you switched",
+        "downgraded": "{{service}}: still charged the old price after you downgraded",
+        "kept": "{{service}}: the charge differs from what you decided to keep"
+      }
+    }
+  },
+  "rentalAlert": {
+    "schemeEnd": {
+      "title_one": "{{property}}: the scheme commitment ends on {{end_date}} (about {{count}} month left)",
+      "title_other": "{{property}}: the scheme commitment ends on {{end_date}} (about {{count}} months left)",
+      "titleEnded": "{{property}}: the scheme commitment ended on {{end_date}}",
+      "body": "No decision about the extension is recorded. Decide whether to extend (if the scheme allows it), keep renting under the ordinary rules or sell, check the consequences in the scheme's rules or with an adviser, then record the decision (`coach rental extension`)."
+    },
+    "rentMissing": {
+      "title": "{{property}}: no rent seen for {{rent_month}}",
+      "body": "The account data cover {{rent_month}} and hold no rent. If the property was empty, record the period in `vacancies` (it is then not reported again); otherwise check with the tenant or the property manager.",
+      "bodyExpected": "The account data cover {{rent_month}} and hold no rent (about {{expected_amount}} expected). If the property was empty, record the period in `vacancies` (it is then not reported again); otherwise check with the tenant or the property manager."
+    },
+    "rentLate": {
+      "title": "{{property}}: this month's rent has not arrived",
+      "body_one": "No rent has been seen in {{rent_month}} and the usual day (plus {{count}} day) has passed.",
+      "body_other": "No rent has been seen in {{rent_month}} and the usual day (plus {{count}} days) has passed."
+    },
+    "rentCap": {
+      "title": "{{property}}: the rent is above the cap you declared",
+      "bodyDeclared": "Rent {{rent_amount}} against a cap of {{cap_amount}} (the lease rent you declared). Check the scheme's rules and the lease: a rent above the cap can put the advantage at risk.",
+      "bodyObserved": "Rent {{rent_amount}} against a cap of {{cap_amount}} (the last rent received: it may be net of management fees, the cap applies to the lease rent). Check the scheme's rules and the lease: a rent above the cap can put the advantage at risk."
+    },
+    "tenantIncome": {
+      "title": "{{property}}: the tenant income is above the limit you declared",
+      "body": "Tenant income {{income_amount}} against a limit of {{limit_amount}}. Check the scheme's rules for the tenant household's size."
+    }
   }
 }

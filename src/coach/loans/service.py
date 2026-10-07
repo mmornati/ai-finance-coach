@@ -8,6 +8,7 @@ from typing import Optional
 import calendar
 
 from coach.analytics.common import add_months, money_str
+from coach.i18n_msg import server_msg, server_msg_or_none
 from coach.loans import infer as I, loa as LOA, payments as P, schedule as S
 
 
@@ -63,7 +64,8 @@ def upcoming_payments(ds, lb, start: dt.date, end: dt.date) -> list[tuple[dt.dat
 # ---------------------------------------------------------------- the feed
 
 def _card(a: P.Alert, who: str) -> dict:
-    return {"id": a.id, "kind": "loan", "subtype": a.type, "severity": a.severity, "title": a.title, "body": a.body,
+    return {"id": a.id, "kind": "loan", "subtype": a.type, "severity": a.severity, "title": a.title, "title_msg": a.title_msg,
+            "body": a.body, "body_msg": a.body_msg,
             "amount": money_str(a.amount_c) if a.amount_c is not None else None, "date": a.date.isoformat(), "subject": who,
             "evidence": list(a.evidence[:5]) + [a.loan], "persist": "ui"}
 
@@ -87,11 +89,15 @@ def loan_cards(ds) -> list[dict]:
         sch = schedule_of(ds, lb)
         if sch.status == "computed" and sch.outstanding_check:
             c = sch.outstanding_check
+            title = f"{who}: the schedule differs from the declared capital"
+            body = (f"Your statement of {c.get('as_of')} says {c.get('declared')} EUR is due; the theoretical table says "
+                    f"{c.get('computed')} EUR on that date. The declared figure is used (rolled forward). Was there an early "
+                    "repayment or a renegotiation? Update the loan (rate, term, capital).")
             cards.append({"id": P._aid("loan-capital", lb.id, c.get("as_of"), c.get("declared")), "kind": "loan", "subtype": "capital_differs", "severity": "medium",
-                          "title": f"{who}: the schedule differs from the declared capital",
-                          "body": f"Your statement of {c.get('as_of')} says {c.get('declared')} EUR is due; the theoretical table says "
-                                  f"{c.get('computed')} EUR on that date. The declared figure is used (rolled forward). Was there an early "
-                                  "repayment or a renegotiation? Update the loan (rate, term, capital).",
+                          "title": title, "title_msg": server_msg("loanAlert.capital.title", title, lender=who),
+                          "body": body,
+                          "body_msg": server_msg_or_none("loanAlert.capital.body", body, statement_date=c.get("as_of"),
+                                                         declared_amount=c.get("declared"), computed_amount=c.get("computed")),
                           "amount": c.get("declared"), "date": c.get("as_of"), "subject": who, "evidence": [lb.id], "persist": "ui"})
         cards += LOA.cards(lb, ds.today, months)
     return cards

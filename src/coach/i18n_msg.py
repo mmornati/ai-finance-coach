@@ -119,3 +119,12 @@ def strip_msgs(obj: Any) -> Any:
     if isinstance(obj, list):
         return [strip_msgs(v) for v in obj]
     return obj
+
+
+def server_msg_or_none(code: str, text: str, **params: Any) -> dict | None:
+    """:func:`server_msg` for a message whose params come from DATA that may not follow the convention (a budget target, a category id the
+    household wrote): None instead of an error, and the web shows the English ``text``."""
+    try:
+        return server_msg(code, text, **params)
+    except MessageError:
+        return None

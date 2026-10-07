@@ -27,6 +27,7 @@ from coach.alerts import channels as ch_mod, digest as digest_mod, engine, messa
 from coach.alerts.settings import CHANNELS, KINDS, warnings_of
 from coach.analytics import api as analytics_api
 from coach.analytics.common import _plain
+from coach.i18n_msg import strip_msgs
 
 
 def alert_warnings(cfg) -> list[str]:
@@ -113,7 +114,7 @@ def cmd_list(a, cfg):
     if not a.all and not a.status:
         rows = [r for r in rows if r["status"] in ("new", "sent", "snoozed")]
     if a.json:
-        print(json.dumps(_plain(rows), ensure_ascii=False, indent=2, default=str))
+        print(json.dumps(strip_msgs(_plain(rows)), ensure_ascii=False, indent=2, default=str))
         return
     for r in rows:
         print(_fmt_event(r))
@@ -134,9 +135,9 @@ def cmd_show(a, cfg):
     con = _connect(a, cfg)
     e = _one(con, a.id)
     if a.json:
-        print(json.dumps(_plain(e), ensure_ascii=False, indent=2, default=str))
+        print(json.dumps(strip_msgs(_plain(e)), ensure_ascii=False, indent=2, default=str))
         return
-    print(_fmt_event(e) + f"\n\n{e['body']}\n\npayload (stays on this machine): {json.dumps(e['payload'], ensure_ascii=False, default=str)}")
+    print(_fmt_event(e) + f"\n\n{e['body']}\n\npayload (stays on this machine): {json.dumps(strip_msgs(e['payload']), ensure_ascii=False, default=str)}")
     if e["escalations"]:
         print(f"escalated {e['escalations']} time(s)")
 

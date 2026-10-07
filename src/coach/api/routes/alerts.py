@@ -54,8 +54,14 @@ def _settings(state: AppState):
 
 
 def _public(e: dict) -> dict:
-    return {k: e[k] for k in ("id", "kind", "severity", "created", "updated", "last_seen", "resolved", "resolved_at", "title", "body",
-                              "payload", "status", "snoozed_until", "acked_at", "channels_sent", "escalations")}
+    """An event for the web. The title / body messages (i18n) are stored in the payload; they come out as ``title_msg`` / ``body_msg``
+    (null for an event stored before them: the web shows the English ``title`` / ``body``)."""
+    d = {k: e[k] for k in ("id", "kind", "severity", "created", "updated", "last_seen", "resolved", "resolved_at", "title", "body",
+                           "payload", "status", "snoozed_until", "acked_at", "channels_sent", "escalations")}
+    payload = dict(d["payload"] or {})
+    d["title_msg"], d["body_msg"] = payload.pop("title_msg", None), payload.pop("body_msg", None)
+    d["payload"] = payload
+    return d
 
 
 # ---------------------------------------------------------------- the list and the badge

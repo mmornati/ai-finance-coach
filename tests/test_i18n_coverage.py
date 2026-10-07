@@ -122,6 +122,11 @@ def test_no_mcp_tool_output_carries_a_msg_sibling(session):
         assert not [k for k in keys if k.endswith("_msg")], name
     cov = payload(outs["cashflow"])["coverage"]
     assert "notes" in cov and "notes_msg" not in cov
+    # 4c: an anomaly carries `message_msg` (stored, for the web); the tool keeps the redacted English message only
+    anoms = payload(outs["anomalies"])["anomalies"]
+    assert anoms and all("message" in a and "message_msg" not in a for a in anoms)
+    for name in ("loans_overview", "rental_overview", "subscription_audit"):                # loan alerts, rental and subscription cards
+        assert not [k for k in _keys(payload(outs[name])) if k.endswith("_msg")], name
 
 
 def test_the_redacted_registry_drops_the_msg_siblings_before_redacting(cfg, world):

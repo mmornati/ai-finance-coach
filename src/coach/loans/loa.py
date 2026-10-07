@@ -14,6 +14,7 @@ import hashlib
 from typing import Optional
 
 from coach.analytics.common import add_months, money_str
+from coach.i18n_msg import server_msg, server_msg_or_none
 from coach.loans.schedule import lax
 from coach.skills.money import cents
 
@@ -147,28 +148,42 @@ def cards(lb, today: dt.date, reminder_months: int = 6) -> list[dict]:
     out = []
     if end["reminder_active"]:
         d = end["days_left"]
+        title = f"{who} ends in {d} days: buy or return?"
+        rv = st['decision']['residual_value']
+        body = (f"The contract ends on {lb.end_date}. Decide between buying the car (option price "
+                f"{rv or 'unknown: record residual_value'}) and returning it; the return checklist "
+                "and the mileage projection are on the loan page. Verify the notice period in your contract.")
         out.append({"id": _iid("loa-end", lb.id, lb.end_date), "kind": "loan", "subtype": "loa_end",
-                    "severity": "high" if d <= 90 else "medium", "title": f"{who} ends in {d} days: buy or return?",
-                    "body": f"The contract ends on {lb.end_date}. Decide between buying the car (option price "
-                            f"{st['decision']['residual_value'] or 'unknown: record residual_value'}) and returning it; the return checklist "
-                            "and the mileage projection are on the loan page. Verify the notice period in your contract.",
+                    "severity": "high" if d <= 90 else "medium", "title": title,
+                    "title_msg": server_msg("loanAlert.loaEnd.title", title, lender=who, count=int(d)),
+                    "body": body,
+                    "body_msg": (server_msg_or_none("loanAlert.loaEnd.body", body, end_date=lb.end_date, option_amount=rv) if rv
+                                 else server_msg_or_none("loanAlert.loaEnd.bodyNoOptionPrice", body, end_date=lb.end_date)),
                     "amount": st["decision"]["residual_value"], "date": end["reminder_date"], "subject": who, "evidence": [lb.id],
                     "persist": "ui"})
         mi = st["mileage"]
         if mi.get("status") == "over_limit":
+            title = f"{who}: about {mi['excess_km']:,} km over the limit at the end"
+            body = (f"At the current pace the projected mileage is {mi['projected_contract_km']:,} km against a limit of "
+                    f"{mi['limit_km']:,} km"
+                    + (f", an estimated {mi['excess_cost']} EUR of excess-mileage fees." if mi.get("excess_cost")
+                       else ". Record the excess fee to price it."))
+            kp = {"projected_km": mi["projected_contract_km"], "limit_km": mi["limit_km"]}
             out.append({"id": _iid("loa-km", lb.id, lb.end_date, mi.get("excess_km")), "kind": "loan", "subtype": "loa_mileage",
-                        "severity": "high", "title": f"{who}: about {mi['excess_km']:,} km over the limit at the end",
-                        "body": f"At the current pace the projected mileage is {mi['projected_contract_km']:,} km against a limit of "
-                                f"{mi['limit_km']:,} km"
-                                + (f", an estimated {mi['excess_cost']} EUR of excess-mileage fees." if mi.get("excess_cost")
-                                   else ". Record the excess fee to price it."),
+                        "severity": "high", "title": title,
+                        "title_msg": server_msg_or_none("loanAlert.loaMileage.title", title, lender=who, excess_km=mi["excess_km"]),
+                        "body": body,
+                        "body_msg": (server_msg_or_none("loanAlert.loaMileage.body", body, fee_amount=mi["excess_cost"], **kp)
+                                     if mi.get("excess_cost") else server_msg_or_none("loanAlert.loaMileage.bodyNoFee", body, **kp)),
                         "amount": mi.get("excess_cost"), "date": today.isoformat(), "subject": who, "evidence": [lb.id],
                         "persist": "ui"})
         elif mi.get("status") in ("needs_readings", "pace_only") and (
                 not lb.odometer or (today - max(o.date for o in lb.odometer)).days > 90):
+            title = f"{who}: record the current mileage"
+            body = ("Within 6 months of the end of the contract the mileage matters: record the odometer (date and km) so the "
+                    "coach can project the excess-mileage cost.")
             out.append({"id": _iid("loa-km-missing", lb.id, today.strftime("%Y-%m")), "kind": "loan", "subtype": "loa_mileage_missing",
-                        "severity": "low", "title": f"{who}: record the current mileage",
-                        "body": "Within 6 months of the end of the contract the mileage matters: record the odometer (date and km) so the "
-                                "coach can project the excess-mileage cost.", "amount": None, "date": today.isoformat(), "subject": who,
+                        "severity": "low", "title": title, "title_msg": server_msg("loanAlert.loaMileageMissing.title", title, lender=who),
+                        "body": body, "body_msg": server_msg("loanAlert.loaMileageMissing.body", body), "amount": None, "date": today.isoformat(), "subject": who,
                         "evidence": [lb.id], "persist": "ui"})
     return out

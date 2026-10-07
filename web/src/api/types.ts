@@ -130,7 +130,7 @@ export interface LoanScheduleSummary {
   payment_check?: { status: string; hint?: string } | null; outstanding_check?: { status: string; declared: Money; computed: Money; as_of: string; hint: string } | null;
   assumptions?: string[]; by_year: ScheduleYear[]; rows?: ScheduleRow[]; rows_count?: number;
 }
-export interface LoanAlert { id: string; type: "missed_payment" | "amount_changed" | "extra_payment" | "wrong_account"; severity: "high" | "medium" | "low"; loan: string; title: string; body: string; date: string; amount: Money | null; expected_date: string | null; expected_amount: Money | null; evidence: string[] }
+export interface LoanAlert { id: string; type: "missed_payment" | "amount_changed" | "extra_payment" | "wrong_account"; severity: "high" | "medium" | "low"; loan: string; title: string; body: string; title_msg?: ServerMsg | null; body_msg?: ServerMsg | null; date: string; amount: Money | null; expected_date: string | null; expected_amount: Money | null; evidence: string[] }
 export interface InferredField { field: string; value: string | number; confidence: "low" | "medium" | "high"; method: string; note?: string }
 export interface LeaseStatus {
   id: string; kind: string; missing: string[]; checklist: string[];
@@ -180,12 +180,12 @@ export interface NetWorth {
 export interface CalendarItem { date: string; days_until: number; source: string; kind: string; title: string; amount: Money | null; ref: string; certainty: string; account_label: string | null; note: string | null }
 export interface CalendarResult { as_of: string; days: number; items: CalendarItem[]; counts: Record<string, number>; month?: string; coverage: Coverage }
 
-export interface Anomaly { id: string; type: string; severity: string; subject: string; period: string; amount: Money; baseline: Money | null; message: string; evidence: string[]; accounts: string[]; dismissed: boolean }
-export interface InsightCard { id: string; kind: "anomaly" | "price_change" | "forecast" | "budget" | "subscription" | "loan" | "rental"; subtype: string; severity: "high" | "medium" | "low"; title: string; body: string; amount: Money | null; date: string | null; subject: string; evidence: string[]; persist: string; snoozed_until?: string | null }
+export interface Anomaly { id: string; type: string; severity: string; subject: string; period: string; amount: Money; baseline: Money | null; message: string; message_msg?: ServerMsg | null; evidence: string[]; accounts: string[]; dismissed: boolean }
+export interface InsightCard { id: string; kind: "anomaly" | "price_change" | "forecast" | "budget" | "subscription" | "loan" | "rental"; subtype: string; severity: "high" | "medium" | "low"; title: string; body: string; title_msg?: ServerMsg | null; body_msg?: ServerMsg | null; disclaimer?: "tax_short"; amount: Money | null; date: string | null; subject: string; evidence: string[]; persist: string; snoozed_until?: string | null }
 export interface CoachInsight { id: string; created: string; kind: string; title: string; body: string; findings: unknown[]; evidence: string[]; skill: string | null; backend: string | null; model: string | null; usage_ref: number | null; status: "new" | "read" | "dismissed" | "done" | "snoozed"; snoozed_until: string | null; unverified_numbers: string[]; suspicious: boolean; question: string | null; ai_generated?: boolean; ai_label?: string | null; ai_label_short?: string | null; compliance?: string[]; compliance_banner?: string | null }
 /** E11-5: the AI-generated label and the investment-advice check of a coach answer. */
 /** GET /meta/disclaimers: the legal labels in one language (their wording lives only in src/coach/disclaimers.py). */
-export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string } }
+export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string; tax_short?: string } }
 export interface Compliance { label: string; label_short: string; lang: string; flagged: boolean; codes: string[]; banner: string }
 export interface Insights { as_of: string; cards: InsightCard[]; hidden: number; alerts?: { open: number; high: number }; counts: Record<string, number>; coach: { configured: boolean; items: CoachInsight[]; hidden: number; message: string } }
 export interface CoachStatus { configured: boolean; backend: string; model: string; message: string; max_tool_calls: number; timeout_seconds: number; busy: boolean; current_job: string | null; tools: string[] }
@@ -313,7 +313,7 @@ export interface DraftPreview extends EditResult { contract: { series: string; c
 /* ------------------------------------------------------------------ alerts (E10) */
 export type AlertSeverity = "high" | "medium" | "low";
 export type AlertStatus = "new" | "sent" | "acked" | "snoozed" | "suppressed";
-export interface AlertEvent { id: string; kind: string; severity: AlertSeverity; created: string; updated: string; last_seen: string; resolved: boolean; resolved_at: string | null; title: string; body: string; payload: Record<string, unknown>; status: AlertStatus; snoozed_until: string | null; acked_at: string | null; channels_sent: Record<string, { at: string; severity: string }>; escalations: number }
+export interface AlertEvent { id: string; kind: string; severity: AlertSeverity; created: string; updated: string; last_seen: string; resolved: boolean; resolved_at: string | null; title: string; body: string; title_msg?: ServerMsg | null; body_msg?: ServerMsg | null; payload: Record<string, unknown>; status: AlertStatus; snoozed_until: string | null; acked_at: string | null; channels_sent: Record<string, { at: string; severity: string }>; escalations: number }
 export interface AlertKindRow { kind: string; label: string; muted: boolean; snoozed_until: string | null; disabled_in_config: boolean; digest_only: boolean }
 export interface AlertCounts { open: number; new: number; high: number; snoozed?: number; acked?: number; suppressed?: number }
 export interface Alerts { ready: boolean; enabled?: boolean; items: AlertEvent[]; counts: AlertCounts; kinds: AlertKindRow[]; settings?: { min_severity: string; external_detail: string; quiet_hours: string; max_per_week: number }; message?: string }

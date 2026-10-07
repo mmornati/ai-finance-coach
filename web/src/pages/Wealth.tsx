@@ -9,7 +9,7 @@ import { NetWorthChart } from "@/components/charts";
 import { useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate, fmtNumber } from "@/lib/format";
-import { holdingKindLabel } from "@/i18n/server";
+import { holdingKindLabel, tServerOr } from "@/i18n/server";
 import type { Asset, Liability, NetWorth, NetWorthPoint, NwCategory } from "@/api/types";
 
 const LoanDialog = lazy(() => import("@/components/LoanDetail"));
@@ -174,7 +174,7 @@ function LoanCard({ l, onOpen, onEdit }: { l: Liability; onOpen: () => void; onE
         <Cell label={t("loans.lastPayment")} v={l.payments ? <Money v={l.payments.amount} /> : null} sub={l.payments ? (l.payments.next_expected ? t("loans.paymentNext", { date: fmtDate(l.payments.last_date), next: fmtDate(l.payments.next_expected, "dayMonth") }) : fmtDate(l.payments.last_date)) : l.payments_seen ? t("loans.paymentsMatched", { count: l.payments_seen }) : t("loans.noMatchingPayment")} />
       </dl>
       {l.alerts.length > 0 && (
-        <ul className="mt-3 grid gap-1.5">{l.alerts.map((a) => <li key={a.id} className="flex gap-2 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden /><span><strong className="font-medium">{a.title}.</strong> {a.body}</span></li>)}</ul>
+        <ul className="mt-3 grid gap-1.5">{l.alerts.map((a) => <li key={a.id} className="flex gap-2 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden /><span><strong className="font-medium">{tServerOr(a.title_msg, a.title)}.</strong> {tServerOr(a.body_msg, a.body)}</span></li>)}</ul>
       )}
       {l.lease?.end.reminder_active && <Notice tone="warn" className="mt-3" title={t("loans.lease.endsIn", { count: l.lease.end.days_left })}>{t("loans.lease.decide")}{l.lease.mileage.status === "over_limit" && <> {t("loans.lease.overLimit", { km: fmtNumber(l.lease.mileage.excess_km) })}</>}</Notice>}
       {(l.missing.length > 0 || l.open_questions.length > 0) && (

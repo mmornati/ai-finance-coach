@@ -19,7 +19,7 @@ export interface ServerMsg {
 }
 
 /** The fixed vocabularies the server sends as codes (keys `labels.<family>.<code>` of server.json). */
-export type LabelFamily = "alertKind" | "subsGroup" | "balanceType" | "setupStep" | "onboardingStep" | "forecast" | "forecastFlag" | "accountPurpose";
+export type LabelFamily = "alertKind" | "subsGroup" | "balanceType" | "setupStep" | "onboardingStep" | "forecast" | "forecastFlag" | "accountPurpose" | "cadence";
 
 // untyped access: the codes come from the server at run time, so they cannot be checked against the key types
 const T = i18n as unknown as { exists: (k: string, o: object) => boolean; t: (k: string, o: object) => string };
@@ -32,10 +32,12 @@ function tr(key: string, vars: Record<string, unknown> = {}): string {
 }
 
 /** A param's display value, from its name: `*_date` -> date, `*_month` -> month, `*_amount` -> money, `*_pct` -> percent,
- *  `*_category` / `*_group` -> the category's name; `count` stays a number (it picks the plural form); anything else as it is. */
+ *  `*_category` / `*_group` -> the category's name, `cadence` -> its label (`labels.cadence.<code>`); `count` stays a number (it picks the
+ *  plural form); anything else as it is (a key may format a number itself: `{{excess_km, number}}`). */
 export function formatParam(name: string, v: ServerParam): string | number {
   if (v === null || v === undefined) return "–";
   if (name === "count") return v;
+  if (name === "cadence") return serverLabel("cadence", String(v), String(v));
   if (name.endsWith("_date")) return fmtDate(String(v));
   if (name.endsWith("_month")) return fmtMonth(String(v), "long");
   if (name.endsWith("_amount")) return fmtMoney(v);
@@ -54,6 +56,35 @@ export function tServer(msg: ServerMsg | null | undefined, fallback = ""): strin
   if (!msg) return fallback;
   if (!msg.code || !has(msg.code)) return msg.text ?? fallback;
   return tr(msg.code, formatParams(msg.params));
+}
+
+/** The web knows this server code (a key of the `server` namespace, or its plural forms). */
+export function knowsCode(code: string | null | undefined): boolean {
+  return !!code && has(code);
+}
+
+/** The title and the body of an insight card or an alert event: each translated from its `*_msg` when the web knows the code, else the
+ *  English (through `legacy`). A body sent with a `disclaimer` key (its English already ends with the text) gets the text of that key in the
+ *  interface language (`useDisclaimers()`: the wording lives only in src/coach/disclaimers.py). */
+export function cardText(
+  item: { title: string; body: string; title_msg?: ServerMsg | null; body_msg?: ServerMsg | null },
+  opts: { legacy?: (s: string) => string; disclaimer?: unknown; disclaimers?: Record<string, string | undefined> } = {},
+): { title: string; body: string } {
+  const title = tServerOr(item.title_msg, item.title, opts.legacy);
+  let body = tServerOr(item.body_msg, item.body, opts.legacy);
+  if (knowsCode(item.body_msg?.code) && typeof opts.disclaimer === "string") {
+    const legal = opts.disclaimers?.[opts.disclaimer];
+    // never without it: until the text in the interface language is loaded, the English body (it ends with the English text)
+    body = legal ? `${body} ${legal}` : opts.legacy ? opts.legacy(item.body) : item.body;
+  }
+  return { title, body };
+}
+
+/** A sentence that may come with its message: the translation when the web knows the code, else the English `text` passed through
+ *  `legacy` (e.g. the `humanize` re-rendering of the ids, dates and amounts of an older English-only text). */
+export function tServerOr(msg: ServerMsg | null | undefined, text: string, legacy?: (s: string) => string): string {
+  if (msg && msg.code && has(msg.code)) return tServer(msg, text);
+  return legacy ? legacy(text) : text;
 }
 
 /** A list of English sentences and their `<field>_msg` siblings (same order; an entry may be null, the server may be older and send
@@ -113,5 +144,5 @@ export function errorText(e: unknown, fallback = ""): string {
 /** The same helpers, re-rendering the component when the language changes. */
 export function useServerText() {
   const { i18n: inst } = useTranslation("server");
-  return { tServer, tServerList, serverLabel, flagLabel, errorText, forecastLabel, language: inst.resolvedLanguage ?? inst.language };
+  return { tServer, tServerOr, cardText, tServerList, serverLabel, flagLabel, errorText, forecastLabel, language: inst.resolvedLanguage ?? inst.language };
 }
