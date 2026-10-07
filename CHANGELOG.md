@@ -5,6 +5,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4i (see `docs/i18n.md`, "Server text")
+- The memory check (Memory > Check), the warnings of a memory write preview and the invalid budget entries are shown in the interface language (`memoryCheck.*`, `memoryLoad.*`);
+  `coach ...` commands, file names and ids stay as they are, Pydantic's own text is passed through. `coach memory check` and the MCP tools are unchanged.
+
 ### Added: multi-language web app, part 4g (see `docs/i18n.md`, "Server text")
 - The rental property page shows the missing facts, the scheme warnings, the tax-year candidates (items, bounds, sources, unknowns, documents), the reduction notes,
   the loan-rate, market and equity readings, the signals and the scenarios in the interface language. Scheme names stay as proper nouns; the general-advice, tax and
