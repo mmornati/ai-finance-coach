@@ -7,6 +7,7 @@ import { Badge, Button, Chips, Dialog, DiffView, Disclosure, Field, Input, Money
 import { CategoryPicker } from "./CategoryPicker";
 import { useFilters, useGet, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
+import { errorText } from "@/i18n/server";
 import { catLabel, fmtDate, fmtMoney } from "@/lib/format";
 import type { AttributionWhy, CategoryChangePreview, EditResult, TxDetail } from "@/api/types";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,7 @@ export function TxPanel({ txKey, onClose }: { txKey: string | null; onClose: () 
 function Body({ txKey, onClose }: { txKey: string; onClose: () => void }) {
   const q = useGet<TxDetail>("/transactions/detail", { tx_key: txKey }, { staleTime: 0 });
   if (q.isPending) return <Spinner />;
-  if (q.isError) return <Notice tone="neg">{q.error.message}</Notice>;
+  if (q.isError) return <Notice tone="neg">{errorText(q.error)}</Notice>;
   return <Detail d={q.data} onClose={onClose} />;
 }
 
@@ -116,7 +117,7 @@ function ChangeCategory({ d, onDone }: { d: TxDetail; onDone: () => void }) {
     if (!changed) return;
     const ctl = new AbortController();
     const timer = setTimeout(() => {
-      api.post<CategoryChangePreview>("/transactions/category", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(e.message));
+      api.post<CategoryChangePreview>("/transactions/category", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(errorText(e)));
     }, 250);
     return () => {
       clearTimeout(timer);
@@ -207,7 +208,7 @@ function Annotate({ d }: { d: TxDetail }) {
     if (!tags.length && !event) return;
     const ctl = new AbortController();
     const t = setTimeout(() => {
-      api.post<EditResult>("/annotations", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(e.message));
+      api.post<EditResult>("/annotations", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(errorText(e)));
     }, 250);
     return () => {
       clearTimeout(t);

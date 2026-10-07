@@ -186,6 +186,7 @@ def test_an_llm_insight_is_labelled_and_a_flagged_one_is_recorded(con):
                 backend="claude-code", model="sonnet")
     a, b = I.get(con, ok), I.get(con, bad)
     assert a["ai_generated"] and a["compliance"] == [] and a["compliance_banner"] is None and "AI-generated" in a["ai_label"]
+    assert a["ai_label_short"] == "AI-generated"                     # the badge text, in the answer's language (the web copies no wording)
     assert b["ai_generated"] and set(b["compliance"]) >= {"isin", "recommendation"} and "General information only" in b["compliance_banner"]
     ev = con.execute("SELECT source, insight_id, codes FROM compliance_events").fetchall()
     assert len(ev) == 1 and ev[0][0] == "insight" and ev[0][1] == bad and "isin" in json.loads(ev[0][2])
@@ -196,7 +197,7 @@ def test_an_llm_insight_is_labelled_and_a_flagged_one_is_recorded(con):
 def test_deterministic_insights_are_not_labelled_or_checked(con):
     iid = I.add(con, kind="digest", title="Weekly summary", body="You should invest in an ETF.", backend="code", model=None)
     d = I.get(con, iid)
-    assert d["ai_generated"] is False and d["ai_label"] is None and d["compliance"] == []
+    assert d["ai_generated"] is False and d["ai_label"] is None and d["ai_label_short"] is None and d["compliance"] == []
     iid = I.add(con, kind="finding", title="Loan scenario", body="Buy shares.", backend="local", model="none")
     assert I.get(con, iid)["ai_generated"] is False
     assert con.execute("SELECT COUNT(*) FROM compliance_events").fetchone()[0] == 0

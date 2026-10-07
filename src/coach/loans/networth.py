@@ -29,6 +29,7 @@ ASSET_CATEGORY = {
     "life_insurance_savings": "investments", "securities": "investments", "pension": "investments", "crypto": "investments",
     "real_estate": "real_estate", "real_estate_rental": "real_estate", "vehicle": "vehicles", "cash": "cash",
 }
+# what the coach reads (MCP, English); the web names a kind with the item form's options (itemForm.option.*Kind of common.json)
 GENERIC_NAME = {
     "regulated_savings": "regulated savings", "savings_account": "savings account", "employee_savings_plan": "employee savings plan",
     "life_insurance_savings": "life insurance savings", "securities": "securities", "pension": "pension", "crypto": "crypto",

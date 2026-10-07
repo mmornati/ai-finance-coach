@@ -1,0 +1,152 @@
+{
+  "group": {
+    "income": "Entrate",
+    "transfer": "Trasferimenti",
+    "housing": "Casa",
+    "food": "Alimentazione",
+    "transport": "Trasporti",
+    "shopping": "Acquisti",
+    "health": "Salute",
+    "personal_care": "Cura della persona",
+    "leisure": "Tempo libero",
+    "subscriptions": "Abbonamenti",
+    "travel": "Viaggi",
+    "kids": "Figli",
+    "education": "Istruzione",
+    "insurance": "Assicurazioni",
+    "pets": "Animali",
+    "debt": "Debiti",
+    "cash": "Contanti",
+    "fees": "Commissioni",
+    "taxes": "Tasse",
+    "charity": "Beneficenza",
+    "other": "Altro"
+  },
+  "cat": {
+    "income": {
+      "salary": "Stipendio",
+      "refund": "Rimborsi",
+      "bonus": "Premi e bonus",
+      "gift": "Regali ricevuti",
+      "interest": "Interessi e dividendi",
+      "rental": "Affitti incassati",
+      "other": "Altre"
+    },
+    "transfer": {
+      "internal": "Tra i tuoi conti",
+      "to_people": "Verso persone",
+      "from_people": "Da persone"
+    },
+    "housing": {
+      "mortgage": "Mutuo",
+      "rent": "Affitto",
+      "energy": "Luce e gas",
+      "water": "Acqua",
+      "home_insurance": "Assicurazione casa",
+      "maintenance_diy": "Fai da te e riparazioni",
+      "renovation": "Ristrutturazioni",
+      "furniture": "Arredamento ed elettrodomestici",
+      "property_charges": "Spese condominiali",
+      "rental_property_loan": "Mutuo dell'immobile in affitto",
+      "property_tax": "Imposta sugli immobili",
+      "property_management": "Gestione dell'affitto",
+      "property_insurance": "Assicurazione del proprietario"
+    },
+    "food": {
+      "groceries": "Spesa",
+      "restaurants": "Ristoranti",
+      "fast_food": "Fast food",
+      "cafes_bars": "Bar e caffè",
+      "food_delivery": "Consegna a domicilio",
+      "work_meals": "Pasti al lavoro"
+    },
+    "transport": {
+      "fuel": "Carburante e ricarica",
+      "parking_tolls": "Parcheggi e pedaggi",
+      "public_transport": "Trasporto pubblico",
+      "taxi_rideshare": "Taxi e NCC",
+      "car_maintenance": "Manutenzione auto",
+      "car_loan_lease": "Finanziamento e noleggio auto",
+      "car_insurance": "Assicurazione auto"
+    },
+    "shopping": {
+      "marketplace": "Acquisti online",
+      "clothing": "Abbigliamento",
+      "electronics": "Elettronica",
+      "sports_gear": "Articoli sportivi",
+      "books_media": "Libri, musica e giochi",
+      "gifts_flowers": "Regali e fiori",
+      "tobacco_press": "Tabacchi ed edicola",
+      "department_general": "Grandi magazzini"
+    },
+    "health": {
+      "pharmacy": "Farmacia",
+      "doctors": "Medici e cure",
+      "health_insurance": "Assicurazione sanitaria",
+      "optician": "Ottico"
+    },
+    "personal_care": {
+      "hair_beauty": "Parrucchiere ed estetica"
+    },
+    "leisure": {
+      "cinema_events": "Cinema ed eventi",
+      "sports_activities": "Sport e attività",
+      "hobbies": "Hobby"
+    },
+    "subscriptions": {
+      "video_streaming": "Streaming video",
+      "music_streaming": "Streaming musicale",
+      "software_cloud": "Software e cloud",
+      "telecom": "Telefono e internet",
+      "news_media": "Giornali e riviste",
+      "memberships": "Iscrizioni"
+    },
+    "travel": {
+      "lodging": "Alloggio",
+      "flights": "Voli",
+      "trains": "Treni",
+      "car_rental": "Noleggio auto",
+      "activities": "Attività"
+    },
+    "kids": {
+      "childcare": "Asilo e baby-sitter",
+      "school": "Scuola",
+      "activities_toys": "Attività e giocattoli"
+    },
+    "education": {
+      "courses": "Corsi e formazione"
+    },
+    "insurance": {
+      "life": "Assicurazione vita",
+      "borrower": "Assicurazione del mutuo",
+      "pet": "Assicurazione animali",
+      "other": "Altre assicurazioni"
+    },
+    "pets": {
+      "pets": "Animali"
+    },
+    "debt": {
+      "bnpl": "Pagamento a rate (BNPL)",
+      "personal_loan": "Prestito personale",
+      "loan_repayment": "Rimborso di prestiti",
+      "credit_card": "Carta di credito"
+    },
+    "cash": {
+      "atm_withdrawal": "Prelievi di contanti"
+    },
+    "fees": {
+      "bank_fees": "Commissioni bancarie"
+    },
+    "taxes": {
+      "taxes": "Tasse e imposte"
+    },
+    "charity": {
+      "donations": "Donazioni"
+    },
+    "other": {
+      "uncategorized": "Non categorizzato"
+    }
+  },
+  "withGroup": "{{group}}: {{leaf}}",
+  "allOfGroup": "tutta la categoria {{group}}"
+}

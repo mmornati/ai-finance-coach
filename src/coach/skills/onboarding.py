@@ -53,7 +53,7 @@ def _text_len(store, rel: str) -> int:
 def onboarding_status(ds: Dataset, store, con, cfg, recurring: Optional[RecurringResult] = None) -> dict:
     rec = recurring or detect_recurring(ds)
     mem = ds.memory
-    steps: list[dict] = []
+    steps: list[dict] = []          # each "heading" is English; the web shows labels.onboardingStep.<id> (web/src/locales/<lang>/server.json)
     actions: list[dict] = []
 
     # -- household

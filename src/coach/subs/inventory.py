@@ -23,6 +23,7 @@ from coach.skills.subaudit import group_of
 from coach.subs import alternatives as A, decisions as DEC, usage as U
 
 GROUPS = ("streaming_media", "software_cloud", "telecom", "memberships", "other_subscriptions", "insurance", "energy_utilities")
+# the web shows labels.subsGroup.<group> (web/src/locales/<lang>/server.json); this English label is the fallback
 GROUP_LABEL = {"streaming_media": "Streaming & media", "software_cloud": "Software & cloud", "telecom": "Telecom",
                "memberships": "Memberships", "other_subscriptions": "Other subscriptions", "insurance": "Insurance",
                "energy_utilities": "Energy & utilities"}

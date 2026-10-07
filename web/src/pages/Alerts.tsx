@@ -6,6 +6,7 @@ import { Async, Badge, Button, Card, Dialog, EmptyState, Notice, PageHeader, Seg
 import { useAlertChannels, useAlertDigest, useAlerts, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
+import { serverLabel } from "@/i18n/server";
 import { cn } from "@/lib/utils";
 import type { AlertChannel, AlertChannelTest, AlertEvent, AlertKindRow } from "@/api/types";
 
@@ -40,7 +41,7 @@ function EventCard({ e, kinds, act }: { e: AlertEvent; kinds: AlertKindRow[]; ac
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-[15px] font-semibold">{e.title}</h3>
               <Badge tone={tone}>{SEVERITY[e.severity] ? t(SEVERITY[e.severity]) : e.severity}</Badge>
-              <Badge>{kind?.label ?? e.kind}</Badge>
+              <Badge>{serverLabel("alertKind", e.kind, kind?.label)}</Badge>
               {e.status === "new" && <Badge tone="pos">{t("event.new")}</Badge>}
               {e.status === "snoozed" && <Badge>{t("event.snoozedUntil", { date: fmtDate(e.snoozed_until, "dayMonth") })}</Badge>}
               {e.status === "acked" && <Badge>{t("event.acknowledged")}</Badge>}
@@ -64,7 +65,7 @@ function EventCard({ e, kinds, act }: { e: AlertEvent; kinds: AlertKindRow[]; ac
                   <Button size="sm" onClick={() => act("restore", e)}><RotateCcw className="size-3.5" aria-hidden /> {t("event.restore")}</Button>
                 )}
                 {!kind?.muted && (e.status === "new" || e.status === "sent") && (
-                  <Button size="sm" variant="ghost" onClick={() => act("mute", e)} title={t("event.muteKindTitle", { kind: kind?.label ?? e.kind })}><VolumeX className="size-3.5" aria-hidden /> {t("event.muteKind")}</Button>
+                  <Button size="sm" variant="ghost" onClick={() => act("mute", e)} title={t("event.muteKindTitle", { kind: serverLabel("alertKind", e.kind, kind?.label) })}><VolumeX className="size-3.5" aria-hidden /> {t("event.muteKind")}</Button>
                 )}
               </span>
             </div>
@@ -84,18 +85,18 @@ function KindsCard({ kinds }: { kinds: AlertKindRow[] }) {
       <ul className="divide-y divide-border text-sm" aria-label={t("kinds.title")}>
         {kinds.map((k) => (
           <li key={k.kind} className="flex flex-wrap items-center gap-2 py-2">
-            <span className="min-w-0 flex-1">{k.label}</span>
+            <span className="min-w-0 flex-1">{serverLabel("alertKind", k.kind, k.label)}</span>
             {k.disabled_in_config && <Badge title={t("kinds.offInConfigTitle")}>{t("kinds.offInConfig")}</Badge>}
             {k.digest_only && <Badge title={t("kinds.digestOnlyTitle")}>{t("kinds.digestOnly")}</Badge>}
             {k.muted && <Badge tone="warn">{t("kinds.muted")}</Badge>}
             {k.snoozed_until && <Badge>{t("kinds.heldUntil", { date: fmtDate(k.snoozed_until, "dayMonth") })}</Badge>}
             <span className="flex gap-1.5">
               {k.muted ? (
-                <Button size="sm" aria-label={t("kinds.unmuteAria", { kind: k.label })} onClick={() => mute.mutate({ kind: k.kind, on: false })}><Volume2 className="size-3.5" aria-hidden /> {t("kinds.unmute")}</Button>
+                <Button size="sm" aria-label={t("kinds.unmuteAria", { kind: serverLabel("alertKind", k.kind, k.label) })} onClick={() => mute.mutate({ kind: k.kind, on: false })}><Volume2 className="size-3.5" aria-hidden /> {t("kinds.unmute")}</Button>
               ) : (
-                <Button size="sm" aria-label={t("kinds.muteAria", { kind: k.label })} onClick={() => mute.mutate({ kind: k.kind, on: true })}><VolumeX className="size-3.5" aria-hidden /> {t("kinds.mute")}</Button>
+                <Button size="sm" aria-label={t("kinds.muteAria", { kind: serverLabel("alertKind", k.kind, k.label) })} onClick={() => mute.mutate({ kind: k.kind, on: true })}><VolumeX className="size-3.5" aria-hidden /> {t("kinds.mute")}</Button>
               )}
-              <Button size="sm" aria-label={k.snoozed_until ? t("kinds.wakeAria", { kind: k.label }) : t("kinds.holdAria", { kind: k.label })} onClick={() => snooze.mutate({ kind: k.kind, wake: !!k.snoozed_until })}>
+              <Button size="sm" aria-label={k.snoozed_until ? t("kinds.wakeAria", { kind: serverLabel("alertKind", k.kind, k.label) }) : t("kinds.holdAria", { kind: serverLabel("alertKind", k.kind, k.label) })} onClick={() => snooze.mutate({ kind: k.kind, wake: !!k.snoozed_until })}>
                 <BellOff className="size-3.5" aria-hidden /> {k.snoozed_until ? t("kinds.wake") : t("kinds.hold")}
               </Button>
             </span>
@@ -230,7 +231,7 @@ export default function Alerts() {
                 <label className="flex items-center gap-2 text-[13px] text-muted">{t("filter.kind")}
                   <Select aria-label={t("filter.kind")} value={kind} onChange={(e) => setKind(e.target.value)} className="w-52">
                     <option value="">{t("filter.all")}</option>
-                    {d.kinds.map((k) => <option key={k.kind} value={k.kind}>{k.label}</option>)}
+                    {d.kinds.map((k) => <option key={k.kind} value={k.kind}>{serverLabel("alertKind", k.kind, k.label)}</option>)}
                   </Select>
                 </label>
               </div>

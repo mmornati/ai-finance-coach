@@ -60,6 +60,12 @@
     "reset": "Réinitialiser",
     "done": "Terminé"
   },
+  "people": {
+    "unassigned": "Non attribué",
+    "joint": "Commun",
+    "someoneElse": "Quelqu'un d'autre",
+    "unknownSource": "Source inconnue"
+  },
   "sync": {
     "now": "Synchroniser",
     "running": "Synchronisation…",

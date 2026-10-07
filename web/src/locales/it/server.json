@@ -1,0 +1,103 @@
+{
+  "balances": {
+    "oneBalance": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca.",
+    "mixedTypes_one": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca. {{count}} conto fornisce solo un saldo non contabilizzato ({{accounts}}): il totale mescola tipi diversi.",
+    "mixedTypes_many": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca. {{count}} conti forniscono solo un saldo non contabilizzato ({{accounts}}): il totale mescola tipi diversi.",
+    "mixedTypes_other": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca. {{count}} conti forniscono solo un saldo non contabilizzato ({{accounts}}): il totale mescola tipi diversi."
+  },
+  "labels": {
+    "alertKind": {
+      "consent": "Consenso bancario in scadenza o scaduto",
+      "sync_failing": "Sincronizzazione bancaria non riuscita",
+      "unusual_charge": "Addebito insolito",
+      "price_increase": "Aumento di prezzo",
+      "low_balance": "Saldo previsto basso",
+      "budget": "Budget superato o a rischio",
+      "loan_alert": "Avviso su una rata del prestito",
+      "loa_end": "Promemoria di fine noleggio",
+      "unused_subscription": "Abbonamento non usato",
+      "contract_notice": "Scadenza del preavviso di un contratto",
+      "decision_contradicted": "Servizio disdetto ancora addebitato",
+      "llm_usage_high": "Uso dell'IA oltre la tua soglia mensile",
+      "scheme_end": "Fine dell'impegno del regime di locazione",
+      "scheme_check": "Condizione del regime di locazione da verificare",
+      "rent_missing": "Affitto non ricevuto",
+      "kid_budget": "Limite del budget di un figlio"
+    },
+    "subsGroup": {
+      "streaming_media": "Streaming e media",
+      "software_cloud": "Software e cloud",
+      "telecom": "Telefonia e internet",
+      "memberships": "Iscrizioni",
+      "other_subscriptions": "Altri abbonamenti",
+      "insurance": "Assicurazioni",
+      "energy_utilities": "Energia e utenze"
+    },
+    "balanceType": {
+      "CLBD": "contabile",
+      "ITBD": "contabile (provvisorio)",
+      "XPCD": "previsto",
+      "CLAV": "disponibile (chiusura)",
+      "ITAV": "disponibile (provvisorio)",
+      "OPBD": "contabile (apertura)",
+      "OPAV": "disponibile (apertura)",
+      "FWAV": "disponibile a termine"
+    },
+    "setupStep": {
+      "init": "Cartella, segreti e database cifrato",
+      "enablebanking": "La tua applicazione Enable Banking",
+      "connect": "Collega la tua prima banca",
+      "sync": "Prima sincronizzazione (storico più lungo)",
+      "classify": "Normalizza e categorizza (scelta di privacy)",
+      "onboarding": "Intervista iniziale",
+      "schedule": "Attività giornaliera e avvisi (facoltativo)"
+    },
+    "onboardingStep": {
+      "household": "Famiglia e dichiarazioni di privacy",
+      "accounts": "Conti: titolare e uso",
+      "loans": "Prestiti e mutuo (campi necessari a mortgage-check)",
+      "contracts": "Contratti dietro i pagamenti ricorrenti",
+      "preferences": "Preferenze e obiettivi",
+      "budgets": "Budget",
+      "questions": "Domande aperte"
+    },
+    "forecast": {
+      "household": "Famiglia",
+      "accountUnresolved": "(conto non identificato)"
+    },
+    "forecastFlag": {
+      "no_variable_history": "nessuno storico di spese variabili",
+      "no_balance": "nessun saldo",
+      "balance_stale": "saldo non aggiornato",
+      "projected_negative": "previsto sotto zero",
+      "at_risk": "rischio di scoperto",
+      "accounts_without_balance_one": "{{count}} conto senza saldo escluso",
+      "accounts_without_balance_many": "{{count}} conti senza saldo esclusi",
+      "accounts_without_balance_other": "{{count}} conti senza saldo esclusi"
+    },
+    "accountPurpose": {
+      "main": "Principale",
+      "cards": "Carte",
+      "rental": "Affitto",
+      "kids": "Figli",
+      "savings": "Risparmio"
+    }
+  },
+  "error": {
+    "unauthorized": "Non hai effettuato l'accesso: apri il link di accesso monouso stampato da `coach ui`.",
+    "invalid_login_token": "Questo link di accesso non è valido, è già stato usato o è scaduto: esegui `coach ui --login-link` nel terminale per averne uno nuovo.",
+    "csrf": "La pagina non è aggiornata: ricaricala e riprova.",
+    "rate_limited": "Troppi tentativi in poco tempo: aspetta un momento e riprova.",
+    "forbidden": "Questa richiesta è stata rifiutata.",
+    "forbidden_scope": "Questo accesso può vedere solo i propri dati.",
+    "bad_host": "Questo nome host non è consentito.",
+    "unsupported_media_type": "La richiesta non è stata inviata come JSON.",
+    "method_not_allowed": "Questa azione non è disponibile qui.",
+    "not_found": "Non trovato: potrebbe essere stato rimosso o modificato. Ricarica la pagina.",
+    "validation_error": "Alcuni valori non sono validi: controlla il modulo.",
+    "migration_pending": "Il database va aggiornato: esegui `coach db migrate` nel terminale.",
+    "alerts_disabled": "Gli avvisi sono disattivati ([alerts] enabled = false in config.toml).",
+    "coach_busy": "Il coach sta già rispondendo a una domanda: aspetta che finisca.",
+    "internal_error": "Errore imprevisto: guarda il terminale in cui gira `coach ui`."
+  }
+}

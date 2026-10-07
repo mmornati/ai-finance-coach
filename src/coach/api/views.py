@@ -15,6 +15,7 @@ from coach.analytics.common import (Scope, add_months_key, div_cents, last_close
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset, is_income, is_spending, is_transfer
 from coach.classify import rules as R
+from coach.i18n_msg import server_msg
 
 
 # ---------------------------------------------------------------- scope / meta
@@ -83,6 +84,7 @@ def events_list(store) -> list[dict]:
 
 # ---------------------------------------------------------------- balances
 
+# the web shows labels.balanceType.<code> (web/src/locales/<lang>/server.json); this English label is its fallback
 BALANCE_TYPE = {"CLBD": "booked", "ITBD": "booked (interim)", "XPCD": "expected", "CLAV": "available (closing)",
                 "ITAV": "available (interim)", "OPBD": "booked (opening)", "OPAV": "available (opening)", "FWAV": "forward available"}
 BOOKED = ("CLBD", "ITBD")
@@ -108,10 +110,14 @@ def balances(ds: Dataset, scope: Optional[Scope] = None) -> dict:
     non_booked = [r["label"] for r in rows if r["balance"] is not None and not r["booked"]]
     note = "One balance per account, the most booked type the bank provides."
     if non_booked:
-        note += f" {len(non_booked)} account(s) only give a non-booked balance ({', '.join(non_booked[:4])}): the total mixes types."
+        accounts = ", ".join(non_booked[:4])
+        note += f" {len(non_booked)} account(s) only give a non-booked balance ({accounts}): the total mixes types."
+        note_msg = server_msg("balances.mixedTypes", note, count=len(non_booked), accounts=accounts)
+    else:
+        note_msg = server_msg("balances.oneBalance", note)
     return {"as_of": ds.today.isoformat(), "household_total": money_str(total),
             "n_accounts": len(rows), "n_without_balance": sum(1 for r in rows if r["balance"] is None),
-            "mixed_types": bool(non_booked), "non_booked": non_booked, "accounts": rows, "note": note}
+            "mixed_types": bool(non_booked), "non_booked": non_booked, "accounts": rows, "note": note, "note_msg": note_msg}
 
 
 # ---------------------------------------------------------------- categories

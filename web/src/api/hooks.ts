@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { api, ApiError } from "@/lib/api";
 import { useScope, useToast } from "@/lib/app";
 import { humanize } from "@/lib/humanize";
+import { errorText } from "@/i18n/server";
 import type * as T from "./types";
 
 type P = Record<string, unknown> | undefined;
@@ -47,7 +49,7 @@ export function useWrite<R, V>(fn: (v: V) => Promise<R>, o?: { success?: string;
       if (o?.success) toast(o.success, "success");
       o?.onSuccess?.(r, v);
     },
-    onError: (e) => toast(e.message, "error"),
+    onError: (e) => toast(errorText(e), "error"),
   });
 }
 
@@ -67,7 +69,7 @@ export function useDryRun<R>(path: string, body: unknown, enabled: boolean, meth
     const t = setTimeout(() => {
       api[method]<R>(path, body, { dry_run: true })
         .then((data) => live && setState({ data, error: null, loading: false }))
-        .catch((e: Error) => live && setState({ data: null, error: e.message, loading: false }));
+        .catch((e: Error) => live && setState({ data: null, error: errorText(e), loading: false }));
     }, 250);
     return () => {
       live = false;
@@ -101,12 +103,23 @@ export const useMeTransactions = (limit = 30) => useGet<T.MeTransactions>("/me/t
 /** Member ids -> display names (local pages only: names never leave this machine) */
 export function usePeople() {
   const { data } = useFilters();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? i18n.language;
   return useMemo(() => {
     const byId = new Map((data?.members ?? []).map((m) => [m.id, m]));
     const name = (id: string | null | undefined) =>
-      !id ? "Unassigned" : id === "joint" ? "Joint" : id === "other" ? "Someone else" : id === "unknown" ? "Unknown source" : (byId.get(id)?.name ?? id);
+      !id ? t("people.unassigned") : id === "joint" ? t("people.joint") : id === "other" ? t("people.someoneElse") : id === "unknown" ? t("people.unknownSource") : (byId.get(id)?.name ?? id);
     return { members: data?.members ?? [], name, first: (id: string | null | undefined) => name(id).split(" ")[0], role: (id: string) => byId.get(id)?.role };
-  }, [data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, lang]);
+}
+
+/** The legal labels (AI-generated...) in the interface language. Their wording lives only in src/coach/disclaimers.py: the web
+ *  app asks for it (it is never in a locale file). */
+export function useDisclaimers(): T.Disclaimers["texts"] | undefined {
+  const { i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? i18n.language;
+  return useGet<T.Disclaimers>("/meta/disclaimers", { lang }, { staleTime: Infinity }).data?.texts;
 }
 
 export const useRentalList = () => useGet<T.RentalList>("/rental/properties");

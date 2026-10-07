@@ -6,7 +6,8 @@ import { Async, Badge, Button, Card, Dialog, Dot, EmptyState, Field, Input, Mone
 import { SyncButton } from "@/components/Layout";
 import { useConnections, useFilters, useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { fmtDate, fmtDateTime, fmtMoney, groupLabel } from "@/lib/format";
+import { errorText, purposeLabel } from "@/i18n/server";
+import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
 import type { ConnAccount, Consent, HealthBank, JobState, LastRun, Transfers } from "@/api/types";
 
 /** The last scheduled run, from its structured log (step names, durations and counts only: no description, name or amount is ever logged). */
@@ -54,7 +55,7 @@ export default function Connections() {
                       <tr key={a.uid} className="border-t border-border">
                         <td className="px-4 py-2"><div className="font-medium">{a.label ?? a.name}</div><div className="text-xs text-muted">{a.bank ?? t("accounts.manual")}{a.iban_last4 ? ` · ${a.iban_last4}` : ""}{a.source !== "api" ? t("accounts.imported") : ""}</div>{a.excluded && <Badge tone="warn">{t("accounts.excluded")}</Badge>} {a.needs_review && <Badge tone="warn">{t("accounts.needsReview")}</Badge>}</td>
                         <td className="px-2 py-2">{a.owner ?? <span className="text-faint">{t("accounts.notSet")}</span>}</td>
-                        <td className="px-2 py-2">{a.purpose ? groupLabel(a.purpose) : <span className="text-faint">{t("accounts.notSet")}</span>}</td>
+                        <td className="px-2 py-2">{a.purpose ? purposeLabel(a.purpose) : <span className="text-faint">{t("accounts.notSet")}</span>}</td>
                         <td className="num px-2 py-2 text-right">{a.tx_count}</td>
                         <td className="num px-4 py-2 text-right">{a.syncs_left_today === null ? "–" : t("accounts.syncsLeft", { count: a.syncs_left_today })}</td>
                         <td className="px-2 py-2 text-right"><Button size="sm" variant="ghost" aria-label={t("accounts.editAria", { name: a.label ?? a.name })} onClick={() => setEdit(a)}><Pencil className="size-3.5" /></Button></td>
@@ -141,7 +142,7 @@ function ConnectDialog({ onClose, reconnect }: { onClose: () => void; reconnect?
                 <Field label={t("connectDialog.country")}>{(id) => <Input id={id} maxLength={2} value={country} onChange={(e) => setCountry(e.target.value.toUpperCase())} />}</Field>
                 <Field label={t("connectDialog.findBank")}>{(id) => <Input id={id} value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("connectDialog.findPlaceholder")} />}</Field>
               </div>
-              {banks.isFetching ? <Spinner /> : banks.isError ? <Notice tone="neg">{banks.error.message}</Notice> : (
+              {banks.isFetching ? <Spinner /> : banks.isError ? <Notice tone="neg">{errorText(banks.error)}</Notice> : (
                 <ul className="max-h-56 overflow-auto rounded-lg border border-border">
                   {(banks.data?.banks ?? []).slice(0, 40).map((b) => <li key={b.name}><button type="button" onClick={() => setBank(b.name)} className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-surface-2 ${bank === b.name ? "bg-accent-soft text-accent" : ""}`}>{b.name}<span className="text-xs text-muted">{t("connectDialog.upTo", { count: b.max_consent_days })}</span></button></li>)}
                 </ul>
@@ -165,7 +166,7 @@ function ConnectDialog({ onClose, reconnect }: { onClose: () => void; reconnect?
           {job.state !== "running" && <div className="flex justify-end"><Button variant="primary" onClick={onClose}>{t("connectDialog.close")}</Button></div>}
         </div>
       )}
-      {start.error && <Notice tone="neg" className="mt-3">{start.error.message}</Notice>}
+      {start.error && <Notice tone="neg" className="mt-3">{errorText(start.error)}</Notice>}
     </Dialog>
   );
 }
@@ -180,10 +181,10 @@ function AccountDialog({ a, onClose }: { a: ConnAccount; onClose: () => void }) 
       <div className="grid gap-4">
         <Field label={t("accountDialog.name")}>{(id) => <Input id={id} value={v.label} onChange={(e) => setV({ ...v, label: e.target.value })} />}</Field>
         <Field label={t("accountDialog.owner")} hint={t("accountDialog.ownerHint")}>{(id) => <><Input id={id} list="owners" value={v.owner} onChange={(e) => setV({ ...v, owner: e.target.value })} /><datalist id="owners">{filters.data?.owners.map((o) => <option key={o} value={o} />)}</datalist></>}</Field>
-        <Field label={t("accountDialog.usedFor")}>{(id) => <Select id={id} value={v.purpose} onChange={(e) => setV({ ...v, purpose: e.target.value })}><option value="">{t("accountDialog.notSet")}</option>{["main", "cards", "rental", "kids", "savings"].map((p) => <option key={p} value={p}>{groupLabel(p)}</option>)}</Select>}</Field>
+        <Field label={t("accountDialog.usedFor")}>{(id) => <Select id={id} value={v.purpose} onChange={(e) => setV({ ...v, purpose: e.target.value })}><option value="">{t("accountDialog.notSet")}</option>{["main", "cards", "rental", "kids", "savings"].map((p) => <option key={p} value={p}>{purposeLabel(p)}</option>)}</Select>}</Field>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={v.exclude} onChange={(e) => setV({ ...v, exclude: e.target.checked })} /> {t("accountDialog.exclude")}</label>
         {a.needs_review && <Notice tone="warn">{t("accountDialog.needsReview")}</Notice>}
-        {save.error && <Notice tone="neg">{save.error.message}</Notice>}
+        {save.error && <Notice tone="neg">{errorText(save.error)}</Notice>}
       </div>
     </Dialog>
   );

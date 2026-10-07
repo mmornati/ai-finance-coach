@@ -8,7 +8,8 @@ import { ItemDialog, Kind } from "@/components/ItemForm";
 import { NetWorthChart } from "@/components/charts";
 import { useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { fmtDate, fmtNumber, groupLabel } from "@/lib/format";
+import { fmtDate, fmtNumber } from "@/lib/format";
+import { holdingKindLabel } from "@/i18n/server";
 import type { Asset, Liability, NetWorth, NetWorthPoint, NwCategory } from "@/api/types";
 
 const LoanDialog = lazy(() => import("@/components/LoanDetail"));
@@ -88,7 +89,7 @@ export default function Wealth() {
                     <li key={a.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-medium">{a.description ?? a.id}</div>
-                        <div className="text-xs text-muted">{[groupLabel(a.kind), a.provider, a.holder, a.connected ? t("assets.syncedFromBank") : null].filter(Boolean).join(" · ")}</div>
+                        <div className="text-xs text-muted">{[holdingKindLabel(a.kind), a.provider, a.holder, a.connected ? t("assets.syncedFromBank") : null].filter(Boolean).join(" · ")}</div>
                       </div>
                       <div className="text-right">
                         {a.unknown_value ? <Badge tone="warn">{t("assets.valueUnknown")}</Badge> : <div className="num font-semibold"><Money v={a.value} round /></div>}

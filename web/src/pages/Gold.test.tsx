@@ -61,7 +61,7 @@ describe("gold set page", () => {
     const row = (await screen.findByText(/VOMIRA ENERGIE/)).closest("section")!;
     const set = within(row).getByRole("button", { name: "Set" });
     expect(set).toBeDisabled();
-    await within(row).findByRole("option", { name: "Energy" });
+    await within(row).findByRole("option", { name: "Electricity and gas" });
     await userEvent.selectOptions(within(row).getByRole("combobox"), "housing.energy");
     expect(set).toBeEnabled();
     await userEvent.click(within(row).getByRole("button", { name: "Skip" }));

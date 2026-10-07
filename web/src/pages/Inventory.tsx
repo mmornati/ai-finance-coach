@@ -6,6 +6,7 @@ import { Async, Badge, Button, Card, Dialog, DiffView, EmptyState, Field, Input,
 import { useDryRun, useGet, useScoped, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate, fmtMoney } from "@/lib/format";
+import { serverLabel } from "@/i18n/server";
 import type { ContactInfo, DraftPreview, InvAlternative, InvRow, Inventory as Inv, Letter, UsageFrequency } from "@/api/types";
 
 const FREQ: UsageFrequency[] = ["daily", "weekly", "monthly", "rarely", "never", "unknown"];
@@ -46,9 +47,9 @@ export default function InventoryView() {
           {(proposed.data?.proposed ?? []).length > 0 && <ProposedDecisions items={proposed.data!.proposed} />}
           {d.rows.length === 0 ? <Card><EmptyState title={t("inv.emptyTitle")}>{t("inv.emptyBody")}</EmptyState></Card> : (
             Object.entries(byGroup(d.rows)).map(([g, rows]) => (
-              <section key={g} aria-label={d.groups_meta.find((m) => m.id === g)?.label ?? g} className="grid gap-3">
+              <section key={g} aria-label={serverLabel("subsGroup", g, d.groups_meta.find((m) => m.id === g)?.label)} className="grid gap-3">
                 <h2 className="mt-2 flex flex-wrap items-baseline gap-x-3 text-sm font-semibold text-muted">
-                  {rows[0].group_label}
+                  {serverLabel("subsGroup", g, rows[0].group_label)}
                   {d.groups[g] && <span className="text-xs font-normal text-faint">{t("inv.groupTotals", { monthly: fmtMoney(d.groups[g].monthly), yearly: fmtMoney(d.groups[g].yearly, { round: true }) })}</span>}
                 </h2>
                 <ul className="grid gap-3">{rows.map((r) => <li key={r.ref}><SubRow row={r} country={d.country} /></li>)}</ul>

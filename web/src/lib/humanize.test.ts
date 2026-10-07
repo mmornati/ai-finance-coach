@@ -7,7 +7,7 @@ const nb = (s: string) => s.replace(/[  ]/g, " ");
 describe("humanize server texts", () => {
   it("turns category ids, ISO months, dates and EUR amounts into reader-friendly text", () => {
     const t = humanize("Spending in subscriptions.software_cloud in 2026-09 is 356.97 EUR, versus a typical 25.98 EUR per month.", cats);
-    expect(nb(t)).toBe("Spending in Software cloud in septembre 2026 is 356,97 €, versus a typical 25,98 € per month.");
+    expect(nb(t)).toBe("Spending in Software and cloud in septembre 2026 is 356,97 €, versus a typical 25,98 € per month.");
   });
   it("formats dates and leaves unknown dotted words alone", () => {
     const t = humanize("A payment on 2026-10-01 to shop.example.com of -1200.00 EUR", cats);

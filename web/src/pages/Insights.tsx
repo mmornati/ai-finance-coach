@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, BellOff, Bot, Building2, Check, Eye, Info, Landmark, ShieldAlert, Sparkles, TrendingUp, Wallet, X } from "lucide-react";
 import { Async, Badge, Button, Card, EmptyState, PageHeader, Segmented, Skeleton } from "@/components/ui";
-import { useHumanize, useInsights, useWrite } from "@/api/hooks";
+import { useDisclaimers, useHumanize, useInsights, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -11,20 +11,21 @@ import { CoachText, RefChip, useResolved } from "@/components/CoachText";
 import type { CoachInsight, InsightCard } from "@/api/types";
 
 const KINDS = ["anomaly", "price_change", "forecast", "budget", "subscription", "loan", "rental"] as const;
-// the EU AI Act label (E11-5): its wording lives in src/coach/disclaimers.py and the server sends it in the answer's language; this is only the fallback
-const AI_LABEL = "AI-generated content: it can contain mistakes. Check the figures against your accounts.";
 const ICON = { anomaly: AlertTriangle, price_change: TrendingUp, forecast: Wallet, budget: Info, subscription: Info, loan: Landmark, rental: Building2 } as const;
 
 function CoachCard({ i, act }: { i: CoachInsight; act: (kind: "read" | "done" | "dismiss" | "snooze", id: string) => void }) {
   const q = useResolved(i.evidence);
   const { t } = useTranslation("insights");
+  // the EU AI Act label (E11-5): the server sends it in the answer's language; without it, the interface language's (GET /meta/disclaimers).
+  // Its wording lives only in src/coach/disclaimers.py.
+  const disclaimers = useDisclaimers();
   return (
     <Card>
       <div className="flex flex-wrap items-center gap-2">
         <Sparkles className="size-4 text-accent" aria-hidden />
         <h3 className="text-[15px] font-semibold">{i.title}</h3>
         <Badge tone="info">{i.kind === "answer" ? t("coach.answer") : i.kind === "digest" ? t("coach.digest") : t("coach.title")}</Badge>
-        {i.ai_generated !== false && <Badge tone="neutral" title={i.ai_label ?? AI_LABEL}><Bot className="size-3" aria-hidden /> AI-generated</Badge>}
+        {i.ai_generated !== false && <Badge tone="neutral" title={i.ai_label ?? disclaimers?.ai_label}><Bot className="size-3" aria-hidden /> {i.ai_label_short ?? disclaimers?.ai_label_short}</Badge>}
         {i.status === "new" && <Badge tone="pos">{t("coach.new")}</Badge>}
         {i.status === "snoozed" && <Badge>{t("coach.snoozedUntil", { date: fmtDate(i.snoozed_until, "dayMonth") })}</Badge>}
         {i.suspicious && <Badge tone="warn" title={t("coach.suspiciousTitle")}><ShieldAlert className="size-3" aria-hidden /> {t("coach.suspicious")}</Badge>}

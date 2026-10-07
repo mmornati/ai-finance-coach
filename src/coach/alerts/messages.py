@@ -20,6 +20,7 @@ from typing import Optional
 
 from coach.alerts.settings import RANK
 
+# English labels (the channels, the CLI); the web shows labels.alertKind.<kind> of web/src/locales/<lang>/server.json (tests/test_i18n_msg.py)
 KIND_LABEL = {
     "consent": "Bank consent expiring or expired",
     "sync_failing": "Bank sync failing",
