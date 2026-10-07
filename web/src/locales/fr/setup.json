@@ -1,0 +1,90 @@
+{
+  "title": "Configurer le coach",
+  "subtitle": "Ce que le coach ne sait pas encore de votre foyer. Chaque modification est prévisualisée, validée et enregistrée dans l'historique de la mémoire.",
+  "progress": "Avancement de la configuration",
+  "stepsDone": "{{done}} étapes faites sur {{total}}",
+  "askCoach": "Demander au coach de me guider",
+  "proposalsHint": "Le coach peut seulement proposer des modifications : elles apparaissent dans Mémoire > Propositions et vous les acceptez vous-même dans un terminal. Terminez par <code>uv run coach memory check</code>.",
+  "links": {
+    "household": "Membres",
+    "accounts": "Comptes",
+    "loans": "Prêts",
+    "contracts": "Contrats",
+    "preferences": "Mémoire",
+    "budgets": "Budgets",
+    "questions": "Questions"
+  },
+  "status": {
+    "done": "fait",
+    "partial": "en cours",
+    "todo": "à faire",
+    "skipped": "ignorée",
+    "blocked": "en attente"
+  },
+  "missing": {
+    "account": "compte {{account}} : {{fields}} non renseigné(s)",
+    "liability": "{{id}} ({{kind}}) : {{fields}}",
+    "loanPayments_one": "{{count}} paiement ressemblant à un prêt sans fichier de prêt",
+    "loanPayments_many": "{{count}} paiements ressemblant à un prêt sans fichier de prêt",
+    "loanPayments_other": "{{count}} paiements ressemblant à un prêt sans fichier de prêt",
+    "recurring_one": "{{count}} paiement récurrent sans fichier de contrat",
+    "recurring_many": "{{count}} paiements récurrents sans fichier de contrat",
+    "recurring_other": "{{count}} paiements récurrents sans fichier de contrat",
+    "contract": "contrat {{id}} : {{fields}}",
+    "more": "et {{count}} de plus"
+  },
+  "firstRun": {
+    "title": "Premier lancement",
+    "progress": "Avancement du premier lancement",
+    "stepsDone": "{{done}} étapes du premier lancement terminées sur {{total}}",
+    "steps": "Étapes du premier lancement",
+    "optional": " (facultatif)",
+    "next": "Ensuite, dans un terminal (ces étapes demandent votre confirmation avant que quoi que ce soit ne quitte cet ordinateur ; la page ne peut donc pas les lancer) :",
+    "docker": "Exécution dans Docker : les commandes tournent dans le conteneur, pas sur votre machine.",
+    "enableBanking": "Enable Banking : la clé téléchargée est sur votre machine ; montez-la pour cette seule commande :",
+    "enableBankingDocker": "Enable Banking : la clé téléchargée est sur votre machine ; montez-la pour cette seule commande (l'assistant en garde une copie privée dans /config ; donnez-lui /tmp/eb.pem) :"
+  },
+  "preview": {
+    "nothing": "Rien à modifier.",
+    "write": "Écrire cette modification"
+  },
+  "household": {
+    "updated": "Foyer mis à jour",
+    "intro": "Le pays détermine les règles fiscales et de résiliation. Les employeurs, villes et écoles déclarés sont masqués dans tout ce que voit un modèle. En saisir de nouveaux les <b>ajoute</b> ; rien n'est supprimé sauf si vous le marquez (déclarés : {{employers}} employeur(s), {{places}} lieu(x), {{schools}} école(s)).",
+    "country": "Pays",
+    "notChanged": "Inchangé",
+    "france": "France",
+    "italy": "Italie",
+    "list": {
+      "employers": "Employeur(s)",
+      "places": "Ville(s) où vous vivez ou travaillez",
+      "schools": "École(s) ou crèche(s)"
+    },
+    "add": {
+      "employers": "Ajouter des employeurs",
+      "places": "Ajouter des villes où vous vivez ou travaillez",
+      "schools": "Ajouter des écoles ou crèches"
+    },
+    "declared": {
+      "employers": "Employeurs déclarés",
+      "places": "Villes déclarées où vous vivez ou travaillez",
+      "schools": "Écoles ou crèches déclarées"
+    },
+    "commaSeparated": "séparés par des virgules",
+    "keep": "Garder {{value}}",
+    "remove": "Retirer {{value}}",
+    "removingTitle": "Retrait de termes déclarés",
+    "removingBody": "Ils ne seront plus masqués pour le modèle.",
+    "understand": "J'ai compris, les retirer"
+  },
+  "preferences": {
+    "saved": "Préférences enregistrées",
+    "intro": "Ces lignes sont ajoutées à preferences.md, qui indique au coach comment vous parler (le coach ne les lit que si vous autorisez le texte libre dans <code>[privacy] model_detail</code>).",
+    "language": "Langue",
+    "languagePlaceholder": "fr, en ou it",
+    "tone": "Ton",
+    "tonePlaceholder": "bref, direct, les chiffres d'abord",
+    "goals": "Objectifs",
+    "avoid": "Sujets à éviter"
+  }
+}

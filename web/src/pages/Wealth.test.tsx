@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/utils";
 import Wealth from "./Wealth";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 import type { Liability, LoanDetail, NetWorth, NetWorthPoint, ScheduleRow } from "@/api/types";
 
 const schedule = (o: object = {}) => ({
@@ -203,5 +204,15 @@ describe("loan details", () => {
     await waitFor(() => expect(writes()).toHaveLength(1));
     expect(writes()[0].url).toMatch(/^\/api\/v1\/loans\/evcar\/odometer/);
     expect(csrf(writes()[0])).toBe("tok");
+  });
+});
+
+describe("translations", () => {
+  it("speaks French", async () => {
+    await setLanguage("fr");
+    renderApp(<Wealth />);
+    expect(await screen.findByRole("heading", { name: "Prêts et patrimoine" })).toBeInTheDocument();
+    expect(await screen.findByText("Patrimoine net, partie connue seulement")).toBeInTheDocument();
+    expect(screen.getByText("1 élément non compté")).toBeInTheDocument();
   });
 });

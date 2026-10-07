@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/utils";
 import Rental from "./Rental";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 
 // every name, figure and id below is invented
 const vacancy = (o: object = {}) => ({ missing_months: ["2026-08"], declared_months: [], late_paid_months: [], unknown_months: [], n_missing: 1, n_declared: 0, months_since_let: 6, occupancy_rate: 0.8333, ...o });
@@ -214,5 +215,17 @@ describe("rental property: declaring one", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Save" }));
     await waitFor(() => expect(writes().filter((c) => c.url.includes("/memory/assets/rental-flat-1"))).toHaveLength(1));
     expect(JSON.parse(String(writes().find((c) => c.url.includes("/memory/assets/"))!.init!.body)).fields).toEqual({ commitment: { years: 12 } });
+  });
+});
+
+describe("rental property: translations", () => {
+  it("speaks Italian and keeps the French terms of art", async () => {
+    await setLanguage("it");
+    renderApp(<Rental />);
+    expect(await screen.findByRole("heading", { name: "Immobile in affitto" })).toBeInTheDocument();
+    expect(await screen.findByText("Ultimi dodici mesi chiusi")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /Anno fiscale/ }));
+    expect(await screen.findByText("Micro-foncier")).toBeInTheDocument();
+    expect(screen.getByText("Regime réel")).toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/utils";
 import Memory, { RejectDialog } from "./Memory";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 import type { Proposal } from "@/api/types";
 
 const proposal: Proposal = {
@@ -71,5 +72,18 @@ describe("history is read-only in the page", () => {
     await userEvent.click(screen.getByRole("button", { name: "View" }));
     expect(await screen.findByText("uv run coach memory revert 9f8e7d6")).toBeInTheDocument();
     expect(calls.some((c) => c.init?.method === "POST")).toBe(false);
+  });
+});
+
+describe("in another language", () => {
+  it("translates the page frame but keeps the command and the server's text as they are", async () => {
+    await setLanguage("it");
+    renderApp(<Memory />, "/memory?tab=proposals");
+    expect(await screen.findByText("Add a restaurant budget")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Memoria" })).toBeInTheDocument();
+    expect(screen.getByText("Proposte")).toBeInTheDocument();
+    expect(screen.getByText(/questa pagina non può accettare al posto tuo/i)).toBeInTheDocument();
+    expect(screen.getByText("uv run coach memory accept p-20261004-ab12cd")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Rifiuta…" })).toBeInTheDocument();
   });
 });

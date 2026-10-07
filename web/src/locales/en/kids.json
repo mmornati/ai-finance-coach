@@ -1,0 +1,152 @@
+{
+  "kids": {
+    "header": {
+      "title": "Kids' money",
+      "subtitle": "Pocket money, extra top-ups and what each child spends. A parent's top-up is an internal transfer for the household (not spending, not income) but it is the child's income here."
+    },
+    "period": "Period",
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "child": "Child",
+    "empty": {
+      "title": "No child declared",
+      "body": "Declare a member with the role child (<code>coach memory member add --role child</code>), then give their account an owner on the Household page."
+    },
+    "cadence": {
+      "weekly": "weekly",
+      "fortnightly": "fortnightly",
+      "monthly": "monthly"
+    },
+    "stat": {
+      "balance": "Balance",
+      "unknown": "unknown",
+      "asOf": "as of {{date}}",
+      "noBalance": "no balance synced",
+      "noAccount": "the child owns no account",
+      "pocket": "Pocket money",
+      "pocketHint": "per month, in the period",
+      "extra": "Extra top-ups",
+      "credits_one": "{{count}} credit",
+      "credits_other": "{{count}} credits",
+      "ratio": "Pocket money vs extra",
+      "ratioHint": "pocket money / extra",
+      "noCredit": "no credit in the period",
+      "ratioBar": "Share of the credits that is regular pocket money"
+    },
+    "pocket": {
+      "title": "Pocket money",
+      "subtitle": "A regular credit: three or more of about the same amount, from the same source, at a weekly, fortnightly or monthly rhythm.",
+      "declare": "Declare",
+      "empty": "No regular top-up detected yet.",
+      "series_one": "<b><amount/></b> {{cadence}} from {{source}} <muted>· {{count}} payment, last {{last}}</muted>",
+      "series_other": "<b><amount/></b> {{cadence}} from {{source}} <muted>· {{count}} payments, last {{last}}</muted>",
+      "next": "next about {{date}}",
+      "declared_one": "Declared: {{amount}} {{period}}; {{count}} credit matches it.",
+      "declared_other": "Declared: {{amount}} {{period}}; {{count}} credits match it."
+    },
+    "extra": {
+      "title": "Extra top-ups",
+      "subtitle": "Every other credit, with where it came from.",
+      "empty": "None in the period.",
+      "internal": "internal transfer"
+    },
+    "spending": {
+      "title": "Spending by category",
+      "subtitle": "{{total}} in the period · {{avg}} per month",
+      "empty": "No spending attributed to this child in the period."
+    },
+    "trend": {
+      "title": "Balance trend",
+      "subtitle": "Month ends, rebuilt backwards from the newest balance (an estimate).",
+      "short": "Not enough history to draw a trend.",
+      "label": "Balance at each month end"
+    },
+    "budgets": {
+      "title": "Budgets",
+      "subtitle": "Weekly or monthly limits. Gentle alerts appear in the local alerts feed only: nothing about a child is ever sent outside this machine.",
+      "add": "Budget",
+      "empty": "No budget for this child.",
+      "thisWeek": "This week",
+      "thisMonth": "This month",
+      "remove": "Remove budget {{id}}",
+      "confirmRemove": "Remove the kid budget \"{{id}}\"?",
+      "removed": "Kid budget removed",
+      "used": "{{id}} used"
+    },
+    "status": {
+      "over": "over",
+      "close": "close",
+      "ok": "ok"
+    },
+    "pocketDialog": {
+      "title": "Declare the pocket money",
+      "description": "The amount a child is meant to get. A credit of about this amount counts as pocket money even before a rhythm is detected.",
+      "remove": "Remove declaration",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Pocket money declared",
+      "removed": "Declaration removed",
+      "amount": "Amount (EUR)",
+      "every": "Every",
+      "week": "week",
+      "month": "month"
+    },
+    "budgetDialog": {
+      "title": "New kid budget",
+      "description": "A limit on what this child spends; leave the category empty for all their spending.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Kid budget saved",
+      "id": "Id",
+      "idHint": "lowercase letters, digits, - or _",
+      "limit": "Limit (EUR)",
+      "period": "Period",
+      "weekly": "Weekly (Monday to Sunday)",
+      "monthly": "Monthly",
+      "onlyFor": "Only for",
+      "all": "All spending"
+    }
+  },
+  "kidHome": {
+    "title": "My money",
+    "signOut": "Sign out of this browser",
+    "greeting": "Hello {{name}}. This is only your own money; you can look, nothing here can be changed.",
+    "balance": "My balance",
+    "unknown": "unknown",
+    "asOf": "as of {{date}}",
+    "spent": "Spent this month",
+    "spentHint": "{{amount}} a month on average",
+    "pocket": {
+      "title": "Pocket money",
+      "empty": "No regular pocket money seen yet.",
+      "series": "<b><amount/></b> {{cadence}}, from {{source}}. Next one about {{date}}.",
+      "extra": "Extra money you received: {{total}} ({{sources}}).",
+      "fromSource": "{{amount}} from {{source}}"
+    },
+    "spending": {
+      "title": "Where my money goes",
+      "empty": "Nothing spent in the last months."
+    },
+    "trend": {
+      "title": "My balance over time",
+      "subtitle": "An estimate at the end of each month.",
+      "label": "My balance at each month end"
+    },
+    "payments": {
+      "title": "My latest payments",
+      "empty": "No payment yet",
+      "emptyBody": "Your payments will appear here."
+    },
+    "budget": {
+      "weekly": "This week's limit",
+      "monthly": "This month's limit",
+      "over": "You went over this limit. No worries: have a look at it with a parent.",
+      "close_one": "Nearly there: {{left}} left, {{count}} day to go.",
+      "close_other": "Nearly there: {{left}} left, {{count}} days to go.",
+      "ok_one": "{{left}} left, {{count}} day to go.",
+      "ok_other": "{{left}} left, {{count}} days to go.",
+      "spentOf": "<spent/> of <limit/>",
+      "used": "Limit used"
+    }
+  }
+}

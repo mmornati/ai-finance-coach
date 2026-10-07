@@ -1,0 +1,168 @@
+{
+  "title": "Memoria",
+  "subtitle": "Ciò che il coach sa della tua famiglia, in semplici file che ti appartengono. Ogni modifica è validata, mostrata in anteprima e registrata in una cronologia che puoi annullare.",
+  "tabs": {
+    "label": "Sezioni della memoria",
+    "questions": "Domande",
+    "proposals": "Proposte",
+    "household": "Famiglia",
+    "events": "Eventi",
+    "items": "Prestiti, contratti, beni",
+    "annotations": "Annotazioni",
+    "check": "Controllo",
+    "history": "Cronologia"
+  },
+  "questions": {
+    "show": "Mostra",
+    "filter": {
+      "open": "Aperte",
+      "answered": "Con risposta",
+      "dismissed": "Scartate",
+      "all": "Tutte"
+    },
+    "hint": "Una risposta viene solo registrata. Trasformarla in una modifica della memoria è un passaggio separato, con anteprima.",
+    "emptyTitle": "Nessuna domanda qui",
+    "emptyBody": "Nuove domande compaiono dopo una sincronizzazione, quando il coach trova qualcosa che non riesce a dedurre.",
+    "answerRecorded": "Risposta registrata",
+    "dismissedToast": "Domanda scartata",
+    "reopened": "Domanda riaperta",
+    "atStake": "{{amount}} in gioco",
+    "status": {
+      "open": "aperta",
+      "answered": "con risposta",
+      "dismissed": "scartata"
+    },
+    "dismissedNote": "Scartata: {{note}}",
+    "answer": "Rispondi",
+    "fillLoan": "Completa il prestito",
+    "openTransactions": "Apri le transazioni",
+    "reason": "Motivo (facoltativo)",
+    "dismiss": "Scarta",
+    "yourAnswer": "La tua risposta",
+    "answerPlaceholder": "La tua risposta, con parole tue",
+    "cancel": "Annulla",
+    "record": "Registra la risposta",
+    "reopen": "Riapri"
+  },
+  "proposals": {
+    "terminalTitle": "L'accettazione si fa nel tuo terminale, di proposito",
+    "terminalBody": "Il coach e l'estrazione dei documenti possono solo proporre modifiche. Non viene scritto nulla finché non sei <b>tu</b> a eseguire, nel tuo terminale, il comando di accettazione mostrato su ogni proposta (mostra lo stesso diff e chiede una conferma digitata). Questa pagina non può accettare al posto tuo, quindi nulla di ciò che arriva a questa pagina può scrivere nella tua memoria.",
+    "empty": "Nessuna proposta in attesa",
+    "modified": "modificata dopo la creazione: non può essere accettata",
+    "source": "fonte: «{{snippet}}»",
+    "instructionLike": "testo simile a un'istruzione",
+    "noChange": "Nessuna modifica.",
+    "suspiciousTitle": "La fonte contiene un testo simile a un'istruzione",
+    "suspiciousBody": "La fonte (un documento, o dati letti dal coach per questa proposta) contiene un testo che sembra un'istruzione. Controlla tu stesso questi campi prima di accettare; ognuno richiede il proprio --confirm-field: {{paths}}.",
+    "notApplicable": "Non può essere applicata al file nel suo stato attuale: {{error}}",
+    "toAccept": "Per accettare, esegui questo nel tuo terminale:",
+    "reject": "Rifiuta…"
+  },
+  "reject": {
+    "done": "Proposta rifiutata",
+    "title": "Rifiutare questa proposta?",
+    "keep": "Tienila",
+    "confirm": "Rifiuta",
+    "body": "Non viene scritto nulla nella tua memoria. La proposta viene chiusa e non potrà più essere accettata.",
+    "why": "Perché? (facoltativo)"
+  },
+  "household": {
+    "title": "Membri della famiglia",
+    "subtitle": "I nomi restano su questo computer; il coach vede solo pseudonimi.",
+    "add": "Membro",
+    "empty": "Ancora nessun membro",
+    "role": {
+      "adult": "adulto",
+      "child": "bambino"
+    },
+    "born": "nato/a nel {{year}}",
+    "birthUnknown": "anno di nascita sconosciuto",
+    "seenAs": " · visto come {{aliases}}",
+    "edit": "Modifica {{name}}"
+  },
+  "events": {
+    "title": "Eventi",
+    "subtitle": "Viaggi, lavori e progetti. Collega le transazioni a un evento per tenerne il costo fuori dal mese abituale.",
+    "add": "Evento",
+    "empty": "Ancora nessun evento",
+    "status": {
+      "planned": "previsto",
+      "ongoing": "in corso",
+      "done": "concluso"
+    },
+    "noStatus": "nessuno stato",
+    "noDates": "nessuna data",
+    "budget": " · budget {{amount}}",
+    "transactions": "Transazioni",
+    "edit": "Modifica {{name}}"
+  },
+  "items": {
+    "edit": "Modifica {{name}}",
+    "loans": "Prestiti",
+    "addLoan": "Prestito",
+    "perMonth": " · {{amount}}/mese",
+    "missing": "mancano: {{fields}}",
+    "noLoan": "Nessun prestito",
+    "contracts": "Contratti",
+    "addContract": "Contratto",
+    "renews": " · rinnovo il {{date}}",
+    "noContract": "Nessun contratto registrato",
+    "noContractBody": "Aggiungi quelli dietro ai tuoi abbonamenti per vedere le date di rinnovo.",
+    "assets": "Beni",
+    "addAsset": "Bene",
+    "asOf": " al {{date}}",
+    "valueUnknown": "valore sconosciuto",
+    "valueOld": "valore vecchio: aggiornalo",
+    "noAsset": "Nessun bene"
+  },
+  "annotations": {
+    "title": "Annotazioni",
+    "subtitle": "Le regole che hai insegnato: quali transazioni ricevono quale categoria, quali tag o quale evento. Vince la prima che corrisponde.",
+    "emptyTitle": "Nessuna annotazione",
+    "emptyBody": "Correggi una categoria in Transazioni e scegli «Ricorda con un'annotazione».",
+    "transactions_one": "{{count}} transazione",
+    "transactions_many": "{{count}} transazioni",
+    "transactions_other": "{{count}} transazioni",
+    "decided_one": "{{count}} decisa",
+    "decided_many": "{{count}} decise",
+    "decided_other": "{{count}} decise",
+    "matched_one": "{{count}} corrispondente",
+    "matched_many": "{{count}} corrispondenti",
+    "matched_other": "{{count}} corrispondenti",
+    "remove": "Rimuovi {{id}}",
+    "removed": "Annotazione rimossa",
+    "removeTitle": "Rimuovere «{{id}}»?",
+    "follow_one": "{{count}} transazione la segue attualmente.",
+    "follow_many": "{{count}} transazioni la seguono attualmente.",
+    "follow_other": "{{count}} transazioni la seguono attualmente.",
+    "keep": "Tieni",
+    "confirm": "Rimuovi"
+  },
+  "check": {
+    "errors_one": "{{count}} errore",
+    "errors_many": "{{count}} errori",
+    "errors_other": "{{count}} errori",
+    "warnings_one": "{{count}} avviso",
+    "warnings_many": "{{count}} avvisi",
+    "warnings_other": "{{count}} avvisi",
+    "notes_one": "{{count}} nota",
+    "notes_many": "{{count}} note",
+    "notes_other": "{{count}} note",
+    "consistent": "La memoria è coerente",
+    "level": {
+      "error": "errore",
+      "warning": "avviso",
+      "info": "info"
+    },
+    "line": " · riga {{line}}"
+  },
+  "history": {
+    "title": "Cronologia delle modifiche",
+    "subtitle": "Ogni scrittura nella memoria, chiunque l'abbia fatta (tu nell'app, la riga di comando, il coach). L'annullamento si fa in un terminale.",
+    "offTitle": "La cronologia è disattivata",
+    "offBody": "Imposta [memory] history = true in config.toml per registrare le modifiche.",
+    "empty": "Ancora nessuna modifica registrata",
+    "view": "Vedi",
+    "toUndo": "Per annullare questa modifica, esegui questo nel tuo terminale (l'annullamento è un'azione deliberata, solo da terminale):"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "household": {
+    "header": {
+      "title": "Household",
+      "subtitle": "Who is in the household, who owns each account, and how transactions are attributed to a person. Names stay on this machine."
+    },
+    "role": {
+      "adult": "adult",
+      "child": "child"
+    },
+    "members": {
+      "title": "Members",
+      "subtitle": "Declared in memory/household.yaml. A model only ever sees adult-1, kid-1 ... never a name or an alias.",
+      "empty": "No member declared yet",
+      "col": {
+        "name": "Name",
+        "role": "Role",
+        "born": "Born",
+        "accounts": "Accounts",
+        "transactions": "Transactions"
+      },
+      "footer": "Add or change members with <code>coach memory member add</code> or on the <memory>Memory</memory> page. Children's pocket money is on <kids>Kids' money</kids>."
+    },
+    "accounts": {
+      "title": "Accounts: owner and purpose",
+      "subtitle": "The owner is who the account belongs to (joint, or one member). It is the default for every transaction on it.",
+      "saved": "Account updated",
+      "col": {
+        "account": "Account",
+        "owner": "Owner",
+        "purpose": "Used for",
+        "attributed": "Attributed to"
+      },
+      "ownerOf": "Owner of {{account}}",
+      "purposeOf": "Purpose of {{account}}",
+      "notMember": "{{owner}} (not a member)",
+      "noOwner": "No owner",
+      "joint": "Joint",
+      "notSet": "Not set"
+    },
+    "rules": {
+      "title": "Attribution rules",
+      "subtitle": "Who a transaction belongs to: a manual reassignment, then the first matching rule, then the account's owner.",
+      "add": "Rule",
+      "empty": "No rule: the owner of the account decides. Typical rules: a prepaid card account per child, or a card's last four digits on a shared account.",
+      "item": "<b>{{name}}</b> when {{conditions}}",
+      "remove": "Remove rule {{id}}",
+      "confirmRemove": "Remove the rule \"{{id}}\"? It is recorded in the memory history.",
+      "removed": "Rule removed",
+      "manual_one": "{{count}} transaction reassigned by hand (open a transaction to change or undo one).",
+      "manual_other": "{{count}} transactions reassigned by hand (open a transaction to change or undo one).",
+      "match": {
+        "account": "account {{value}}",
+        "card": "card ending {{value}}",
+        "merchant": "merchant /{{value}}/",
+        "description": "description /{{value}}/",
+        "moneyIn": "money in",
+        "moneyOut": "money out",
+        "direction": "money {{value}}",
+        "atLeast": "at least {{value}}",
+        "atMost": "at most {{value}}"
+      }
+    },
+    "ruleDialog": {
+      "title": "New attribution rule",
+      "description": "Every condition you fill must match (AND). The preview shows how many transactions it would attribute.",
+      "cancel": "Cancel",
+      "save": "Save rule",
+      "saved": "Rule saved",
+      "id": "Rule id",
+      "idHint": "lowercase letters, digits, - or _",
+      "member": "Attribute to",
+      "joint": "Joint",
+      "account": "Account (uid or label)",
+      "anyAccount": "Any account",
+      "card": "Card's last four digits",
+      "cardHint": "only when the bank prints them in the description",
+      "merchantMatch": "Merchant matches (regex)",
+      "descriptionMatch": "Description matches (regex)",
+      "preview_one": "It matches <b>{{count}}</b> transaction; <b>{{change}}</b> would change person.",
+      "preview_other": "It matches <b>{{count}}</b> transactions; <b>{{change}}</b> would change person."
+    },
+    "logins": {
+      "title": "Logins",
+      "subtitle": "Each person can have their own login: an adult sees everything, a child sees only their own money. Logins are created in a terminal, never here.",
+      "empty": "No login yet: the app opens with the owner's login (everything).",
+      "disabled": "disabled"
+    },
+    "prefs": {
+      "title": "My preferences",
+      "subtitle": "Stored for the login {{user}}.",
+      "saved": "Preferences saved for this login",
+      "theme": "Theme",
+      "unchanged": "Unchanged",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark",
+      "locale": "Dates and numbers",
+      "landing": "Opens on",
+      "save": "Save"
+    },
+    "audit": {
+      "title": "Who changed what",
+      "subtitle": "The changes made in the web app (method, endpoint, who: never a payload) and the memory history with the source of each change.",
+      "show": "Show the audit",
+      "requests": "Changes made in the web app",
+      "requestsEmpty": "Nothing yet.",
+      "memory": "Memory changes and their source",
+      "memoryEmpty": "No history."
+    }
+  },
+  "whoPays": {
+    "header": {
+      "title": "Who pays what",
+      "subtitle": "Shared costs (house, cars, insurance) split by the rules you set. A cost paid from the joint account settles nothing; what a person paid from their own money is compared with their fair share."
+    },
+    "period": "Period",
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "addRule": "Rule",
+    "method": {
+      "equal": "shared equally",
+      "income": "in proportion to income",
+      "custom": "by the percentages you set"
+    },
+    "empty": {
+      "title": "No allocation rule yet",
+      "action": "Add a rule",
+      "body": "A rule says which costs it covers (a category, a group, a tag, a merchant), how they are shared (50/50, by income, custom percentages) and between whom."
+    },
+    "total": {
+      "title": "All rules together",
+      "subtitle": "Positive: the others owe this person. Negative: this person owes.",
+      "line": "owed share <owed/> · paid <paid/> · settlement <net/>"
+    },
+    "confirmRemove": "Remove the allocation rule \"{{id}}\"?",
+    "removed": "Allocation rule removed",
+    "footnote": "A split of the past, computed by code from the transactions attributed to each person. It moves no money and is not legal or tax advice on a couple's finances.",
+    "rule": {
+      "subtitle_one": "{{method}} · {{total}} over {{count}} payment",
+      "subtitle_other": "{{method}} · {{total}} over {{count}} payments",
+      "remove": "Remove allocation {{id}}",
+      "col": {
+        "member": "Member",
+        "share": "Share",
+        "owed": "Fair share of the cost",
+        "paid": "Paid personally",
+        "settlement": "Settlement"
+      },
+      "jointPaid": "joint account {{amount}}",
+      "personalPaid": "paid personally {{amount}}",
+      "unattributed": "outside the rule {{amount}}"
+    },
+    "dialog": {
+      "title": "New allocation rule",
+      "description": "Shared between every adult unless you pick custom percentages. The first rule that matches a payment takes it.",
+      "cancel": "Cancel",
+      "save": "Save rule",
+      "saved": "Allocation rule saved",
+      "id": "Id",
+      "idHint": "lowercase letters, digits, - or _",
+      "ruleTitle": "Title (optional)",
+      "group": "Costs covered (category group)",
+      "method": "Shared",
+      "equal": "Equally",
+      "income": "In proportion to income",
+      "custom": "Custom percentages"
+    }
+  }
+}

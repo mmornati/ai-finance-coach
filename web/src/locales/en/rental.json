@@ -1,0 +1,341 @@
+{
+  "common": {
+    "editFacts": "Edit facts",
+    "cancel": "Cancel",
+    "save": "Save",
+    "note": "Note (optional)",
+    "dateHint": "YYYY-MM-DD",
+    "unknown": "unknown",
+    "missing": "Missing: {{fields}}.",
+    "pct": "{{pct}} %",
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days"
+  },
+  "header": {
+    "title": "Rental property",
+    "subtitle": "The cash flow and the P&L of a rental flat, the commitment of its tax-incentive scheme, the figures of the rental-income return and the renegotiate-or-sell indicators. Everything is computed from its bank account, its loan schedule and the facts you recorded: a missing fact is listed, never guessed.",
+    "declare": "Declare a property",
+    "property": "Property",
+    "unlinked": "{{n}} account(s) are flagged \"rental\" but belong to no property: set <code>account</code> on a property (Edit facts)."
+  },
+  "empty": {
+    "title": "No rental property yet",
+    "body": "A rental property is an asset of kind real_estate_rental. Give it its bank account (purpose \"rental\"), its loan and, for a tax-incentive scheme, the commitment you signed.",
+    "flagged": "{{n}} account(s) are already flagged \"rental\"."
+  },
+  "tabs": {
+    "label": "Rental sections",
+    "cashflow": "Cash flow and P&L",
+    "scheme": "Scheme commitment",
+    "tax": "Tax year",
+    "sell": "Renegotiate or sell",
+    "decide": "decide"
+  },
+  "status": {
+    "received": "rent received",
+    "missing": "no rent",
+    "partial": "part of the rent",
+    "latePaid": "paid late",
+    "declaredVacancy": "declared vacancy",
+    "unknown": "data incomplete",
+    "notLetYet": "not let yet"
+  },
+  "link": {
+    "declared": "set on the property",
+    "onlyOne": "the only rental account (confirm it)",
+    "none": "not linked",
+    "unknown": "not found in the data",
+    "asset": "named by the loan",
+    "account": "debited from the property account"
+  },
+  "state": {
+    "unknown": "unknown",
+    "notStarted": "not started",
+    "active": "active",
+    "ended": "ended"
+  },
+  "decision": {
+    "extend": "extend",
+    "notExtend": "not extend",
+    "undecided": "undecided"
+  },
+  "cashflow": {
+    "emptyTitle": "No closed month of data for this property yet",
+    "empty": "Link its bank account (Edit facts, field \"account\"), or tag the payments made from another account with <code>{{tag}}</code>.",
+    "title": "Last twelve closed months",
+    "subtitle": "A cash flow: the loan principal counts as money out. The effort d'épargne is what you had to add each month when the rent did not cover the costs.",
+    "rentExpected": "Rent expected",
+    "rentDeclared": "the rent you declared",
+    "rentMedian": "median of the rents seen",
+    "averageNet": "Average monthly net",
+    "overMonths": "over {{n}} complete month(s)",
+    "noCompleteMonth": "no complete month yet",
+    "averageEffort": "Average monthly effort d'épargne",
+    "outOfPocket": "out of your pocket",
+    "occupancy": "Occupancy",
+    "occupancyHint": "{{missing}} month(s) without rent, {{declared}} declared",
+    "flowsToLabel": "{{n}} flow(s) of the property account are in no property category and sit in \"other flows\". Label them with a memory annotation (rent, loan, charges, tax, fees, insurance, works), or tag a cost paid from another account <code>{{tag}}</code>."
+  },
+  "links": {
+    "title": "Property {{id}}",
+    "account": "account: {{value}}",
+    "loan": "loan: {{value}}",
+    "scheme": "scheme: {{value}}",
+    "recorded": "recorded",
+    "missing": "{{n}} fact(s) missing",
+    "hint": "Link the account and the loan to get the full cash flow, the interest of the return and the net equity."
+  },
+  "table": {
+    "month": "Month",
+    "rent": "Rent",
+    "loan": "Loan",
+    "otherCosts": "Other costs",
+    "net": "Net",
+    "effort": "Effort",
+    "rentStatus": "Rent status",
+    "partialTitle": "the account data do not cover the whole month",
+    "partialNote": "* the bank data do not cover the whole month: its figures are lighter in the chart and not averaged."
+  },
+  "vacancy": {
+    "title": "Vacancy",
+    "subtitle": "A month without the expected rent, once the property is let. Months the data do not cover are never counted.",
+    "declare": "Declare a vacancy",
+    "none": "No month without rent since the property was let ({{n}} month(s) followed).",
+    "declared": "declared",
+    "thisMonth": "this month",
+    "late": "the rent of {{month}} has not arrived yet"
+  },
+  "pnl": {
+    "title": "P&L {{year}}",
+    "months": "{{n}} closed month(s)",
+    "monthsIncomplete": "{{n}} closed month(s): not a complete year",
+    "year": "Year",
+    "row": {
+      "rent": "Rent received",
+      "loan": "Loan instalments",
+      "charges": "Co-ownership charges",
+      "fees": "Management fees",
+      "taxes": "Property tax",
+      "insurance": "Insurance (PNO, GLI)",
+      "works": "Works and repairs",
+      "other": "Other flows"
+    },
+    "net": "Net cash result",
+    "effortWithAverage": "Effort d'épargne: <total/> (about <average/> a month). Your own transfers into the account (<owner/>) are not rent.",
+    "effort": "Effort d'épargne: <total/>. Your own transfers into the account (<owner/>) are not rent.",
+    "loanSplit": "Loan of the year from its schedule: interest <interest/>, borrower insurance <insurance/>, principal <principal/>.",
+    "economic": "Result if the principal repaid is not a cost: <result/>.",
+    "grossYield": "Gross yield on the value you declared: {{pct}} %.",
+    "notCovered": "Not fully covered by the account data: {{months}}.",
+    "noData": "Closed months without any data: {{months}}."
+  },
+  "scheme": {
+    "emptyTitle": "No scheme recorded for this property",
+    "record": "Record the scheme",
+    "empty": "Give the scheme's name, the start of the commitment and its length in years (6, 9 or 12 for a Pinel-type scheme); the end date and its reminders follow. The rent cap and the tenant income limit are the figures you read in your deed: nothing is looked up.",
+    "title": "{{scheme}}: commitment",
+    "fallbackName": "Scheme",
+    "subtitle": "The end date counts the commitment from its start date; check it against your deed."
+  },
+  "rentCap": {
+    "title": "Rent cap",
+    "subtitle": "Your own figures: the cap you declared against the rent",
+    "notChecked": "Not checked: record a rent cap and the lease rent.",
+    "above": "above the cap",
+    "within": "within the cap",
+    "compare": "rent <rent/> against a cap of <cap/>",
+    "basis": "Rent: {{rent}}. Cap: {{cap}}."
+  },
+  "tenantIncome": {
+    "title": "Tenant income",
+    "subtitle": "The limit and the income you declared",
+    "notChecked": "Not checked: record the income limit and the tenant's reference income.",
+    "above": "above the limit",
+    "within": "within the limit",
+    "compare": "<income/> against a limit of <limit/>"
+  },
+  "missingFacts": {
+    "title": "Facts the coach does not know",
+    "subtitle": "Never guessed: record them, or let the coach ask you (Memory > Questions).",
+    "neededFor": "for {{what}}"
+  },
+  "schemeBody": {
+    "start": "Start",
+    "length": "Length",
+    "years_one": "{{count}} year",
+    "years_other": "{{count}} years",
+    "end": "End",
+    "left": "Left",
+    "progress": "Share of the commitment elapsed",
+    "extension": "extension: {{decision}}",
+    "extensionYears": "{{n}} year(s)",
+    "extensionYearsDecided": "{{n}} year(s), decided on {{date}}",
+    "recordDecision": "Record the decision",
+    "reminders": "Reminders while no decision is recorded: {{list}}. They go through the alerts (kind \"Rental scheme commitment ending\"); an external message only says that an alert exists.",
+    "reminder": "{{n}} months before ({{date}})"
+  },
+  "extension": {
+    "saved": "Decision recorded",
+    "title": "Decision at the end of the commitment",
+    "description": "Recorded in the memory (with its history); the reminders stop once a decision is recorded.",
+    "decision": "Decision",
+    "option": {
+      "extend": "Extend the commitment",
+      "notExtend": "Do not extend",
+      "undecided": "Not decided yet"
+    },
+    "years": "Extension (years)",
+    "rate": "Extra reduction rate of the extension (%)",
+    "rateHint": "as the scheme states it, optional"
+  },
+  "vacancyDialog": {
+    "saved": "Vacancy recorded",
+    "title": "Declare a vacancy",
+    "description": "A period you know the property was not let (works, between two tenants). The months it covers are not reported as a missing rent.",
+    "from": "From",
+    "to": "To (blank: still empty)"
+  },
+  "tax": {
+    "incomeYear": "Income year",
+    "declaredNextSpring": "The income year is declared the spring after it.",
+    "notModelled": "Not modelled",
+    "candidates": "Candidates for the rental-income return, computed from the bank flows: not a return, nothing is filed, not tax advice.",
+    "notCovered": "The year is not fully covered by the property account{{details}}: the figures are a lower bound for the rents and for the costs.",
+    "partialMonths": " (partial: {{months}})",
+    "noDataMonths": " (no data: {{months}})",
+    "grossRents": "Gross rents",
+    "micro": {
+      "title": "Micro-foncier",
+      "subtitle": "Flat abatement of {{pct}} % on the gross rents",
+      "abatement": "Abatement",
+      "taxable": "Taxable (candidate)",
+      "overCeiling": "The household's gross rents (<rents/>) exceed the ceiling (<ceiling/>): this regime would not apply."
+    },
+    "reel": {
+      "title": "Real regime",
+      "subtitle": "Gross rents less the costs the return lets you deduct",
+      "net": "Net (candidate)",
+      "unknown": "Unknown: {{what}}"
+    },
+    "lower": {
+      "title": "Which is lower?",
+      "subtitle": "The lower taxable figure between the two candidates; the choice of a regime has consequences over several years: check with the tax office or an adviser.",
+      "text": "The <b>{{regime}}</b> gives the lower taxable figure ({{reel}} against {{micro}}; difference <difference/>).",
+      "reel": "real regime",
+      "micro": "micro-foncier"
+    },
+    "documents": {
+      "title": "Documents to gather",
+      "subtitle": "A checklist for yourself (not saved)"
+    }
+  },
+  "reduction": {
+    "title": "Scheme reduction (candidate)",
+    "subtitle": "Computed from the price and the total rate you declared; a tax reduction, not a deduction from the rental income",
+    "forYear": "For {{year}}: <b><amount/></b>.",
+    "forYearOutside": "For {{year}}: <b><amount/></b> (the year is outside the commitment).",
+    "calc": "{{rate}} % of <base/> = <total/> spread over {{n}} year(s), {{first}} to {{last}}."
+  },
+  "market": {
+    "title": "Market rate",
+    "subtitle": "A rate you looked up for a loan of similar duration (your own quote, a comparator). The coach never looks it up.",
+    "rate": "Market rate (%)",
+    "asOf": "As of",
+    "fees": "Fees of a new loan (EUR)",
+    "feesHint": "bank + guarantee, optional",
+    "remember": "Remember this rate"
+  },
+  "vsMarket": {
+    "title": "Loan rate vs market",
+    "yourLoan": "Your loan",
+    "gap": "market {{market}} %, gap {{gap}} point(s)",
+    "enterRate": "enter a market rate"
+  },
+  "commitmentEnd": {
+    "title": "End of the commitment",
+    "state": "State",
+    "ends": "ends {{date}}",
+    "endsAbout_one": "ends {{date}}, about {{count}} month",
+    "endsAbout_other": "ends {{date}}, about {{count}} months",
+    "recordStart": "record the start and the length"
+  },
+  "equity": {
+    "title": "Net equity",
+    "subtitle": "Declared value − capital still due, before selling costs, penalty and tax",
+    "hint": "value {{value}} − capital due {{due}} ({{pct}} % of the value)",
+    "unknown": "Unknown: missing {{fields}}."
+  },
+  "renegotiation": {
+    "title": "Renegotiation on the real schedule",
+    "subtitle": "An estimate with the fees you gave (none by default): your bank or a broker gives the binding figures",
+    "instalment": "Instalment",
+    "perMonth": "EUR a month",
+    "costs": "Costs",
+    "penalty": "penalty {{amount}}",
+    "netSaving": "Net saving",
+    "breakEven": "Break-even",
+    "never": "never"
+  },
+  "indicators": {
+    "title": "Indicators",
+    "subtitle": "Trailing effort d'épargne: {{amount}} a month",
+    "none": "No indicator yet: record the loan, the valuation, the commitment and a market rate."
+  },
+  "marketDialog": {
+    "saved": "Market rate recorded",
+    "title": "Remember this market rate",
+    "description": "Written to the property in the memory with its date; after 30 days it is flagged as possibly outdated.",
+    "source": "Where does it come from? (optional)",
+    "sourcePlaceholder": "a quote, a comparator, a date"
+  },
+  "facts": {
+    "saved": "Facts saved",
+    "title": "Facts of the property",
+    "description": "Only what you change is written (blank fields are left as they are). These are YOUR figures from the deed and the scheme's table: the coach never looks them up.",
+    "invalid": "Not a valid value: {{fields}}.",
+    "field": {
+      "account": "Bank account (uid or label)",
+      "loan": "Loan id",
+      "value": "Value today (EUR)",
+      "asOf": "Value as of",
+      "rentMonthly": "Monthly rent of the lease (EUR)",
+      "purchasePrice": "Purchase price (EUR)",
+      "purchaseDate": "Purchase date",
+      "scheme": "Scheme name",
+      "commitmentStart": "Commitment start",
+      "commitmentYears": "Commitment length (years)",
+      "surface": "Surface (m²)",
+      "rentCapM2": "Rent cap per m² (EUR a month)",
+      "rentCapMonthly": "Rent cap per month (EUR)",
+      "tenantIncomeLimit": "Tenant income limit (EUR a year)",
+      "tenantIncome": "Tenant reference income (EUR a year)",
+      "reductionRate": "Total reduction rate over the commitment (%)",
+      "reductionBaseCap": "Ceiling of the eligible price (EUR)",
+      "reductionFirstYear": "First tax year of the reduction"
+    },
+    "hint": {
+      "account": "its purpose should be rental (Household page)",
+      "loan": "the loan file that financed it",
+      "scheme": "e.g. the name on your deed: free text",
+      "commitmentStart": "YYYY-MM-DD, the first lease",
+      "commitmentYears": "6, 9 or 12 for a Pinel-type scheme",
+      "rentCapM2": "as you computed it from the scheme's table",
+      "rentCapMonthly": "wins over the cap per m²",
+      "reductionRate": "from the scheme's table",
+      "reductionBaseCap": "optional, as the scheme states it"
+    }
+  },
+  "declare": {
+    "saved": "Property declared",
+    "title": "Declare a rental property",
+    "description": "An asset of kind real_estate_rental in your memory. Add the scheme and the other facts afterwards (Edit facts).",
+    "submit": "Declare",
+    "id": "Id",
+    "idHint": "lowercase letters, digits, - or _ (no address)",
+    "account": "Bank account (optional)",
+    "accountHint": "uid or label",
+    "loan": "Loan id (optional)"
+  }
+}

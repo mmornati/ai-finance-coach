@@ -1,0 +1,88 @@
+{
+  "title": "Set up the coach",
+  "subtitle": "What the coach still does not know about your household. Every change is previewed, validated and recorded in the memory history.",
+  "progress": "Setup progress",
+  "stepsDone": "{{done}} of {{total}} steps done",
+  "askCoach": "Ask the coach to guide me",
+  "proposalsHint": "The coach can only propose changes: they appear in Memory > Proposals and you accept them yourself in a terminal. Finish with <code>uv run coach memory check</code>.",
+  "links": {
+    "household": "Members",
+    "accounts": "Accounts",
+    "loans": "Loans",
+    "contracts": "Contracts",
+    "preferences": "Memory",
+    "budgets": "Budgets",
+    "questions": "Questions"
+  },
+  "status": {
+    "done": "done",
+    "partial": "in progress",
+    "todo": "to do",
+    "skipped": "skipped",
+    "blocked": "waiting"
+  },
+  "missing": {
+    "account": "account {{account}}: {{fields}} not set",
+    "liability": "{{id}} ({{kind}}): {{fields}}",
+    "loanPayments_one": "{{count}} loan-like payment without a liability file",
+    "loanPayments_other": "{{count}} loan-like payments without a liability file",
+    "recurring_one": "{{count}} recurring payment without a contract file",
+    "recurring_other": "{{count}} recurring payments without a contract file",
+    "contract": "contract {{id}}: {{fields}}",
+    "more": "and {{count}} more"
+  },
+  "firstRun": {
+    "title": "First run",
+    "progress": "First-run progress",
+    "stepsDone": "{{done}} of {{total}} first-run steps done",
+    "steps": "First-run steps",
+    "optional": " (optional)",
+    "next": "Next, in a terminal (these steps ask for your confirmation before anything leaves this machine, so the page cannot run them):",
+    "docker": "Running in Docker: the commands run in the container, not on your host.",
+    "enableBanking": "Enable Banking: the downloaded key is on your host, so mount it for this one command:",
+    "enableBankingDocker": "Enable Banking: the downloaded key is on your host, so mount it for this one command (the guide keeps a private copy in /config; give it /tmp/eb.pem):"
+  },
+  "preview": {
+    "nothing": "Nothing to change.",
+    "write": "Write this change"
+  },
+  "household": {
+    "updated": "Household updated",
+    "intro": "Country decides the tax and cancellation rules. Declared employers, towns and schools are masked in everything a model sees. Typing new ones <b>adds</b> them; nothing is removed unless you mark it ({{employers}} employer(s), {{places}} place(s), {{schools}} school(s) declared).",
+    "country": "Country",
+    "notChanged": "Not changed",
+    "france": "France",
+    "italy": "Italy",
+    "list": {
+      "employers": "Employer(s)",
+      "places": "Town(s) you live or work in",
+      "schools": "School(s) or nursery(ies)"
+    },
+    "add": {
+      "employers": "Add Employer(s)",
+      "places": "Add Town(s) you live or work in",
+      "schools": "Add School(s) or nursery(ies)"
+    },
+    "declared": {
+      "employers": "Declared Employer(s)",
+      "places": "Declared Town(s) you live or work in",
+      "schools": "Declared School(s) or nursery(ies)"
+    },
+    "commaSeparated": "comma separated",
+    "keep": "Keep {{value}}",
+    "remove": "Remove {{value}}",
+    "removingTitle": "Removing declared terms",
+    "removingBody": "These will no longer be masked for the model.",
+    "understand": "I understand, remove them"
+  },
+  "preferences": {
+    "saved": "Preferences saved",
+    "intro": "These lines are added to preferences.md, which tells the coach how to talk to you (the coach reads them only when you allow free text in <code>[privacy] model_detail</code>).",
+    "language": "Language",
+    "languagePlaceholder": "fr, en or it",
+    "tone": "Tone",
+    "tonePlaceholder": "short, direct, numbers first",
+    "goals": "Goals",
+    "avoid": "Topics to avoid"
+  }
+}

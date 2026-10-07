@@ -5,6 +5,7 @@ import { renderApp } from "@/test/utils";
 import Alerts from "./Alerts";
 import { AlertsCard } from "./Dashboard";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 
 const ev = (o: object) => ({ id: "alr_aaaaaaaaaaaa", kind: "consent", severity: "high", created: "2026-10-04T12:00:00+00:00", updated: "2026-10-04T12:00:00+00:00", last_seen: "2026-10-04T12:00:00+00:00", resolved: false, resolved_at: null, title: "Fortuneo (FR): consent URGENT, 2 day(s) left", body: "Reconnect the bank.", payload: {}, status: "new", snoozed_until: null, acked_at: null, channels_sent: {}, escalations: 0, ...o });
 const KINDS = [
@@ -189,5 +190,18 @@ describe("dashboard badge", () => {
     expect(within(card).getByText("2 open")).toBeInTheDocument();
     expect(within(card).getByText("1 high")).toBeInTheDocument();
     for (const l of within(card).getAllByRole("link")) expect(l).toHaveAttribute("href", "/alerts");
+  });
+});
+
+describe("alerts center in French", () => {
+  it("translates the buttons, badges and filters, not the alert written by the server", async () => {
+    await setLanguage("fr");
+    renderApp(<Alerts />);
+    const a = (await screen.findByText(/Fortuneo \(FR\): consent URGENT/)).closest("section")!;
+    expect(screen.getByRole("heading", { name: "Alertes" })).toBeInTheDocument();
+    expect(within(a).getByText("élevée")).toBeInTheDocument();
+    expect(within(a).getByText("nouvelle")).toBeInTheDocument();
+    expect(within(a).getByRole("button", { name: /reporter de 7 jours/i })).toBeInTheDocument();
+    expect(screen.getByLabelText("Gravité")).toBeInTheDocument();
   });
 });

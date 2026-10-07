@@ -1,0 +1,174 @@
+{
+  "household": {
+    "header": {
+      "title": "Famiglia",
+      "subtitle": "Chi fa parte della famiglia, di chi è ogni conto e come le transazioni vengono attribuite a una persona. I nomi restano su questo computer."
+    },
+    "role": {
+      "adult": "adulto",
+      "child": "bambino"
+    },
+    "members": {
+      "title": "Membri",
+      "subtitle": "Dichiarati in memory/household.yaml. Un modello vede solo adult-1, kid-1 ... mai un nome o un alias.",
+      "empty": "Nessun membro dichiarato per ora",
+      "col": {
+        "name": "Nome",
+        "role": "Ruolo",
+        "born": "Anno di nascita",
+        "accounts": "Conti",
+        "transactions": "Transazioni"
+      },
+      "footer": "Aggiungi o modifica i membri con <code>coach memory member add</code> o nella pagina <memory>Memoria</memory>. La paghetta dei bambini è in <kids>Soldi dei bambini</kids>."
+    },
+    "accounts": {
+      "title": "Conti: intestatario e uso",
+      "subtitle": "L'intestatario è la persona a cui appartiene il conto (comune, o un membro). È il valore predefinito per ogni transazione del conto.",
+      "saved": "Conto aggiornato",
+      "col": {
+        "account": "Conto",
+        "owner": "Intestatario",
+        "purpose": "Usato per",
+        "attributed": "Attribuito a"
+      },
+      "ownerOf": "Intestatario di {{account}}",
+      "purposeOf": "Uso di {{account}}",
+      "notMember": "{{owner}} (non è un membro)",
+      "noOwner": "Nessun intestatario",
+      "joint": "Comune",
+      "notSet": "Non impostato"
+    },
+    "rules": {
+      "title": "Regole di attribuzione",
+      "subtitle": "A chi appartiene una transazione: un'attribuzione manuale, poi la prima regola che corrisponde, poi l'intestatario del conto.",
+      "add": "Regola",
+      "empty": "Nessuna regola: decide l'intestatario del conto. Regole tipiche: un conto con carta prepagata per ogni bambino, o le ultime quattro cifre di una carta su un conto condiviso.",
+      "item": "<b>{{name}}</b> quando {{conditions}}",
+      "remove": "Elimina la regola {{id}}",
+      "confirmRemove": "Eliminare la regola \"{{id}}\"? L'eliminazione resta nello storico della memoria.",
+      "removed": "Regola eliminata",
+      "manual_one": "{{count}} transazione riattribuita a mano (apri una transazione per modificarla o annullarla).",
+      "manual_many": "{{count}} transazioni riattribuite a mano (apri una transazione per modificarla o annullarla).",
+      "manual_other": "{{count}} transazioni riattribuite a mano (apri una transazione per modificarla o annullarla).",
+      "match": {
+        "account": "conto {{value}}",
+        "card": "carta che termina con {{value}}",
+        "merchant": "esercente /{{value}}/",
+        "description": "descrizione /{{value}}/",
+        "moneyIn": "soldi in entrata",
+        "moneyOut": "soldi in uscita",
+        "direction": "direzione {{value}}",
+        "atLeast": "almeno {{value}}",
+        "atMost": "al massimo {{value}}"
+      }
+    },
+    "ruleDialog": {
+      "title": "Nuova regola di attribuzione",
+      "description": "Ogni condizione che compili deve corrispondere (AND). L'anteprima mostra quante transazioni attribuirebbe.",
+      "cancel": "Annulla",
+      "save": "Salva la regola",
+      "saved": "Regola salvata",
+      "id": "Id della regola",
+      "idHint": "lettere minuscole, cifre, - o _",
+      "member": "Attribuisci a",
+      "joint": "Comune",
+      "account": "Conto (uid o nome)",
+      "anyAccount": "Qualsiasi conto",
+      "card": "Ultime quattro cifre della carta",
+      "cardHint": "solo se la banca le riporta nella descrizione",
+      "merchantMatch": "L'esercente corrisponde a (regex)",
+      "descriptionMatch": "La descrizione corrisponde a (regex)",
+      "preview_one": "Corrisponde a <b>{{count}}</b> transazione; <b>{{change}}</b> cambierebbero persona.",
+      "preview_many": "Corrisponde a <b>{{count}}</b> transazioni; <b>{{change}}</b> cambierebbero persona.",
+      "preview_other": "Corrisponde a <b>{{count}}</b> transazioni; <b>{{change}}</b> cambierebbero persona."
+    },
+    "logins": {
+      "title": "Accessi",
+      "subtitle": "Ogni persona può avere il proprio accesso: un adulto vede tutto, un bambino vede solo i propri soldi. Gli accessi si creano in un terminale, mai qui.",
+      "empty": "Nessun accesso per ora: l'app si apre con l'accesso del proprietario (tutto).",
+      "disabled": "disattivato"
+    },
+    "prefs": {
+      "title": "Le mie preferenze",
+      "subtitle": "Salvate per l'accesso {{user}}.",
+      "saved": "Preferenze salvate per questo accesso",
+      "theme": "Tema",
+      "unchanged": "Invariato",
+      "system": "Sistema",
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "locale": "Date e numeri",
+      "landing": "Si apre su",
+      "save": "Salva"
+    },
+    "audit": {
+      "title": "Chi ha cambiato cosa",
+      "subtitle": "Le modifiche fatte nell'app web (metodo, indirizzo, chi: mai il contenuto) e lo storico della memoria con l'origine di ogni modifica.",
+      "show": "Mostra il registro",
+      "requests": "Modifiche fatte nell'app web",
+      "requestsEmpty": "Ancora niente.",
+      "memory": "Modifiche della memoria e loro origine",
+      "memoryEmpty": "Nessuno storico."
+    }
+  },
+  "whoPays": {
+    "header": {
+      "title": "Chi paga cosa",
+      "subtitle": "Le spese condivise (casa, auto, assicurazioni) divise secondo le regole che imposti. Una spesa pagata dal conto comune non salda nulla; ciò che una persona ha pagato con i propri soldi viene confrontato con la sua giusta quota."
+    },
+    "period": "Periodo",
+    "months_one": "{{count}} mese",
+    "months_many": "{{count}} mesi",
+    "months_other": "{{count}} mesi",
+    "addRule": "Regola",
+    "method": {
+      "equal": "diviso in parti uguali",
+      "income": "in proporzione al reddito",
+      "custom": "secondo le percentuali che hai impostato"
+    },
+    "empty": {
+      "title": "Nessuna regola di ripartizione per ora",
+      "action": "Aggiungi una regola",
+      "body": "Una regola dice quali spese copre (una categoria, un gruppo, un'etichetta, un esercente), come sono divise (50/50, in base al reddito, percentuali personalizzate) e tra chi."
+    },
+    "total": {
+      "title": "Tutte le regole insieme",
+      "subtitle": "Positivo: gli altri devono a questa persona. Negativo: questa persona deve.",
+      "line": "quota dovuta <owed/> · pagato <paid/> · saldo <net/>"
+    },
+    "confirmRemove": "Eliminare la regola di ripartizione \"{{id}}\"?",
+    "removed": "Regola di ripartizione eliminata",
+    "footnote": "Una ripartizione del passato, calcolata dal codice a partire dalle transazioni attribuite a ciascuna persona. Non sposta soldi e non è una consulenza legale o fiscale sulle finanze di una coppia.",
+    "rule": {
+      "subtitle_one": "{{method}} · {{total}} su {{count}} pagamento",
+      "subtitle_many": "{{method}} · {{total}} su {{count}} pagamenti",
+      "subtitle_other": "{{method}} · {{total}} su {{count}} pagamenti",
+      "remove": "Elimina la ripartizione {{id}}",
+      "col": {
+        "member": "Membro",
+        "share": "Quota",
+        "owed": "Giusta quota del costo",
+        "paid": "Pagato di tasca propria",
+        "settlement": "Saldo"
+      },
+      "jointPaid": "conto comune {{amount}}",
+      "personalPaid": "pagato di tasca propria {{amount}}",
+      "unattributed": "fuori dalla regola {{amount}}"
+    },
+    "dialog": {
+      "title": "Nuova regola di ripartizione",
+      "description": "Divisa tra tutti gli adulti, a meno che tu non scelga percentuali personalizzate. La prima regola che corrisponde a un pagamento lo prende.",
+      "cancel": "Annulla",
+      "save": "Salva la regola",
+      "saved": "Regola di ripartizione salvata",
+      "id": "Id",
+      "idHint": "lettere minuscole, cifre, - o _",
+      "ruleTitle": "Titolo (facoltativo)",
+      "group": "Spese coperte (gruppo di categorie)",
+      "method": "Divisione",
+      "equal": "In parti uguali",
+      "income": "In proporzione al reddito",
+      "custom": "Percentuali personalizzate"
+    }
+  }
+}
