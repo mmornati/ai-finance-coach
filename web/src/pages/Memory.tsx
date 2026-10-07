@@ -8,7 +8,7 @@ import { ItemDialog, Kind } from "@/components/ItemForm";
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useProposals, useQuestions, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { errorText, holdingKindLabel } from "@/i18n/server";
+import { errorText, holdingKindLabel, useServerText } from "@/i18n/server";
 import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
 import type { Annotation, Asset, Change, CheckIssue, EditResult, EventMeta, Liability, MemoryOverview, Member, Proposal, Question } from "@/api/types";
 import { cn } from "@/lib/utils";
@@ -260,13 +260,14 @@ function DeleteAnnotation({ a, onClose }: { a: Annotation; onClose: () => void }
 function CheckTab() {
   const { t } = useTranslation("memory");
   const q = useGet<{ summary: { errors: number; warnings: number; info: number }; issues: CheckIssue[] }>("/memory/check");
+  const { tServer } = useServerText();
   return (
     <Async q={q} skeleton={<Skeleton className="h-64 w-full" />}>
       {(d) => (
         <div className="grid gap-4">
           <div className="flex gap-2"><Badge tone={d.summary.errors ? "neg" : "pos"}>{t("check.errors", { count: d.summary.errors })}</Badge><Badge tone={d.summary.warnings ? "warn" : "neutral"}>{t("check.warnings", { count: d.summary.warnings })}</Badge><Badge>{t("check.notes", { count: d.summary.info })}</Badge></div>
           {d.issues.length === 0 ? <Card><EmptyState icon={<Check className="size-6" />} title={t("check.consistent")} /></Card> : (
-            <Card pad={false}><ul className="divide-y divide-border">{d.issues.map((i, k) => <li key={k} className="flex gap-3 px-4 py-2.5 text-sm sm:px-5"><Badge tone={i.level === "error" ? "neg" : i.level === "warning" ? "warn" : "neutral"}>{t(`check.level.${i.level}`)}</Badge><div className="min-w-0"><div>{i.message}</div><div className="truncate text-xs text-faint">{i.file}{i.path ? ` · ${i.path}` : ""}{i.line ? t("check.line", { line: i.line }) : ""}</div></div></li>)}</ul></Card>
+            <Card pad={false}><ul className="divide-y divide-border">{d.issues.map((i, k) => <li key={k} className="flex gap-3 px-4 py-2.5 text-sm sm:px-5"><Badge tone={i.level === "error" ? "neg" : i.level === "warning" ? "warn" : "neutral"}>{t(`check.level.${i.level}`)}</Badge><div className="min-w-0"><div>{tServer(i.message_msg, i.message)}</div><div className="truncate text-xs text-faint">{i.file}{i.path ? ` · ${i.path}` : ""}{i.line ? t("check.line", { line: i.line }) : ""}</div></div></li>)}</ul></Card>
           )}
         </div>
       )}

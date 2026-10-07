@@ -6,6 +6,7 @@ import { useDryRun, useFilters, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { parseMoney } from "@/lib/format";
 import type { EditResult } from "@/api/types";
+import { useServerText } from "@/i18n/server";
 
 export type Kind = "liabilities" | "contracts" | "assets" | "members" | "events";
 type FT = "text" | "number" | "date" | "select" | "bool" | "textarea" | "list" | "int" | "account";
@@ -177,6 +178,7 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
   const enabled = idOk && has;
   const path = `/memory/${kind}/${id}`;
   const pv = useDryRun<EditResult>(path, { fields }, enabled, "put");
+  const { tServerList } = useServerText();
   const save = useWrite(() => api.put<EditResult>(path, { fields }, { dry_run: false }), { success: t("itemForm.saved"), onSuccess: onClose });
   const missingKind = kind === "liabilities" && isNew && !vals.kind;
 
@@ -203,7 +205,7 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
         {missingKind && <Notice tone="warn">{t("itemForm.chooseKind")}</Notice>}
         {pv.loading && <Spinner label={t("itemForm.validating")} />}
         {pv.error && <Notice tone="neg" title={t("itemForm.notValid")}>{pv.error}</Notice>}
-        {pv.data && <>{pv.data.warnings.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}<DiffView diff={pv.data.diff} empty={t("itemForm.nothingChanges")} /></>}
+        {pv.data && <>{tServerList(pv.data.warnings, pv.data.warnings_msg).map((w, i) => <Notice key={i} tone="warn">{w}</Notice>)}<DiffView diff={pv.data.diff} empty={t("itemForm.nothingChanges")} /></>}
       </div>
     </Dialog>
   );
