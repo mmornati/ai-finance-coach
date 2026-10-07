@@ -260,11 +260,14 @@ def ops_for(d: Draft, *, iso: bool = False) -> list:
 
 def question_for(d: Draft, today: dt.date):
     """The open question that asks for the missing fields (same key as the generator's ``fill:contract:<id>``: never twice)."""
-    from coach.memory.qgen import _mk
+    from coach.memory.qgen import _mk, qmsg
     key = f"fill:contract:{d.contract_id}"
     extra = (" Several recurring payments share this bank label: what does this contract cover (home, car, health, other), and who holds it?"
              if d.shared_label else "")
-    return _mk("fill", key, "Contracts",
-               f"Contract {d.contract_id} ({d.provider}) was drafted from the bank payments: {', '.join(d.missing)} unknown. "
-               "The contract or the customer area has them." + extra, {"missing": d.missing, "drafted_from": d.series_id},
-               {"file": d.rel, "field": ",".join(d.missing)}, round(d.yearly_c / 100, 2), today)
+    fields = ", ".join(d.missing)
+    text = (f"Contract {d.contract_id} ({d.provider}) was drafted from the bank payments: {fields} unknown. "
+            "The contract or the customer area has them." + extra)
+    msg = (qmsg("question.contractDraftedShared", text, id=d.contract_id, provider=d.provider, fields=fields) if d.shared_label else
+           qmsg("question.contractDrafted", text, id=d.contract_id, provider=d.provider, fields=fields))
+    return _mk("fill", key, "Contracts", text, {"missing": d.missing, "drafted_from": d.series_id},
+               {"file": d.rel, "field": ",".join(d.missing)}, round(d.yearly_c / 100, 2), today, msg=msg)

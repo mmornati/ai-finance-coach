@@ -224,7 +224,9 @@ def test_a_contradicted_decision_raises_an_insight_and_a_calendar_item(ctx):
     s = ctx.get("/subs/savings").json()
     assert s["contradicted"] == 1 and s["realised_monthly"] == "0.00" and "latest 2026-09-12 (39.90)" in s["decisions"][0]["reason"]
     assert any("still charged after you cancelled" in c["title"] and c["severity"] == "high" for c in ctx.get("/insights").json()["cards"])
-    assert any(i["kind"] == "decision_check" and "still being charged" in i["title"] for i in ctx.get("/calendar", days=14).json()["items"])
+    item = next(i for i in ctx.get("/calendar", days=14).json()["items"] if i["kind"] == "decision_check" and "still being charged" in i["title"])
+    assert item["title_msg"]["code"] == "calendar.stillCharged.cancelled" and item["title_msg"]["params"]["name"] == "Fitclub"
+    assert item["note_msg"]["code"].startswith("subs.decision.") and item["note_msg"]["text"] == item["note"]   # 4e's verification reason
 
 
 def test_the_existing_contract_endpoints_serialise_the_structured_usage(ctx):

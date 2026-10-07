@@ -16,6 +16,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Optional
 
+from coach.i18n_msg import MessageError, server_msg
 from coach.memory import schemas
 from coach.memory.store import MemoryStore
 
@@ -33,9 +34,38 @@ def months_ago(today: dt.date, n: int) -> dt.date:
     return dt.date(y, m + 1, min(today.day, last))
 
 
-def _mk(kind, key, topic, question, evidence, target=None, stake=None, today=None, context=None):
-    return schemas.Question(id=qid(kind, key), topic=topic, question=question, evidence=evidence, key=key,
-                            suggested_target=target, created=today, origin="generated", stake=stake, context=context)
+# the topics of the generated questions: their code for the web app (labels.questionTopic.<code> of server.json)
+TOPIC_CODE = {"Categorization (ordered by money at stake)": "categorization", "Large one-off payments": "largePayments",
+              "Recurring payments without a contract or loan file": "recurringNoFile", "Liabilities": "liabilities", "Contracts": "contracts",
+              "Assets": "assets", "Rental property": "rentalProperty", "Accounts": "accounts", "Household": "household",
+              "Subscriptions": "subscriptions"}
+
+
+def qmsg(code: str, text: str, **params) -> Optional[dict]:
+    """The web's message of a generated question (docs/i18n.md "Server text"), or None when a value does not fit its param type (the web
+    then shows the English): a question must never fail to be generated over its translation."""
+    try:
+        return server_msg(code, text, **params)
+    except MessageError:
+        return None
+
+
+def _mk(kind, key, topic, question, evidence, target=None, stake=None, today=None, context=None, msg=None):
+    """A generated question. ``question`` is the English text, or its message (``qmsg``: the text is the English)."""
+    if isinstance(question, dict):
+        question, msg = question["text"], question
+    return schemas.Question(id=qid(kind, key), topic=topic, topic_code=TOPIC_CODE.get(topic), question=question, question_msg=msg,
+                            evidence=evidence, key=key, suggested_target=target, created=today, origin="generated", stake=stake,
+                            context=context)
+
+
+def _cat(c) -> Optional[str]:
+    """A category id for a ``*_category`` param (None when it is not one)."""
+    return c if isinstance(c, str) and re.match(r"^[a-z0-9_]+\.[a-z0-9_]+$", c) else None
+
+
+def _amount(v) -> str:
+    return f"{float(v):.2f}"
 
 
 def _person_like(key, raw, types, family, first, known, allow):
@@ -91,17 +121,24 @@ def merchant_questions(con, cfg, store, today, min_stake, limit):
               "reason": r["reason"]}
         if r["confidence"] is not None:
             ev["confidence"] = r["confidence"]
-        out.append(_mk("merchant", f"merchant:{r['key']}", "Categorization (ordered by money at stake)",
-                       f"What is {r['key']}? {r['n']} payment{'s' if r['n'] != 1 else ''}, {r['total']:+,.0f} EUR between {d[0]} and {d[1]} "
-                       f"(currently {r['category'] or 'not categorized'}).", ev,
-                       {"file": "categorization.yaml"}, r["at_stake"], today))
+        text = (f"What is {r['key']}? {r['n']} payment{'s' if r['n'] != 1 else ''}, {r['total']:+,.0f} EUR between {d[0]} and {d[1]} "
+                f"(currently {r['category'] or 'not categorized'}).")
+        cat = _cat(r["category"])
+        msg = (qmsg("question.merchant", text, merchant=r["key"], count=r["n"], total_amount=_amount(r["total"]), first_date=d[0],
+                    last_date=d[1], current_category=cat) if cat else
+               qmsg("question.merchantUncategorized", text, merchant=r["key"], count=r["n"], total_amount=_amount(r["total"]), first_date=d[0],
+                    last_date=d[1]) if not r["category"] else None)
+        out.append(_mk("merchant", f"merchant:{r['key']}", "Categorization (ordered by money at stake)", text, ev,
+                       {"file": "categorization.yaml"}, r["at_stake"], today, msg=msg))
     out.sort(key=lambda q: -(q.stake or 0))
     out = out[:limit]
     if held_n and held_total >= min_stake:
+        text = (f"{held_n} counterparties may be people (transfers, no business name): {held_total:,.0f} EUR "
+                "in total. They are never sent to an LLM; review them with `coach classify review` and say "
+                "what they are (family, rent, babysitter...).")
         out.append(_mk("people", "held-back:people", "Categorization (ordered by money at stake)",
-                       f"{held_n} counterparties may be people (transfers, no business name): {held_total:,.0f} EUR "
-                       "in total. They are never sent to an LLM; review them with `coach classify review` and say "
-                       "what they are (family, rent, babysitter...).",
+                       qmsg("question.peopleHeldBack", text, count=held_n, total_amount=_amount(held_total), command="coach classify review")
+                       or text,
                        {"counterparties": held_n, "gross_total": round(held_total, 2)},
                        {"file": "categorization.yaml"}, held_total, today))
     return out
@@ -124,10 +161,12 @@ def large_tx_questions(con, cfg, store, today, threshold, limit):
             continue
         ev = {"amount": t["amount"], "date": t["date"], "category": t["category"], "label_source": t["source"],
               "bank": t["bank"] or "?", "merchant": t["key"]}
-        out.append(_mk("large", f"large:{t['tx_key']}", "Large one-off payments",
-                       f"Is the payment of {t['amount']:+,.0f} EUR on {t['date']} to {t['key']} a one-off? "
-                       f"(counted as {t['category']}; it is in the monthly averages unless tagged)", ev,
-                       {"file": "categorization.yaml"}, abs(t["amount"]), today))
+        text = (f"Is the payment of {t['amount']:+,.0f} EUR on {t['date']} to {t['key']} a one-off? "
+                f"(counted as {t['category']}; it is in the monthly averages unless tagged)")
+        msg = qmsg("question.largeOneOff", text, payment_amount=_amount(t["amount"]), payment_date=t["date"], merchant=t["key"],
+                   counted_category=t["category"])
+        out.append(_mk("large", f"large:{t['tx_key']}", "Large one-off payments", text, ev,
+                       {"file": "categorization.yaml"}, abs(t["amount"]), today, msg=msg))
         if len(out) >= limit:
             break
     return out
@@ -175,10 +214,12 @@ def recurring_questions(con, cfg, store, today, limit):
         if _person_like(key, txs[-1]["merchant"], {txs[-1]["type"]}, family, first, known, cfg.llm_allowlist):
             continue
         cat = txs[-1]["category"]
+        text = (f"{key}: a monthly debit of about {mean:,.0f} EUR ({len(txs)} payments since {txs[0]['date']}, "
+                f"{cat}) has no file in liabilities/ or contracts/. Is it a loan, an insurance or a subscription? "
+                "What are its terms (start, end, renewal, notice)?")
         out.append(_mk("recurring", f"recurring:{key}", "Recurring payments without a contract or loan file",
-                       f"{key}: a monthly debit of about {mean:,.0f} EUR ({len(txs)} payments since {txs[0]['date']}, "
-                       f"{cat}) has no file in liabilities/ or contracts/. Is it a loan, an insurance or a subscription? "
-                       "What are its terms (start, end, renewal, notice)?",
+                       qmsg("question.recurringNoFile", text, merchant=key, average_amount=_amount(mean), count=len(txs),
+                            since_date=txs[0]["date"], payment_category=cat) or text,
                        {"payments": len(txs), "average": round(mean, 2), "first": txs[0]["date"], "last": txs[-1]["date"],
                         "category": cat}, {"file": "liabilities/ or contracts/"}, mean * 12, today))
     out.sort(key=lambda q: -(q.stake or 0))
@@ -207,21 +248,26 @@ def null_field_questions(store, cfg, today):
     for rel, m in store.liabilities():
         missing = [f for f in key_fields(m) if _get(m, f) is None]
         if missing:
+            fields = ", ".join(missing)
+            text = (f"Liability {m.id} ({m.kind}): {len(missing)} key fields are empty ({fields}). "
+                    "The loan contract or the latest statement has them.")
             out.append(_mk("fill", f"fill:liability:{m.id}", "Liabilities",
-                           f"Liability {m.id} ({m.kind}): {len(missing)} key fields are empty ({', '.join(missing)}). "
-                           "The loan contract or the latest statement has them.",
+                           qmsg("question.liabilityFields", text, id=m.id, loan_kind=m.kind, count=len(missing), fields=fields) or text,
                            {"missing": missing, "monthly_payment": m.monthly_payment},
                            {"file": rel, "field": ",".join(missing)}, (m.monthly_payment or 0) * 12, today))
     for rel, m in store.contracts():
         missing = [f for f in ("provider", "billing.amount", "renewal", "notice_period_days") if _get(m, f) is None]
         if missing:
+            fields = ", ".join(missing)
+            text = f"Contract {m.id}: {fields} unknown."
             out.append(_mk("fill", f"fill:contract:{m.id}", "Contracts",
-                           f"Contract {m.id}: {', '.join(missing)} unknown.", {"missing": missing},
+                           qmsg("question.contractFields", text, id=m.id, fields=fields) or text, {"missing": missing},
                            {"file": rel, "field": ",".join(missing)}, None, today))
     for a in store.assets():
         if a.amount is None:
+            text = f"Asset {a.id} ({a.kind}) has no value or balance yet: what is it today (and as of when)?"
             out.append(_mk("fill", f"fill:asset:{a.id}", "Assets",
-                           f"Asset {a.id} ({a.kind}) has no value or balance yet: what is it today (and as of when)?",
+                           qmsg("question.assetNoValue", text, id=a.id, asset_kind=a.kind) or text,
                            {"missing": ["balance" if a.kind not in ("vehicle", "real_estate", "real_estate_rental") else "value"]},
                            {"file": "assets.yaml", "field": f"assets[{a.id}].balance"}, None, today))
     return out
@@ -233,14 +279,16 @@ def stale_questions(store, cfg, today):
     liab_cut = months_ago(today, cfg.memory_stale_months)
     for a in store.assets():
         if a.amount is not None and a.as_of and a.as_of < asset_cut:
+            text = f"The value of asset {a.id} dates from {a.as_of}: what is it now?"
             out.append(_mk("stale", f"stale:asset:{a.id}:{a.as_of}", "Assets",
-                           f"The value of asset {a.id} dates from {a.as_of}: what is it now?",
+                           qmsg("question.assetStale", text, id=a.id, as_of_date=a.as_of) or text,
                            {"as_of": str(a.as_of), "value": a.amount}, {"file": "assets.yaml", "field": f"assets[{a.id}].balance"},
                            abs(a.amount) * 0.02, today))
     for rel, m in store.liabilities():
         if m.outstanding is not None and m.outstanding_as_of and m.outstanding_as_of < liab_cut:
+            text = f"The outstanding capital of {m.id} dates from {m.outstanding_as_of}: what is it now?"
             out.append(_mk("stale", f"stale:liability:{m.id}:{m.outstanding_as_of}", "Liabilities",
-                           f"The outstanding capital of {m.id} dates from {m.outstanding_as_of}: what is it now?",
+                           qmsg("question.outstandingStale", text, id=m.id, as_of_date=m.outstanding_as_of) or text,
                            {"as_of": str(m.outstanding_as_of), "outstanding": m.outstanding},
                            {"file": rel, "field": "outstanding"}, None, today))
     return out
@@ -256,9 +304,10 @@ def odometer_questions(store, today):
         last = max((o.date for o in m.odometer), default=None)
         if last is not None and last >= months_ago(today, 3):
             continue
+        text = (f"What is the odometer of the vehicle of {m.id} now? The lease ends {m.end_date} with a limit of "
+                f"{m.mileage_limit_km:,} km: a reading lets the coach project the excess-mileage cost.")
         out.append(_mk("stale", f"stale:odometer:{m.id}:{last or 'none'}", "Liabilities",
-                       f"What is the odometer of the vehicle of {m.id} now? The lease ends {m.end_date} with a limit of "
-                       f"{m.mileage_limit_km:,} km: a reading lets the coach project the excess-mileage cost.",
+                       qmsg("question.odometer", text, id=m.id, end_date=m.end_date, limit_km=m.mileage_limit_km) or text,
                        {"last_reading": str(last) if last else None, "end_date": str(m.end_date)},
                        {"file": rel, "field": "odometer"}, None, today))
     return out
@@ -286,10 +335,11 @@ def rental_questions(con, store, today):
     for a in assets:
         missing = rental_service.facts_for_questions(a, liabs, n_acc, n_free)
         if missing:
+            facts = ", ".join(RENTAL_PROMPT.get(f, f) for f in missing)          # English descriptions of the facts, a param as they are
+            text = (f"Rental property {a.id}: to follow its cash flow, the scheme commitment and the tax figures I still need "
+                    f"{facts}. The deed of purchase, the lease and the loan offer have them; `coach rental edit` records them.")
             out.append(_mk("fill", f"fill:rental:{a.id}", "Rental property",
-                           f"Rental property {a.id}: to follow its cash flow, the scheme commitment and the tax figures I still need "
-                           f"{', '.join(RENTAL_PROMPT.get(f, f) for f in missing)}. The deed of purchase, the lease and the loan offer have them; "
-                           "`coach rental edit` records them.",
+                           qmsg("question.rentalFacts", text, id=a.id, facts=facts, command="coach rental edit") or text,
                            {"missing": missing}, {"file": "assets.yaml", "field": ",".join(f"assets[{a.id}].{m.split(' ')[0]}" for m in missing)},
                            (a.rent_monthly or 0) * 12 or None, today))
     return out
@@ -302,9 +352,13 @@ def account_questions(con, store, today):
             FROM accounts a LEFT JOIN transactions t ON t.account_uid=a.uid
             WHERE a.exclude=0 AND (a.owner IS NULL OR a.purpose IS NULL) GROUP BY a.uid"""):
         miss = [f for f, v in (("owner", owner), ("purpose", purpose)) if v is None]
-        out.append(_mk("acct", f"acct:{uid}", "Accounts",
-                       f"Account {uid[:8]} at {bank or 'an unknown bank'} ({n} transactions): "
-                       f"{' and '.join(miss)} not set. Whose is it and what is it for?",
+        text = (f"Account {uid[:8]} at {bank or 'an unknown bank'} ({n} transactions): "
+                f"{' and '.join(miss)} not set. Whose is it and what is it for?")
+        code = {("owner",): "question.accountNoOwner", ("purpose",): "question.accountNoPurpose",
+                ("owner", "purpose"): "question.accountNoOwnerPurpose"}[tuple(miss)]
+        msg = qmsg(code, text, account=uid[:8], bank=bank, count=n) if bank else \
+            qmsg(code + "UnknownBank", text, account=uid[:8], count=n)
+        out.append(_mk("acct", f"acct:{uid}", "Accounts", msg or text,
                        {"bank": bank or "?", "transactions": n, "first": first, "last": last, "missing": miss},
                        {"file": "db:accounts", "field": ",".join(miss)}, None, today))
     return out
@@ -316,14 +370,16 @@ def household_questions(con, store, today):
     if not store.exists("household.yaml"):
         owners = [r[0] for r in con.execute("SELECT DISTINCT owner FROM accounts WHERE owner IS NOT NULL AND LOWER(owner)<>'joint'")]
         if owners:
+            text = (f"No household.yaml: {len(owners)} account owners exist in the data. Declare the members "
+                    "(id, name, role adult/child, birth year, holder-name spellings) with `coach memory member add`.")
             out.append(_mk("household", "household:init", "Household",
-                           f"No household.yaml: {len(owners)} account owners exist in the data. Declare the members "
-                           "(id, name, role adult/child, birth year, holder-name spellings) with `coach memory member add`.",
+                           qmsg("question.householdInit", text, count=len(owners), command="coach memory member add") or text,
                            {"account_owners": len(owners)}, {"file": "household.yaml"}, None, today))
     for m in members:
         if m.birth_year is None:
-            out.append(_mk("birth", f"member-birth:{m.id}", "Household",
-                           f"What is the birth year of member {m.id} ({m.role})? Used for age-based analysis and goals.",
+            text = f"What is the birth year of member {m.id} ({m.role})? Used for age-based analysis and goals."
+            code = {"adult": "question.birthYearAdult", "child": "question.birthYearChild"}.get(m.role)
+            out.append(_mk("birth", f"member-birth:{m.id}", "Household", (qmsg(code, text, member=m.id) if code else None) or text,
                            {"member": m.id, "role": m.role}, {"file": "household.yaml", "field": f"members[{m.id}].birth_year"},
                            None, today))
     return out

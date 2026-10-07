@@ -24,6 +24,7 @@ from typing import Optional
 from coach.analytics.common import add_months_key, last_closed_month, money_str, months_between
 from coach.analytics.dataset import Dataset, is_income, is_spending
 from coach.household.people import JOINT, People, fold
+from coach.i18n_msg import server_msg
 
 WINDOW_MONTHS = 12
 
@@ -87,14 +88,15 @@ def who_pays(ds: Dataset, months: int = WINDOW_MONTHS, rule_id: Optional[str] = 
         for t in mine:
             claimed.add((t.key, t.split_index))
         among = list(rule.among) if rule.among else people.adults()
-        notes = []
+        notes_msg = []
         if rule.method == "custom":
             weights = {m: float(p) for m, p in rule.shares.items()}
             among = [m for m in weights]
         elif rule.method == "income":
             weights = {m: float(max(income_by.get(m, 0), 0)) for m in among}
             if sum(weights.values()) <= 0:
-                notes.append("no income is attributed to these members over the window: shared equally instead")
+                notes_msg.append(server_msg("household.allocationNoIncome",
+                                            "no income is attributed to these members over the window: shared equally instead"))
                 weights = {m: 1.0 for m in among}
         else:
             weights = {m: 1.0 for m in among}
@@ -110,7 +112,7 @@ def who_pays(ds: Dataset, months: int = WINDOW_MONTHS, rule_id: Optional[str] = 
         net = {m: paid[m] - fair_personal[m] for m in among}
         joint_share = split_cents(joint, weights)
         if not mine:
-            notes.append("no transaction matched this rule in the window")
+            notes_msg.append(server_msg("household.allocationNoMatch", "no transaction matched this rule in the window"))
         rows = []
         for m in among:
             rows.append({"member": m, "share_pct": share_pct[m], "owed_c": owed[m], "paid_c": paid[m],
@@ -122,9 +124,12 @@ def who_pays(ds: Dataset, months: int = WINDOW_MONTHS, rule_id: Optional[str] = 
         rules_out.append({"id": rule.id, "title": rule.title, "method": rule.method, "among": among, "members": rows, "total_c": cost,
                           "joint_paid_c": joint, "personal_paid_c": personal, "unattributed_c": unattributed, "n": len(mine),
                           "income_basis": {m: income_by.get(m, 0) for m in among} if rule.method == "income" else None,
-                          "evidence": sorted({t.key for t in mine})[:20], "notes": notes})
+                          "evidence": sorted({t.key for t in mine})[:20], "notes": [m["text"] for m in notes_msg],
+                          "notes_msg": notes_msg})
+    top = [] if people.allocations else [server_msg("household.allocationNoRule", "no allocation rule: add one with `coach household allocate` "
+                                                    "(household.yaml: allocations)", command="coach household allocate")]
     return {"as_of": ds.today, "window": {"months": win}, "rules": rules_out, "by_member": sorted(totals.values(), key=lambda r: r["member"]),
-            "notes": ([] if people.allocations else ["no allocation rule: add one with `coach household allocate` (household.yaml: allocations)"])}
+            "notes": [m["text"] for m in top], "notes_msg": top}
 
 
 def to_json(report: dict) -> dict:

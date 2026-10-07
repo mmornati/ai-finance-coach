@@ -600,7 +600,8 @@ def _qline(q) -> str:
 def cmd_q_list(a, cfg):
     qs = q_mod.listing(_store(cfg), "open" if a.open else a.status)
     if a.json:
-        print(_j([q.model_dump(mode="python", exclude_none=True) for q in qs]))
+        from coach.i18n_msg import strip_msgs                  # the *_msg translations are the web app's only
+        print(_j([strip_msgs(q.model_dump(mode="python", exclude_none=True)) for q in qs]))
         return
     if not qs:
         print("no questions" + (" open" if a.open else "") + " (`coach questions generate`)")

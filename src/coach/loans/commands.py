@@ -197,17 +197,19 @@ def cmd_schedule(a, cfg):
 
 def _propose_questions(cfg, lb, rel, sch: S.LoanSchedule) -> None:
     from coach.memory import questions as Q, schemas
-    from coach.memory.qgen import qid
+    from coach.memory.qgen import TOPIC_CODE, qid, qmsg
     store = _store(cfg)
     key = f"fill:loan-schedule:{lb.id}"
     if any(q.key == key for q in store.questions()):
         print("the question about these fields is already on the open-questions list")
         return
     miss = sch.missing
-    q = schemas.Question(id=qid("fill", key), topic="Liabilities", key=key, origin="manual", created=dt.date.today(),
-                         stake=round((lb.monthly_payment or 0) * 12, 2) or None,
-                         question=(f"Liability {lb.id} ({lb.kind}): to show its amortization schedule I need {', '.join(miss)}. The loan offer or "
-                                   "the latest annual statement has them."),
+    fields = ", ".join(miss)
+    text = (f"Liability {lb.id} ({lb.kind}): to show its amortization schedule I need {fields}. The loan offer or "
+            "the latest annual statement has them.")
+    q = schemas.Question(id=qid("fill", key), topic="Liabilities", topic_code=TOPIC_CODE["Liabilities"], key=key, origin="manual",
+                         created=dt.date.today(), stake=round((lb.monthly_payment or 0) * 12, 2) or None, question=text,
+                         question_msg=qmsg("question.loanSchedule", text, id=lb.id, loan_kind=lb.kind, fields=fields),
                          evidence={"missing": miss}, suggested_target={"file": rel, "field": ",".join(miss)})
     Q.add_many(store, [q], source="cli")
     print(f"added 1 open question about {', '.join(miss)} (`coach questions list --open`)")

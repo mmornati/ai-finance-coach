@@ -21,6 +21,7 @@ from coach.api.state import AppState, ui_source
 from coach.household import (allocation as alloc_mod, attribution as attr_mod, kidbudgets, kids as kids_mod, people as people_mod,
                              users as users_mod)
 from coach.household.attribution import rule_matches
+from coach.i18n_msg import server_msg
 from coach.memory.edit import jsonable
 
 router = APIRouter(tags=["household"])
@@ -59,19 +60,23 @@ def overview(state: AppState = Depends(get_state)):
         accounts.append({"uid": uid, "label": a.label, "bank": a.bank, "owner": a.owner,
                          "owner_member": who if who in people.by_id else None, "joint": who == people_mod.JOINT,
                          "owner_known": who is not None, "purpose": a.purpose, "attributed": dict(per_account.get(uid, {}))})
-    warnings = []
+    warnings_msg = []
     if not people.members:
-        warnings.append("no member is declared: add the household's members first (`coach memory member add`)")
+        warnings_msg.append(server_msg("household.noMember", "no member is declared: add the household's members first (`coach memory member add`)",
+                                       command="coach memory member add"))
     else:
         for a in accounts:
             if not a["owner_known"]:
-                warnings.append(f"account {a['label']}: owner {a['owner'] or '(none)'!r} is not 'joint' or a declared member")
+                owner = repr(a["owner"] or "(none)")
+                warnings_msg.append(server_msg("household.ownerUnknown", f"account {a['label']}: owner {owner} is not 'joint' or a declared member",
+                                               account=a["label"], owner=owner))
+    warnings = [m["text"] for m in warnings_msg]
     return {"as_of": ds.today.isoformat(), "members": members, "accounts": accounts, "purposes": list(PURPOSES),
             "attribution": {"counts": dict(counts), "manual": manual},
             "rules": [jsonable(r.model_dump(exclude_none=True)) for r in people.attribution],
             "kid_budgets": [jsonable(b.model_dump(exclude_none=True)) for b in people.kid_budgets],
             "allocations": [jsonable(a.model_dump(exclude_none=True)) for a in people.allocations],
-            "users": users, "warnings": warnings}
+            "users": users, "warnings": warnings, "warnings_msg": warnings_msg}
 
 
 # ---------------------------------------------------------------- generic list edit in household.yaml
@@ -90,6 +95,9 @@ def _delete(state: AppState, key: str, item_id: str, *, dry_run: bool, action: s
 
 
 # ---------------------------------------------------------------- attribution rules (E14-3)
+
+RULE_NOTE = server_msg("household.ruleNote", "a rule never overrides a manual reassignment, and an earlier rule wins")
+
 
 class RuleRequest(BaseModel):
     member: str
@@ -122,7 +130,7 @@ def put_rule(rule_id: str, req: RuleRequest, dry_run: bool = False, state: AppSt
     value = jsonable(rule.model_dump(exclude_none=True))
     return _upsert(state, "attribution", rule_id, value, dry_run=dry_run, reason=req.reason, action="attribution-rule",
                    extra={"matches": matched, "would_change": changed,
-                          "note": "a rule never overrides a manual reassignment, and an earlier rule wins"})
+                          "note": RULE_NOTE["text"], "note_msg": RULE_NOTE})
 
 
 @router.post("/household/attribution/rules/{rule_id}/delete", summary="Remove an attribution rule (dry_run=true: preview)")

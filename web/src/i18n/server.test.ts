@@ -151,3 +151,21 @@ describe("insight cards and alert events (title_msg / body_msg)", () => {
       .toMatch(/^2 payments of .*45\.00 to CINEMAX within 1 day \(/);
   });
 });
+
+describe("params that name memory items", () => {
+  it("names a memory item's kind and a list of memory fields in the interface language", async () => {
+    const msg = { code: "question.liabilityFields", params: { id: "home-loan", loan_kind: "mortgage", count: 2, fields: "rate.nominal, outstanding_as_of" }, text: "x" };
+    expect(tServer(msg)).toBe("Liability home-loan (Mortgage): 2 key fields are empty (nominal rate, date of the outstanding capital). The loan contract or the latest statement has them.");
+    await setLanguage("it", { persist: false });
+    expect(tServer(msg)).toContain("2 campi chiave sono vuoti (tasso nominale, data del capitale residuo)");
+    expect(tServer({ code: "question.contractFields", params: { id: "c", fields: "unknown_field" }, text: "x" })).toBe("Contratto c: unknown_field sconosciuto/i.");
+  });
+
+  it("labels the manual-import group and the question topics, falling back to the English", async () => {
+    await setLanguage("fr", { persist: false });
+    expect(serverLabel("bankGroup", "manual", "Manual imports")).toBe("Imports manuels");
+    expect(serverLabel("bankGroup", null, "Some Bank")).toBe("Some Bank");
+    expect(serverLabel("questionTopic", "liabilities", "Liabilities")).toBe("Emprunts");
+    expect(serverLabel("questionTopic", undefined, "Cars")).toBe("Cars");
+  });
+});

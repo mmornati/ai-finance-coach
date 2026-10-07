@@ -6,6 +6,7 @@ import json
 from datetime import date, datetime, time, timedelta, timezone
 
 from coach.db import now_iso
+from coach.i18n_msg import server_msg
 from coach.ingest import consent as consent_mod
 from coach.ingest.accounts import AccountError, resolve_account
 from coach.ingest.client import ApiError
@@ -248,7 +249,10 @@ def sync_account(con, client, uid: str, full: bool, force: bool, daily_limit: in
         con.execute("INSERT INTO sync_log VALUES (?,?,?,?,?,?)", (uid, ts, 0, 0, pages, note))
         con.commit()
         out(f"  {uid}: FAILED - {note}")
-        return {"uid": uid, "status": "failed", "note": note, "http_status": e.status}
+        res = {"uid": uid, "status": "failed", "note": note, "http_status": e.status}
+        if e.status == 429:                     # the web's translation (docs/i18n.md "Server text"); another error is the bank's own text
+            res["note_msg"] = server_msg("sync.rateLimited", note)
+        return res
 
 
 def sync_targets(con, account: str | None = None) -> list[tuple[str, str, str | None]]:
@@ -287,7 +291,9 @@ def sync_all(con, client, account: str | None = None, full: bool = False, force:
         if c and c.status in consent_mod.DEAD:
             note = f"{bank}: consent {c.status}: run `coach reconnect \"{bank}\"`"
             out(f"  skip {uid}: {note}")
-            results.append({"uid": uid, "bank": bank, "status": "failed", "note": note, "consent": c.status})
+            msg = server_msg("sync.consentExpired" if c.status == "expired" else "sync.consentRevoked", note, bank=bank, status=c.status,
+                             command=f'coach reconnect "{bank}"')
+            results.append({"uid": uid, "bank": bank, "status": "failed", "note": note, "note_msg": msg, "consent": c.status})
             continue
         try:
             res = sync_account(con, client, uid, full, force, daily_limit, out)

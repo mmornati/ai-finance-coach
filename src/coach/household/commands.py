@@ -54,7 +54,8 @@ def _fail(e) -> None:
 
 
 def _j(obj) -> str:
-    return json.dumps(jsonable(obj), ensure_ascii=False, indent=2, default=str)
+    from coach.i18n_msg import strip_msgs
+    return json.dumps(strip_msgs(jsonable(obj)), ensure_ascii=False, indent=2, default=str)   # the *_msg siblings are the web's only
 
 
 def _eur(c) -> str:

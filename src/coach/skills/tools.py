@@ -330,19 +330,24 @@ def _usage_question(s: ToolSession, x, store, fam, first, known):
 
 def _loan_question(s: ToolSession, lb, rel, today):
     from coach.memory import schemas
-    from coach.memory.qgen import qid
+    from coach.memory.qgen import TOPIC_CODE, qid, qmsg
     lease = lb.kind in ("loa", "lld")                              # E9: a lease owes no capital: its end-of-contract fields are asked instead
     miss = [f for f in (OB.LEASE_FIELDS if lease else OB.MORTGAGE_FIELDS) if OB._get(lb, f) is None]
     if not miss:
         return None
     key = f"fill:mortgage-check:{lb.id}"
+    fields = ", ".join(miss)
+    if lease:
+        text = (f"Liability {lb.id} ({lb.kind}): to prepare the end of the lease (buy or return, mileage) I need {fields}. "
+                "The lease contract has them.")
+        msg = qmsg("question.leaseEnd", text, id=lb.id, loan_kind=lb.kind, fields=fields)
+    else:
+        text = (f"Liability {lb.id} ({lb.kind}): to show its amortization schedule and estimate a renegotiation or an insurance change "
+                f"I need {fields}. The loan offer or the latest annual statement has them.")
+        msg = qmsg("question.mortgageCheck", text, id=lb.id, loan_kind=lb.kind, fields=fields)
     return schemas.Question(
-        id=qid("fill", key), topic="Liabilities", key=key, origin="coach", created=today,
-        stake=round((lb.monthly_payment or 0) * 12, 2) or None,
-        question=((f"Liability {lb.id} ({lb.kind}): to prepare the end of the lease (buy or return, mileage) I need {', '.join(miss)}. "
-                   "The lease contract has them.") if lease else
-                  (f"Liability {lb.id} ({lb.kind}): to show its amortization schedule and estimate a renegotiation or an insurance change "
-                   f"I need {', '.join(miss)}. The loan offer or the latest annual statement has them.")),
+        id=qid("fill", key), topic="Liabilities", topic_code=TOPIC_CODE["Liabilities"], key=key, origin="coach", created=today,
+        stake=round((lb.monthly_payment or 0) * 12, 2) or None, question=text, question_msg=msg,
         evidence={"missing": miss, "monthly_payment": lb.monthly_payment}, suggested_target={"file": rel, "field": ",".join(miss)})
 
 

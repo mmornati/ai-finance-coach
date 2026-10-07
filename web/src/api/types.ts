@@ -184,7 +184,7 @@ export interface NetWorth {
   history?: NetWorthPoint[]; note: string; note_msg?: ServerMsg;
 }
 
-export interface CalendarItem { date: string; days_until: number; source: string; kind: string; title: string; amount: Money | null; ref: string; certainty: string; account_label: string | null; note: string | null }
+export interface CalendarItem { date: string; days_until: number; source: string; kind: string; title: string; amount: Money | null; ref: string; certainty: string; account_label: string | null; note: string | null; title_msg?: ServerMsg | null; note_msg?: ServerMsg | null }
 export interface CalendarResult { as_of: string; days: number; items: CalendarItem[]; counts: Record<string, number>; month?: string; coverage: Coverage }
 
 export interface Anomaly { id: string; type: string; severity: string; subject: string; period: string; amount: Money; baseline: Money | null; message: string; message_msg?: ServerMsg | null; evidence: string[]; accounts: string[]; dismissed: boolean }
@@ -200,7 +200,7 @@ export interface Insights { as_of: string; cards: InsightCard[]; hidden: number;
 export interface CoachStatus { configured: boolean; backend: string; model: string; message: string; max_tool_calls: number; timeout_seconds: number; busy: boolean; current_job: string | null; tools: string[] }
 export interface ResolvedRef { kind: "transaction" | "series" | "anomaly" | "price_change"; tx_key?: string; date?: string; amount?: string; category?: string; merchant?: string; link?: string }
 
-export interface Question { id: string; status: "open" | "answered" | "dismissed"; topic: string; question: string; context?: string; evidence?: Record<string, unknown>; suggested_target?: { file: string; field?: string }; created?: string; answered?: string; answer?: string; note?: string; stake?: Money; origin: string }
+export interface Question { id: string; status: "open" | "answered" | "dismissed"; topic: string; topic_code?: string; question: string; question_msg?: ServerMsg; context?: string; context_msg?: ServerMsg; evidence?: Record<string, unknown>; suggested_target?: { file: string; field?: string }; created?: string; answered?: string; answer?: string; note?: string; stake?: Money; origin: string }
 export interface Questions { questions: Question[]; counts: Record<string, number> }
 export interface Member { id: string; name: string; role: "adult" | "child"; birth_year: number | null; aliases: string[] }
 export interface Proposal {
@@ -214,8 +214,8 @@ export interface Annotation { id: string; category?: string; tags?: string[]; ev
 
 export interface ConnAccount { uid: string; bank: string | null; label: string | null; name: string | null; iban_last4: string; currency: string | null; owner: string | null; purpose: string | null; excluded: boolean; source: string; session_status: string | null; needs_review: boolean; tx_count: number; syncs_left_today: number | null }
 export interface Consent { session_id: string; bank: string; country: string; valid_until: string | null; days_left: number | null; status: string; live_status: string | null; live_checked_at: string | null; accounts: number }
-export interface HealthAccount { uid: string; label: string; bank: string; source: string; level: "green" | "amber" | "red"; problems: string[]; last_ok_sync: string | null; syncs_today: number; daily_limit: number; syncs_left_today: number; consent_days_left: number | null; tx_count: number; stale: boolean; excluded: boolean; last_import: string | null }
-export interface HealthBank { bank: string; country: string; session_id: string | null; consent_status: string | null; consent_days_left: number | null; valid_until: string | null; level: "green" | "amber" | "red"; accounts: HealthAccount[] }
+export interface HealthAccount { uid: string; label: string; bank: string; source: string; level: "green" | "amber" | "red"; problems: string[]; problems_msg?: (ServerMsg | null)[]; last_ok_sync: string | null; syncs_today: number; daily_limit: number; syncs_left_today: number; consent_days_left: number | null; tx_count: number; stale: boolean; excluded: boolean; last_import: string | null }
+export interface HealthBank { bank: string; country: string; session_id: string | null; consent_status: string | null; consent_days_left: number | null; valid_until: string | null; level: "green" | "amber" | "red"; accounts: HealthAccount[]; bank_code?: string | null }
 export interface RunStep { step: string; status: "ok" | "warn" | "error" | "skipped"; ms: number; counts: Record<string, number>; error?: string | null }
 export interface LastRun { run: string; started: string | null; ended: string | null; outcome: "ok" | "failed" | "running"; duration_s: number | null; steps: RunStep[]; failed: string[]; warned: string[] }
 export interface Health { generated_at: string; banks: HealthBank[]; ok: boolean; level: "green" | "amber" | "red"; memory?: { errors: number; warnings: number; info: number }; last_run?: LastRun | null }
@@ -234,7 +234,7 @@ export interface UsageSummary {
   destinations: UsageDestination[]; journal_available: boolean; month: UsageMonth; note: string;
   totals: { calls: number; tokens_in: number; tokens_out: number; cost_usd: number; notional_cost_usd: number; estimated_cost_usd: number; unknown_cost_calls: number; duration_s: number };
 }
-export interface JobState { kind: string; state: "idle" | "running" | "done" | "failed"; started_at: string | null; finished_at: string | null; message: string | null; results: { uid: string; bank?: string; status: string; new?: number; note?: string }[]; log: string[]; url: string | null }
+export interface JobState { kind: string; state: "idle" | "running" | "done" | "failed"; started_at: string | null; finished_at: string | null; message: string | null; message_msg?: ServerMsg | null; results: { uid: string; bank?: string; status: string; new?: number; note?: string; note_msg?: ServerMsg | null }[]; log: string[]; url: string | null }
 export interface Connections {
   accounts: ConnAccount[]; consents: Consent[]; health: Health; purposes: string[]; sync: JobState & { daily_limit: number }; enable_banking_configured: boolean; connect: JobState;
 }
@@ -246,22 +246,26 @@ export interface OnboardingStep {
   status: "done" | "partial" | "todo";
   have: Record<string, unknown>;
   missing?: (string | { account: string; label?: string; missing: string[] })[];
+  /** the string entries of `missing`, same order (household, preferences, budgets) */
+  missing_msg?: (ServerMsg | null)[];
   liabilities?: { id: string; kind: string; missing: string[]; matched_in_bank_data: boolean }[];
   loan_payments_without_file?: string[];
   recurring_without_contract?: string[];
   contracts_with_empty_fields?: { id: string; missing: string[] }[];
 }
 /** E13-2: the first-run wizard (`coach setup`), read-only: the steps run in a terminal, with a typed consent before anything leaves the machine. */
-export interface WizardStep { id: string; title: string; status: "done" | "partial" | "todo" | "skipped" | "blocked"; detail: string; command: string; optional: boolean }
+export interface WizardStep { id: string; title: string; status: "done" | "partial" | "todo" | "skipped" | "blocked"; detail: string; detail_msg?: ServerMsg | null; command: string; optional: boolean }
 export interface WizardStatus { steps: WizardStep[]; progress: { done: number; total: number; next_step: string | null }; container: boolean; command: string; commands: { setup: string; enablebanking: string } }
 
 export interface Onboarding {
   as_of: string;
   progress: { done: number; total: number; next_step: string | null };
   steps: OnboardingStep[];
-  next_actions: { step: string; do: string; command: string }[];
+  next_actions: { step: string; do: string; do_msg?: ServerMsg; command: string }[];
   how: string[];
+  how_msg?: ServerMsg[];
   note: string;
+  note_msg?: ServerMsg;
   declared?: { employers: string[]; places: string[]; schools: string[] };
 }
 
@@ -341,7 +345,7 @@ export interface KidBudgetDef { id: string; member: string; period: "weekly" | "
 export interface AllocationDef { id: string; title?: string; match: Record<string, string>; method: "equal" | "income" | "custom"; among?: string[]; shares?: Record<string, number>; note?: string }
 export interface HouseholdOverview {
   as_of: string; members: HouseholdMember[]; accounts: HouseholdAccount[]; purposes: string[]; attribution: { counts: Record<string, number>; manual: number };
-  rules: AttributionRule[]; kid_budgets: KidBudgetDef[]; allocations: AllocationDef[]; users: UserInfo[]; warnings: string[];
+  rules: AttributionRule[]; kid_budgets: KidBudgetDef[]; allocations: AllocationDef[]; users: UserInfo[]; warnings: string[]; warnings_msg?: ServerMsg[];
 }
 export interface PocketSeries { id: string; source: string; amount: Money; cadence: string; count: number; first: string; last: string; next_expected: string; day: number }
 export interface KidReport {
@@ -354,10 +358,11 @@ export interface KidReport {
   ratio: { pocket_share: number | null; extra_share: number | null; pocket_to_extra: number | null };
   spending: { total: Money; monthly_avg: Money; this_month_to_date: Money; by_category: { category: string; total: Money; n: number; share: number | null }[]; by_month: { month: string; total: Money }[] };
   notes: string[];
+  notes_msg?: ServerMsg[];
 }
 export interface KidBudgetStatus { id: string; member?: string; period: "weekly" | "monthly"; category: string | null; group: string | null; limit: Money; spent: Money; remaining: Money; ratio: number; status: "ok" | "at_risk" | "over"; period_start: string; period_end: string; days_left: number; projected: Money; note: string | null }
-export interface AllocationRuleResult { id: string; title: string | null; method: string; among: string[]; members: { member: string; share_pct: number; owed: Money; paid: Money; joint_share: Money; net: Money }[]; total: Money; joint_paid: Money; personal_paid: Money; unattributed: Money; n: number; notes: string[] }
-export interface AllocationReport { as_of: string; window: { months: string[] }; rules: AllocationRuleResult[]; by_member: { member: string; owed: Money; paid: Money; net: Money }[]; notes: string[] }
+export interface AllocationRuleResult { id: string; title: string | null; method: string; among: string[]; members: { member: string; share_pct: number; owed: Money; paid: Money; joint_share: Money; net: Money }[]; total: Money; joint_paid: Money; personal_paid: Money; unattributed: Money; n: number; notes: string[]; notes_msg?: ServerMsg[] }
+export interface AllocationReport { as_of: string; window: { months: string[] }; rules: AllocationRuleResult[]; by_member: { member: string; owed: Money; paid: Money; net: Money }[]; notes: string[]; notes_msg?: ServerMsg[] }
 export interface AttributionWhy {
   tx_key: string; person: string | null; source: "manual" | "rule" | "account" | "none"; rule: string | null; reason: string;
   manual: { member: string; set_at: string; set_by: string; note: string | null } | null;

@@ -186,7 +186,7 @@ def cmd_scheme(a, cfg):
 
 def _propose_questions(cfg, prop: M.Property, s: dict) -> None:
     from coach.memory import questions as Q, schemas
-    from coach.memory.qgen import qid
+    from coach.memory.qgen import TOPIC_CODE, qid, qmsg
     store = _store(cfg)
     key = f"fill:rental:{prop.id}"
     if any(q.key == key for q in store.questions()):
@@ -196,9 +196,11 @@ def _propose_questions(cfg, prop: M.Property, s: dict) -> None:
         print("nothing is missing")
         return
     miss = [m["field"] for m in s["missing"]]
-    q = schemas.Question(id=qid("fill", key), topic="Rental property", key=key, origin="manual", created=dt.date.today(),
-                         question=(f"Rental property {prop.id}: I still need {', '.join(miss)} to follow its cash flow, its scheme commitment and "
-                                   "the tax figures. The deed of purchase, the lease and the loan offer have them."),
+    fields = ", ".join(miss)
+    text = (f"Rental property {prop.id}: I still need {fields} to follow its cash flow, its scheme commitment and "
+            "the tax figures. The deed of purchase, the lease and the loan offer have them.")
+    q = schemas.Question(id=qid("fill", key), topic="Rental property", topic_code=TOPIC_CODE["Rental property"], key=key, origin="manual",
+                         created=dt.date.today(), question=text, question_msg=qmsg("question.rentalNeeds", text, id=prop.id, fields=fields),
                          evidence={"missing": miss}, suggested_target={"file": "assets.yaml", "field": ",".join(miss)})
     Q.add_many(store, [q], source="cli")
     print(f"added 1 open question about {', '.join(miss)} (`coach questions list --open`)")

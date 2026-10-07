@@ -24,6 +24,7 @@ from typing import Optional
 from coach.analytics.common import (add_months, add_months_key, last_closed_month, median_c, money_str, month_end, month_key, months_between, pct)
 from coach.analytics.dataset import Dataset, is_income, is_spending, is_transfer
 from coach.household.people import JOINT, People
+from coach.i18n_msg import server_msg
 
 WINDOW_MONTHS = 6
 OWN_MOVE_TYPES = frozenset({"savings_internal", "fx_exchange"})   # moves between the child's own pockets / vaults and currency exchanges: not money received
@@ -223,11 +224,14 @@ def kid_report(ds: Dataset, con, member: str, months: int = WINDOW_MONTHS) -> di
     owned = _owned_accounts(ds, member)
     bal = balance_trend(ds, member, win)
     n = len(win)
-    notes = []
+    notes_msg = []
     if not owned:
-        notes.append("the child owns no account: only the transactions attributed to them by a rule or by hand are counted")
+        notes_msg.append(server_msg("household.kidNoAccount",
+                                    "the child owns no account: only the transactions attributed to them by a rule or by hand are counted"))
     if bal["unknown"]:
-        notes.append("no balance known for: " + ", ".join(bal["unknown"]))
+        unknown = ", ".join(bal["unknown"])
+        notes_msg.append(server_msg("household.kidNoBalance", "no balance known for: " + unknown, accounts=unknown))
+    notes = [m["text"] for m in notes_msg]
     return {
         "member": member, "as_of": ds.today, "window": {"months": win, "from": win[0] + "-01", "to": month_end(win[-1])},
         "accounts": [{"account": a.uid, "label": a.label, "balance_c": ds.balance_of(a.uid).amount_c if ds.balance_of(a.uid) else None,
@@ -246,7 +250,7 @@ def kid_report(ds: Dataset, con, member: str, months: int = WINDOW_MONTHS) -> di
                      "by_category": [{"category": c, "total_c": v[0], "n": v[1], "share": pct(v[0], spent_c)}
                                      for c, v in sorted(cats.items(), key=lambda kv: -kv[1][0])],
                      "by_month": [{"month": m, "total_c": per_month.get(m, 0)} for m in win]},
-        "notes": notes,
+        "notes": notes, "notes_msg": notes_msg,
     }
 
 

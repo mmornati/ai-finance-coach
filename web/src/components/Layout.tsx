@@ -10,7 +10,7 @@ import { usePrefs, useScope, useToast } from "@/lib/app";
 import { api } from "@/lib/api";
 import { LANGUAGES, isLanguageCode } from "@/i18n/languages";
 import { cn } from "@/lib/utils";
-import { purposeLabel } from "@/i18n/server";
+import { purposeLabel, tServer } from "@/i18n/server";
 import type { JobState } from "@/api/types";
 
 interface NavItem { to: string; label: ParseKeys; icon: typeof Gauge; end?: boolean; key?: "insights" | "alerts" | "memory" | "connections" | "review" }
@@ -217,7 +217,7 @@ export function SyncButton({ compact }: { compact?: boolean }) {
       setJob(j);
       if (j.state !== "running") {
         void qc.invalidateQueries();
-        toast(j.message ?? t("sync.finished"), j.state === "failed" ? "error" : "success");
+        toast(j.message ? tServer(j.message_msg, j.message) : t("sync.finished"), j.state === "failed" ? "error" : "success");
       }
     }, 1500);
     return () => clearInterval(timer);
