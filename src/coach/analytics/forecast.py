@@ -40,6 +40,7 @@ from datetime import date, timedelta
 from typing import Optional
 
 from coach.analytics.common import CoverageInfo, Result, Scope, add_months, median_c
+from coach.analytics.common import non_eur_note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset, is_spending, is_transfer
 from coach.analytics.recurring import RecurringResult, detect_recurring, occurrences
@@ -357,7 +358,7 @@ def forecast(ds: Dataset, days: int = 90, scope: Optional[Scope] = None, recurri
     if any(e.certainty == "scheduled" for e in hh_events):
         assumptions.append("liability instalments without a matching recurring series use the amortization schedule: exact due "
                            "dates and amounts (insurance included; a variable-rate loan uses its current rate)")
-    notes = [f"{len(ds.foreign)} non-EUR transaction(s) left out"] if ds.foreign else []
+    notes = [non_eur_note(len(ds.foreign))] if ds.foreign else []
     cov = ds.coverage.info([a.account for a in accs if a.account], [],
                            "variable spend: each account's own last covered months", notes)
     assumptions += warnings

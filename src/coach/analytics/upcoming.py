@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from coach.analytics.common import CoverageInfo, Result, add_months, money_str
+from coach.analytics.common import note
 from coach.analytics.dataset import Dataset
 from coach.analytics.forecast import resolve_liability_account
 from coach.analytics.recurring import RecurringResult, detect_recurring, occurrences
@@ -171,7 +172,8 @@ def calendar_items(ds: Dataset, days: Optional[int] = None, recurring: Optional[
                     a.id, "scheduled", None, f"older than {s.asset_stale_months} months" if due <= today else None)
     items.sort(key=lambda i: (i.date, SOURCES.index(i.source), i.kind, i.ref, i.title))
     counts = {src: sum(1 for i in items if i.source == src) for src in SOURCES}
-    notes = [f"{len(ds.memory.warnings)} memory file problem(s): `coach memory check`"] if ds.memory.warnings else []
+    notes = ([note("coverage.memoryProblems", f"{len(ds.memory.warnings)} memory file problem(s): `coach memory check`",
+                   count=len(ds.memory.warnings))] if ds.memory.warnings else [])
     cov = ds.coverage.info([], [], "forward-looking: recurring series from history, the rest from memory and consents",
                            notes)
     return CalendarResult(today, days, items, counts, cov, sorted({i.ref for i in items}))

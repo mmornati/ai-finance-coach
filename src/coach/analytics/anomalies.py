@@ -30,6 +30,7 @@ from datetime import date, timedelta
 from typing import Optional
 
 from coach.analytics.common import (CoverageInfo, Result, Scope, median_c, money_str)
+from coach.analytics.common import non_eur_note, note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import CAPITAL_TAG, NO_AVERAGE_TAGS, Dataset, Tx, is_spending
 from coach.analytics.recurring import RecurringResult, detect_recurring
@@ -246,10 +247,11 @@ def detect_anomalies(ds: Dataset, scope: Optional[Scope] = None, recurring: Opti
         counts[a.type] = counts.get(a.type, 0) + 1
         counts["severity_" + a.severity] = counts.get("severity_" + a.severity, 0) + 1
     uids = ds.uids_in(scope)
-    notes = ["category spikes: months covered by every account carrying the category, >= "
-             f"{ds.settings.anomaly_min_history_months} earlier months required"]
+    mh = ds.settings.anomaly_min_history_months
+    notes = [note("coverage.spikeHistory", "category spikes: months covered by every account carrying the category, >= "
+                  f"{mh} earlier months required", count=int(mh))]
     if ds.foreign:
-        notes.append(f"{len(ds.foreign)} non-EUR transaction(s) left out")
+        notes.append(non_eur_note(len(ds.foreign)))
     cov = ds.coverage.info(uids, [], "see module doc: per-detector windows and minimum history", notes)
     return AnomaliesResult(ds.today, found, counts, n_dismissed, (scope or Scope()).describe(), cov,
                            sorted({k for a in found for k in a.evidence}))

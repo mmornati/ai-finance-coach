@@ -5,7 +5,7 @@ import { Async, Badge, Card, Dot, EmptyState, Money, Notice, PageHeader, Progres
 import { CashflowChart, ForecastChart, ShareBar } from "@/components/charts";
 import { useAlerts, useBalances, useBudgets, useCashflow, useForecast, useGet, useHealth, useHumanize, useInsights, useMonthCategories, useQuestions, useScoped } from "@/api/hooks";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, fmtRelativeDays, parseMoney } from "@/lib/format";
-import { forecastLabel, serverLabel, tServer } from "@/i18n/server";
+import { forecastLabel, serverLabel, tServer, tServerList } from "@/i18n/server";
 import type { CalendarResult, SavingsView } from "@/api/types";
 import { cn } from "@/lib/utils";
 
@@ -141,7 +141,7 @@ function CashflowCard() {
         {(d) => (
           <>
             <CashflowChart months={d.household.months} />
-            {d.coverage.notes.slice(0, 2).map((n) => (
+            {tServerList(d.coverage.notes, d.coverage.notes_msg).slice(0, 2).map((n) => (
               <p key={n} className="mt-2 text-xs text-faint">{n}</p>
             ))}
           </>

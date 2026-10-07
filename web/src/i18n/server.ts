@@ -56,6 +56,12 @@ export function tServer(msg: ServerMsg | null | undefined, fallback = ""): strin
   return tr(msg.code, formatParams(msg.params));
 }
 
+/** A list of English sentences and their `<field>_msg` siblings (same order; an entry may be null, the server may be older and send
+ *  none): each sentence in the interface language, the English where there is no message. Used for the coverage notes. */
+export function tServerList(texts: readonly string[] | null | undefined, msgs?: readonly (ServerMsg | null)[] | null): string[] {
+  return (texts ?? []).map((text, i) => tServer(msgs?.[i], text));
+}
+
 /** A label of a fixed vocabulary: `labels.<family>.<code>`, else the English label the server sent, else the code itself. */
 export function serverLabel(family: LabelFamily, code: string | null | undefined, english?: string | null): string {
   if (!code) return english ?? "";
@@ -107,5 +113,5 @@ export function errorText(e: unknown, fallback = ""): string {
 /** The same helpers, re-rendering the component when the language changes. */
 export function useServerText() {
   const { i18n: inst } = useTranslation("server");
-  return { tServer, serverLabel, flagLabel, errorText, forecastLabel, language: inst.resolvedLanguage ?? inst.language };
+  return { tServer, tServerList, serverLabel, flagLabel, errorText, forecastLabel, language: inst.resolvedLanguage ?? inst.language };
 }

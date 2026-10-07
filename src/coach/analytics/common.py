@@ -184,7 +184,34 @@ class CoverageInfo(Result):
     accounts: list = field(default_factory=list)          # list[AccountRef] that contribute
     skipped_months: list = field(default_factory=list)    # closed months NOT used because an account lacked data
     partial_current_month: Optional[str] = None
-    notes: list = field(default_factory=list)
+    notes: list = field(default_factory=list)             # English sentences (CLI, MCP tools)
+    notes_msg: list = field(default_factory=list)         # the same notes for the web app: {code, params, text}, or None (see split_notes)
+
+
+def note(code: str, text: str, **params: Any) -> dict:
+    """A coverage note: the English ``text`` and its ``code`` + raw params for the web (``coach.i18n_msg.server_msg``). Pass the result
+    in the ``notes`` of ``CoverageModel.info``; the CoverageInfo keeps the English in ``notes`` and the message in ``notes_msg``."""
+    from coach.i18n_msg import server_msg
+    return server_msg(code, text, **params)
+
+
+def split_notes(notes) -> tuple[list, list]:
+    """(English sentences, messages) of a list of notes: a :func:`note` gives both, a plain string its text and ``None`` (the web shows
+    the English)."""
+    texts, msgs = [], []
+    for n in notes or []:
+        if isinstance(n, dict):
+            texts.append(n["text"])
+            msgs.append(n)
+        else:
+            texts.append(n)
+            msgs.append(None)
+    return texts, msgs
+
+
+def non_eur_note(n: int) -> dict:
+    """The note every analytics result carries when non-EUR transactions were left out (no conversion is attempted)."""
+    return note("coverage.nonEur", f"{n} non-EUR transaction(s) left out", count=n)
 
 
 @dataclass(frozen=True)

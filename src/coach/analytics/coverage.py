@@ -23,7 +23,7 @@ import datetime as dt
 from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
-from coach.analytics.common import (AccountRef, CoverageInfo, Result, last_closed_month, month_end, month_key,
+from coach.analytics.common import (AccountRef, CoverageInfo, Result, last_closed_month, month_end, month_key, split_notes,
                                     month_start, months_between)
 
 
@@ -114,9 +114,10 @@ class CoverageModel:
         uids = sorted(set(uids))
         lo = months[0] if months else None
         skipped = [m for m in self.closed_months(uids) if m not in months and (lo is None or m >= lo)]
+        texts, msgs = split_notes(notes)          # a note is an English string, or common.note(code, text, **params) for the web
         return CoverageInfo(rule=rule, months=list(months), n_months=len(months), accounts=[self.ref(u) for u in uids],
                             skipped_months=skipped, partial_current_month=month_key(self.today),
-                            notes=list(notes or []))
+                            notes=texts, notes_msg=msgs)
 
 
 def last_n(months: list[str], n: int) -> list[str]:

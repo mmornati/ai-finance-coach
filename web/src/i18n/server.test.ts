@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import i18n, { setLanguage } from "@/i18n";
 import { ApiError } from "@/lib/api";
-import { errorText, flagLabel, forecastLabel, formatParams, holdingKindLabel, purposeLabel, serverLabel, tServer } from "./server";
+import { errorText, flagLabel, forecastLabel, formatParams, holdingKindLabel, purposeLabel, serverLabel, tServer, tServerList, type ServerMsg } from "./server";
 
 const nb = (s: string) => s.replace(/[  ]/g, " ");
 
@@ -30,6 +30,22 @@ describe("server text: code + params, the English text as fallback", () => {
 
   it("leaves null params visible as a dash and unknown names as they are", () => {
     expect(formatParams({ end_date: null, label: "Rent", n: 3 })).toEqual({ end_date: "–", label: "Rent", n: 3 });
+  });
+
+  it("translates a list of notes next to their messages, keeping the English where there is none", async () => {
+    const notes = ["1 non-EUR transaction(s) left out", "incomplete months: ...", "a note from an older server"];
+    const msgs: (ServerMsg | null)[] = [
+      { code: "coverage.nonEur", params: { count: 1 }, text: notes[0] },
+      { code: "coverage.incompleteMonths", params: { count: 2, first_month: "2026-08", last_month: "2026-09", accounts: "Card B" }, text: notes[1] },
+      null,
+    ];
+    expect(tServerList(notes, msgs)).toEqual(["1 non-EUR transaction left out.", "2 incomplete months, août 2026 to septembre 2026 (no full data for Card B).", "a note from an older server"]);
+    expect(tServerList(notes)).toEqual(notes);
+    expect(tServerList(undefined, msgs)).toEqual([]);
+    await setLanguage("fr", { persist: false });
+    expect(tServerList(notes.slice(0, 2), msgs)).toEqual(["1 transaction hors EUR exclue.", "2 mois incomplets, de août 2026 à septembre 2026 (pas de données complètes pour Card B)."]);
+    await setLanguage("it", { persist: false });
+    expect(tServerList(notes.slice(0, 1), [{ code: "coverage.nonEur", params: { count: 3 }, text: "x" }])).toEqual(["3 transazioni non in EUR escluse."]);
   });
 
   it("follows the interface language", async () => {

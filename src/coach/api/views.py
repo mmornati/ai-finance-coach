@@ -11,7 +11,7 @@ from typing import Optional
 
 from coach.analytics.averages import category_averages, spending_txs
 from coach.analytics.common import (Scope, add_months_key, div_cents, last_closed_month, money_str, month_key,
-                                    month_start, to_cents)
+                                    month_start, note, split_notes, to_cents)
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset, is_income, is_spending, is_transfer
 from coach.classify import rules as R
@@ -308,24 +308,27 @@ def category_detail(ds: Dataset, scope: Optional[Scope], cat_id: str, months: in
     one_offs = [{"tx_key": t.key, "date": t.date.isoformat(), "amount": money_str(t.amount_c), "entity": t.entity,
                  "category": t.category, "tags": sorted(t.tags), "event": t.event, "account": ds.label(t.account)}
                 for t in sorted(txs, key=lambda t: t.date, reverse=True) if t.is_one_off][:50]
-    notes = []
+    notes = []                                         # common.note: the English (notes) and the web's message (notes_msg)
     if avg and avg.get("low_confidence"):
-        notes.append(f"low confidence: only {avg['n_months']} fully covered month(s) back this figure")
+        notes.append(note("coverage.lowConfidence", f"low confidence: only {avg['n_months']} fully covered month(s) back this figure",
+                          count=int(avg["n_months"])))
     if avg and avg.get("lumpy"):
-        notes.append("seasonal or lumpy category: its average needs at least 12 covered months")
+        notes.append(note("coverage.lumpy", "seasonal or lumpy category: its average needs at least 12 covered months"))
     missing = [s["month"] for s in series if not s["covered"] and not s["partial"] and s["n_tx"]]
     if missing:
-        notes.append(f"{len(missing)} month(s) with transactions are not fully covered by the accounts carrying this "
-                     "category (shown lighter, left out of the average)")
+        notes.append(note("coverage.monthsNotCovered", f"{len(missing)} month(s) with transactions are not fully covered by the accounts "
+                          "carrying this category (shown lighter, left out of the average)", count=len(missing)))
     if ds.foreign:
-        notes.append(f"{len(ds.foreign)} non-EUR transaction(s) are left out of every figure")
+        notes.append(note("coverage.nonEurEveryFigure", f"{len(ds.foreign)} non-EUR transaction(s) are left out of every figure",
+                          count=len(ds.foreign)))
     cov = ds.coverage.info(sorted(carriers), (avg or {}).get("months", []),
                            "months fully covered by every account that carries the category", notes)
+    notes, notes_msg = split_notes(notes)
     return {"id": cat_id, "is_group": is_group, "kind": kind,
             "description": R.CATEGORIES.get(cat_id) if not is_group else None,
             "leaves": [{"id": l, "description": R.CATEGORIES[l]} for l in leaves] if is_group else [],
             "group": cat_id.split(".")[0], "as_of": ds.today.isoformat(), "series": series, "average": avg, "trend": trend,
-            "entities": entities, "one_offs": one_offs, "notes": notes, "coverage": cov.to_dict(),
+            "entities": entities, "one_offs": one_offs, "notes": notes, "notes_msg": notes_msg, "coverage": cov.to_dict(),
             "totals": {"last_12_months": money_str(sum(e["total"] for e in by_e.values())),
                        "n_tx": sum(e["n_tx"] for e in by_e.values())}}
 

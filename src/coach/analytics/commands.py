@@ -9,6 +9,7 @@ from pathlib import Path
 
 from coach.analytics import api
 from coach.analytics.common import Scope, money_str, parse_money
+from coach.i18n_msg import strip_msgs
 
 
 def _fmt(c) -> str:
@@ -20,7 +21,7 @@ def _pc(x) -> str:
 
 
 def _j(res) -> str:
-    return json.dumps(res.to_dict() if hasattr(res, "to_dict") else res, ensure_ascii=False, indent=2)
+    return json.dumps(strip_msgs(res.to_dict() if hasattr(res, "to_dict") else res), ensure_ascii=False, indent=2)   # *_msg: the web's only
 
 
 def _dataset(a, cfg):
@@ -193,7 +194,7 @@ def cmd_recurring(a, cfg):
     if a.json:
         d = res.to_dict()
         d["series"] = [x.to_dict() for x in series]
-        print(json.dumps(d, ensure_ascii=False, indent=2))
+        print(json.dumps(strip_msgs(d), ensure_ascii=False, indent=2))
         return
     print(f"recurring series as of {ds.today}: {res.counts['active']} active, {res.counts['ended']} ended; "
           f"active by cadence: {res.by_cadence}")

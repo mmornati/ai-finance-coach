@@ -20,6 +20,7 @@ from typing import Optional
 
 from coach.analytics.cashflow import FlowBlock, cashflow
 from coach.analytics.common import (CoverageInfo, Result, Scope, div_cents, last_closed_month, pct)
+from coach.analytics.common import non_eur_note, note
 from coach.analytics.dataset import Dataset, Tx, is_income, is_spending
 
 
@@ -138,21 +139,26 @@ def year_review(ds: Dataset, year: Optional[int] = None, scope: Optional[Scope] 
     uids = ds.uids_in(scope)
     notes = []
     if partial:
-        notes.append(f"{year} is partial: {complete} complete month(s) of {len(rows)} listed"
-                     + ("" if end_m >= f"{year:04d}-12" else f", year not over (data to {end_m})"))
+        text = (f"{year} is partial: {complete} complete month(s) of {len(rows)} listed"
+                + ("" if end_m >= f"{year:04d}-12" else f", year not over (data to {end_m})"))
+        notes.append(note("coverage.yearPartial", text, year=year, count=complete, listed=len(rows)) if end_m >= f"{year:04d}-12"
+                     else note("coverage.yearPartialOngoing", text, year=year, count=complete, listed=len(rows), end_month=end_m))
     if rows:
         lacking = {}
         for r in rows:
             for lab in r.missing_accounts:
                 lacking[lab] = lacking.get(lab, 0) + 1
         if lacking:
-            notes.append("accounts without full data: " + ", ".join(f"{k} ({v} of {len(rows)} months)"
-                                                                   for k, v in sorted(lacking.items())))
+            notes.append(note("coverage.accountsLacking",
+                              "accounts without full data: " + ", ".join(f"{k} ({v} of {len(rows)} months)" for k, v in sorted(lacking.items())),
+                              # labels (not translated) with their number of months lacking data, out of `listed`
+                              accounts=", ".join(f"{k} ({v}/{len(rows)})" for k, v in sorted(lacking.items())), listed=len(rows)))
         if complete == 0:
-            notes.append("no month of the year is complete: income and net are NOT meaningful (an account that carries "
-                         "income or spending has no data)")
+            notes.append(note("coverage.yearNoCompleteMonth",
+                              "no month of the year is complete: income and net are NOT meaningful (an account that carries "
+                              "income or spending has no data)"))
     if ds.foreign:
-        notes.append(f"{len(ds.foreign)} non-EUR transaction(s) left out")
+        notes.append(non_eur_note(len(ds.foreign)))
     cov = ds.coverage.info(uids, [r.month for r in rows if r.complete],
                            "totals over closed months of the year; category averages over covered months of each year",
                            notes)

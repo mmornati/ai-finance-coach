@@ -104,3 +104,18 @@ def server_msg(code: str, text: str, **params: Any) -> dict:
     if not isinstance(text, str) or not text:
         raise MessageError("text: the English sentence")
     return {"code": code, "params": {k: _param(k, v) for k, v in params.items()}, "text": text}
+
+
+def is_msg_key(key: object) -> bool:
+    """A ``<field>_msg`` sibling (or a list of them): what only the web app reads."""
+    return isinstance(key, str) and key.endswith("_msg")
+
+
+def strip_msgs(obj: Any) -> Any:
+    """``obj`` without its ``*_msg`` keys, at any depth. The MCP finance tools (read by a model) and the CLI's ``--json`` keep the English
+    sentences only: a message's params can hold raw labels the redaction walks differently, and the model does not need them."""
+    if isinstance(obj, dict):
+        return {k: strip_msgs(v) for k, v in obj.items() if not is_msg_key(k)}
+    if isinstance(obj, list):
+        return [strip_msgs(v) for v in obj]
+    return obj

@@ -6,6 +6,7 @@ import { MonthlyBars, ShareBar } from "@/components/charts";
 import { useScoped } from "@/api/hooks";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel, parseMoney } from "@/lib/format";
 import type { CategoryDetail } from "@/api/types";
+import { tServerList } from "@/i18n/server";
 
 export default function CategoryPage() {
   const { id = "" } = useParams();
@@ -82,7 +83,7 @@ export default function CategoryPage() {
                   )}
                 </Card>
               </div>
-              {d.notes.length > 0 && <div className="mt-4 grid gap-2">{d.notes.map((n) => <Notice key={n}>{n}</Notice>)}</div>}
+              {d.notes.length > 0 && <div className="mt-4 grid gap-2">{tServerList(d.notes, d.notes_msg).map((n) => <Notice key={n}>{n}</Notice>)}</div>}
             </>
           );
         }}
