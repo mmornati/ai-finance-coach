@@ -5,6 +5,11 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4g (see `docs/i18n.md`, "Server text")
+- The rental property page shows the missing facts, the scheme warnings, the tax-year candidates (items, bounds, sources, unknowns, documents), the reduction notes,
+  the loan-rate, market and equity readings, the signals and the scenarios in the interface language. Scheme names stay as proper nouns; the general-advice, tax and
+  loan disclaimers come from `disclaimers.py` in the same language. New param type `*_num` (a plain decimal in the reader's number format). MCP and CLI unchanged.
+
 ### Added: multi-language web app, part 4f (see `docs/i18n.md`, "Server text")
 - Loans and net worth: the unknown values and their reasons, the missing loan fields, the schedule hints and assumptions, the scenarios (early repayment, renegotiation,
   insurance: notes, penalty explanations, options, verdicts), the fields inferred from the payments and the lease checks are shown in the interface language.
