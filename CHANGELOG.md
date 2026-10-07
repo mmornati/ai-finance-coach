@@ -5,6 +5,11 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4h (see `docs/i18n.md`, "Server text")
+- Household, Kids' money and Who pays notes, the Set up checklist and first-run wizard, the Connections health problems and sync results, the calendar titles and the
+  generated memory questions are shown in the interface language. Generated questions store optional `topic_code` / `question_msg` / `context_msg` in
+  `open-questions.yaml` (older files load unchanged; questions proposed by the coach stay plain text). The `.ics` export, the MCP tools and the CLI keep the English.
+
 ### Added: multi-language web app, part 4i (see `docs/i18n.md`, "Server text")
 - The memory check (Memory > Check), the warnings of a memory write preview and the invalid budget entries are shown in the interface language (`memoryCheck.*`, `memoryLoad.*`);
   `coach ...` commands, file names and ids stay as they are, Pydantic's own text is passed through. `coach memory check` and the MCP tools are unchanged.

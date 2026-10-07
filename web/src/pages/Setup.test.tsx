@@ -4,23 +4,27 @@ import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/utils";
 import Setup from "./Setup";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 
 const status = {
   as_of: "2026-10-05", progress: { done: 1, total: 7, next_step: "household" },
   steps: [
-    { id: "household", heading: "Household and privacy declarations", status: "partial", have: { adults: 1, children: 0, country: null, employers: 0, places: 0, schools: 0 }, missing: ["country (FR or IT; FR is assumed): tax and cancellation rules depend on it"] },
+    { id: "household", heading: "Household and privacy declarations", status: "partial", have: { adults: 1, children: 0, country: null, employers: 0, places: 0, schools: 0 }, missing: ["country (FR or IT; FR is assumed): tax and cancellation rules depend on it"],
+      missing_msg: [{ code: "onboarding.missing.country", params: {}, text: "country (FR or IT; FR is assumed): tax and cancellation rules depend on it" }] },
     { id: "accounts", heading: "Accounts: owner and purpose", status: "todo", have: { accounts: 2 }, missing: [{ account: "uid1", label: "Main", missing: ["owner", "purpose"] }] },
     { id: "loans", heading: "Loans and mortgage (fields mortgage-check needs)", status: "partial", have: { liabilities: 1 }, liabilities: [{ id: "mortgage", kind: "mortgage", missing: ["rate.nominal", "principal"], matched_in_bank_data: true }], loan_payments_without_file: [] },
     { id: "questions", heading: "Open questions", status: "done", have: { open: 0 } },
   ],
-  next_actions: [{ step: "loans", do: "fill the empty fields", command: "uv run coach memory set <liability-id> rate.nominal <value>" }],
+  next_actions: [{ step: "loans", do: "fill the empty fields", do_msg: { code: "onboarding.do.loans", params: {}, text: "fill the empty fields" },
+    command: "uv run coach memory set <liability-id> rate.nominal <value>" }],
   how: [], note: "", declared: { employers: ["Acme"], places: ["Quimper", "Redon"], schools: [] },
 };
 const wizard = {
   steps: [
     { id: "init", title: "Home, secrets and encrypted database", status: "done", detail: "ready", command: "coach init && coach doctor", optional: false },
     { id: "enablebanking", title: "Your Enable Banking application", status: "todo", detail: "app id, redirect URL or key not set", command: "coach setup enablebanking", optional: false },
-    { id: "connect", title: "Connect your first bank", status: "blocked", detail: "finish 'Your Enable Banking application' first", command: "coach connect", optional: false },
+    { id: "connect", title: "Connect your first bank", status: "blocked", detail: "finish 'Your Enable Banking application' first", command: "coach connect", optional: false,
+      detail_msg: { code: "wizard.finishFirst", params: { step: "Your Enable Banking application", need: "enablebanking" }, text: "finish 'Your Enable Banking application' first" } },
     { id: "schedule", title: "Daily job and alerts (optional)", status: "skipped", detail: "skipped for now", command: "coach schedule install", optional: true },
   ],
   progress: { done: 2, total: 4, next_step: "enablebanking" }, container: false,
@@ -41,7 +45,10 @@ beforeEach(() => {
     return new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } });
   }));
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(async () => {
+  vi.unstubAllGlobals();
+  await setLanguage("en", { persist: false });
+});
 
 describe("first-run wizard card", () => {
   it("shows the steps read-only, with the terminal command and no button that starts a step", async () => {
@@ -77,7 +84,8 @@ describe("setup checklist", () => {
     renderApp(<Setup />);
     expect(await screen.findByTestId("setup-progress")).toHaveTextContent("1 of 7 steps done");
     expect(screen.getByText(/account Main: owner, purpose not set/)).toBeInTheDocument();
-    expect(screen.getByText(/mortgage \(mortgage\): rate.nominal, principal/)).toBeInTheDocument();
+    expect(screen.getByText(/mortgage \(Mortgage\): nominal rate, amount borrowed/)).toBeInTheDocument();
+    expect(screen.getByText(/finish 'Your Enable Banking application' first/)).toBeInTheDocument();
     expect(screen.getByText("uv run coach memory set <liability-id> rate.nominal <value>")).toBeInTheDocument();
   });
 
@@ -105,5 +113,20 @@ describe("setup checklist", () => {
     await waitFor(() => expect(write).toBeEnabled());
     await userEvent.click(write);
     await waitFor(() => expect(calls.some((c) => !c.url.includes("dry_run=true") && c.init?.method === "PUT" && String(c.init.body).includes('"confirm_removal":true'))).toBe(true));
+  });
+});
+
+describe("setup checklist in French", () => {
+  it("translates what the server says is missing, the field names, the next action and the wizard details", async () => {
+    await setLanguage("fr", { persist: false });
+    renderApp(<Setup />);
+    expect(await screen.findByText(/pays \(FR ou IT ; FR par défaut\)/)).toBeInTheDocument();
+    expect(screen.getByText(/compte Main : titulaire, usage non renseigné/)).toBeInTheDocument();
+    expect(screen.getByText(/mortgage \(Prêt immobilier\) : taux nominal, montant emprunté/)).toBeInTheDocument();
+    expect(screen.getByText(/remplissez les champs vides/)).toBeInTheDocument();
+    expect(screen.getByText("uv run coach memory set <liability-id> rate.nominal <value>")).toBeInTheDocument();     // the command stays as it is
+    const list = await screen.findByRole("list", { name: /étapes/i });
+    expect(list).toHaveTextContent(/terminez d'abord « .*Enable Banking.* »/);
+    expect(list).toHaveTextContent("app id, redirect URL or key not set");                      // no message: the English is kept
   });
 });

@@ -8,7 +8,7 @@ import { ItemDialog, Kind } from "@/components/ItemForm";
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useProposals, useQuestions, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { errorText, holdingKindLabel, useServerText } from "@/i18n/server";
+import { errorText, holdingKindLabel, serverLabel, tServer, useServerText } from "@/i18n/server";
 import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
 import type { Annotation, Asset, Change, CheckIssue, EditResult, EventMeta, Liability, MemoryOverview, Member, Proposal, Question } from "@/api/types";
 import { cn } from "@/lib/utils";
@@ -73,6 +73,7 @@ function QuestionsTab() {
 
 function QuestionCard({ x }: { x: Question }) {
   const { t } = useTranslation("memory");
+  useServerText();
   const [answer, setAnswer] = useState("");
   const [open, setOpen] = useState(false);
   const [why, setWhy] = useState("");
@@ -83,9 +84,9 @@ function QuestionCard({ x }: { x: Question }) {
   const target = x.suggested_target?.file;
   return (
     <Card>
-      <div className="flex flex-wrap items-center gap-2"><Badge>{x.topic}</Badge>{x.stake && <Badge tone="warn">{t("questions.atStake", { amount: fmtMoney(x.stake, { round: true }) })}</Badge>}{x.status !== "open" && <Badge tone={x.status === "answered" ? "pos" : "neutral"}>{t(`questions.status.${x.status}`)}</Badge>}</div>
-      <p className="mt-2 text-[15px] font-medium">{x.question}</p>
-      {x.context && <p className="mt-1 text-[13px] text-muted">{x.context}</p>}
+      <div className="flex flex-wrap items-center gap-2"><Badge>{serverLabel("questionTopic", x.topic_code, x.topic)}</Badge>{x.stake && <Badge tone="warn">{t("questions.atStake", { amount: fmtMoney(x.stake, { round: true }) })}</Badge>}{x.status !== "open" && <Badge tone={x.status === "answered" ? "pos" : "neutral"}>{t(`questions.status.${x.status}`)}</Badge>}</div>
+      <p className="mt-2 text-[15px] font-medium">{tServer(x.question_msg, x.question)}</p>
+      {x.context && <p className="mt-1 text-[13px] text-muted">{tServer(x.context_msg, x.context)}</p>}
       {ev.length > 0 && <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted">{ev.slice(0, 6).map(([k, v]) => <div key={k}><dt className="inline">{k.replace(/_/g, " ")}: </dt><dd className="inline font-medium text-text">{Array.isArray(v) ? v.join(", ") : String(v)}</dd></div>)}</dl>}
       {x.answer && <p className="mt-2 rounded-lg bg-pos-soft px-3 py-2 text-[13px] text-pos">{x.answer}</p>}
       {x.note && <p className="mt-2 text-xs text-muted">{t("questions.dismissedNote", { note: x.note })}</p>}

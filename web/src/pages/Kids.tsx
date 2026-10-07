@@ -7,6 +7,7 @@ import { Sparkline, ShareBar } from "@/components/charts";
 import { useDryRun, useKidBudgets, useKids, usePeople, useTaxonomy, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel, parseMoney } from "@/lib/format";
+import { useServerText } from "@/i18n/server";
 import type { EditResult, KidBudgetStatus, KidReport } from "@/api/types";
 
 /** The rhythm codes the server sends for a pocket-money series (an unknown code is shown as sent). */
@@ -61,6 +62,7 @@ export default function Kids() {
 
 function Child({ r, budgets }: { r: KidReport; budgets: KidBudgetStatus[] }) {
   const { t } = useTranslation("kids");
+  const { tServerList } = useServerText();
   const people = usePeople();
   const [pocket, setPocket] = useState(false);
   const [budget, setBudget] = useState(false);
@@ -86,7 +88,7 @@ function Child({ r, budgets }: { r: KidReport; budgets: KidBudgetStatus[] }) {
         />
       </div>
       {share != null && <ProgressBar label={t("kids.stat.ratioBar")} value={share * 100} max={100} tone="info" />}
-      {r.notes.map((n) => (
+      {tServerList(r.notes, r.notes_msg).map((n) => (
         <Notice key={n}>{n}</Notice>
       ))}
 

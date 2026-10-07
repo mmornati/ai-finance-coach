@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 from coach.ingest import consent as consent_mod
 from coach.ingest.sync import local_day_bounds_utc
 from coach.db import now_iso
+from coach.i18n_msg import server_msg
 
 RANK = {"green": 0, "amber": 1, "red": 2}
 
@@ -28,6 +29,7 @@ class AccountHealth:
     source: str
     level: str = "green"
     problems: list[str] = field(default_factory=list)
+    problems_msg: list[dict] = field(default_factory=list)     # the same problems for the web app: {code, params, text}, same order
     last_ok_sync: str | None = None
     last_attempt: str | None = None
     last_attempt_ok: bool | None = None
@@ -58,6 +60,7 @@ class BankHealth:
     valid_until: str | None
     level: str = "green"
     accounts: list[AccountHealth] = field(default_factory=list)
+    bank_code: str | None = None            # "manual": the group of the file-import accounts (the web's labels.bankGroup.manual)
 
 
 @dataclass
@@ -76,6 +79,17 @@ class HealthReport:
 
 def _raise(level: str, new: str) -> str:
     return new if RANK[new] > RANK[level] else level
+
+
+def _problem(h: AccountHealth, level: str, msg: dict) -> None:
+    """A problem: the English sentence (CLI, `coach health`) and its message for the web; the `coach ...` commands are params."""
+    h.level = _raise(h.level, level)
+    h.problems.append(msg["text"])
+    h.problems_msg.append(msg)
+
+
+# the consent statuses that need a reconnect (consent_mod.DEAD): one sentence each
+DEAD_CODE = {"expired": "health.consentExpired", "revoked": "health.consentRevoked"}
 
 
 def _account(con, row, consent, daily_limit, stale_days, now, explicit_now) -> AccountHealth:
@@ -104,43 +118,41 @@ def _account(con, row, consent, daily_limit, stale_days, now, explicit_now) -> A
                                 (uid, start, end)).fetchone()[0]
     h.syncs_left_today = max(0, daily_limit - h.syncs_today)
     if needs_review:
-        h.level = _raise(h.level, "amber")
-        h.problems.append("needs review after a reconnect (not synced, left out of analytics): "
-                          "`coach accounts merge OLD NEW` or `coach accounts set UID --resolve`")
+        _problem(h, "amber", server_msg("health.needsReview", "needs review after a reconnect (not synced, left out of analytics): "
+                                        "`coach accounts merge OLD NEW` or `coach accounts set UID --resolve`",
+                                        merge_command="coach accounts merge OLD NEW", resolve_command="coach accounts set UID --resolve"))
     if consent:
         h.consent_status, h.consent_days_left = consent.status, consent.days_left
+        reconnect = f'coach reconnect "{bank}"'
         if consent.status in consent_mod.DEAD:
-            h.level = _raise(h.level, "red")
-            h.problems.append(f"consent {consent.status}: `coach reconnect \"{bank}\"`")
+            text = f"consent {consent.status}: `{reconnect}`"
+            _problem(h, "red", server_msg(DEAD_CODE.get(consent.status, "health.consentDead"), text, status=consent.status, command=reconnect))
         elif consent.status == "urgent":
-            h.level = _raise(h.level, "red")
-            h.problems.append(f"consent expires in {consent.days_left} day(s): `coach reconnect \"{bank}\"`")
+            _problem(h, "red", server_msg("health.consentUrgent", f"consent expires in {consent.days_left} day(s): `{reconnect}`",
+                                          count=consent.days_left, command=reconnect))
         elif consent.status == "unknown":
-            h.level = _raise(h.level, "amber")
-            h.problems.append("consent status unknown (live check failed or unrecognised status): "
-                              "`coach consents --refresh`")
+            _problem(h, "amber", server_msg("health.consentUnknown", "consent status unknown (live check failed or unrecognised status): "
+                                            "`coach consents --refresh`", command="coach consents --refresh"))
         elif consent.status == "expiring":
-            h.level = _raise(h.level, "amber")
-            h.problems.append(f"consent expires in {consent.days_left} days")
+            _problem(h, "amber", server_msg("health.consentExpiring", f"consent expires in {consent.days_left} days", count=consent.days_left))
     note = con.execute("SELECT note FROM sync_log WHERE account_uid=? AND ok=1 ORDER BY ran_at DESC, rowid DESC LIMIT 1",
                        (uid,)).fetchone()
     if note and (m := re.search(r"key_conflicts=(\d+)", note[0] or "")):
         h.key_conflicts = int(m.group(1))
-        h.level = _raise(h.level, "amber")
-        h.problems.append(f"{h.key_conflicts} transaction(s) reused a bank reference with different content in the "
-                          "last sync (both kept): check the duplicates")
+        _problem(h, "amber", server_msg("health.keyConflicts", f"{h.key_conflicts} transaction(s) reused a bank reference with different content "
+                                        "in the last sync (both kept): check the duplicates", count=h.key_conflicts))
     if h.last_attempt_ok is False:
-        h.level = _raise(h.level, "red")
-        h.problems.append(f"last sync failed ({h.last_error_at}): {(h.last_error or '')[:120]}")
+        error = (h.last_error or "")[:120]          # the bank's own text: a param, never translated
+        _problem(h, "red", server_msg("health.lastSyncFailed", f"last sync failed ({h.last_error_at}): {error}", at=h.last_error_at or "",
+                                      error=error))
     if h.last_ok_sync is None:
-        h.level = _raise(h.level, "amber")
-        h.problems.append("never synced")
+        _problem(h, "amber", server_msg("health.neverSynced", "never synced"))
     else:
         ok_at = consent_mod.parse_ts(h.last_ok_sync)
         if ok_at and now - ok_at > timedelta(days=stale_days):
             h.stale = True
-            h.level = _raise(h.level, "amber")
-            h.problems.append(f"stale: no successful sync since {h.last_ok_sync} (> {stale_days} days)")
+            _problem(h, "amber", server_msg("health.stale", f"stale: no successful sync since {h.last_ok_sync} (> {stale_days} days)",
+                                            since=h.last_ok_sync, count=stale_days))
     return h
 
 
@@ -155,7 +167,7 @@ def health(con, daily_limit: int = 4, stale_days: int = 2, now: datetime | None 
     for uid, label, bank, source, excl, sid, nr in rows:
         c = consents.get(sid) if source == "api" else None
         if source != "api":
-            key, mk = ("import",), lambda: BankHealth("Manual imports", "", None, None, None, None)
+            key, mk = ("import",), lambda: BankHealth("Manual imports", "", None, None, None, None, bank_code="manual")
         elif c:
             key, mk = (sid,), lambda: BankHealth(bank or c.bank, c.country, sid, c.status, c.days_left, c.valid_until)
         else:  # account left on a replaced session: still reported
@@ -164,8 +176,7 @@ def health(con, daily_limit: int = 4, stale_days: int = 2, now: datetime | None 
         a = _account(con, (uid, label, bank, source, excl, nr), c, daily_limit, stale_days, now, explicit_now)
         if source == "api" and not c:
             a.consent_status = "replaced"
-            a.level = _raise(a.level, "amber")
-            a.problems.append("session replaced: account no longer synced (not returned by the new session)")
+            _problem(a, "amber", server_msg("health.sessionReplaced", "session replaced: account no longer synced (not returned by the new session)"))
         b.accounts.append(a)
         b.level = _raise(b.level, a.level)
     out = sorted(banks.values(), key=lambda b: (b.bank.lower(), b.session_id or ""))

@@ -6,6 +6,7 @@ import { Async, Badge, Button, Card, Dialog, DiffView, EmptyState, Field, Input,
 import { useAllocation, useDryRun, useHousehold, usePeople, useTaxonomy, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtMoney, fmtPct, groupLabel } from "@/lib/format";
+import { useServerText } from "@/i18n/server";
 import type { AllocationRuleResult, EditResult } from "@/api/types";
 
 const METHOD: Record<string, ParseKeys<"household">> = { equal: "whoPays.method.equal", income: "whoPays.method.income", custom: "whoPays.method.custom" };
@@ -80,6 +81,7 @@ export default function WhoPays() {
 }
 
 function Rule({ r, onDelete }: { r: AllocationRuleResult; onDelete: () => void }) {
+  const { tServerList } = useServerText();
   const { t } = useTranslation("household");
   const people = usePeople();
   return (
@@ -117,7 +119,7 @@ function Rule({ r, onDelete }: { r: AllocationRuleResult; onDelete: () => void }
         <Badge>{t("whoPays.rule.jointPaid", { amount: fmtMoney(r.joint_paid) })}</Badge>
         <Badge>{t("whoPays.rule.personalPaid", { amount: fmtMoney(r.personal_paid) })}</Badge>
         {parseFloat(r.unattributed) !== 0 && <Badge tone="warn">{t("whoPays.rule.unattributed", { amount: fmtMoney(r.unattributed) })}</Badge>}
-        {r.notes.map((n) => (
+        {tServerList(r.notes, r.notes_msg).map((n) => (
           <span key={n}>{n}</span>
         ))}
       </div>

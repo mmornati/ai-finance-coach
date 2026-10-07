@@ -164,8 +164,8 @@ def questions_to_doc(questions: list[schemas.Question]) -> dict:
         if q.suggested_target:
             d["suggested_target"] = q.suggested_target.model_dump(exclude_none=True)
         # a stable, readable key order
-        order = ["id", "status", "topic", "question", "context", "evidence", "suggested_target", "stake", "key",
-                 "origin", "created", "answered", "answer", "note", "source_text"]
+        order = ["id", "status", "topic", "topic_code", "question", "question_msg", "context", "context_msg", "evidence", "suggested_target",
+                 "stake", "key", "origin", "created", "answered", "answer", "note", "source_text"]
         out.append({k: d[k] for k in order if k in d})
     return {"questions": out}
 

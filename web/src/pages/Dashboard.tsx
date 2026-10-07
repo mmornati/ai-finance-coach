@@ -268,7 +268,7 @@ function UpcomingCard() {
                     <div className="font-medium text-text">{fmtDate(i.date, "dayMonth")}</div>
                     <div>{fmtRelativeDays(i.days_until)}</div>
                   </div>
-                  <span className="min-w-0 flex-1 truncate">{i.title}</span>
+                  <span className="min-w-0 flex-1 truncate">{tServer(i.title_msg, i.title)}</span>
                   {i.amount !== null && <Money v={i.amount} colored className="shrink-0 text-sm font-medium" />}
                 </li>
               ))}
@@ -398,7 +398,7 @@ function HealthCard() {
             {d.banks.map((b) => (
               <li key={`${b.bank}${b.session_id}`} className="flex items-center gap-2">
                 <Dot level={b.level} />
-                <span className="min-w-0 flex-1 truncate">{b.bank}</span>
+                <span className="min-w-0 flex-1 truncate">{serverLabel("bankGroup", b.bank_code, b.bank)}</span>
                 <span className="text-xs text-muted">{b.consent_days_left !== null ? t("health.daysLeft", { days: b.consent_days_left }) : b.consent_status ?? t("health.manual")}</span>
               </li>
             ))}

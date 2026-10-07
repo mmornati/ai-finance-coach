@@ -6,7 +6,7 @@ import { Async, Badge, Button, Card, Dialog, Dot, EmptyState, Field, Input, Mone
 import { SyncButton } from "@/components/Layout";
 import { useConnections, useFilters, useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { errorText, purposeLabel } from "@/i18n/server";
+import { errorText, purposeLabel, serverLabel, tServer } from "@/i18n/server";
 import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
 import type { ConnAccount, Consent, HealthBank, JobState, LastRun, Transfers } from "@/api/types";
 
@@ -81,8 +81,8 @@ function SyncResult({ job, limit }: { job: JobState; limit: number }) {
   const tone = job.state === "failed" ? "neg" : job.state === "running" ? "info" : "pos";
   return (
     <Notice tone={tone} title={job.state === "running" ? t("sync.running") : job.state === "failed" ? t("sync.failed") : t("sync.last")}>
-      {job.message ?? (job.state === "running" ? t("sync.asking") : "")}
-      {job.results.length > 0 && <ul className="mt-1 text-xs">{job.results.map((r) => <li key={r.uid}>{r.new ? t("sync.resultNew", { bank: r.bank ?? r.uid, status: r.status, count: r.new }) : t("sync.result", { bank: r.bank ?? r.uid, status: r.status })}{r.note ? t("sync.note", { note: r.note }) : ""}</li>)}</ul>}
+      {job.message ? tServer(job.message_msg, job.message) : (job.state === "running" ? t("sync.asking") : "")}
+      {job.results.length > 0 && <ul className="mt-1 text-xs">{job.results.map((r) => <li key={r.uid}>{r.new ? t("sync.resultNew", { bank: r.bank ?? r.uid, status: r.status, count: r.new }) : t("sync.result", { bank: r.bank ?? r.uid, status: r.status })}{r.note ? t("sync.note", { note: tServer(r.note_msg, r.note) }) : ""}</li>)}</ul>}
       {job.finished_at && <div className="mt-1 text-xs opacity-80">{fmtDateTime(job.finished_at)}</div>}
     </Notice>
   );
@@ -97,7 +97,7 @@ function BankCard({ b, consent, canReconnect }: { b: HealthBank; consent?: Conse
   return (
     <Card>
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0"><h3 className="flex items-center gap-2 text-[15px] font-semibold"><Dot level={b.level} />{b.bank}</h3>
+        <div className="min-w-0"><h3 className="flex items-center gap-2 text-[15px] font-semibold"><Dot level={b.level} />{serverLabel("bankGroup", b.bank_code, b.bank)}</h3>
           <p className="text-xs text-muted">{b.consent_status ? (left !== null ? t("bank.consentLeft", { status: b.consent_status, count: left, date: fmtDate(b.valid_until) }) : t("bank.consent", { status: b.consent_status })) : t("bank.importedFiles")}</p></div>
         {consent && canReconnect && <Button size="sm" variant={left !== null && left <= 14 ? "primary" : "secondary"} onClick={() => setDlg(true)}><RefreshCw className="size-3.5" aria-hidden /> {t("bank.reconnect")}</Button>}
       </div>
@@ -107,7 +107,7 @@ function BankCard({ b, consent, canReconnect }: { b: HealthBank; consent?: Conse
           <li key={a.uid} className="py-2">
             <div className="flex items-center justify-between gap-3"><span className="flex min-w-0 items-center gap-2"><Dot level={a.level} /><span className="truncate">{a.label}</span></span><span className="shrink-0 text-xs text-muted">{a.source === "api" ? (a.last_ok_sync ? t("bank.synced", { date: fmtDateTime(a.last_ok_sync) }) : t("bank.neverSynced")) : (a.last_import ? t("bank.importedOn", { date: fmtDateTime(a.last_import) }) : t("bank.noImport"))}</span></div>
             {a.source === "api" && <div className="ml-4 text-xs text-faint">{t("bank.syncsLeft", { left: a.syncs_left_today, limit: a.daily_limit, count: a.tx_count })}</div>}
-            {a.problems.map((p) => <div key={p} className="ml-4 text-xs text-warn">{p.replace(/`[^`]*`/g, "").trim()}</div>)}
+            {a.problems.map((p, i) => <div key={p} className="ml-4 text-xs text-warn">{tServer(a.problems_msg?.[i], p).replace(/`[^`]*`/g, "").trim()}</div>)}
           </li>
         ))}
       </ul>
@@ -162,7 +162,7 @@ function ConnectDialog({ onClose, reconnect }: { onClose: () => void; reconnect?
             </>
           )}
           {job.state === "done" && <Notice tone="pos" title={t("connectDialog.connected")}>{t("connectDialog.connectedBody")}</Notice>}
-          {job.state === "failed" && <Notice tone="neg" title={t("connectDialog.notConnected")}>{job.message}</Notice>}
+          {job.state === "failed" && <Notice tone="neg" title={t("connectDialog.notConnected")}>{tServer(job.message_msg, job.message ?? "")}</Notice>}
           {job.state !== "running" && <div className="flex justify-end"><Button variant="primary" onClick={onClose}>{t("connectDialog.close")}</Button></div>}
         </div>
       )}

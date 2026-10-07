@@ -20,7 +20,7 @@ export interface ServerMsg {
 
 /** The fixed vocabularies the server sends as codes (keys `labels.<family>.<code>` of server.json). */
 export type LabelFamily = "alertKind" | "subsGroup" | "balanceType" | "setupStep" | "onboardingStep" | "forecast" | "forecastFlag" | "accountPurpose" | "cadence" | "explainStep"
-  | "loanField" | "loanOption" | "loanVerdict" | "rentalDocument" | "rentalDocumentFrom";
+  | "loanField" | "loanOption" | "loanVerdict" | "rentalDocument" | "rentalDocumentFrom" | "bankGroup" | "memoryField" | "questionTopic";
 
 // untyped access: the codes come from the server at run time, so they cannot be checked against the key types
 const T = i18n as unknown as { exists: (k: string, o: object) => boolean; t: (k: string, o: object) => string };
@@ -33,12 +33,15 @@ function tr(key: string, vars: Record<string, unknown> = {}): string {
 }
 
 /** A param's display value, from its name: `*_date` -> date, `*_month` -> month, `*_amount` -> money, `*_pct` -> percent,
- *  `*_category` / `*_group` -> the category's name, `cadence` -> its label (`labels.cadence.<code>`); `count` stays a number (it picks the
+ *  `*_category` / `*_group` -> the category's name, `*_kind` -> the kind of a memory item (`holdingKindLabel`), `fields` -> a comma-separated
+ *  list of memory fields (`fieldListLabel`), `cadence` -> its label (`labels.cadence.<code>`); `count` stays a number (it picks the
  *  plural form); anything else as it is (a key may format a number itself: `{{excess_km, number}}`). */
 export function formatParam(name: string, v: ServerParam): string | number {
   if (v === null || v === undefined) return "–";
   if (name === "count") return v;
   if (name === "cadence") return serverLabel("cadence", String(v), String(v));
+  if (name === "fields") return fieldListLabel(String(v));
+  if (name.endsWith("_kind")) return holdingKindLabel(String(v));
   if (name.endsWith("_date")) return fmtDate(String(v));
   if (name.endsWith("_month")) return fmtMonth(String(v), "long");
   if (name.endsWith("_amount")) return fmtMoney(v);
@@ -133,6 +136,16 @@ export function holdingKindLabel(kind: string | null | undefined): string {
     if (T.exists(key, { ns: "common" })) return T.t(key, { ns: "common" });
   }
   return groupLabel(kind);
+}
+
+/** A field of the memory files (`rate.nominal`, `notice_period_days`, `owner`): `labels.memoryField.<field, dots as _>`, else the field itself. */
+export function fieldLabel(field: string): string {
+  return serverLabel("memoryField", field.replace(/\./g, "_"), field);
+}
+
+/** A list of memory fields as the server joins them (`"lender, rate.nominal"`), each one named in the interface language. */
+export function fieldListLabel(fields: string): string {
+  return fields.split(",").map((f) => f.trim()).filter(Boolean).map(fieldLabel).join(", ");
 }
 
 /** The forecast line of an account, or of the whole household (`account: null`). */
