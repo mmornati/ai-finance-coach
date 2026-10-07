@@ -48,7 +48,10 @@ def test_meta_disclaimers_in_the_asked_language(ctx):
     fr = ctx.get("/meta/disclaimers", lang="fr").json()
     assert fr["lang"] == "fr" and fr["texts"]["ai_label_short"] == "Généré par IA" and "IA" in fr["texts"]["ai_label"]
     en = ctx.get("/meta/disclaimers", lang="xx").json()                     # an unknown language: English
-    assert en["lang"] == "en" and en["texts"]["ai_label_short"] == "AI-generated" and set(en["texts"]) == {"ai_label", "ai_label_short"}
+    assert en["lang"] == "en" and en["texts"]["ai_label_short"] == "AI-generated" and {"ai_label", "ai_label_short"} <= set(en["texts"])
+    from coach import disclaimers
+    it = ctx.get("/meta/disclaimers", lang="it").json()                     # E8: the cancellation panel's two disclaimers, from disclaimers.py
+    assert it["texts"]["contract"] == disclaimers.get("contract", "it") and it["texts"]["contract_verify"] == disclaimers.get("contract_verify", "it")
 
 
 # ====================================================================== analytics

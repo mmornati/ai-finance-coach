@@ -16,11 +16,15 @@ from __future__ import annotations
 import datetime as dt
 from typing import Optional
 
+from coach.i18n_msg import server_msg
 from coach.memory.schemas import USAGE_FREQUENCIES, Usage
 
 UNUSED_DAYS = 60
 NOT_MEASURABLE = ("Whether a service is used is not in the bank data: only what you record (frequency, last used) is "
                   "counted. Without it the usage stays unknown.")
+NOT_MEASURABLE_MSG = server_msg("subs.usage.notMeasurable", NOT_MEASURABLE)
+MEASURABLE_LAST_USED = server_msg("subs.usage.fromLastUsed", "from the last-used date you recorded")
+MEASURABLE_NEVER = server_msg("subs.usage.neverAndPaying", "you recorded 'never' and the payments continue")
 
 
 def usage_of(contract) -> dict:
@@ -48,10 +52,11 @@ def signals(u: dict, *, paying: Optional[bool], today: dt.date, last_payment: Op
     if lu is not None:
         days = (today - lu).days
         if days > UNUSED_DAYS:
-            out.append({"kind": "unused_60_days", "days": days, "last_used": lu, "measurable": "from the last-used date you recorded",
-                        "paying": paying})
+            out.append({"kind": "unused_60_days", "days": days, "last_used": lu, "measurable": MEASURABLE_LAST_USED["text"],
+                        "measurable_msg": MEASURABLE_LAST_USED, "paying": paying})
     if u["frequency"] == "never" and paying:
-        out.append({"kind": "paid_but_never_used", "last_payment": last_payment, "measurable": "you recorded 'never' and the payments continue"})
+        out.append({"kind": "paid_but_never_used", "last_payment": last_payment, "measurable": MEASURABLE_NEVER["text"],
+                    "measurable_msg": MEASURABLE_NEVER})
     return out
 
 

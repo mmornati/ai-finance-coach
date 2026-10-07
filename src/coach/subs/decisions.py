@@ -28,6 +28,7 @@ from typing import Optional
 
 from coach.analytics.common import add_months, money_str
 from coach.analytics.recurring import CADENCES
+from coach.i18n_msg import server_msg
 from coach.skills.money import cents
 
 KINDS = ("cancelled", "renegotiated", "switched", "downgraded", "kept")
@@ -227,50 +228,64 @@ def monthly_equivalent_c(amount_c: int, cadence: str) -> int:
     return round(abs(amount_c) * CADENCES[cadence][3] / 12)
 
 
+def _v(status: str, msg: dict, check_on, evidence) -> dict:
+    """A verification: the English ``reason`` and its message ``reason_msg`` (docs/i18n.md "Server text"; the codes ``subs.decision.*``
+    are shared with the reminder cards built on the same reason)."""
+    return {"status": status, "reason": msg["text"], "reason_msg": msg, "check_on": check_on, "evidence": evidence}
+
+
 def verify(d: Decision, rec, today: dt.date) -> dict:
-    """-> ``{status: verified|pending|contradicted|not_applicable, reason, check_on, evidence}``."""
+    """-> ``{status: verified|pending|contradicted|not_applicable, reason, reason_msg, check_on, evidence}``."""
     eff = d.effective
     if d.decision == "kept":
-        return {"status": "not_applicable", "reason": "nothing to verify: the subscription was kept", "check_on": None, "evidence": None}
+        return _v("not_applicable", server_msg("subs.decision.kept", "nothing to verify: the subscription was kept"), None, None)
     x = series_of(d, rec)
     if x is None and len(linked_series(d, rec)) > 1:
-        return {"status": "ambiguous", "reason": f"the contract covers {len(linked_series(d, rec))} recurring series: record the decision on one "
-                                                 "series (name it) so the bank data can be checked", "check_on": None, "evidence": None}
+        n = len(linked_series(d, rec))
+        return _v("ambiguous", server_msg("subs.decision.ambiguous", f"the contract covers {n} recurring series: record the decision on one "
+                                                                     "series (name it) so the bank data can be checked", count=n), None, None)
     if x is None:
-        return {"status": "pending", "reason": "the recurring series is not in the bank data (not found): confirm it by hand",
-                "check_on": eff + dt.timedelta(days=35), "evidence": None}
+        return _v("pending", server_msg("subs.decision.seriesNotFound",
+                                        "the recurring series is not in the bank data (not found): confirm it by hand"),
+                  eff + dt.timedelta(days=35), None)
     pays = [o for o in x.occurrences if o.amount_c < 0] if x.direction == "out" else list(x.occurrences)      # a refund (positive) is not a payment
     occ = [o for o in pays if o.date >= eff]
     if d.decision in ("cancelled", "switched"):
         late = [o for o in pays if o.date > eff + dt.timedelta(days=GRACE_DAYS)]
         if late:
             last = late[-1]
-            return {"status": "contradicted", "reason": f"{len(late)} payment(s) after the effective date {eff}; latest {last.date} "
-                                                      f"({money_str(abs(last.amount_c))})", "check_on": None,
-                    "evidence": {"series": x.id, "last_payment": last.date, "payments_after": len(late)}}
+            amount = money_str(abs(last.amount_c))
+            return _v("contradicted", server_msg("subs.decision.paymentsAfter", f"{len(late)} payment(s) after the effective date {eff}; latest "
+                                                 f"{last.date} ({amount})", count=len(late), effective_date=eff, last_date=last.date,
+                                                 last_amount=amount),
+                      None, {"series": x.id, "last_payment": last.date, "payments_after": len(late)})
         overdue_from = (x.next_expected or x.last_date) + dt.timedelta(days=OVERDUE_DAYS)
         if eff <= today and (x.status == "ended" or today > overdue_from):
-            return {"status": "verified", "reason": f"no payment since {x.last_date}" + (" (the series ended)" if x.status == "ended" else
-                                                                                     ", the next one is overdue"),
-                    "check_on": None, "evidence": {"series": x.id, "last_payment": x.last_date}}
-        return {"status": "pending", "reason": "no later payment yet, but the next one is not overdue" if eff <= today else
-                "the decision takes effect later", "check_on": max(eff, overdue_from) + dt.timedelta(days=1),
-                "evidence": {"series": x.id, "last_payment": x.last_date}}
+            msg = (server_msg("subs.decision.noPaymentSeriesEnded", f"no payment since {x.last_date} (the series ended)", last_date=x.last_date)
+                   if x.status == "ended" else
+                   server_msg("subs.decision.noPaymentNextOverdue", f"no payment since {x.last_date}, the next one is overdue", last_date=x.last_date))
+            return _v("verified", msg, None, {"series": x.id, "last_payment": x.last_date})
+        msg = (server_msg("subs.decision.nextNotOverdue", "no later payment yet, but the next one is not overdue") if eff <= today else
+               server_msg("subs.decision.takesEffectLater", "the decision takes effect later"))
+        return _v("pending", msg, max(eff, overdue_from) + dt.timedelta(days=1), {"series": x.id, "last_payment": x.last_date})
     # renegotiated / downgraded
     if not occ:
-        return {"status": "pending", "reason": "no payment on or after the effective date yet",
-                "check_on": max(eff, x.next_expected or eff) + dt.timedelta(days=OVERDUE_DAYS), "evidence": {"series": x.id}}
+        return _v("pending", server_msg("subs.decision.noPaymentSinceEffective", "no payment on or after the effective date yet"),
+                  max(eff, x.next_expected or eff) + dt.timedelta(days=OVERDUE_DAYS), {"series": x.id})
     last = occ[-1]
     m = monthly_equivalent_c(last.amount_c, x.cadence)
     tol = max(1, round(d.after_c * PRICE_TOLERANCE_PCT / 100))
     ev = {"series": x.id, "payment": last.date, "monthly_equivalent": money_str(m)}
     if abs(m - d.after_c) <= tol:
-        return {"status": "verified", "reason": f"the payment of {last.date} is {money_str(m)} a month, as recorded", "check_on": None, "evidence": ev}
+        return _v("verified", server_msg("subs.decision.asRecorded", f"the payment of {last.date} is {money_str(m)} a month, as recorded",
+                                         payment_date=last.date, monthly_amount=money_str(m)), None, ev)
     if abs(m - d.before_c) <= max(1, round(d.before_c * PRICE_TOLERANCE_PCT / 100)):
-        return {"status": "contradicted", "reason": f"the payment of {last.date} is still about the old amount ({money_str(m)} a month)",
-                "check_on": None, "evidence": ev}
-    return {"status": "contradicted", "reason": f"the payment of {last.date} is {money_str(m)} a month, not the {money_str(d.after_c)} recorded",
-            "check_on": None, "evidence": ev}
+        return _v("contradicted", server_msg("subs.decision.stillOldAmount",
+                                             f"the payment of {last.date} is still about the old amount ({money_str(m)} a month)",
+                                             payment_date=last.date, monthly_amount=money_str(m)), None, ev)
+    return _v("contradicted", server_msg("subs.decision.otherAmount",
+                                         f"the payment of {last.date} is {money_str(m)} a month, not the {money_str(d.after_c)} recorded",
+                                         payment_date=last.date, monthly_amount=money_str(m), recorded_amount=money_str(d.after_c)), None, ev)
 
 
 def counted_from(d: Decision, rec) -> dt.date:
@@ -297,7 +312,7 @@ def status_row(d: Decision, rec, today: dt.date) -> dict:
             "decided_on": d.decided_on, "effective_on": d.effective, "counted_from": start, "before_monthly": money_str(d.before_c),
             "after_monthly": money_str(d.after_c), "monthly_saving": money_str(saving), "months_counted": months,
             "since_decision": money_str(saving * months), "note": d.note, "source": d.source, "state": d.state,
-            "status": v["status"], "reason": v["reason"], "check_on": v["check_on"], "evidence": v["evidence"],
+            "status": v["status"], "reason": v["reason"], "reason_msg": v["reason_msg"], "check_on": v["check_on"], "evidence": v["evidence"],
             "reminder": bool((v["status"] == "pending" and v["check_on"] and today >= v["check_on"]) or v["status"] == "ambiguous"),
             "_saving_c": saving, "_since_c": saving * months}
 
@@ -316,8 +331,11 @@ def savings(decisions: list[Decision], rec, today: dt.date) -> dict:
            "claimed_monthly_unverified": money_str(sum(r["_saving_c"] for r in pend)),
            "reminders": [r["id"] for r in rows if r["reminder"]],
            "decisions": rows,
-           "note": ("only decisions the bank data confirms count as realised; pending ones are claims (a cancelled service still "
-                    "being paid is flagged). Months are whole calendar months from the effective date.")}
+           "note": SAVINGS_NOTE["text"], "note_msg": SAVINGS_NOTE}
     for r in rows:
         r.pop("_saving_c"), r.pop("_since_c")
     return out
+
+
+SAVINGS_NOTE = server_msg("subs.savings.note", "only decisions the bank data confirms count as realised; pending ones are claims (a cancelled "
+                                               "service still being paid is flagged). Months are whole calendar months from the effective date.")

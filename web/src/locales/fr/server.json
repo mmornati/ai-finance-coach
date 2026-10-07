@@ -5,6 +5,117 @@
     "mixedTypes_many": "Un solde par compte, le type le plus comptabilisé que fournit la banque. {{count}} comptes ne donnent qu'un solde non comptabilisé ({{accounts}}) : le total mélange les types.",
     "mixedTypes_other": "Un solde par compte, le type le plus comptabilisé que fournit la banque. {{count}} comptes ne donnent qu'un solde non comptabilisé ({{accounts}}) : le total mélange les types."
   },
+  "cancel": {
+    "assumes": {
+      "annualRenewal": "renouvellement annuel à cette date"
+    },
+    "condition": {
+      "earlyExitJustified": "une sortie anticipée ne peut coûter que ce qui est justifié ou proportionné à la remise reçue",
+      "equivalentGuarantees": "le nouveau contrat doit présenter un niveau de garanties équivalent",
+      "equivalentToBank": "le nouveau contrat doit être équivalent à ce que la banque exige",
+      "firstYear": "la résiliation sans frais n'est possible qu'après la première année ; avant, le contrat prend fin à sa date d'échéance annuelle avec le préavis prévu au contrat (généralement deux mois)",
+      "fixedTermOffer": "cela ressemble à une offre à durée déterminée : lisez ses conditions pour une éventuelle clause de sortie",
+      "groupContract": "un contrat collectif obligatoire d'entreprise ne peut pas être résilié de cette façon (seulement lors d'un événement qui le permet)",
+      "hamonEligible": "la résiliation sans frais à tout moment (loi Hamon) s'applique aux contrats auto et habitation éligibles : vérifiez si le vôtre en fait partie ; sinon le contrat prend fin à sa date d'échéance annuelle avec le préavis prévu au contrat (généralement deux mois)",
+      "longPolicyIt": "une police de plus de cinq ans (avec une remise liée à sa durée) peut être résiliée par l'assuré après la cinquième année avec un préavis de 60 jours, avec effet à la fin de l'année d'assurance (art. 1899 c.c.) ; les polices annuelles suivent le contrat",
+      "minimumTerm": "la durée minimale court jusqu'à cette date : une sortie plus tôt dépend du contrat",
+      "noGapInCover": "l'ancien contrat prend fin le jour où le nouveau commence : il ne doit y avoir aucune interruption de couverture",
+      "rcAutoExpiry": "aucun préavis n'est nécessaire : la police prend simplement fin à l'échéance (la couverture dure encore 15 jours) ; en cours d'année seulement en cas de vente, destruction ou vol du véhicule",
+      "renewedWithoutReminder": "il a été reconduit le {{renewal_date}} : si le professionnel ne vous a pas informé avant cette date, vous pouvez peut-être résilier à tout moment (voir les règles)",
+      "rollingMonthly": "un abonnement mensuel sans engagement prend normalement fin à la fin de la période déjà payée",
+      "singlePremiumRefund": "prime unique : demandez le remboursement de la part non utilisée en cas de remboursement anticipé",
+      "telecomCommitment": "résilier avant la fin de l'engagement coûte le montant de résiliation anticipée ; attendre le {{free_date}} est sans frais"
+    },
+    "method": {
+      "carInsuranceIt": "ne rien faire à l'échéance et souscrire la nouvelle police avant",
+      "energyFr": "souscrivez auprès du nouveau fournisseur, qui résilie l'ancien contrat pour vous ; ne résiliez pas d'abord (pas de coupure de fourniture)",
+      "energyIt": "souscrivez auprès du nouveau fournisseur, qui envoie le recesso ; une demande directe s'adresse au fournisseur actuel",
+      "genericFr": "le bouton de résiliation en ligne si vous avez souscrit en ligne, sinon la méthode prévue au contrat (lettre ou e-mail)",
+      "genericIt": "la méthode prévue au contrat (espace client en ligne, lettre ou e-mail certifié)",
+      "insuranceFr": "demande écrite (lettre recommandée, e-mail ou formulaire en ligne de l'assureur), ou laissez le nouvel assureur l'envoyer pour vous ; un contrat souscrit en ligne peut être résilié en ligne (3 clics)",
+      "insuranceIt": "disdetta par lettre recommandée ou e-mail certifié (PEC) dans le délai prévu par la police",
+      "insuranceOtherFr": "demande écrite (lettre recommandée, e-mail ou formulaire en ligne de l'assureur) avant la date limite du préavis",
+      "loanInsuranceFr": "envoyez l'offre du nouveau contrat au prêteur (le nouvel assureur s'occupe généralement des démarches)",
+      "loanInsuranceIt": "présentez le nouveau contrat à la banque",
+      "telecomFr": "en ligne (bouton de résiliation), par lettre ou e-mail, ou via le nouvel opérateur (la portabilité du numéro résilie l'ancienne ligne)",
+      "telecomIt": "demande écrite à l'opérateur (e-mail ou lettre recommandée) ou via le nouvel opérateur"
+    },
+    "noticeAssumption": {
+      "twoMonths": "deux mois, sauf si le contrat prévoit autre chose (L113-12)"
+    },
+    "reference": {
+      "anniversary": "date anniversaire",
+      "commitmentEnds": "l'engagement prend fin",
+      "freeCancellationOpens": "la résiliation sans frais devient possible",
+      "renews": "se renouvelle"
+    },
+    "rule": {
+      "frHamon": {
+        "name": "Loi Hamon (assurance après la première année)",
+        "summary": "Les assurances habitation et auto peuvent être résiliées à tout moment après la première année, sans frais ni pénalités ; la résiliation prend effet un mois après la réception de la demande par l'assureur (le nouvel assureur peut effectuer la démarche pour vous)."
+      },
+      "frChatelInsurance": {
+        "name": "Reconduction tacite des contrats d'assurance (loi Chatel)",
+        "summary": "Le contrat prend fin à sa date d'échéance annuelle, avec le préavis prévu au contrat (L113-12 ; généralement deux mois). L'assureur doit envoyer l'avis d'échéance à temps : s'il est envoyé moins de 15 jours avant la date limite pour refuser la reconduction, ou après cette date, l'assuré dispose de 20 jours à compter de son envoi pour résilier (L113-15-1)."
+      },
+      "frRiaSante": {
+        "name": "Complémentaire santé (mutuelle) : résiliation infra-annuelle",
+        "summary": "Un contrat de complémentaire santé peut être résilié à tout moment après un an, sans frais, avec effet un mois après la demande. Les contrats collectifs obligatoires d'entreprise ne sont pas concernés."
+      },
+      "frLemoine": {
+        "name": "Assurance emprunteur : loi Lemoine",
+        "summary": "L'assurance d'un prêt peut être remplacée à tout moment, sans frais, par un contrat présentant un niveau de garanties équivalent ; le prêteur doit répondre dans un délai de 10 jours ouvrés."
+      },
+      "frTelecom": {
+        "name": "Contrats de communications électroniques (loi Chatel)",
+        "summary": "La durée d'engagement est limitée à 24 mois. Après les 12 premiers mois, une résiliation anticipée coûte au plus 25 % des sommes restant dues au titre de l'abonnement ; sans engagement, ou à son terme, le contrat peut être résilié à tout moment, normalement dans un délai d'environ dix jours après la demande."
+      },
+      "frEnergy": {
+        "name": "Électricité et gaz des particuliers",
+        "summary": "Aucuns frais de résiliation pour l'électricité ou le gaz d'un particulier ; le nouveau fournisseur s'occupe du changement (généralement en trois semaines). Les offres de marché à durée déterminée peuvent prévoir des conditions : lisez-les."
+      },
+      "fr3Clics": {
+        "name": "Résiliation en ligne (« résiliation en 3 clics »)",
+        "summary": "Un contrat qui peut être souscrit en ligne doit pouvoir être résilié en ligne grâce à une fonctionnalité clairement visible ; le professionnel doit confirmer la date de fin du contrat."
+      },
+      "frChatelRenewal": {
+        "name": "Reconduction tacite des contrats de services (loi Chatel)",
+        "summary": "Pour un contrat à reconduction tacite, le professionnel doit vous informer au plus tôt trois mois et au plus tard un mois avant la fin de la période pendant laquelle vous pouvez refuser la reconduction. À défaut, vous pouvez résilier à tout moment après la reconduction et obtenir le remboursement de la part non utilisée."
+      },
+      "itBersaniTelecom": {
+        "name": "Télécoms et télévision payante : Legge Bersani",
+        "summary": "Le client peut résilier (recesso) à tout moment sans pénalités ; seuls des frais justifiés par les coûts réels de la clôture, ou proportionnés à une remise reçue, peuvent être facturés. Le préavis est de 30 jours au plus."
+      },
+      "itBersaniEnergy": {
+        "name": "Électricité et gaz : recesso (ARERA)",
+        "summary": "Un particulier peut résilier (recesso) à tout moment sans pénalités ; le préavis est d'un mois au plus, et le changement de fournisseur est géré par le nouveau fournisseur."
+      },
+      "itRcauto": {
+        "name": "RC auto : pas de reconduction tacite",
+        "summary": "La police de responsabilité civile automobile (RC auto) prend fin à son échéance : il n'y a pas de reconduction tacite, donc aucun préavis de résiliation n'est nécessaire ; cherchez une nouvelle police avant l'échéance. La couverture continue 15 jours après l'échéance (délai de grâce)."
+      },
+      "itInsurance": {
+        "name": "Autres assurances : disdetta",
+        "summary": "Les polices annuelles d'assurance de dommages se renouvellent tacitement, sauf si un préavis (disdetta) est envoyé dans le délai prévu par la police. Une police de plus de cinq ans (avec une remise liée à sa durée) peut être résiliée par l'assuré après la cinquième année avec un préavis de 60 jours, avec effet à la fin de l'année d'assurance (art. 1899 c.c.)."
+      },
+      "itLoanInsurance": {
+        "name": "Assurance liée à un prêt immobilier",
+        "summary": "L'emprunteur peut présenter une police de son choix (la banque doit accepter une police équivalente) ; la part non utilisée d'une prime unique est remboursable en cas de remboursement anticipé du prêt."
+      },
+      "itSubscription": {
+        "name": "Abonnements : Codice del consumo",
+        "summary": "Les conditions de renouvellement et de résiliation sont celles du contrat ; le droit de rétractation de 14 jours ne s'applique qu'aux contrats à distance, au moment de la souscription."
+      }
+    },
+    "unknown": {
+      "noticePeriodDays": "durée du préavis (jours)",
+      "renewalAnniversary": "échéance (date anniversaire)",
+      "renewalExpiry": "échéance (date d'expiration)",
+      "renewalOrCommitmentEnd": "échéance ou fin d'engagement",
+      "startDate": "date de début",
+      "startLowerBound": "date de début du contrat (seul le premier paiement observé est connu, et il date de moins d'un an)"
+    }
+  },
   "coverage": {
     "accountsLacking": "Comptes sans données complètes (mois sans données / mois listés) : {{accounts}}.",
     "budgetLeftOut": "Les dépenses ponctuelles, le capital et l'épargne sont exclus.",
@@ -118,6 +229,53 @@
       "rental": "Location",
       "kids": "Enfants",
       "savings": "Épargne"
+    }
+  },
+  "subs": {
+    "alternatives": {
+      "note": "les offres de plus de 30 jours sont dépassées et exclues de la meilleure ; les prix changent : vérifiez sur la page du fournisseur avant d'agir",
+      "staleWarning": "prix de plus de 30 jours : revérifiez-le avant de vous y fier"
+    },
+    "decision": {
+      "ambiguous_one": "le contrat couvre {{count}} série de paiements récurrents : enregistrez la décision sur une seule série (nommez-la) pour que les données bancaires puissent la vérifier",
+      "ambiguous_many": "le contrat couvre {{count}} séries de paiements récurrents : enregistrez la décision sur une seule série (nommez-la) pour que les données bancaires puissent la vérifier",
+      "ambiguous_other": "le contrat couvre {{count}} séries de paiements récurrents : enregistrez la décision sur une seule série (nommez-la) pour que les données bancaires puissent la vérifier",
+      "asRecorded": "le paiement du {{payment_date}} correspond à {{monthly_amount}} par mois, comme enregistré",
+      "kept": "rien à vérifier : l'abonnement a été conservé",
+      "nextNotOverdue": "pas encore de paiement ultérieur, mais le prochain n'est pas en retard",
+      "noPaymentNextOverdue": "aucun paiement depuis le {{last_date}}, le prochain est en retard",
+      "noPaymentSeriesEnded": "aucun paiement depuis le {{last_date}} (la série est terminée)",
+      "noPaymentSinceEffective": "pas encore de paiement à partir de la date d'effet",
+      "otherAmount": "le paiement du {{payment_date}} correspond à {{monthly_amount}} par mois, et non aux {{recorded_amount}} enregistrés",
+      "paymentsAfter_one": "{{count}} paiement après la date d'effet du {{effective_date}} ; le dernier le {{last_date}} ({{last_amount}})",
+      "paymentsAfter_many": "{{count}} paiements après la date d'effet du {{effective_date}} ; le dernier le {{last_date}} ({{last_amount}})",
+      "paymentsAfter_other": "{{count}} paiements après la date d'effet du {{effective_date}} ; le dernier le {{last_date}} ({{last_amount}})",
+      "seriesNotFound": "la série de paiements récurrents n'est pas dans les données bancaires (introuvable) : confirmez-le vous-même",
+      "stillOldAmount": "le paiement du {{payment_date}} est encore à peu près l'ancien montant ({{monthly_amount}} par mois)",
+      "takesEffectLater": "la décision prend effet plus tard"
+    },
+    "draft": {
+      "indistinguishable_one": "{{count}} autre série récurrente ne peut pas être distinguée de celle-ci par son libellé et son montant ({{series}}) : un seul fichier de contrat couvre les deux ; donnez-lui un merchant_match plus précis s'il s'agit de contrats distincts",
+      "indistinguishable_many": "{{count}} autres séries récurrentes ne peuvent pas être distinguées de celle-ci par leur libellé et leur montant ({{series}}) : un seul fichier de contrat les couvre toutes ; donnez-lui un merchant_match plus précis s'il s'agit de contrats distincts",
+      "indistinguishable_other": "{{count}} autres séries récurrentes ne peuvent pas être distinguées de celle-ci par leur libellé et leur montant ({{series}}) : un seul fichier de contrat les couvre toutes ; donnez-lui un merchant_match plus précis s'il s'agit de contrats distincts",
+      "matchedBy_one": "{{series}} serait rattachée à {{count}} fichier de contrat (exactement un attendu)",
+      "matchedBy_many": "{{series}} serait rattachée à {{count}} fichiers de contrat (exactement un attendu)",
+      "matchedBy_other": "{{series}} serait rattachée à {{count}} fichiers de contrat (exactement un attendu)",
+      "noBillingPeriod": "le paiement ({{cadence}}) n'a pas de période de facturation correspondante : facturation laissée vide",
+      "noMerchantMatch": "aucune expression merchant_match reliant le contrat aux paiements de cette série n'a pu être construite"
+    },
+    "inventory": {
+      "cancellationSummary": "les informations de résiliation sont un résumé général des règles du droit de la consommation : vérifiez avec votre contrat",
+      "costSource": "le coût vient des paiements détectés ; un fichier de contrat sans paiement dans les données bancaires utilise son montant facturé",
+      "notSubscriptions": "les prêts, crédits immobiliers, loyers et impôts ne sont pas des abonnements et ne sont pas listés"
+    },
+    "savings": {
+      "note": "seules les décisions confirmées par les données bancaires comptent comme réalisées ; celles en attente sont des déclarations (un service résilié encore payé est signalé). Les mois sont des mois calendaires entiers depuis la date d'effet."
+    },
+    "usage": {
+      "fromLastUsed": "d'après la date de dernière utilisation que vous avez enregistrée",
+      "neverAndPaying": "vous avez indiqué « jamais » et les paiements continuent",
+      "notMeasurable": "L'utilisation d'un service n'apparaît pas dans les données bancaires : seul ce que vous enregistrez (fréquence, dernière utilisation) est pris en compte. Sans cela, l'usage reste inconnu."
     }
   },
   "error": {

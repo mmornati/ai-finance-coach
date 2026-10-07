@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from typing import Optional
 from urllib.parse import urlparse
 
+from coach.i18n_msg import server_msg
 from coach.skills.money import cents
 from coach.skills.savings import savings_estimate
 
@@ -205,10 +206,15 @@ def summarize(alts: list[Alternative], current_monthly_c: Optional[int], today: 
     best = max(fresh, key=lambda i: (i["_net_c"], i["id"]), default=None)
     for i in items:
         i.pop("_net_c")
+        if i["savings"] and i["savings"]["stale_warning"]:        # the web's message (assess itself stays English: the MCP tool returns it)
+            i["savings"]["stale_warning_msg"] = STALE_WARNING_MSG
     best_pub = None
     if best is not None:
         best_pub = next(i for i in items if i["id"] == best["id"])
     return {"count": len(items), "current": sum(1 for i in items if not i["stale"]), "outdated": sum(1 for i in items if i["stale"]),
-            "best": best_pub, "items": items,
-            "note": ("quotes older than 30 days are outdated and excluded from the best; prices change: verify on the provider's "
-                     "page before acting")}
+            "best": best_pub, "items": items, "note": SUMMARY_NOTE["text"], "note_msg": SUMMARY_NOTE}
+
+
+STALE_WARNING_MSG = server_msg("subs.alternatives.staleWarning", "price older than 30 days: re-check before relying on it")
+SUMMARY_NOTE = server_msg("subs.alternatives.note", "quotes older than 30 days are outdated and excluded from the best; prices change: "
+                                                    "verify on the provider's page before acting")
