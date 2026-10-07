@@ -5,6 +5,11 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4e (see `docs/i18n.md`, "Server text")
+- The subscription inventory shows the cancellation rules (name, summary, method, conditions, missing facts), decision checks, usage, offer notes and contract-draft warnings
+  in the interface language; the legal citations stay as written, and the contract disclaimers come from `disclaimers.py` in the same language (`GET /meta/disclaimers`).
+  The MCP tools, the CLI, letters and the calendar keep the English (`cancellability(..., messages=False)` by default).
+
 ### Added: multi-language web app, part 4b (see `docs/i18n.md`, "Server text")
 - The coverage notes of the analytics results (incomplete months, non-EUR transactions left out, low confidence of a category, partial year, ...) carry `notes_msg` next to `notes`
   and are shown in the interface language on the Dashboard, Categories, a category's page and Subscriptions. The MCP finance tools and the CLI `--json` output never contain a `*_msg` key.
