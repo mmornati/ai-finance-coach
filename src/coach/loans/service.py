@@ -32,6 +32,22 @@ def observed_of(ds, lb) -> list:
     return cache[lb.id]
 
 
+# where an upcoming instalment comes from (the 4th item of upcoming_payments): its English note -> the message the web translates
+PAYMENT_SOURCE = {
+    "from the amortization schedule": lambda: server_msg("loan.source.schedule", "from the amortization schedule"),
+    "from the amortization schedule (approximate: variable rate)":
+        lambda: server_msg("loan.source.scheduleApprox", "from the amortization schedule (approximate: variable rate)"),
+    "from memory: monthly_payment on the start_date day":
+        lambda: server_msg("loan.source.memory", "from memory: monthly_payment on the start_date day"),
+}
+
+
+def payment_source_msg(note: Optional[str]) -> Optional[dict]:
+    """The message of a note of :func:`upcoming_payments` (None for another text)."""
+    f = PAYMENT_SOURCE.get(note or "")
+    return f() if f else None
+
+
 def upcoming_payments(ds, lb, start: dt.date, end: dt.date) -> list[tuple[dt.date, int, str, str]]:
     """The instalments of a liability that no recurring series explains, in [start, end]: [(date, amount_c (positive, what leaves the
     account), certainty, note)]. From the computed schedule (exact dates and amounts, insurance included) when there is one, else
@@ -114,8 +130,10 @@ def calendar_reminders(ds, start: dt.date, end: dt.date) -> list[dict]:
         e = LOA.end_status(lb, ds.today, months)
         rd = dt.date.fromisoformat(e["reminder_date"])
         if start <= rd <= end:
-            out.append({"date": rd, "id": lb.id, "title": f"{lb.lender or lb.id}: {months} months before the end: buy or return?",
-                        "note": f"contract ends {lb.end_date}"})
+            who = lb.lender or lb.id
+            title = server_msg("lease.reminderTitle", f"{who}: {months} months before the end: buy or return?", who=who, count=months)
+            note = server_msg("lease.reminderNote", f"contract ends {lb.end_date}", end_date=lb.end_date)
+            out.append({"date": rd, "id": lb.id, "title": title["text"], "note": note["text"], "title_msg": title, "note_msg": note})
     return out
 
 
@@ -139,7 +157,8 @@ def overview_of(ds, rec, lb, rel: Optional[str] = None, with_rows: bool = False)
                         "recent": [{"date": p.date.isoformat(), "amount": money_str(p.amount_c), "account": p.account_label}
                                    for p in obs[-12:]]},
            "alerts": [a.to_dict() for a in alerts_of(ds, lb)],
-           "inference": inf.to_dict() if inf.status in ("inferred", "insufficient") else {"status": inf.status, "notes": inf.notes},
+           "inference": inf.to_dict() if inf.status in ("inferred", "insufficient") else {"status": inf.status, "notes": inf.notes,
+                                                                                             "notes_msg": inf.notes_msg},
            "lease": LOA.status(lb, ds.today, getattr(ds.settings, "loan_reminder_months", 6))}
     if with_rows:
         out["schedule"]["rows"] = rows

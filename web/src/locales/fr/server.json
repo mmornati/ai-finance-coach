@@ -303,6 +303,53 @@
     "typeRulePurpose": "type d'opération « {{tx_type}} » sur un compte d'usage « {{purpose}} »",
     "userLabel": "vous avez classé « {{merchant_key}} » en {{label_category}} ({{updated}})"
   },
+  "infer": {
+    "lease": "une location (LOA / LLD) n'a pas de tableau d'amortissement à résoudre : renseignez le loyer, la date de fin et la valeur résiduelle",
+    "varies_one": "l'échéance varie de {{spread_pct}} sur le dernier prélèvement ({{count}}) (taux variable, modulation ou autre prélèvement) : le montant le plus récent est utilisé et la confiance est faible",
+    "varies_many": "l'échéance varie de {{spread_pct}} sur les {{count}} derniers prélèvements (taux variable, modulation ou autre prélèvement) : le montant le plus récent est utilisé et la confiance est faible",
+    "varies_other": "l'échéance varie de {{spread_pct}} sur les {{count}} derniers prélèvements (taux variable, modulation ou autre prélèvement) : le montant le plus récent est utilisé et la confiance est faible",
+    "insuranceSubtracted": "l'assurance emprunteur ({{insurance_amount}} par mois) est supposée prélevée AVEC l'échéance et elle est déduite : si elle est prélevée à part, les chiffres ci-dessous sont trop bas",
+    "insuranceRateSubtracted": "la prime d'assurance calculée à partir de son taux est supposée prélevée AVEC l'échéance et elle est déduite",
+    "mayIncludeInsurance": "l'échéance peut inclure l'assurance emprunteur (non renseignée) : le capital et le taux déduits seraient alors un peu trop élevés",
+    "variableRate": "taux variable / mixte : le taux déduit est celui qui correspond à l'échéance actuelle",
+    "notLargerThanInsurance": "l'échéance n'est pas supérieure à l'assurance",
+    "noRateFits": "aucun taux ne convient : les échéances sur la durée totalisent moins que le capital (capital ou durée erronés ?)",
+    "noTermFits": "l'échéance ne couvre pas les intérêts du capital : capital, taux ou échéance erronés",
+    "allRecorded": "capital, taux et durée sont tous renseignés : rien à déduire (le contrôle de l'échéancier les compare aux prélèvements)",
+    "principalNotDerivable": "le capital emprunté ne peut pas être déduit du seul capital restant dû : reprenez-le de l'offre de prêt",
+    "method": {
+      "median": "médiane des prélèvements bancaires observés",
+      "latest": "dernier prélèvement bancaire observé",
+      "principal_one": "annuité : capital déduit de l'échéance, du taux de {{rate}} % et de {{count}} mois",
+      "principal_many": "annuité : capital déduit de l'échéance, du taux de {{rate}} % et de {{count}} mois",
+      "principal_other": "annuité : capital déduit de l'échéance, du taux de {{rate}} % et de {{count}} mois",
+      "rate_one": "méthode de Newton sur l'annuité de {{principal_amount}} sur {{count}} mois",
+      "rate_many": "méthode de Newton sur l'annuité de {{principal_amount}} sur {{count}} mois",
+      "rate_other": "méthode de Newton sur l'annuité de {{principal_amount}} sur {{count}} mois",
+      "term": "annuité : nombre de mois nécessaires pour rembourser {{principal_amount}} à {{rate}} % avec cette échéance",
+      "startPlusTerm": "date de début + la durée déduite",
+      "rateOutstanding_one": "méthode de Newton sur le capital restant dû ({{outstanding_amount}} au {{as_of_date}}) sur le {{count}} mois jusqu'à la date de fin",
+      "rateOutstanding_many": "méthode de Newton sur le capital restant dû ({{outstanding_amount}} au {{as_of_date}}) sur les {{count}} mois jusqu'à la date de fin",
+      "rateOutstanding_other": "méthode de Newton sur le capital restant dû ({{outstanding_amount}} au {{as_of_date}}) sur les {{count}} mois jusqu'à la date de fin",
+      "endOutstanding_one": "annuité : {{count}} mois pour rembourser {{outstanding_amount}} (au {{as_of_date}}) à {{rate}} %",
+      "endOutstanding_many": "annuité : {{count}} mois pour rembourser {{outstanding_amount}} (au {{as_of_date}}) à {{rate}} %",
+      "endOutstanding_other": "annuité : {{count}} mois pour rembourser {{outstanding_amount}} (au {{as_of_date}}) à {{rate}} %",
+      "endMinusTerm": "date de fin - la durée"
+    },
+    "note": {
+      "roundedEuro": "arrondi à l'euro ; à vérifier avec le contrat",
+      "nominalRate": "taux nominal annuel, hors assurance",
+      "exact": "valeur exacte {{value}}",
+      "exactMismatch": "valeur exacte {{value}} ; la durée arrondie ne reproduit pas l'échéance à 1 % près"
+    },
+    "missing": {
+      "payments": "des prélèvements bancaires reconnus par le libellé de paiement (renseignez-le ou liez la série de paiements)",
+      "twoOfNone": "deux éléments parmi capital emprunté, taux nominal, date de fin / durée (aucun renseigné) - ou capital restant dû + sa date + date de fin pour la voie du capital restant dû",
+      "twoOf_one": "deux éléments parmi capital emprunté, taux nominal, date de fin / durée ({{count}} seul renseigné) - ou capital restant dû + sa date + date de fin pour la voie du capital restant dû",
+      "twoOf_many": "deux éléments parmi capital emprunté, taux nominal, date de fin / durée (seulement {{count}} renseignés) - ou capital restant dû + sa date + date de fin pour la voie du capital restant dû",
+      "twoOf_other": "deux éléments parmi capital emprunté, taux nominal, date de fin / durée (seulement {{count}} renseignés) - ou capital restant dû + sa date + date de fin pour la voie du capital restant dû"
+    }
+  },
   "insight": {
     "anomaly": {
       "categorySpike": "Pic de dépenses",
@@ -432,6 +479,73 @@
       "llmWeb": "libellé IA avec preuves web",
       "knn": "libellé par similarité (kNN)",
       "autoLabel": "libellé automatique (IA / kNN)"
+    },
+    "loanField": {
+      "monthly_payment": "mensualité",
+      "outstanding": "capital restant dû",
+      "outstanding_as_of": "date du capital restant dû",
+      "end_date": "date de fin",
+      "debited_account": "compte prélevé",
+      "payment_match": "comment ses prélèvements sont reconnus",
+      "rate": "taux d'intérêt"
+    },
+    "loanOption": {
+      "keep_payment": "garder l'échéance, finir plus tôt",
+      "keep_term": "garder la date de fin, baisser l'échéance"
+    },
+    "loanVerdict": {
+      "saves_money": "fait économiser sur la durée du prêt",
+      "penalty_exceeds_saving": "la pénalité dépasse ce que font économiser les intérêts et l'assurance",
+      "no_saving": "aucune économie",
+      "costs_exceed_saving": "les frais dépassent l'économie",
+      "break_even_after_the_loan_ends": "le seuil de rentabilité arrive après la fin du prêt",
+      "worth_asking_for_quotes": "intéressant de demander des offres",
+      "small_saving_check_the_costs": "petite économie : vérifiez les frais",
+      "fees_exceed_saving": "les frais dépassent l'économie",
+      "saving": "économie"
+    }
+  },
+  "lease": {
+    "basisReadings": "le premier et le dernier relevé (le kilométrage initial n'est pas renseigné)",
+    "marketAbove": "la valeur de marché dépasse le prix de l'option d'achat : acheter puis revendre laisserait la différence, avant frais",
+    "marketNotAbove": "le prix de l'option d'achat n'est pas inférieur à la valeur de marché : restituer la voiture n'est pas moins avantageux sur le seul prix",
+    "giveMarketValue": "indiquez la valeur de marché de la même voiture (une cote datée que vous avez consultée) pour la comparer au prix de l'option d'achat",
+    "reminderTitle_one": "{{who}} : {{count}} mois avant la fin : acheter ou restituer ?",
+    "reminderTitle_many": "{{who}} : {{count}} mois avant la fin : acheter ou restituer ?",
+    "reminderTitle_other": "{{who}} : {{count}} mois avant la fin : acheter ou restituer ?",
+    "reminderNote": "le contrat se termine le {{end_date}}",
+    "needs": {
+      "endDate": "la date de fin",
+      "mileageLimit": "le kilométrage maximal du contrat",
+      "initialKm": "le kilométrage initial (le compteur au début du contrat ; 0 pour une voiture neuve)",
+      "reading": "un relevé du compteur (date + km)",
+      "secondReading": "un deuxième relevé, ou la date de début + le kilométrage initial",
+      "readingsApart_one": "des relevés espacés d'au moins {{count}} jour depuis le début de la mesure",
+      "readingsApart_many": "des relevés espacés d'au moins {{count}} jours depuis le début de la mesure",
+      "readingsApart_other": "des relevés espacés d'au moins {{count}} jours depuis le début de la mesure",
+      "excessFee": "le prix du km supplémentaire (pour chiffrer le dépassement)",
+      "residualValue": "la valeur résiduelle (le prix de l'option d'achat prévu au contrat)"
+    },
+    "factor": {
+      "financing": "le financement du prix de l'option d'achat (comptant ou nouveau crédit)",
+      "condition": "l'état et le kilométrage par rapport au contrat",
+      "replacement": "le coût d'un véhicule de remplacement"
+    },
+    "checklist": {
+      "clauses": "lisez les clauses de fin de contrat : le préavis pour annoncer la restitution, le lieu de restitution et la période prévue",
+      "inspection": "réservez l'inspection avant restitution si le loueur en propose une : les dommages sont facturés selon sa grille (l'usure normale est admise)",
+      "documents": "rassemblez les documents : certificat d'immatriculation, carnet d'entretien et factures, les deux clés, les manuels, les câbles de recharge / accessoires livrés avec la voiture",
+      "condition": "vérifiez les pneus, le pare-brise, la carrosserie et l'intérieur par rapport à la grille ; faites réparer les petits dommages quand c'est moins cher que le tarif du loueur",
+      "mileage": "relevez le kilométrage final (photo du compteur) et comparez-le à la limite du contrat ; chaque km au-delà coûte le prix du km supplémentaire",
+      "insurance": "résiliez l'assurance auto et les prélèvements seulement après la confirmation de la restitution par le loueur ; conservez le PV de restitution",
+      "buy": "si vous achetez la voiture : le prix de l'option d'achat est la valeur résiduelle ; demandez au loueur le décompte de solde et la date limite pour lever l'option"
+    }
+  },
+  "loan": {
+    "source": {
+      "schedule": "d'après le tableau d'amortissement",
+      "scheduleApprox": "d'après le tableau d'amortissement (approximatif : taux variable)",
+      "memory": "d'après la mémoire : la mensualité au jour de la date de début"
     }
   },
   "loanAlert": {
@@ -495,6 +609,41 @@
       "body": "Dans les 6 mois avant la fin du contrat, le kilométrage compte : renseignez le compteur (date et km) pour que le coach puisse estimer le coût des kilomètres supplémentaires."
     }
   },
+  "netWorth": {
+    "noBalance": "aucun solde synchronisé pour l'instant",
+    "nonBooked": "solde {{balance_type}} (pas un solde comptabilisé)",
+    "noValue": "aucune valeur renseignée",
+    "valueDateUnknown": "date de la valeur inconnue",
+    "lease": "location : aucun capital dû, non comptée",
+    "leaseRents": "location : aucun capital dû, non comptée ; les loyers restants sont un engagement, indiqué comme montant",
+    "fromSchedule": "calculé d'après le tableau d'amortissement",
+    "fromScheduleApprox": "calculé d'après le tableau d'amortissement (taux variable : approximatif)",
+    "declaredRolled": "le capital déclaré au {{declared_date}}, actualisé avec le taux et les échéances du prêt",
+    "declaredAsIs": "le capital déclaré au {{declared_date}} (il ne peut pas être actualisé)",
+    "fromScheduleDiffers": "calculé d'après le tableau d'amortissement ; il diffère du tableau théorique ({{theoretical_amount}} aujourd'hui) : remboursement anticipé ou renégociation ? mettez le prêt à jour",
+    "fromScheduleApproxDiffers": "calculé d'après le tableau d'amortissement (taux variable : approximatif) ; il diffère du tableau théorique ({{theoretical_amount}} aujourd'hui) : remboursement anticipé ou renégociation ? mettez le prêt à jour",
+    "declaredRolledDiffers": "le capital déclaré au {{declared_date}}, actualisé avec le taux et les échéances du prêt ; il diffère du tableau théorique ({{theoretical_amount}} aujourd'hui) : remboursement anticipé ou renégociation ? mettez le prêt à jour",
+    "declaredAsIsDiffers": "le capital déclaré au {{declared_date}} (il ne peut pas être actualisé) ; il diffère du tableau théorique ({{theoretical_amount}} aujourd'hui) : remboursement anticipé ou renégociation ? mettez le prêt à jour",
+    "declaredNoSchedule": "capital déclaré, pas d'échéancier",
+    "capitalUnknown": "capital restant dû inconnu",
+    "capitalUnknownFields": "capital restant dû inconnu : {{fields}}",
+    "knownOnly": "seul ce qui est connu est additionné : un élément inconnu est listé et NON compté, le chiffre réel est donc différent",
+    "balanceNotKnownOnDate": "solde inconnu à cette date",
+    "valueKnownFrom": "valeur connue seulement à partir du {{from_date}}",
+    "valueKnownFromUnknownDate": "valeur connue seulement à partir d'une date inconnue",
+    "noSchedule": "pas de tableau d'amortissement",
+    "capitalNotKnownOnDate": "capital restant dû inconnu à cette date",
+    "nonBookedCaveat_one": "{{count}} solde de compte est un solde disponible / prévisionnel (ITAV, XPCD...), pas un solde comptabilisé : des opérations en attente peuvent faire légèrement différer ce mois du chiffre de la banque",
+    "nonBookedCaveat_many": "{{count}} soldes de comptes sont des soldes disponibles / prévisionnels (ITAV, XPCD...), pas des soldes comptabilisés : des opérations en attente peuvent faire légèrement différer ce mois du chiffre de la banque",
+    "nonBookedCaveat_other": "{{count}} soldes de comptes sont des soldes disponibles / prévisionnels (ITAV, XPCD...), pas des soldes comptabilisés : des opérations en attente peuvent faire légèrement différer ce mois du chiffre de la banque",
+    "liabilitiesNote": "Le capital restant dû vient du tableau d'amortissement quand il est calculable, sinon du chiffre déclaré.",
+    "syncedAsset": "synchronisé depuis une banque : compté via son solde",
+    "total": "Le total ne compte que ce qui est connu. Les dettes viennent du tableau d'amortissement quand il est calculable, sinon du capital déclaré.",
+    "totalPartial_one": "Le total ne compte que ce qui est connu ; {{count}} élément n'a pas de valeur et n'est PAS inclus, le chiffre réel est donc différent. Les dettes viennent du tableau d'amortissement quand il est calculable, sinon du capital déclaré.",
+    "totalPartial_many": "Le total ne compte que ce qui est connu ; {{count}} éléments n'ont pas de valeur et ne sont PAS inclus, le chiffre réel est donc différent. Les dettes viennent du tableau d'amortissement quand il est calculable, sinon du capital déclaré.",
+    "totalPartial_other": "Le total ne compte que ce qui est connu ; {{count}} éléments n'ont pas de valeur et ne sont PAS inclus, le chiffre réel est donc différent. Les dettes viennent du tableau d'amortissement quand il est calculable, sinon du capital déclaré.",
+    "historyNote": "« Relevé » = enregistré ce jour-là ; « reconstitué » = recalculé à partir des soldes et des opérations bancaires (comptes bancaires uniquement), des tableaux d'amortissement et des actifs saisis à partir de leur propre date. Un mois avec des éléments inconnus n'est que la partie connue."
+  },
   "reminder": {
     "unused": {
       "title_one": "{{service}} : inutilisé depuis {{count}} jour",
@@ -554,6 +703,58 @@
     "tenantIncome": {
       "title": "{{property}} : les revenus du locataire dépassent le plafond que vous avez déclaré",
       "body": "Revenus du locataire de {{income_amount}} pour un plafond de {{limit_amount}}. Vérifiez les règles du dispositif selon la composition du foyer locataire."
+    }
+  },
+  "scenario": {
+    "needsSchedule": "le tableau d'amortissement ne peut pas être calculé : renseignez ces informations (ou acceptez les questions que propose le coach)",
+    "nothingLeft": "aucune échéance ne reste après cette date",
+    "payoff": "le montant couvre tout le capital : demandez au prêteur un décompte de remboursement total (capital + intérêts courus + pénalité)",
+    "deferralNotModelled": "un remboursement anticipé pendant un différé n'est pas modélisé : renseignez-vous auprès du prêteur",
+    "missingInsurance": "la mensualité de l'assurance (ou son taux et sa base de calcul)",
+    "missingSchedule": "le tableau d'amortissement",
+    "flatInsurance": "une prime d'assurance fixe n'est pas réduite par un remboursement partiel, sauf si le prêteur la recalcule : seuls les mois économisés (en gardant l'échéance) changent ce qui est payé en assurance",
+    "estimate": "estimation à partir de l'échéancier enregistré au taux nominal actuel ; c'est le tableau du prêteur qui fait foi.",
+    "penalty": {
+      "override": "le montant que vous avez indiqué (d'après votre contrat)",
+      "ira": "IRA (Code de la consommation L313-47) : le plus faible entre six mois d'intérêts sur le montant remboursé ({{six_months_amount}}) et 3 % du capital restant dû avant le remboursement ({{cap_amount}}) ; votre contrat peut l'exclure, ou ne l'appliquer que dans certains cas",
+      "itMortgage": "aucune pénalité légale pour le remboursement anticipé d'un prêt immobilier d'une personne physique pour l'achat ou la rénovation d'un logement (art. 120-ter TUB, issu du décret Bersani) : vérifiez votre contrat",
+      "frConsumerFree": "crédit à la consommation (Code de la consommation L312-34) : aucune indemnité quand le montant remboursé sur 12 mois ne dépasse pas {{free_amount}} ; les remboursements anticipés des mêmes 12 mois s'additionnent : indiquez la pénalité de votre contrat si c'est le cas",
+      "frConsumerLong": "crédit à la consommation (L312-34) : au plus 1 % du montant remboursé (il reste plus d'un an de contrat) = {{penalty_amount}} ; votre contrat peut l'exclure",
+      "frConsumerShort": "crédit à la consommation (L312-34) : au plus 0,5 % du montant remboursé (il reste moins d'un an de contrat) = {{penalty_amount}} ; votre contrat peut l'exclure",
+      "other": "aucune pénalité légale n'est modélisée pour ce type de prêt : indiquez le montant prévu par votre contrat dans le champ de la pénalité"
+    }
+  },
+  "schedule": {
+    "paymentDiffersHint": "taux variable, échéances modulées, frais ou chiffre erroné : vérifiez le tableau du prêt",
+    "tableDiffersHint": "le tableau diffère du capital déclaré : le taux, la durée, un différé ou un remboursement anticipé ne correspondent peut-être pas à la mémoire",
+    "declaredWinsHint": "le capital déclaré l'emporte sur le tableau théorique : y a-t-il eu un remboursement anticipé ou une renégociation ? mettez le prêt à jour",
+    "variableRate": "taux variable / mixte : le taux nominal actuel est appliqué à toute la durée (le tableau de la banque différera quand l'indice bougera)",
+    "leaseAlternative": "une location a des loyers et une valeur résiduelle, pas de tableau d'amortissement ni de capital dû : voir la vue de fin de contrat",
+    "outstandingAlternative": "capital restant dû + sa date + taux nominal + (date de fin ou mensualité) donnent le tableau À VENIR : il manque {{fields}}",
+    "declaredRolled": "le capital déclaré diffère du tableau théorique : le chiffre déclaré est actualisé à partir de sa date",
+    "declaredAsIs": "le capital déclaré diffère du tableau et ne peut pas être actualisé : le chiffre déclaré est utilisé tel quel ; les échéances listées sont les échéances théoriques",
+    "annuity": "prêt amortissable à échéances constantes, intérêts = capital x taux nominal / 12 par échéance",
+    "firstDue": "première échéance le {{first_date}}",
+    "firstDueDay": "première échéance le {{first_date}}, prélevée le {{day}} du mois",
+    "deferralPartial_one": "différé partiel de {{count}} mois (intérêts seuls) : le capital ne bouge pas ; l'assurance reste due",
+    "deferralPartial_many": "différé partiel de {{count}} mois (intérêts seuls) : le capital ne bouge pas ; l'assurance reste due",
+    "deferralPartial_other": "différé partiel de {{count}} mois (intérêts seuls) : le capital ne bouge pas ; l'assurance reste due",
+    "deferralTotal_one": "différé total de {{count}} mois : les intérêts s'ajoutent au capital ; l'assurance reste due",
+    "deferralTotal_many": "différé total de {{count}} mois : les intérêts s'ajoutent au capital ; l'assurance reste due",
+    "deferralTotal_other": "différé total de {{count}} mois : les intérêts s'ajoutent au capital ; l'assurance reste due",
+    "outstandingStart": "le capital restant dû au {{as_of_date}} est le point de départ ; les échéances antérieures ne sont pas connues",
+    "instalmentDay": "échéances supposées le {{day}} du mois",
+    "instalmentDayAssumed": "échéances supposées le {{day}} du mois (le jour de prélèvement n'est pas renseigné)",
+    "termFromPayment": "date de fin inconnue : la durée découle de la mensualité (supposée hors assurance quand le montant de l'assurance est inconnu)",
+    "termFromPaymentFlatInsurance": "date de fin inconnue : la durée découle de la mensualité moins l'assurance fixe",
+    "totalsUnknown": "les totaux et les intérêts payés à ce jour sont inconnus (le tableau part du capital déclaré) ; les intérêts restants et les chiffres annuels à venir sont exacts",
+    "missing": {
+      "principal": "le capital emprunté",
+      "rateNominal": "le taux nominal",
+      "startDate": "la date de début",
+      "endDateOrTerm": "la date de fin ou la durée en mois",
+      "principalPositive": "le capital emprunté (doit être positif)",
+      "deferralShorter": "le différé (doit être plus court que la durée)"
     }
   },
   "subs": {

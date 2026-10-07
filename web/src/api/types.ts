@@ -125,20 +125,22 @@ export interface Subscriptions { as_of: string; series: Series[]; totals: { acti
 export interface ScheduleYear { year: number; instalments: number; interest: Money; principal: Money; insurance: Money; total: Money; partial: boolean }
 export interface ScheduleRow { k: number; due: string; kind: "regular" | "deferral"; interest: Money; principal: Money; insurance: Money; payment: Money; total: Money; balance: Money; made: boolean }
 export interface LoanScheduleSummary {
-  status: "computed" | "not_computable" | "not_applicable" | "invalid"; mode?: "from_principal" | "from_outstanding" | null; missing?: string[]; alternative?: string | null; approximate?: boolean;
+  status: "computed" | "not_computable" | "not_applicable" | "invalid"; mode?: "from_principal" | "from_outstanding" | null; missing?: string[]; missing_msg?: ServerMsg[];
+  alternative?: string | null; alternative_msg?: ServerMsg | null; approximate?: boolean;
   payment?: Money | null; remaining_capital?: Money | null; next_due?: string | null; first_due?: string | null; last_due?: string | null; remaining_instalments?: number; payments_made?: number;
   term_instalments?: number | null; total_interest?: Money | null; total_insurance?: Money | null; total_cost?: Money | null; interest_paid?: Money | null; remaining_interest?: Money | null;
-  payment_check?: { status: string; hint?: string } | null; outstanding_check?: { status: string; declared: Money; computed: Money; as_of: string; hint: string } | null;
-  assumptions?: string[]; by_year: ScheduleYear[]; rows?: ScheduleRow[]; rows_count?: number;
+  payment_check?: { status: string; hint?: string; hint_msg?: ServerMsg } | null; outstanding_check?: { status: string; declared: Money; computed: Money; as_of: string; hint: string; hint_msg?: ServerMsg } | null;
+  assumptions?: string[]; assumptions_msg?: ServerMsg[]; by_year: ScheduleYear[]; rows?: ScheduleRow[]; rows_count?: number;
 }
 export interface LoanAlert { id: string; type: "missed_payment" | "amount_changed" | "extra_payment" | "wrong_account"; severity: "high" | "medium" | "low"; loan: string; title: string; body: string; title_msg?: ServerMsg | null; body_msg?: ServerMsg | null; date: string; amount: Money | null; expected_date: string | null; expected_amount: Money | null; evidence: string[] }
-export interface InferredField { field: string; value: string | number; confidence: "low" | "medium" | "high"; method: string; note?: string }
+export interface InferredField { field: string; value: string | number; confidence: "low" | "medium" | "high"; method: string; method_msg?: ServerMsg; note?: string | null; note_msg?: ServerMsg | null }
 export interface LeaseStatus {
-  id: string; kind: string; missing: string[]; checklist: string[];
+  id: string; kind: string; missing: string[]; checklist: string[]; checklist_msg?: ServerMsg[];
   end: { end_date: string | null; known: boolean; days_left?: number; ended?: boolean; reminder_date?: string; reminder_active?: boolean; reminder_months?: number };
-  decision: { residual_value: Money | null; needs?: string[]; note?: string; market_value?: Money; market_minus_option_price?: Money; reading?: string; other_factors?: string[] };
-  mileage: { limit_km: number | null; excess_km_fee: Money | null; readings: number; status: string; needs: string[]; latest?: { date: string; km: number; age_days: number }; pace?: { km_per_year: number; km_per_month: number; since: string };
-    projected_odometer_at_end?: number; projected_contract_km?: number; excess_km?: number; excess_cost?: Money; allowed_km_per_year?: number; basis?: string };
+  decision: { residual_value: Money | null; needs?: string[]; needs_msg?: ServerMsg[]; note?: string; note_msg?: ServerMsg; market_value?: Money; market_minus_option_price?: Money; reading?: string; reading_msg?: ServerMsg;
+    other_factors?: string[]; other_factors_msg?: ServerMsg[] };
+  mileage: { limit_km: number | null; excess_km_fee: Money | null; readings: number; status: string; needs: string[]; needs_msg?: ServerMsg[]; latest?: { date: string; km: number; age_days: number }; pace?: { km_per_year: number; km_per_month: number; since: string };
+    projected_odometer_at_end?: number; projected_contract_km?: number; excess_km?: number; excess_cost?: Money; allowed_km_per_year?: number; basis?: string; basis_msg?: ServerMsg };
 }
 export interface Liability {
   id: string; file: string; kind: string; lender: string | null; asset: string | null; holder?: string | null; start_date: string | null; end_date: string | null; first_payment_date?: string | null;
@@ -149,33 +151,37 @@ export interface Liability {
   deferral?: { months: number; kind: "partial" | "total" } | null; debited_account: string | null; debited_account_label: string | null;
   payment_match: string | null; early_repayment_penalty: string | number | null; first_payment?: Money | null; residual_value: Money | null; mileage_limit_km: number | null; excess_km_fee?: Money | null; initial_km?: number | null;
   odometer?: { date: string; km: number }[]; notes: string | null;
-  missing: string[]; open_questions: string[]; payments: { series_id: string; last_date: string; next_expected: string | null; amount: Money; status: string } | null;
+  /** English labels of the missing fields; `missing_codes` (same order) are the codes the web translates (labels.loanField). */
+  missing: string[]; missing_codes?: string[]; open_questions: string[]; payments: { series_id: string; last_date: string; next_expected: string | null; amount: Money; status: string } | null;
   schedule: LoanScheduleSummary; remaining_capital: Money | null; remaining_capital_source: "schedule" | "declared" | null; alerts: LoanAlert[]; payments_seen: number; lease: LeaseStatus | null; inferred: InferredField[];
 }
 export interface LoanDetail {
   id: string; kind: string; schedule: LoanScheduleSummary; lease: LeaseStatus | null; alerts: LoanAlert[];
   payments: { count: number; first: string | null; last: string | null; last_amount: Money | null; median_amount: Money | null; recent: { date: string; amount: Money; account: string }[] };
-  inference: { status: string; fields?: InferredField[]; notes?: string[]; missing?: string[] };
+  inference: { status: string; fields?: InferredField[]; notes?: string[]; notes_msg?: ServerMsg[]; missing?: string[]; missing_msg?: ServerMsg[] };
 }
-export interface ScenarioOption { mode: "keep_payment" | "keep_term"; label: string; new_instalment: Money; monthly_change: Money; months_saved: number; new_last_instalment: string | null; interest_saved: Money; insurance_saved: Money; penalty: Money; net_saving: Money; break_even_months: number | null; verdict: string }
+export interface ScenarioOption { mode: "keep_payment" | "keep_term"; label: string; new_instalment: Money; monthly_change: Money; months_saved: number; new_last_instalment: string | null; interest_saved: Money; insurance_saved: Money; penalty: Money; net_saving: Money; break_even_months: number | null; verdict: string; verdict_code?: string }
 export interface ScenarioResult {
-  status: "computed" | "needs_fields" | "payoff" | "nothing_left"; missing?: string[]; alternative?: string | null; note?: string;
+  status: "computed" | "needs_fields" | "payoff" | "nothing_left"; missing?: string[]; missing_msg?: ServerMsg[]; alternative?: string | null; alternative_msg?: ServerMsg | null; note?: string; note_msg?: ServerMsg;
   // prepay
-  date?: string; amount?: Money; capital_before?: Money; capital_after?: Money; remaining_instalments?: number; instalment?: Money; penalty?: Money; penalty_basis?: string; options?: ScenarioOption[]; notes?: string[];
+  date?: string; amount?: Money; capital_before?: Money; capital_after?: Money; remaining_instalments?: number; instalment?: Money; penalty?: Money; penalty_basis?: string; penalty_basis_msg?: ServerMsg; options?: ScenarioOption[]; notes?: string[]; notes_msg?: ServerMsg[];
+  /** a key of GET /meta/disclaimers (the wording lives in the server's disclaimers.py) */
+  disclaimer_key?: "loan";
   // renegotiate / insurance
   variant?: string; country?: string; current_rate_pct?: number; new_rate_pct?: number; current_payment?: Money; new_payment?: Money; monthly_saving?: Money; gross_interest_saving?: Money; total_costs?: Money; net_saving?: Money;
   break_even_months?: number | null; verdict?: string; current_monthly?: Money; alternative_monthly?: Money; remaining_months?: number; total_saving?: Money; basis?: Record<string, unknown>;
 }
-export interface Asset { id: string; kind: string; provider: string | null; holder: string | null; value: Money | null; as_of: string | null; stale: boolean; unknown_value: boolean; liquidity: string | null; connected: boolean | null; contribution_monthly: Money | null; description: string | null; counted?: boolean; note?: string }
+export interface Asset { id: string; kind: string; provider: string | null; holder: string | null; value: Money | null; as_of: string | null; stale: boolean; unknown_value: boolean; liquidity: string | null; connected: boolean | null; contribution_monthly: Money | null; description: string | null; counted?: boolean; note?: string; note_msg?: ServerMsg }
 export type NwCategory = "cash" | "savings" | "investments" | "real_estate" | "vehicles" | "other";
-export interface NetWorthPoint { month: string; as_of: string; source: "snapshot" | "backfill"; net_worth: Money; assets: Money; liabilities: Money; by_category: Record<NwCategory, Money>; n_unknown: number; complete: boolean; unknown: { type: string; id: string; label: string; reason: string }[]; newly_counted?: { type: string; id: string; label: string; reason_before: string }[]; non_booked_accounts?: number; caveat?: string | null }
+export interface NetWorthPoint { month: string; as_of: string; source: "snapshot" | "backfill"; net_worth: Money; assets: Money; liabilities: Money; by_category: Record<NwCategory, Money>; n_unknown: number; complete: boolean; unknown: { type: string; id: string; label: string; reason: string; reason_msg?: ServerMsg }[];
+  newly_counted?: { type: string; id: string; label: string; reason_before: string; reason_before_msg?: ServerMsg | null }[]; non_booked_accounts?: number; caveat?: string | null; caveat_msg?: ServerMsg | null }
 export interface NetWorth {
-  as_of: string; net_worth: Money; complete: boolean; unknown: { kind: string; id: string; label: string; reason: string }[]; stale: { kind: string; id: string }[];
+  as_of: string; net_worth: Money; complete: boolean; unknown: { kind: string; id: string; label: string; reason: string; reason_msg?: ServerMsg | null }[]; stale: { kind: string; id: string }[];
   bank: { total: Money; accounts: { uid: string; label: string; bank: string | null; owner: string | null; purpose: string | null; balance: Money | null; as_of: string | null; balance_type?: string | null; stale?: boolean }[] };
   assets: { total: Money; items: (Asset & { category?: NwCategory })[]; connected_not_counted: number };
-  liabilities: { total: Money; items: { id: string; kind: string; lender: string | null; outstanding: Money | null; as_of: string | null; stale: boolean; counted: boolean; source?: string | null; excluded?: boolean; note?: string | null }[] };
+  liabilities: { total: Money; items: { id: string; kind: string; lender: string | null; outstanding: Money | null; as_of: string | null; stale: boolean; counted: boolean; source?: string | null; excluded?: boolean; note?: string | null; note_msg?: ServerMsg | null }[] };
   by_category: Record<NwCategory | "liabilities", Money>; by_owner: Record<string, { assets: Money; liabilities: Money; net_worth: Money; n_unknown: number }>; n_unknown: number;
-  history?: NetWorthPoint[]; note: string;
+  history?: NetWorthPoint[]; note: string; note_msg?: ServerMsg;
 }
 
 export interface CalendarItem { date: string; days_until: number; source: string; kind: string; title: string; amount: Money | null; ref: string; certainty: string; account_label: string | null; note: string | null }
@@ -186,7 +192,7 @@ export interface InsightCard { id: string; kind: "anomaly" | "price_change" | "f
 export interface CoachInsight { id: string; created: string; kind: string; title: string; body: string; findings: unknown[]; evidence: string[]; skill: string | null; backend: string | null; model: string | null; usage_ref: number | null; status: "new" | "read" | "dismissed" | "done" | "snoozed"; snoozed_until: string | null; unverified_numbers: string[]; suspicious: boolean; question: string | null; ai_generated?: boolean; ai_label?: string | null; ai_label_short?: string | null; compliance?: string[]; compliance_banner?: string | null }
 /** E11-5: the AI-generated label and the investment-advice check of a coach answer. */
 /** GET /meta/disclaimers: the legal labels in one language (their wording lives only in src/coach/disclaimers.py). */
-export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string; tax_short?: string } }
+export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string; loan?: string; tax_short?: string } }
 export interface Compliance { label: string; label_short: string; lang: string; flagged: boolean; codes: string[]; banner: string }
 export interface Insights { as_of: string; cards: InsightCard[]; hidden: number; alerts?: { open: number; high: number }; counts: Record<string, number>; coach: { configured: boolean; items: CoachInsight[]; hidden: number; message: string } }
 export interface CoachStatus { configured: boolean; backend: string; model: string; message: string; max_tool_calls: number; timeout_seconds: number; busy: boolean; current_job: string | null; tools: string[] }

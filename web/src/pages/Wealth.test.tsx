@@ -215,4 +215,23 @@ describe("translations", () => {
     expect(await screen.findByText("Patrimoine net, partie connue seulement")).toBeInTheDocument();
     expect(screen.getByText("1 élément non compté")).toBeInTheDocument();
   });
+
+  it("translates the server's sentences by their code and the loan fields by theirs, the English staying the fallback", async () => {
+    const note_msg = { code: "netWorth.totalPartial", params: { count: 1 }, text: networth.note };
+    const body = { ...networth, note_msg, unknown: [{ ...networth.unknown[0], reason_msg: { code: "netWorth.noValue", params: {}, text: "no value recorded" } }] };
+    const old = { ...stale, missing_codes: ["rate"] };
+    const base = (globalThis.fetch as unknown as { getMockImplementation: () => (u: string, i?: RequestInit) => Promise<Response> }).getMockImplementation();
+    vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.startsWith("/api/v1/net-worth") && !url.includes("snapshot")) return new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url.startsWith("/api/v1/liabilities")) return new Response(JSON.stringify({ as_of: "2026-10-04", liabilities: [old], totals: { outstanding_known: "3000.00", monthly_payments: "0", n_unknown_outstanding: 0 }, note: "" }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return base(url, init);
+    }));
+    await setLanguage("fr");
+    renderApp(<Wealth />);
+    expect(await screen.findByText(/1 élément n'a pas de valeur et n'est PAS inclus/)).toBeInTheDocument();
+    expect(screen.getByTitle("aucune valeur renseignée")).toBeInTheDocument();
+    const card = (await screen.findByRole("heading", { name: "OldBank" })).closest("section")!;
+    expect(within(card).getByText(/taux d'intérêt/)).toBeInTheDocument();
+    await setLanguage("en");
+  });
 });
