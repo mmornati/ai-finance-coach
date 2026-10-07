@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4c (see `docs/i18n.md`, "Server text")
+- Insight cards (anomalies, price changes, forecast, budgets, subscription reminders, loan and rental alerts) and alert events (bank consent, failing sync, kid budgets, AI usage)
+  carry `title_msg` / `body_msg` and are shown in the interface language on Insights, the Dashboard, Alerts and the loan pages. New rows store the codes in the existing
+  `anomalies.payload` and `alert_events.payload` (no migration); older rows keep their English. Messages sent outside the machine (ntfy, e-mail, Telegram) and the CLI are unchanged.
+- New short disclaimer `tax_short` in `disclaimers.py` (the English is the text the rental scheme card already showed).
+
 ### Added: multi-language web app, part 4e (see `docs/i18n.md`, "Server text")
 - The subscription inventory shows the cancellation rules (name, summary, method, conditions, missing facts), decision checks, usage, offer notes and contract-draft warnings
   in the interface language; the legal citations stay as written, and the contract disclaimers come from `disclaimers.py` in the same language (`GET /meta/disclaimers`).
