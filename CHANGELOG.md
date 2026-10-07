@@ -5,6 +5,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4b (see `docs/i18n.md`, "Server text")
+- The coverage notes of the analytics results (incomplete months, non-EUR transactions left out, low confidence of a category, partial year, ...) carry `notes_msg` next to `notes`
+  and are shown in the interface language on the Dashboard, Categories, a category's page and Subscriptions. The MCP finance tools and the CLI `--json` output never contain a `*_msg` key.
+
 ### Added: multi-language web app, part 4a (see `docs/i18n.md`, "Server text")
 - Server text the web translates: next to an English sentence the API can send `<field>_msg` = `{code, params, text}` (built by `coach.i18n_msg.server_msg`, raw params typed by their name:
   `*_date`, `*_month`, `*_amount`, `*_pct`, `*_category`, `*_group`, `count`); the web renders it with `tServer()` (new namespace `server`) and falls back to the English text. The CLI, the MCP finance tools and the stored rows keep the English.
