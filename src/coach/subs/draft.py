@@ -24,6 +24,7 @@ from typing import Optional
 
 from coach.analytics.common import money_str
 from coach.analytics.recurring import match_share
+from coach.i18n_msg import server_msg
 from coach.memory import yamlio
 from coach.skills.subaudit import group_of
 from coach.subs.inventory import kind_of_category
@@ -43,13 +44,14 @@ class Draft:
     missing: list = field(default_factory=list)
     yearly_c: int = 0
     warnings: list = field(default_factory=list)
+    warnings_msg: list = field(default_factory=list)     # the same warnings as messages for the web app (docs/i18n.md "Server text")
     series_ids: list = field(default_factory=list)       # every series the file covers (the first is the one it was drafted from)
     shared_label: bool = False                           # another series has the same bank label: ask what this contract covers
 
     def to_dict(self) -> dict:
         return {"series": self.series_id, "contract_id": self.contract_id, "file": self.rel, "kind": self.kind,
                 "provider": self.provider, "missing": self.missing, "yearly": money_str(self.yearly_c), "value": self.value,
-                "warnings": self.warnings, "series_ids": self.series_ids, "shared_label": self.shared_label}
+                "warnings": self.warnings, "warnings_msg": self.warnings_msg, "series_ids": self.series_ids, "shared_label": self.shared_label}
 
 
 def candidates(rec, ds=None) -> list:
@@ -135,21 +137,30 @@ def draft_for(ds, x, taken_ids: set, rx=None, peers=(), amount_match=None, share
     kind = kind_of_category(x.category)
     cid = _unique_id(yamlio.slug(provider, 28), taken_ids)
     period = PERIODS.get(x.cadence)
-    warnings = []
+    warnings: list = []
+    warnings_msg: list = []
+
+    def warn(m: dict) -> None:
+        warnings.append(m["text"])
+        warnings_msg.append(m)
     billing = {"amount": None, "period": None}
     missing = list(MISSING_FIELDS)
     if peers:
-        warnings.append(f"{len(peers)} other recurring series cannot be told apart from this one by label and amount ({', '.join(p.id for p in peers)}): "
-                        "one contract file covers them all; give it a more specific merchant_match if they are separate contracts")
+        series = ", ".join(p.id for p in peers)
+        warn(server_msg("subs.draft.indistinguishable",
+                        f"{len(peers)} other recurring series cannot be told apart from this one by label and amount ({series}): "
+                        "one contract file covers them all; give it a more specific merchant_match if they are separate contracts",
+                        count=len(peers), series=series))
         missing.insert(0, "billing.amount")
     elif period:
         billing = {"amount": round(abs(x.expected_amount_c) / 100, 2), "period": period}
     else:
-        warnings.append(f"the {x.cadence} payment has no matching billing period: billing left empty")
+        warn(server_msg("subs.draft.noBillingPeriod", f"the {x.cadence} payment has no matching billing period: billing left empty",
+                        cadence=x.cadence))
         missing.insert(0, "billing.amount")
     rx = rx if rx is not None else match_regex(ds, x)
     if rx is None:
-        warnings.append("no merchant_match regex could be built that links to this series' payments")
+        warn(server_msg("subs.draft.noMerchantMatch", "no merchant_match regex could be built that links to this series' payments"))
         missing.insert(0, "merchant_match")
     also = f"; also covers {', '.join(p.id for p in peers)}" if peers else ""
     value = {"id": cid, "provider": provider, "kind": kind, "holder": None, "merchant_match": rx, "amount_match": amount_match,
@@ -158,7 +169,7 @@ def draft_for(ds, x, taken_ids: set, rx=None, peers=(), amount_match=None, share
              "usage": None, "keep": None, "contract_number": None, "documents": [],
              "notes": f"drafted from {x.id}{also}: dates and terms to fill"}
     return Draft(x.id, cid, f"contracts/{cid}.yaml", value, kind, provider, missing, x.yearly_cost_c + sum(p.yearly_cost_c for p in peers), warnings,
-                 [x.id, *[p.id for p in peers]], shared_label)
+                 warnings_msg, [x.id, *[p.id for p in peers]], shared_label)
 
 
 def drafts(ds, rec, existing_ids=None, series_ids=None, limit: Optional[int] = None) -> list[Draft]:
@@ -208,7 +219,10 @@ def drafts(ds, rec, existing_ids=None, series_ids=None, limit: Optional[int] = N
     for pr in link_report(ds, rec, out):
         for d in out:
             if pr["series"] in d.series_ids:
-                d.warnings.append(f"{pr['series']} would be matched by {pr['matches']} contract file(s) (expected exactly one)")
+                m = server_msg("subs.draft.matchedBy", f"{pr['series']} would be matched by {pr['matches']} contract file(s) (expected exactly one)",
+                               series=pr["series"], count=pr["matches"])
+                d.warnings.append(m["text"])
+                d.warnings_msg.append(m)
     return out
 
 

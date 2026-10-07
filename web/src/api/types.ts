@@ -185,7 +185,7 @@ export interface InsightCard { id: string; kind: "anomaly" | "price_change" | "f
 export interface CoachInsight { id: string; created: string; kind: string; title: string; body: string; findings: unknown[]; evidence: string[]; skill: string | null; backend: string | null; model: string | null; usage_ref: number | null; status: "new" | "read" | "dismissed" | "done" | "snoozed"; snoozed_until: string | null; unverified_numbers: string[]; suspicious: boolean; question: string | null; ai_generated?: boolean; ai_label?: string | null; ai_label_short?: string | null; compliance?: string[]; compliance_banner?: string | null }
 /** E11-5: the AI-generated label and the investment-advice check of a coach answer. */
 /** GET /meta/disclaimers: the legal labels in one language (their wording lives only in src/coach/disclaimers.py). */
-export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string } }
+export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string } }
 export interface Compliance { label: string; label_short: string; lang: string; flagged: boolean; codes: string[]; banner: string }
 export interface Insights { as_of: string; cards: InsightCard[]; hidden: number; alerts?: { open: number; high: number }; counts: Record<string, number>; coach: { configured: boolean; items: CoachInsight[]; hidden: number; message: string } }
 export interface CoachStatus { configured: boolean; backend: string; model: string; message: string; max_tool_calls: number; timeout_seconds: number; busy: boolean; current_job: string | null; tools: string[] }
@@ -258,10 +258,12 @@ export interface Onboarding {
 
 /* ------------------------------------------------------------------ E8: subscriptions & contracts optimizer */
 export type UsageFrequency = "daily" | "weekly" | "monthly" | "rarely" | "never" | "unknown";
-export interface LegalRule { id: string; name: string; law: string; source: string; last_reviewed: string }
+export interface LegalRule { id: string; name: string; law: string; source: string; last_reviewed: string; name_msg?: ServerMsg }
 export interface InvCancellation {
   country: string; family: string; can_cancel_now: boolean | null; earliest_effective_date: string | null; notice_period_days: number | null; method: string;
   conditions: string[]; unknown: string[]; legal_basis: LegalRule[]; last_reviewed: string | null; verify: string; disclaimer: string;
+  /** i18n 4e: the sentences as codes (docs/i18n.md "Server text"); the two disclaimers by key (`useDisclaimers()`). */
+  method_msg?: ServerMsg; conditions_msg?: ServerMsg[]; unknown_msg?: ServerMsg[]; disclaimer_key?: "contract"; verify_key?: "contract_verify";
   early_termination_cost: { basis: string; share_pct: number | null; remaining_months: number; free_exit_date: string; amount: number | null; needs?: string } | null;
   anniversary_route: { effective: string; send_notice_by: string; months_notice: number; notice_still_possible: boolean } | null;
   contract_notice_deadline: { renewal: string; send_notice_by: string; notice_period_days: number; days_left: number } | null;
@@ -270,11 +272,11 @@ export interface InvCancellation {
 export interface InvAlternative {
   id: string; provider: string; offer: string; monthly_price: Money; switching_costs: Money; features: string | null; source_url: string | null; retrieved_at: string;
   age_days: number; method: string; source: string; status: "current" | "outdated"; label: string; stale: boolean;
-  savings: { monthly: Money; yearly: Money; net_12m: Money; break_even_months: number | null; verdict: string; computed_by: string; stale_warning: string | null } | null;
+  savings: { monthly: Money; yearly: Money; net_12m: Money; break_even_months: number | null; verdict: string; computed_by: string; stale_warning: string | null; stale_warning_msg?: ServerMsg } | null;
 }
 export interface InvDecision {
   id: string; decision: string; decided_on: string; effective_on: string; before_monthly: Money; after_monthly: Money; monthly_saving: Money; months_counted: number;
-  since_decision: Money; note: string | null; source: string; status: "verified" | "pending" | "contradicted" | "not_applicable" | "ambiguous"; reason: string; check_on: string | null; reminder: boolean;
+  since_decision: Money; note: string | null; source: string; status: "verified" | "pending" | "contradicted" | "not_applicable" | "ambiguous"; reason: string; reason_msg?: ServerMsg; check_on: string | null; reminder: boolean;
 }
 export interface InvRow {
   ref: string; name: string; entity: string; group: string; group_label: string; category: string | null; kind: string; cost_source: "series" | "contract" | "unknown";
@@ -284,10 +286,10 @@ export interface InvRow {
   price_changes: { id: string; date: string; old: Money; new: Money; direction: string; pct: number; yearly_impact: Money; confirmed: boolean }[];
   contract: { status: "on_file" | "missing" | "expired"; id: string | null; provider?: string | null; renewal?: string | null; commitment_end?: string | null; notice_period_days?: number | null; expired_on?: string | null; keep?: boolean | string | null; contract_number_on_file?: boolean };
   series_id: string | null; series: string[]; contract_id: string | null; linked_series: string[]; draftable: boolean;
-  usage: { frequency: UsageFrequency; last_used: string | null; note: string | null; recorded: boolean; measurable: boolean; question_asked: boolean; note_not_measurable: string | null;
-           signals: { kind: "unused_60_days" | "paid_but_never_used"; days?: number; last_used?: string; last_payment?: string; measurable: string }[] };
+  usage: { frequency: UsageFrequency; last_used: string | null; note: string | null; recorded: boolean; measurable: boolean; question_asked: boolean; note_not_measurable: string | null; note_not_measurable_msg?: ServerMsg | null;
+           signals: { kind: "unused_60_days" | "paid_but_never_used"; days?: number; last_used?: string; last_payment?: string; measurable: string; measurable_msg?: ServerMsg }[] };
   cancellation: InvCancellation;
-  alternatives: { count: number; current: number; outdated: number; best: InvAlternative | null; items: InvAlternative[]; note: string };
+  alternatives: { count: number; current: number; outdated: number; best: InvAlternative | null; items: InvAlternative[]; note: string; note_msg?: ServerMsg };
   decision: InvDecision | null; proposed_decisions: string[];
 }
 export interface SavingsSummary { realised_monthly: Money; realised_since_decisions: Money; realised_yearly_run_rate: Money; verified: number; pending: number; contradicted: number; claimed_monthly_unverified: Money }
@@ -295,18 +297,18 @@ export interface Inventory {
   as_of: string; country: string; rows: InvRow[]; groups_meta: { id: string; label: string }[];
   groups: Record<string, { label: string; count: number; monthly: Money; yearly: Money; without_contract: number; unknown_cost: number }>;
   totals: { services: number; monthly: Money; yearly: Money; without_contract: number; expired_contracts: number; with_cancellation_rule: number; cancellation_decidable: number; usage_unknown: number; outdated_alternatives: number; reminders: number };
-  savings: SavingsSummary; notes: string[];
+  savings: SavingsSummary; notes: string[]; notes_msg?: ServerMsg[];
 }
 export interface SavingsView extends SavingsSummary {
   as_of: string; decisions: (InvDecision & { contract: string | null; series: string | null; name: string | null; state: string })[];
-  proposed: { id: string; decision: string; name: string | null; source: string; before_monthly: number; after_monthly: number; note: string | null }[]; reminders: string[]; note: string;
+  proposed: { id: string; decision: string; name: string | null; source: string; before_monthly: number; after_monthly: number; note: string | null }[]; reminders: string[]; note: string; note_msg?: ServerMsg;
 }
 export interface Letter {
   contract: string; lang: "fr" | "it" | "en"; channel: "lrar" | "email" | "online"; subject: string; text: string; filename: string; placeholders: string[];
   legal_basis: LegalRule[]; can_cancel_now: boolean | null; send_on_or_after: string | null; send_by: string | null; notes: string[]; pdf: null; pdf_note: string; sent: false; country: string;
 }
 export interface ContactInfo { contact: { address?: string; email?: string; phone?: string }; set: boolean; local_only: boolean; members: { id: string; name: string }[] }
-export interface DraftPreview extends EditResult { contract: { series: string; contract_id: string; file: string; kind: string; provider: string; missing: string[]; yearly: Money; warnings: string[]; value: Record<string, unknown> } }
+export interface DraftPreview extends EditResult { contract: { series: string; contract_id: string; file: string; kind: string; provider: string; missing: string[]; yearly: Money; warnings: string[]; warnings_msg?: ServerMsg[]; value: Record<string, unknown> } }
 
 /* ------------------------------------------------------------------ alerts (E10) */
 export type AlertSeverity = "high" | "medium" | "low";

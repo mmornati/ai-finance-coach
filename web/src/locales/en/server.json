@@ -4,6 +4,117 @@
     "mixedTypes_one": "One balance per account, the most booked type the bank provides. {{count}} account only gives a non-booked balance ({{accounts}}): the total mixes types.",
     "mixedTypes_other": "One balance per account, the most booked type the bank provides. {{count}} accounts only give a non-booked balance ({{accounts}}): the total mixes types."
   },
+  "cancel": {
+    "assumes": {
+      "annualRenewal": "annual renewal on this date"
+    },
+    "condition": {
+      "earlyExitJustified": "an early exit can only cost what is justified or proportionate to the discount received",
+      "equivalentGuarantees": "the replacement policy must offer equivalent guarantees",
+      "equivalentToBank": "the replacement policy must be equivalent to what the bank requires",
+      "firstYear": "free cancellation opens after the first year; before that, the contract ends at its anniversary with the notice of the contract (commonly two months)",
+      "fixedTermOffer": "this looks like a fixed-term offer: read its conditions for any exit clause",
+      "groupContract": "an employer-mandated group contract cannot be cancelled this way (only on a qualifying event)",
+      "hamonEligible": "free cancellation at any time (Hamon) applies to eligible car and home policies: check whether yours is one; otherwise the contract ends at its anniversary with the notice of the contract (commonly two months)",
+      "longPolicyIt": "a policy longer than five years (with a duration discount) can be ended by the insured after the fifth year with 60 days' notice, effective at the end of the policy year (art. 1899 c.c.); annual policies follow the contract",
+      "minimumTerm": "the minimum term runs until this date: leaving earlier is governed by the contract",
+      "noGapInCover": "the old policy ends the day the new one starts: there must be no gap in cover",
+      "rcAutoExpiry": "no notice is needed: the policy simply ends at expiry (the cover lasts 15 more days); mid-term only for sale, destruction or theft of the vehicle",
+      "renewedWithoutReminder": "it renewed on {{renewal_date}}: if the provider did not remind you before that date, you may be able to terminate at any time (see the rules)",
+      "rollingMonthly": "a rolling monthly subscription normally ends at the end of the period already paid",
+      "singlePremiumRefund": "a single premium: ask for the refund of the unused part on early closure",
+      "telecomCommitment": "leaving before the end of the commitment costs the early termination amount; waiting until {{free_date}} is free"
+    },
+    "method": {
+      "carInsuranceIt": "do nothing at expiry and buy the new policy beforehand",
+      "energyFr": "subscribe to the new supplier, who cancels the old contract for you; do not cancel first (no gap in supply)",
+      "energyIt": "sign with the new supplier, who sends the recesso; a direct request goes to the current supplier",
+      "genericFr": "online termination button if you signed online, else the method in the contract (letter or e-mail)",
+      "genericIt": "the method in the contract (online area, letter or certified e-mail)",
+      "insuranceFr": "written request (registered letter, e-mail or the insurer's online form), or let the new insurer send it for you; a contract signed online can be terminated online (3 clicks)",
+      "insuranceIt": "disdetta by registered letter or certified e-mail within the period in the policy",
+      "insuranceOtherFr": "written request (registered letter, e-mail or the insurer's online form) before the notice deadline",
+      "loanInsuranceFr": "send the new policy's offer to the lender (the new insurer usually does the paperwork)",
+      "loanInsuranceIt": "present the new policy to the bank",
+      "telecomFr": "online (termination button), by letter or e-mail, or through the new operator (number portability ends the old line)",
+      "telecomIt": "written request to the operator (e-mail or registered letter) or through the new operator"
+    },
+    "noticeAssumption": {
+      "twoMonths": "two months unless the contract says otherwise (L113-12)"
+    },
+    "reference": {
+      "anniversary": "anniversary",
+      "commitmentEnds": "commitment ends",
+      "freeCancellationOpens": "free cancellation opens",
+      "renews": "renews"
+    },
+    "rule": {
+      "frHamon": {
+        "name": "Loi Hamon (insurance after the first year)",
+        "summary": "Home and car insurance can be cancelled at any time after the first year, free of charge; the cancellation takes effect one month after the insurer receives the request (the new insurer can send it for you)."
+      },
+      "frChatelInsurance": {
+        "name": "Tacit renewal of insurance (Loi Chatel)",
+        "summary": "The contract ends at its anniversary with the notice of the contract (L113-12; commonly two months). The insurer must send the renewal notice (avis d'echeance) in time: if it is sent less than 15 days before the deadline for refusing the renewal, or after it, the insured has 20 days from its sending to cancel (L113-15-1)."
+      },
+      "frRiaSante": {
+        "name": "Complementary health (mutuelle): resiliation infra-annuelle",
+        "summary": "A complementary health contract can be cancelled at any time after one year, free of charge, effective one month after the request. Employer-mandated group contracts are not covered."
+      },
+      "frLemoine": {
+        "name": "Borrower insurance: Loi Lemoine",
+        "summary": "The insurance of a loan can be replaced at any time, free of charge, by a policy with equivalent guarantees; the lender must answer within 10 working days."
+      },
+      "frTelecom": {
+        "name": "Telecom contracts (Loi Chatel)",
+        "summary": "A commitment is limited to 24 months. After the first 12 months an early exit costs at most 25 % of the subscription still due; without a commitment, or after it, the contract can be ended at any time, normally within about ten days of the request."
+      },
+      "frEnergy": {
+        "name": "Electricity and gas for households",
+        "summary": "No termination fee for household electricity or gas; the new supplier handles the switch (typically within three weeks). Fixed-term market offers may state conditions: read them."
+      },
+      "fr3Clics": {
+        "name": "Termination online (\"resiliation en 3 clics\")",
+        "summary": "A contract that can be signed online must be terminable online through a clearly visible button; the provider must confirm the date the contract ends."
+      },
+      "frChatelRenewal": {
+        "name": "Tacit renewal of service contracts (Loi Chatel)",
+        "summary": "For a tacitly renewed contract the provider must remind you, between three and one month before the end of the period in which you can refuse the renewal. If it did not, you can terminate at any time after the renewal and get the unused part refunded."
+      },
+      "itBersaniTelecom": {
+        "name": "Telecom and pay-TV: Legge Bersani",
+        "summary": "The customer can withdraw at any time without penalties; only costs justified by the real cost of closing, or proportionate to a discount received, can be charged. Notice is at most 30 days."
+      },
+      "itBersaniEnergy": {
+        "name": "Electricity and gas: recesso (ARERA)",
+        "summary": "A household can withdraw at any time without penalties; notice is at most one month, and a switch to a new supplier is handled by the new supplier."
+      },
+      "itRcauto": {
+        "name": "RC auto: no tacit renewal",
+        "summary": "The motor third-party policy ends at its expiry: there is no tacit renewal, so no cancellation notice is needed; shop for a new policy before the expiry. The cover continues for 15 days after the expiry (grace period)."
+      },
+      "itInsurance": {
+        "name": "Other insurance: disdetta",
+        "summary": "Annual non-life policies renew tacitly unless a notice (disdetta) is sent within the period in the policy. A policy longer than five years (with a discount for its duration) can be cancelled by the insured after the fifth year with 60 days' notice, effective at the end of the policy year (art. 1899 c.c.)."
+      },
+      "itLoanInsurance": {
+        "name": "Insurance linked to a mortgage",
+        "summary": "The borrower may bring a policy of their choice (the bank must accept an equivalent one); the unused part of a single premium is refundable on early closure of the loan."
+      },
+      "itSubscription": {
+        "name": "Subscriptions: Codice del consumo",
+        "summary": "Terms of renewal and withdrawal are those of the contract; the 14-day withdrawal right applies only to distance contracts at signing."
+      }
+    },
+    "unknown": {
+      "noticePeriodDays": "notice period (days)",
+      "renewalAnniversary": "renewal (anniversary date)",
+      "renewalExpiry": "renewal (expiry date)",
+      "renewalOrCommitmentEnd": "renewal or end of commitment",
+      "startDate": "start date",
+      "startLowerBound": "contract start date (only the first payment seen is known, and it is less than a year old)"
+    }
+  },
   "coverage": {
     "accountsLacking": "Accounts without full data (months lacking data / months listed): {{accounts}}.",
     "budgetLeftOut": "One-offs, capital and savings are left out.",
@@ -107,6 +218,49 @@
       "rental": "Rental",
       "kids": "Kids",
       "savings": "Savings"
+    }
+  },
+  "subs": {
+    "alternatives": {
+      "note": "quotes older than 30 days are outdated and excluded from the best; prices change: verify on the provider's page before acting",
+      "staleWarning": "price older than 30 days: re-check before relying on it"
+    },
+    "decision": {
+      "ambiguous_one": "the contract covers {{count}} recurring series: record the decision on one series (name it) so the bank data can be checked",
+      "ambiguous_other": "the contract covers {{count}} recurring series: record the decision on one series (name it) so the bank data can be checked",
+      "asRecorded": "the payment of {{payment_date}} is {{monthly_amount}} a month, as recorded",
+      "kept": "nothing to verify: the subscription was kept",
+      "nextNotOverdue": "no later payment yet, but the next one is not overdue",
+      "noPaymentNextOverdue": "no payment since {{last_date}}, the next one is overdue",
+      "noPaymentSeriesEnded": "no payment since {{last_date}} (the series ended)",
+      "noPaymentSinceEffective": "no payment on or after the effective date yet",
+      "otherAmount": "the payment of {{payment_date}} is {{monthly_amount}} a month, not the {{recorded_amount}} recorded",
+      "paymentsAfter_one": "{{count}} payment after the effective date {{effective_date}}; latest {{last_date}} ({{last_amount}})",
+      "paymentsAfter_other": "{{count}} payments after the effective date {{effective_date}}; latest {{last_date}} ({{last_amount}})",
+      "seriesNotFound": "the recurring series is not in the bank data (not found): confirm it by hand",
+      "stillOldAmount": "the payment of {{payment_date}} is still about the old amount ({{monthly_amount}} a month)",
+      "takesEffectLater": "the decision takes effect later"
+    },
+    "draft": {
+      "indistinguishable_one": "{{count}} other recurring series cannot be told apart from this one by label and amount ({{series}}): one contract file covers both; give it a more specific merchant_match if they are separate contracts",
+      "indistinguishable_other": "{{count}} other recurring series cannot be told apart from this one by label and amount ({{series}}): one contract file covers them all; give it a more specific merchant_match if they are separate contracts",
+      "matchedBy_one": "{{series}} would be matched by {{count}} contract file (expected exactly one)",
+      "matchedBy_other": "{{series}} would be matched by {{count}} contract files (expected exactly one)",
+      "noBillingPeriod": "the payment ({{cadence}}) has no matching billing period: billing left empty",
+      "noMerchantMatch": "no merchant_match regex could be built that links to this series' payments"
+    },
+    "inventory": {
+      "cancellationSummary": "cancellation info is a general summary of consumer-law rules: verify with your contract",
+      "costSource": "the cost comes from the detected payments; a contract file without payments in the bank data uses its billing amount",
+      "notSubscriptions": "loans, mortgages, rent and taxes are not subscriptions and are not listed"
+    },
+    "savings": {
+      "note": "only decisions the bank data confirms count as realised; pending ones are claims (a cancelled service still being paid is flagged). Months are whole calendar months from the effective date."
+    },
+    "usage": {
+      "fromLastUsed": "from the last-used date you recorded",
+      "neverAndPaying": "you recorded 'never' and the payments continue",
+      "notMeasurable": "Whether a service is used is not in the bank data: only what you record (frequency, last used) is counted. Without it the usage stays unknown."
     }
   },
   "error": {

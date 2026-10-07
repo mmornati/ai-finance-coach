@@ -5,6 +5,117 @@
     "mixedTypes_many": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca. {{count}} conti forniscono solo un saldo non contabilizzato ({{accounts}}): il totale mescola tipi diversi.",
     "mixedTypes_other": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca. {{count}} conti forniscono solo un saldo non contabilizzato ({{accounts}}): il totale mescola tipi diversi."
   },
+  "cancel": {
+    "assumes": {
+      "annualRenewal": "rinnovo annuale a questa data"
+    },
+    "condition": {
+      "earlyExitJustified": "un recesso anticipato può costare solo quanto giustificato o proporzionato allo sconto ricevuto",
+      "equivalentGuarantees": "la nuova polizza deve offrire garanzie equivalenti",
+      "equivalentToBank": "la nuova polizza deve essere equivalente a quella richiesta dalla banca",
+      "firstYear": "la disdetta senza costi è possibile solo dopo il primo anno; prima, il contratto termina alla scadenza annuale con il preavviso previsto dal contratto (di solito due mesi)",
+      "fixedTermOffer": "sembra un'offerta a durata determinata: leggi le sue condizioni per eventuali clausole di uscita",
+      "groupContract": "un contratto collettivo obbligatorio del datore di lavoro non si può disdire in questo modo (solo al verificarsi di un evento previsto)",
+      "hamonEligible": "la disdetta senza costi in qualsiasi momento (Loi Hamon) vale per le polizze auto e casa ammesse: verifica se la tua lo è; altrimenti il contratto termina alla scadenza annuale con il preavviso previsto dal contratto (di solito due mesi)",
+      "longPolicyIt": "una polizza di durata superiore a cinque anni (con sconto per la durata) può essere disdetta dall'assicurato dopo il quinto anno con preavviso di 60 giorni, con effetto alla fine dell'annualità (art. 1899 c.c.); le polizze annuali seguono il contratto",
+      "minimumTerm": "la durata minima vale fino a questa data: uscire prima dipende dal contratto",
+      "noGapInCover": "la vecchia polizza termina il giorno in cui inizia la nuova: non deve esserci alcun periodo scoperto",
+      "rcAutoExpiry": "non serve alcuna disdetta: la polizza termina semplicemente alla scadenza (la copertura dura altri 15 giorni); in corso d'anno solo per vendita, demolizione o furto del veicolo",
+      "renewedWithoutReminder": "si è rinnovato il {{renewal_date}}: se il fornitore non ti ha avvisato prima di quella data, potresti poter disdire in qualsiasi momento (vedi le regole)",
+      "rollingMonthly": "un abbonamento mensile senza vincolo termina di norma alla fine del periodo già pagato",
+      "singlePremiumRefund": "premio unico: chiedi il rimborso della parte non goduta in caso di estinzione anticipata",
+      "telecomCommitment": "uscire prima della fine del vincolo costa l'importo del recesso anticipato; aspettare fino al {{free_date}} non costa nulla"
+    },
+    "method": {
+      "carInsuranceIt": "non fare nulla alla scadenza e sottoscrivi prima la nuova polizza",
+      "energyFr": "sottoscrivi con il nuovo fornitore, che chiude per te il vecchio contratto; non disdire prima (per non restare senza fornitura)",
+      "energyIt": "sottoscrivi con il nuovo fornitore, che invia il recesso; una richiesta diretta va al fornitore attuale",
+      "genericFr": "il pulsante di disdetta online se hai sottoscritto online, altrimenti la modalità prevista dal contratto (lettera o e-mail)",
+      "genericIt": "la modalità prevista dal contratto (area clienti online, lettera o PEC)",
+      "insuranceFr": "richiesta scritta (raccomandata, e-mail o modulo online dell'assicuratore), oppure lascia che la invii per te il nuovo assicuratore; un contratto sottoscritto online si può disdire online (3 clic)",
+      "insuranceIt": "disdetta con raccomandata o PEC entro il termine previsto dalla polizza",
+      "insuranceOtherFr": "richiesta scritta (raccomandata, e-mail o modulo online dell'assicuratore) entro il termine di preavviso",
+      "loanInsuranceFr": "invia l'offerta della nuova polizza alla banca (di solito se ne occupa il nuovo assicuratore)",
+      "loanInsuranceIt": "presenta la nuova polizza alla banca",
+      "telecomFr": "online (pulsante di disdetta), per lettera o e-mail, oppure tramite il nuovo operatore (la portabilità del numero chiude la vecchia linea)",
+      "telecomIt": "richiesta scritta all'operatore (e-mail o raccomandata) oppure tramite il nuovo operatore"
+    },
+    "noticeAssumption": {
+      "twoMonths": "due mesi, salvo diversa previsione del contratto (L113-12)"
+    },
+    "reference": {
+      "anniversary": "scadenza annuale",
+      "commitmentEnds": "il vincolo termina",
+      "freeCancellationOpens": "la disdetta senza costi diventa possibile",
+      "renews": "si rinnova"
+    },
+    "rule": {
+      "frHamon": {
+        "name": "Loi Hamon (assicurazione dopo il primo anno)",
+        "summary": "L'assicurazione casa e auto si può disdire in qualsiasi momento dopo il primo anno, senza costi; la disdetta ha effetto un mese dopo che l'assicuratore riceve la richiesta (può inviarla per te il nuovo assicuratore)."
+      },
+      "frChatelInsurance": {
+        "name": "Rinnovo tacito dell'assicurazione (Loi Chatel)",
+        "summary": "Il contratto termina alla scadenza annuale con il preavviso previsto dal contratto (L113-12; di solito due mesi). L'assicuratore deve inviare in tempo l'avviso di scadenza (avis d'échéance): se lo invia meno di 15 giorni prima del termine per rifiutare il rinnovo, o dopo, l'assicurato ha 20 giorni dall'invio per disdire (L113-15-1)."
+      },
+      "frRiaSante": {
+        "name": "Assicurazione sanitaria integrativa (mutuelle): résiliation infra-annuelle",
+        "summary": "Un contratto di assicurazione sanitaria integrativa si può disdire in qualsiasi momento dopo un anno, senza costi, con effetto un mese dopo la richiesta. Sono esclusi i contratti collettivi obbligatori del datore di lavoro."
+      },
+      "frLemoine": {
+        "name": "Assicurazione del mutuo: Loi Lemoine",
+        "summary": "L'assicurazione di un mutuo si può sostituire in qualsiasi momento, senza costi, con una polizza dalle garanzie equivalenti; la banca deve rispondere entro 10 giorni lavorativi."
+      },
+      "frTelecom": {
+        "name": "Contratti di telefonia e internet (Loi Chatel)",
+        "summary": "Il vincolo è limitato a 24 mesi. Dopo i primi 12 mesi un'uscita anticipata costa al massimo il 25 % dei canoni ancora dovuti; senza vincolo, o dopo la sua fine, il contratto si può chiudere in qualsiasi momento, di norma entro una decina di giorni dalla richiesta."
+      },
+      "frEnergy": {
+        "name": "Luce e gas per le famiglie",
+        "summary": "Nessun costo di recesso per luce o gas domestici; il nuovo fornitore gestisce il cambio (di solito entro tre settimane). Le offerte a durata determinata possono prevedere condizioni: leggile."
+      },
+      "fr3Clics": {
+        "name": "Disdetta online (« résiliation en 3 clics »)",
+        "summary": "Un contratto che si può sottoscrivere online deve poter essere disdetto online tramite un pulsante ben visibile; il fornitore deve confermare la data di fine del contratto."
+      },
+      "frChatelRenewal": {
+        "name": "Rinnovo tacito dei contratti di servizi (Loi Chatel)",
+        "summary": "Per un contratto a rinnovo tacito il fornitore deve avvisarti tra tre mesi e un mese prima della fine del periodo in cui puoi rifiutare il rinnovo. Se non lo ha fatto, puoi disdire in qualsiasi momento dopo il rinnovo e ottenere il rimborso della parte non usata."
+      },
+      "itBersaniTelecom": {
+        "name": "Telefonia e pay-TV: Legge Bersani",
+        "summary": "Il cliente può recedere in qualsiasi momento senza penali; si possono addebitare solo i costi giustificati dai costi reali di chiusura, o proporzionati a uno sconto ricevuto. Il preavviso è al massimo di 30 giorni."
+      },
+      "itBersaniEnergy": {
+        "name": "Luce e gas: recesso (ARERA)",
+        "summary": "Un cliente domestico può recedere in qualsiasi momento senza penali; il preavviso è al massimo di un mese, e il cambio di fornitore è gestito dal nuovo fornitore."
+      },
+      "itRcauto": {
+        "name": "RC auto: niente tacito rinnovo",
+        "summary": "La polizza RC auto termina alla scadenza: non c'è tacito rinnovo, quindi non serve alcuna disdetta; cerca una nuova polizza prima della scadenza. La copertura prosegue per 15 giorni dopo la scadenza (periodo di tolleranza)."
+      },
+      "itInsurance": {
+        "name": "Altre assicurazioni: disdetta",
+        "summary": "Le polizze annuali dei rami danni si rinnovano tacitamente, salvo disdetta inviata entro il termine previsto dalla polizza. Una polizza di durata superiore a cinque anni (con uno sconto per la durata) può essere disdetta dall'assicurato dopo il quinto anno con preavviso di 60 giorni, con effetto alla fine dell'annualità (art. 1899 c.c.)."
+      },
+      "itLoanInsurance": {
+        "name": "Assicurazione collegata al mutuo",
+        "summary": "Il mutuatario può presentare una polizza di sua scelta (la banca deve accettarne una equivalente); la parte non goduta di un premio unico è rimborsabile in caso di estinzione anticipata del mutuo."
+      },
+      "itSubscription": {
+        "name": "Abbonamenti: Codice del consumo",
+        "summary": "Le condizioni di rinnovo e di recesso sono quelle del contratto; il diritto di ripensamento di 14 giorni vale solo per i contratti a distanza, al momento della sottoscrizione."
+      }
+    },
+    "unknown": {
+      "noticePeriodDays": "durata del preavviso (giorni)",
+      "renewalAnniversary": "rinnovo (data di scadenza annuale)",
+      "renewalExpiry": "rinnovo (data di scadenza)",
+      "renewalOrCommitmentEnd": "rinnovo o fine del vincolo",
+      "startDate": "data di inizio",
+      "startLowerBound": "data di inizio del contratto (si conosce solo il primo pagamento visto, e risale a meno di un anno fa)"
+    }
+  },
   "coverage": {
     "accountsLacking": "Conti senza dati completi (mesi senza dati / mesi elencati): {{accounts}}.",
     "budgetLeftOut": "Spese una tantum, capitale e risparmi sono esclusi.",
@@ -118,6 +229,53 @@
       "rental": "Affitto",
       "kids": "Figli",
       "savings": "Risparmio"
+    }
+  },
+  "subs": {
+    "alternatives": {
+      "note": "le offerte di oltre 30 giorni sono superate ed escluse dalla migliore; i prezzi cambiano: verifica sulla pagina del fornitore prima di agire",
+      "staleWarning": "prezzo di oltre 30 giorni fa: ricontrollalo prima di farci affidamento"
+    },
+    "decision": {
+      "ambiguous_one": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
+      "ambiguous_many": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
+      "ambiguous_other": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
+      "asRecorded": "il pagamento del {{payment_date}} corrisponde a {{monthly_amount}} al mese, come registrato",
+      "kept": "niente da verificare: l'abbonamento è stato mantenuto",
+      "nextNotOverdue": "ancora nessun pagamento successivo, ma il prossimo non è in ritardo",
+      "noPaymentNextOverdue": "nessun pagamento dal {{last_date}}, il prossimo è in ritardo",
+      "noPaymentSeriesEnded": "nessun pagamento dal {{last_date}} (la serie è terminata)",
+      "noPaymentSinceEffective": "ancora nessun pagamento dalla data di efficacia in poi",
+      "otherAmount": "il pagamento del {{payment_date}} corrisponde a {{monthly_amount}} al mese, non ai {{recorded_amount}} registrati",
+      "paymentsAfter_one": "{{count}} pagamento dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
+      "paymentsAfter_many": "{{count}} pagamenti dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
+      "paymentsAfter_other": "{{count}} pagamenti dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
+      "seriesNotFound": "la serie di pagamenti ricorrenti non è nei dati bancari (non trovata): confermalo a mano",
+      "stillOldAmount": "il pagamento del {{payment_date}} è ancora circa il vecchio importo ({{monthly_amount}} al mese)",
+      "takesEffectLater": "la decisione ha effetto più avanti"
+    },
+    "draft": {
+      "indistinguishable_one": "{{count}} altra serie ricorrente non si distingue da questa per descrizione e importo ({{series}}): un solo file del contratto le copre entrambe; dagli un merchant_match più specifico se sono contratti distinti",
+      "indistinguishable_many": "{{count}} altre serie ricorrenti non si distinguono da questa per descrizione e importo ({{series}}): un solo file del contratto le copre tutte; dagli un merchant_match più specifico se sono contratti distinti",
+      "indistinguishable_other": "{{count}} altre serie ricorrenti non si distinguono da questa per descrizione e importo ({{series}}): un solo file del contratto le copre tutte; dagli un merchant_match più specifico se sono contratti distinti",
+      "matchedBy_one": "{{series}} verrebbe collegata a {{count}} file del contratto (ne è atteso esattamente uno)",
+      "matchedBy_many": "{{series}} verrebbe collegata a {{count}} file di contratto (ne è atteso esattamente uno)",
+      "matchedBy_other": "{{series}} verrebbe collegata a {{count}} file di contratto (ne è atteso esattamente uno)",
+      "noBillingPeriod": "il pagamento ({{cadence}}) non ha un periodo di fatturazione corrispondente: fatturazione lasciata vuota",
+      "noMerchantMatch": "non è stato possibile costruire un'espressione merchant_match collegata ai pagamenti di questa serie"
+    },
+    "inventory": {
+      "cancellationSummary": "le informazioni sulla disdetta sono una sintesi generale delle regole a tutela dei consumatori: verifica con il tuo contratto",
+      "costSource": "il costo viene dai pagamenti rilevati; un file del contratto senza pagamenti nei dati bancari usa il suo importo fatturato",
+      "notSubscriptions": "prestiti, mutui, affitti e tasse non sono abbonamenti e non sono elencati"
+    },
+    "savings": {
+      "note": "contano come realizzate solo le decisioni confermate dai dati bancari; quelle in attesa sono dichiarazioni (un servizio disdetto ancora pagato viene segnalato). I mesi sono mesi di calendario interi dalla data di efficacia."
+    },
+    "usage": {
+      "fromLastUsed": "dalla data di ultimo uso che hai registrato",
+      "neverAndPaying": "hai indicato « mai » e i pagamenti continuano",
+      "notMeasurable": "Se un servizio viene usato non risulta dai dati bancari: conta solo ciò che registri (frequenza, ultimo uso). Senza questo l'uso resta sconosciuto."
     }
   },
   "error": {
