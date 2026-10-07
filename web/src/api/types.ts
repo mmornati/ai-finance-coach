@@ -192,7 +192,9 @@ export interface InsightCard { id: string; kind: "anomaly" | "price_change" | "f
 export interface CoachInsight { id: string; created: string; kind: string; title: string; body: string; findings: unknown[]; evidence: string[]; skill: string | null; backend: string | null; model: string | null; usage_ref: number | null; status: "new" | "read" | "dismissed" | "done" | "snoozed"; snoozed_until: string | null; unverified_numbers: string[]; suspicious: boolean; question: string | null; ai_generated?: boolean; ai_label?: string | null; ai_label_short?: string | null; compliance?: string[]; compliance_banner?: string | null }
 /** E11-5: the AI-generated label and the investment-advice check of a coach answer. */
 /** GET /meta/disclaimers: the legal labels in one language (their wording lives only in src/coach/disclaimers.py). */
-export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string; loan?: string; tax_short?: string } }
+export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string; contract?: string; contract_verify?: string; general_advice?: string; loan?: string; tax?: string; tax_short?: string } }
+/** A key of GET /meta/disclaimers (the wording lives only in src/coach/disclaimers.py). */
+export type DisclaimerKey = keyof Disclaimers["texts"];
 export interface Compliance { label: string; label_short: string; lang: string; flagged: boolean; codes: string[]; banner: string }
 export interface Insights { as_of: string; cards: InsightCard[]; hidden: number; alerts?: { open: number; high: number }; counts: Record<string, number>; coach: { configured: boolean; items: CoachInsight[]; hidden: number; message: string } }
 export interface CoachStatus { configured: boolean; backend: string; model: string; message: string; max_tool_calls: number; timeout_seconds: number; busy: boolean; current_job: string | null; tools: string[] }
@@ -387,19 +389,23 @@ export interface RentalPnl {
 export interface RentalScheme {
   declared: boolean; scheme: string | null; start_date: string | null; years: number | null; end_date: string | null; end_source: string | null; effective_end_date: string | null;
   state: "unknown" | "not_started" | "active" | "ended"; progress_pct?: number; days_left?: number; months_left?: number; decision_needed?: boolean; next_reminder_date?: string | null;
-  reminders?: { months_before: number; date: string }[]; warnings?: string[];
+  reminders?: { months_before: number; date: string }[]; warnings?: string[]; warnings_msg?: ServerMsgs; end_source_msg?: ServerMsg;
   extension: { decision: "undecided" | "extend" | "not_extend"; years?: number | null; additional_rate_pct?: number | null; decided_on?: string | null };
-  rent_cap: { cap: Money | null; cap_basis: string | null; rent: Money | null; rent_basis: string | null; status: "unknown" | "within_cap" | "above_cap"; gap?: Money };
+  rent_cap: { cap: Money | null; cap_basis: string | null; rent: Money | null; rent_basis: string | null; status: "unknown" | "within_cap" | "above_cap"; gap?: Money; cap_basis_msg?: ServerMsg | null; rent_basis_msg?: ServerMsg | null };
   tenant_income: { limit: Money | null; tenant_income: Money | null; status: "unknown" | "within_limit" | "above_limit"; headroom?: Money };
-  missing: { field: string; needed_for: string }[];
+  missing: { field: string; needed_for: string; needed_for_msg?: ServerMsg }[];
 }
+/** A list of server sentences' messages, in the order of their English list (an entry may be null: no message, the English is shown). */
+export type ServerMsgs = (ServerMsg | null)[];
+/** A reading of the indicators: a server sentence followed, when `disclaimer` is set, by that disclaimer (GET /meta/disclaimers). */
+export type ReadingMsg = ServerMsg & { disclaimer?: DisclaimerKey };
 export interface RentalAsset {
   id: string; kind: string; account: string | null; loan: string | null; scheme: string | null; value: number | null; as_of: string | null; rent_monthly: number | null;
   purchase_price: number | null; purchase_date: string | null; commitment: Record<string, unknown> | null; market_rate: { rate_pct: number; as_of?: string; source?: string } | null;
   vacancies: { start: string; end?: string; note?: string }[];
 }
 export interface RentalDetail {
-  id: string; kind: string; links: { account: string; accounts: number; loan: string; loans: number; notes: string[] }; cashflow: RentalCashflow;
+  id: string; kind: string; links: { account: string; accounts: number; loan: string; loans: number; notes: string[]; notes_msg?: ServerMsgs }; cashflow: RentalCashflow;
   current_month: { month: string; rent: Money; expected: Money | null; status: string }; pnl: RentalPnl; scheme: RentalScheme; years: number[]; flows_to_label: number; asset: RentalAsset; tag: string;
 }
 export interface RentalRow {
@@ -410,18 +416,22 @@ export interface RentalRow {
 }
 export interface RentalList { as_of: string; properties: RentalRow[]; unlinked_rental_accounts: { uid: string; label: string }[]; property_categories: string[] }
 export interface RentalTax {
-  year: number; country: string; status: string; note?: string; disclaimer: string; income_year_note?: string; gross_rents?: Money; months_counted?: number; months_incomplete?: string[]; months_missing_data?: string[]; complete?: boolean;
+  year: number; country: string; status: string; note?: string; note_msg?: ServerMsg; disclaimer: string; disclaimer_key?: DisclaimerKey; income_year_note?: string; income_year_note_msg?: ServerMsg;
+  gross_rents?: Money; months_counted?: number; months_incomplete?: string[]; months_missing_data?: string[]; complete?: boolean;
   micro_foncier?: { gross_rents: Money; household_gross_rents: Money; ceiling: Money; within_ceiling: boolean; abatement_pct: number; abatement: Money; taxable: Money };
-  reel?: { gross_rents: Money; deductible: { item: string; amount: Money; source: string; bound: string }[]; total_deductible: Money; net: Money; unknown: string[]; not_deductible: string[]; net_is_upper_bound?: boolean };
+  reel?: { gross_rents: Money; deductible: { item: string; amount: Money; source: string; bound: string; item_msg?: ServerMsg; source_msg?: ServerMsg; bound_msg?: ServerMsg }[]; total_deductible: Money; net: Money;
+    unknown: string[]; unknown_msg?: ServerMsgs; not_deductible: string[]; not_deductible_msg?: ServerMsgs; net_is_upper_bound?: boolean };
   difference?: Money; lower_taxable_candidate?: "reel" | "micro_foncier";
-  scheme_reduction?: { status: string; missing?: string[]; base?: Money; total?: Money; annual?: Money; candidate?: Money; rate_pct?: number; years?: number; first_year?: number; last_year?: number; in_window?: boolean; notes?: string[] };
-  documents?: { id: string; item: string; from: string }[]; notes?: string[];
+  scheme_reduction?: { status: string; missing?: string[]; missing_msg?: ServerMsgs; base?: Money; total?: Money; annual?: Money; candidate?: Money; rate_pct?: number; years?: number; first_year?: number; last_year?: number; in_window?: boolean; notes?: string[]; notes_msg?: ServerMsgs };
+  documents?: { id: string; item: string; from: string }[]; notes?: string[]; notes_msg?: ServerMsgs;
 }
 export interface RentalIndicators {
-  as_of: string; disclaimer: string; trailing_effort: Money | null; signals: { id: string; reading: string }[]; scenarios: string[];
-  market_rate: { status: "missing" | "given"; note?: string; rate_pct?: number; date?: string; basis?: string; age_days?: number; warning?: string };
-  loan_rate: { status: string; loan_rate_pct?: number; market_rate_pct?: number; gap_pts?: number; threshold_pts?: number; reading?: string; missing?: string[]; renegotiation_note?: string;
+  as_of: string; disclaimer: string; disclaimer_key?: DisclaimerKey; trailing_effort: Money | null; signals: { id: string; reading: string; reading_msg?: ReadingMsg }[]; scenarios: string[]; scenarios_msg?: ServerMsgs;
+  market_rate: { status: "missing" | "given"; note?: string; note_msg?: ServerMsg; rate_pct?: number; date?: string; basis?: string; age_days?: number; warning?: string; warning_msg?: ServerMsg };
+  loan_rate: { status: string; loan_rate_pct?: number; market_rate_pct?: number; gap_pts?: number; threshold_pts?: number; reading?: string; reading_msg?: ReadingMsg; missing?: string[]; missing_msg?: ServerMsgs;
+    renegotiation_note?: string; renegotiation_note_msg?: ServerMsg;
     renegotiation?: { status: string; current_payment?: string; new_payment?: string; monthly_saving?: string; total_costs?: string; penalty?: string; net_saving?: string; break_even_months?: number | null; verdict?: string; notes?: string[] } };
   commitment: { state: string; start_date: string | null; years: number | null; end_date: string | null; effective_end_date: string | null; days_left?: number; months_left?: number; decision_needed?: boolean; extension: { decision: string } };
-  equity: { status: string; value?: Money; value_as_of?: string; value_warning?: string; outstanding?: Money; net_equity?: Money; loan_to_value_pct?: number; equity_share_pct?: number; missing?: string[]; notes?: string[]; approximate?: boolean };
+  equity: { status: string; value?: Money; value_as_of?: string; value_warning?: string; value_warning_msg?: ServerMsg; outstanding?: Money; net_equity?: Money; loan_to_value_pct?: number; equity_share_pct?: number;
+    missing?: string[]; missing_msg?: ServerMsgs; notes?: string[]; notes_msg?: ServerMsgs; approximate?: boolean };
 }

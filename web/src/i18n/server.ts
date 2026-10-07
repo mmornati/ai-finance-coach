@@ -20,7 +20,7 @@ export interface ServerMsg {
 
 /** The fixed vocabularies the server sends as codes (keys `labels.<family>.<code>` of server.json). */
 export type LabelFamily = "alertKind" | "subsGroup" | "balanceType" | "setupStep" | "onboardingStep" | "forecast" | "forecastFlag" | "accountPurpose" | "cadence" | "explainStep"
-  | "loanField" | "loanOption" | "loanVerdict";
+  | "loanField" | "loanOption" | "loanVerdict" | "rentalDocument" | "rentalDocumentFrom";
 
 // untyped access: the codes come from the server at run time, so they cannot be checked against the key types
 const T = i18n as unknown as { exists: (k: string, o: object) => boolean; t: (k: string, o: object) => string };

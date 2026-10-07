@@ -54,9 +54,15 @@ const indicators = (o: object = {}) => ({
 let calls: { url: string; init?: RequestInit }[];
 let list: object;
 let det: object;
+let disc: object | undefined;
+let taxBody: object | undefined;
+let indBody: object | undefined;
 beforeEach(() => {
   resetCsrfForTests();
   calls = [];
+  disc = undefined;
+  taxBody = undefined;
+  indBody = undefined;
   list = { as_of: "2026-10-04", properties: [row()], unlinked_rental_accounts: [], property_categories: [] };
   det = detail();
   vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
@@ -64,8 +70,10 @@ beforeEach(() => {
     const path = url.split("?")[0];
     let body: unknown = {};
     if (path.endsWith("/session")) body = { csrf_token: "tok" };
+    else if (path === "/api/v1/meta/disclaimers") body = disc ?? {};
     else if (path === "/api/v1/rental/properties") body = list;
-    else if (path === "/api/v1/rental/rental-flat-1/tax") body = tax();
+    else if (path === "/api/v1/rental/rental-flat-1/tax") body = taxBody ?? tax();
+    else if (path === "/api/v1/rental/rental-flat-1/indicators" && indBody) body = indBody;
     else if (path === "/api/v1/rental/rental-flat-1/indicators") {
       const q = new URLSearchParams(url.split("?")[1] ?? "");
       body = q.get("market_rate")
@@ -227,5 +235,67 @@ describe("rental property: translations", () => {
     await userEvent.click(screen.getByRole("button", { name: /Anno fiscale/ }));
     expect(await screen.findByText("Micro-foncier")).toBeInTheDocument();
     expect(screen.getByText("Regime réel")).toBeInTheDocument();
+  });
+
+  // the server's sentences come as codes + params (server.json); the legal texts by KEY, their wording from GET /meta/disclaimers (invented here)
+  const msg = (code: string, text: string, params: object = {}) => ({ code, params, text });
+  const frDisclaimers = { lang: "fr", texts: { ai_label: "x", ai_label_short: "x", general_advice: "AVIS-GENERAL-FR", loan: "AVIS-PRET-FR", tax: "AVIS-FISCAL-FR" } };
+
+  it("translates the tax year's lines, notes and documents, and shows the tax disclaimer of the interface language", async () => {
+    await setLanguage("fr");
+    disc = frDisclaimers;
+    taxBody = tax({
+      disclaimer_key: "tax",
+      reel: { gross_rents: "3720.00", deductible: [{ item: "property tax", amount: "800.00", source: "bank flows (housing.property_tax)", bound: "upper bound: x",
+        item_msg: msg("rental.tax.item.propertyTax", "property tax"), source_msg: msg("rental.tax.source.bankFlows", "bank flows (housing.property_tax)", { categories: "housing.property_tax" }),
+        bound_msg: msg("rental.tax.bound.propertyTax", "upper bound: x") }], total_deductible: "800.00", net: "2920.00", unknown: [], not_deductible: [] },
+      notes: ["2026 is not over: only its closed months are counted"], notes_msg: [msg("rental.tax.note.yearInProgress", "2026 is not over: only its closed months are counted", { year: 2026 })],
+    });
+    renderApp(<Rental />);
+    await userEvent.click(await screen.findByRole("button", { name: /Année fiscale/ }));
+    expect(await screen.findByText(/AVIS-FISCAL-FR/)).toBeInTheDocument();
+    expect(screen.queryByText(/Not tax advice/)).not.toBeInTheDocument();                       // the English fixed text is not shown
+    expect(screen.getByText(/^− Taxe foncière/)).toBeInTheDocument();
+    expect(screen.getByText(/la taxe d'enlèvement des ordures ménagères/)).toBeInTheDocument();
+    expect(screen.getByText("2026 n'est pas terminée : seuls ses mois clos sont comptés.")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /Le ou les baux de l'année/ })).toBeInTheDocument();   // the document by its id
+  });
+
+  it("translates the readings and adds the general-advice line and the loan disclaimer in the interface language", async () => {
+    await setLanguage("fr");
+    disc = frDisclaimers;
+    const ending = "the commitment ends in about 5 month(s) (2027-03-04): extend ...";
+    indBody = indicators({
+      disclaimer_key: "loan",
+      signals: [{ id: "commitment_ending", reading: `${ending} This is general information, not financial advice.`,
+        reading_msg: { ...msg("rental.signal.commitmentEnding", ending, { count: 5, end_date: "2027-03-04" }), disclaimer: "general_advice" } }],
+      market_rate: { status: "missing", note: "enter the current market rate", note_msg: msg("rental.market.missing", "enter the current market rate") },
+      scenarios: ["x"], scenarios_msg: [msg("rental.scenario.prepay", "x")],
+    });
+    renderApp(<Rental />);
+    await userEvent.click(await screen.findByRole("button", { name: /Renégocier ou vendre/ }));
+    expect(await screen.findByText(/^L'engagement se termine dans environ 5 mois .* AVIS-GENERAL-FR$/)).toBeInTheDocument();
+    expect(screen.getByText(/^Saisissez le taux actuel du marché/)).toBeInTheDocument();
+    expect(screen.getByText(/un remboursement anticipé sur l'échéancier exact/)).toBeInTheDocument();
+    expect(screen.getByText("AVIS-PRET-FR")).toBeInTheDocument();
+    expect(screen.queryByText(/not financial advice/)).not.toBeInTheDocument();
+  });
+
+  it("keeps the English reading, with its general-advice line, until the disclaimers are known", async () => {
+    const t = "the loan rate is 0.80 point(s) above the market rate you entered: a quote may be worth asking for.";
+    indBody = indicators({ signals: [{ id: "rate_above_market", reading: `${t} This is general information, not financial advice.`,
+      reading_msg: { ...msg("rental.rate.above", t, { gap: 0.8 }), disclaimer: "general_advice" } }] });
+    renderApp(<Rental />);
+    await userEvent.click(await screen.findByRole("button", { name: /Renegotiate or sell/ }));
+    expect(await screen.findByText(/a quote may be worth asking for\. This is general information, not financial advice\./)).toBeInTheDocument();
+  });
+
+  it("translates the missing facts of the scheme", async () => {
+    await setLanguage("it");
+    det = detail({ scheme: scheme({ missing: [{ field: "commitment.reduction_rate_pct", needed_for: "the scheme reduction candidate of the tax return",
+      needed_for_msg: msg("rental.need.reductionRate", "the scheme reduction candidate of the tax return") }] }) });
+    renderApp(<Rental />);
+    await userEvent.click(await screen.findByRole("button", { name: /Vincolo dell'agevolazione/ }));
+    expect(await screen.findByText("per l'importo candidato della riduzione d'imposta dell'agevolazione")).toBeInTheDocument();
   });
 });

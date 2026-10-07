@@ -21,13 +21,14 @@ import sys
 from typing import Optional
 
 from coach.analytics.common import money_str
+from coach.i18n_msg import strip_msgs
 from coach.loans.commands import _confirm, _ctx, _parse_sets, _store
 from coach.rental import cashflow as CF, indicators as IND, model as M, scheme as SC, service as RS, taxyear as TX
 from coach.rental.render import plain
 
 
 def _j(obj) -> str:
-    return json.dumps(plain(obj), ensure_ascii=False, indent=2, default=str)
+    return json.dumps(strip_msgs(plain(obj)), ensure_ascii=False, indent=2, default=str)       # *_msg: the web's only
 
 
 def _m(c) -> str:

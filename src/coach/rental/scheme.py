@@ -15,6 +15,7 @@ import datetime as dt
 from typing import Optional
 
 from coach.analytics.common import add_months, to_cents
+from coach.i18n_msg import server_msg
 
 COMMON_YEARS = (6, 9, 12)
 REMINDER_STEPS = (12, 6, 3)        # months before the end where a reminder is due (the first one is `rental_reminder_months`)
@@ -54,14 +55,26 @@ def whole_months(a: dt.date, b: dt.date) -> int:
     return m - (1 if b.day < a.day else 0)
 
 
+CAP_MONTHLY = "the monthly cap you declared"
+CAP_M2 = "the cap per m2 you declared x the surface you declared"
+RENT_DECLARED = "the lease rent you declared"
+RENT_OBSERVED = "the last rent received (it may be net of management fees: the cap applies to the lease rent)"
+# the web's messages of the texts above (i18n step 4, docs/i18n.md "Server text"): the English stays the field the CLI and the tools read
+BASIS_MSG = {CAP_MONTHLY: server_msg("rental.basis.capMonthly", CAP_MONTHLY), CAP_M2: server_msg("rental.basis.capPerM2", CAP_M2),
+             RENT_DECLARED: server_msg("rental.basis.rentDeclared", RENT_DECLARED),
+             RENT_OBSERVED: server_msg("rental.basis.rentObserved", RENT_OBSERVED)}
+END_SOURCE_MSG = {"declared": server_msg("rental.scheme.endDeclared", "declared"),
+                  "start + years": server_msg("rental.scheme.endComputed", "start + years")}
+
+
 def rent_cap_c(prop) -> tuple[Optional[int], Optional[str]]:
     com = prop.commitment
     if com is None:
         return None, None
     if com.rent_cap_monthly is not None:
-        return to_cents(com.rent_cap_monthly), "the monthly cap you declared"
+        return to_cents(com.rent_cap_monthly), CAP_MONTHLY
     if com.rent_cap_m2 is not None and com.surface_m2:
-        return to_cents(com.rent_cap_m2 * com.surface_m2), "the cap per m2 you declared x the surface you declared"
+        return to_cents(com.rent_cap_m2 * com.surface_m2), CAP_M2
     return None, None
 
 
@@ -70,22 +83,31 @@ def missing_facts(prop) -> list[dict]:
     a, com = prop.asset, prop.commitment
     out: list[dict] = []
 
-    def need(field: str, why: str, ok: bool) -> None:
+    def need(field: str, why: str, ok: bool, msg: dict) -> None:
         if not ok:
-            out.append({"field": field, "needed_for": why})
-    need("account", "the property's bank account (its flows, the P&L)", prop.account_link in ("declared", "only_one"))
-    need("loan", "the loan that financed it (interest, outstanding capital, equity)", bool(prop.loans))
-    need("value", "valuation for the net equity (the latest value you believe, with as_of)", getattr(a, "value", None) is not None)
-    need("rent_monthly", "the expected rent (vacancy and rent cap checks)", bool(getattr(a, "rent_monthly", None)))
-    need("purchase_price", "the figures of the tax return and the scheme reduction", getattr(a, "purchase_price", None) is not None)
-    need("purchase_date", "the figures of the tax return and the scheme reduction", getattr(a, "purchase_date", None) is not None)
+            out.append({"field": field, "needed_for": why, "needed_for_msg": msg})
+    purchase = "the figures of the tax return and the scheme reduction"
+    need("account", (t := "the property's bank account (its flows, the P&L)"), prop.account_link in ("declared", "only_one"),
+         server_msg("rental.need.account", t))
+    need("loan", (t := "the loan that financed it (interest, outstanding capital, equity)"), bool(prop.loans), server_msg("rental.need.loan", t))
+    need("value", (t := "valuation for the net equity (the latest value you believe, with as_of)"), getattr(a, "value", None) is not None,
+         server_msg("rental.need.value", t))
+    need("rent_monthly", (t := "the expected rent (vacancy and rent cap checks)"), bool(getattr(a, "rent_monthly", None)),
+         server_msg("rental.need.rentMonthly", t))
+    need("purchase_price", purchase, getattr(a, "purchase_price", None) is not None, server_msg("rental.need.purchase", purchase))
+    need("purchase_date", purchase, getattr(a, "purchase_date", None) is not None, server_msg("rental.need.purchase", purchase))
     if declared(prop):
-        need("commitment.start_date", "the end date of the commitment and its reminders", bool(com and com.start_date))
-        need("commitment.years", "the end date of the commitment (6, 9 or 12 for a Pinel-type scheme)", years_of(prop) is not None)
+        need("commitment.start_date", (t := "the end date of the commitment and its reminders"), bool(com and com.start_date),
+             server_msg("rental.need.commitmentStart", t))
+        need("commitment.years", (t := "the end date of the commitment (6, 9 or 12 for a Pinel-type scheme)"), years_of(prop) is not None,
+             server_msg("rental.need.commitmentYears", t))
         cap, _ = rent_cap_c(prop)
-        need("commitment.rent_cap_monthly (or rent_cap_m2 and surface_m2)", "the rent cap check", cap is not None)
-        need("commitment.tenant_income_limit", "the tenant income check", bool(com and com.tenant_income_limit is not None))
-        need("commitment.reduction_rate_pct", "the scheme reduction candidate of the tax return", bool(com and com.reduction_rate_pct is not None))
+        need("commitment.rent_cap_monthly (or rent_cap_m2 and surface_m2)", (t := "the rent cap check"), cap is not None,
+             server_msg("rental.need.rentCap", t))
+        need("commitment.tenant_income_limit", (t := "the tenant income check"), bool(com and com.tenant_income_limit is not None),
+             server_msg("rental.need.tenantIncome", t))
+        need("commitment.reduction_rate_pct", (t := "the scheme reduction candidate of the tax return"),
+             bool(com and com.reduction_rate_pct is not None), server_msg("rental.need.reductionRate", t))
     return out
 
 
@@ -97,8 +119,12 @@ def status(ds, prop, reminder_months: int = 12, observed_rent_c: Optional[int] =
     out: dict = {"declared": declared(prop), "scheme": getattr(a, "scheme", None), "start_date": d["start"], "years": d["years"],
                  "end_date": d["end"], "end_source": d["end_source"] if d["end"] else None, "effective_end_date": d["effective_end"],
                  "state": "unknown", "missing": missing_facts(prop)}
+    if d["end"]:
+        out["end_source_msg"] = END_SOURCE_MSG[out["end_source"]]
     if d["years"] and d["years"] not in COMMON_YEARS and str(getattr(a, "scheme", "") or "").lower().startswith("pinel"):
-        out["warnings"] = [f"a Pinel-type commitment is usually 6, 9 or 12 years: {d['years']} was recorded, check the deed"]
+        w = f"a Pinel-type commitment is usually 6, 9 or 12 years: {d['years']} was recorded, check the deed"
+        out["warnings"] = [w]
+        out["warnings_msg"] = [server_msg("rental.scheme.pinelYears", w, years=d["years"])]
     ext = d["extension"]
     out["extension"] = ({"decision": ext.decision, "years": ext.years, "additional_rate_pct": ext.additional_rate_pct,
                          "decided_on": ext.decided_on, "note_recorded": bool(ext.note)} if ext else {"decision": "undecided"})
@@ -125,10 +151,9 @@ def status(ds, prop, reminder_months: int = 12, observed_rent_c: Optional[int] =
         out["next_reminder_date"] = next((r["date"] for r in sorted(rem, key=lambda r: r["date"]) if r["date"] > today), None)
     cap, cap_src = rent_cap_c(prop)
     rent_decl = to_cents(a.rent_monthly) if getattr(a, "rent_monthly", None) else None
-    rent_c, rent_src = (rent_decl, "the lease rent you declared") if rent_decl else (
-        (observed_rent_c, "the last rent received (it may be net of management fees: the cap applies to the lease rent)")
-        if observed_rent_c else (None, None))
-    rc: dict = {"cap_c": cap, "cap_basis": cap_src, "rent_c": rent_c, "rent_basis": rent_src, "status": "unknown"}
+    rent_c, rent_src = (rent_decl, RENT_DECLARED) if rent_decl else ((observed_rent_c, RENT_OBSERVED) if observed_rent_c else (None, None))
+    rc: dict = {"cap_c": cap, "cap_basis": cap_src, "rent_c": rent_c, "rent_basis": rent_src, "status": "unknown",
+                "cap_basis_msg": BASIS_MSG.get(cap_src), "rent_basis_msg": BASIS_MSG.get(rent_src)}
     if cap is not None and rent_c is not None:
         rc["gap_c"] = rent_c - cap
         rc["status"] = "above_cap" if rent_c > cap else "within_cap"
