@@ -22,8 +22,11 @@ export interface FiltersMeta {
 }
 export interface Taxonomy { groups: { id: string; categories: { id: string; description: string }[] }[] }
 
+/** A sentence of the server with its code and raw params (i18n step 4): render it with `tServer` from "@/i18n/server". */
+import type { ServerMsg } from "@/i18n/server";
+export type { ServerMsg };
 export interface BalanceRow { uid: string; label: string; bank: string | null; owner: string | null; purpose: string | null; balance: Money | null; balance_type: string | null; balance_type_label: string | null; booked: boolean; as_of: string | null; age_days: number | null; stale: boolean }
-export interface Balances { as_of: string; household_total: Money; n_accounts: number; n_without_balance: number; mixed_types: boolean; non_booked: string[]; accounts: BalanceRow[]; note: string }
+export interface Balances { as_of: string; household_total: Money; n_accounts: number; n_without_balance: number; mixed_types: boolean; non_booked: string[]; accounts: BalanceRow[]; note: string; note_msg?: ServerMsg }
 
 export interface Coverage { rule: string; months: string[]; n_months: number; accounts: { uid: string; label: string }[]; skipped_months: string[]; partial_current_month: string | null; notes: string[] }
 
@@ -179,8 +182,10 @@ export interface CalendarResult { as_of: string; days: number; items: CalendarIt
 
 export interface Anomaly { id: string; type: string; severity: string; subject: string; period: string; amount: Money; baseline: Money | null; message: string; evidence: string[]; accounts: string[]; dismissed: boolean }
 export interface InsightCard { id: string; kind: "anomaly" | "price_change" | "forecast" | "budget" | "subscription" | "loan" | "rental"; subtype: string; severity: "high" | "medium" | "low"; title: string; body: string; amount: Money | null; date: string | null; subject: string; evidence: string[]; persist: string; snoozed_until?: string | null }
-export interface CoachInsight { id: string; created: string; kind: string; title: string; body: string; findings: unknown[]; evidence: string[]; skill: string | null; backend: string | null; model: string | null; usage_ref: number | null; status: "new" | "read" | "dismissed" | "done" | "snoozed"; snoozed_until: string | null; unverified_numbers: string[]; suspicious: boolean; question: string | null; ai_generated?: boolean; ai_label?: string | null; compliance?: string[]; compliance_banner?: string | null }
+export interface CoachInsight { id: string; created: string; kind: string; title: string; body: string; findings: unknown[]; evidence: string[]; skill: string | null; backend: string | null; model: string | null; usage_ref: number | null; status: "new" | "read" | "dismissed" | "done" | "snoozed"; snoozed_until: string | null; unverified_numbers: string[]; suspicious: boolean; question: string | null; ai_generated?: boolean; ai_label?: string | null; ai_label_short?: string | null; compliance?: string[]; compliance_banner?: string | null }
 /** E11-5: the AI-generated label and the investment-advice check of a coach answer. */
+/** GET /meta/disclaimers: the legal labels in one language (their wording lives only in src/coach/disclaimers.py). */
+export interface Disclaimers { lang: string; texts: { ai_label: string; ai_label_short: string } }
 export interface Compliance { label: string; label_short: string; lang: string; flagged: boolean; codes: string[]; banner: string }
 export interface Insights { as_of: string; cards: InsightCard[]; hidden: number; alerts?: { open: number; high: number }; counts: Record<string, number>; coach: { configured: boolean; items: CoachInsight[]; hidden: number; message: string } }
 export interface CoachStatus { configured: boolean; backend: string; model: string; message: string; max_tool_calls: number; timeout_seconds: number; busy: boolean; current_job: string | null; tools: string[] }

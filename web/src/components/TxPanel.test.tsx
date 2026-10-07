@@ -47,7 +47,7 @@ describe("category fix panel", () => {
   it("previews what will really change and writes only on Apply, with the same scope", async () => {
     const onClose = await open();
     expect(await screen.findByTestId("effect")).toHaveTextContent("3 transactions will change to Pets");
-    expect(screen.getByText(/Currently: Marketplace ×3/)).toBeInTheDocument();
+    expect(screen.getByText(/Currently: Online marketplaces ×3/)).toBeInTheDocument();
     expect(JSON.parse(previews().at(-1)!.init!.body as string)).toMatchObject({ tx_key: "a:ref:1", category: "pets.pets", scope: "merchant" });
     expect(writes()).toHaveLength(0);
     const apply = screen.getByRole("button", { name: "Apply" });

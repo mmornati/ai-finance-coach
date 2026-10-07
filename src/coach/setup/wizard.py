@@ -30,6 +30,7 @@ from coach.setup import doctor as doctor_mod, eb_guide, init as init_mod
 
 STATE_NAME = "setup-state.json"
 STEPS = ("init", "enablebanking", "connect", "sync", "classify", "onboarding", "schedule")
+# the web shows labels.setupStep.<step> (web/src/locales/<lang>/server.json); this English title is the fallback and the CLI's
 TITLES = {
     "init": "Home, secrets and encrypted database",
     "enablebanking": "Your Enable Banking application",

@@ -41,6 +41,14 @@ def test_health_coverage_balances(ctx):
     assert by["fo"]["balance"] == "1500.00" and by["rl"]["balance"] is None and b["n_without_balance"] == 1
     kids = ctx.get("/accounts/balances", owner="mia").json()
     assert [a["uid"] for a in kids["accounts"]] == ["rl"]
+    assert b["note_msg"]["code"] == "balances.oneBalance" and b["note_msg"]["text"] == b["note"]   # i18n step 4: code + English text
+
+
+def test_meta_disclaimers_in_the_asked_language(ctx):
+    fr = ctx.get("/meta/disclaimers", lang="fr").json()
+    assert fr["lang"] == "fr" and fr["texts"]["ai_label_short"] == "Généré par IA" and "IA" in fr["texts"]["ai_label"]
+    en = ctx.get("/meta/disclaimers", lang="xx").json()                     # an unknown language: English
+    assert en["lang"] == "en" and en["texts"]["ai_label_short"] == "AI-generated" and set(en["texts"]) == {"ai_label", "ai_label_short"}
 
 
 # ====================================================================== analytics
@@ -57,6 +65,7 @@ def test_cashflow_averages_forecast(ctx):
     assert ctx.get("/analytics/month-categories").json()["partial"] is True
     fc = ctx.get("/analytics/forecast", days=60).json()
     assert fc["horizon_days"] == 60 and len(fc["household"]["points"]) >= 60 and fc["household"]["start_balance"] == "5700.00"
+    assert fc["household"]["account"] is None and "accounts_without_balance:1" in fc["household"]["flags"]   # a code flag, the count after ':'
     assert ctx.get("/analytics/forecast", days=3).status_code == 422
 
 

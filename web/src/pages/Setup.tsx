@@ -7,6 +7,7 @@ import { Async, Badge, Button, Card, DiffView, Field, Input, Notice, PageHeader,
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
+import { serverLabel } from "@/i18n/server";
 import type { EditResult, Onboarding, OnboardingStep, WizardStatus } from "@/api/types";
 
 const LINKS: Record<OnboardingStep["id"], { to: string; label: ParseKeys<"setup"> }> = {
@@ -52,7 +53,7 @@ function FirstRun() {
         {d.steps.map((s) => (
           <li key={s.id} className="flex flex-wrap items-center gap-2">
             <Badge tone={WIZARD_TONE[s.status]}>{t(`status.${s.status}`)}</Badge>
-            <span>{s.title}{s.optional ? t("firstRun.optional") : ""}</span>
+            <span>{serverLabel("setupStep", s.id, s.title)}{s.optional ? t("firstRun.optional") : ""}</span>
             {s.detail && <span className="text-muted">{s.detail}</span>}
           </li>
         ))}
@@ -108,7 +109,7 @@ function StepCard({ s, cmd, declared }: { s: OnboardingStep; cmd: { do: string; 
     <Card>
       <div className="flex flex-wrap items-center gap-2">
         {ICON[s.status]}
-        <h2 className="text-[15px] font-semibold">{s.heading}</h2>
+        <h2 className="text-[15px] font-semibold">{serverLabel("onboardingStep", s.id, s.heading)}</h2>
         <Badge tone={TONE[s.status]}>{t(`status.${s.status}`)}</Badge>
         <Link to={link.to} className="ml-auto text-sm text-accent hover:underline">{t(link.label)}</Link>
       </div>

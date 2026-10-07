@@ -22,6 +22,7 @@ beforeEach(() => {
     if (url.endsWith("/session")) body = { csrf_token: "tok" };
     else if (url.endsWith("/insights")) body = { as_of: "2026-10-04", cards, hidden: 0, counts: { loan: cards.length }, coach: { configured: true, items, hidden: 0, message: "" } };
     else if (url.endsWith("/coach/resolve")) body = { refs: { [REF]: { kind: "transaction", tx_key: "real-key-1", date: "2026-09-27", amount: "-1200.00", category: "shopping.electronics", merchant: "Big shop" } } };
+    else if (url.includes("/meta/disclaimers")) body = { lang: "en", texts: { ai_label: "AI-generated content: it can contain mistakes.", ai_label_short: "AI-generated" } };
     return new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } });
   }));
 });
@@ -107,10 +108,18 @@ describe("E11-5: insights from the coach carry the AI label and the advice banne
       coachItem({ id: "cin_3", title: "Where to put savings", ai_generated: true, compliance: ["recommendation"], compliance_banner: "General information only, not personalised investment advice (FR: AMF / CIF; IT: Consob)." })];
     renderApp(<Insights />);
     const flagged = (await screen.findByText("Where to put savings")).closest("section")!;
-    expect(within(flagged).getByText("AI-generated")).toBeInTheDocument();
+    expect(await within(flagged).findByText("AI-generated")).toBeInTheDocument();
     expect(within(flagged).getByTestId("compliance-banner")).toHaveTextContent(/AMF \/ CIF/);
     const clean = screen.getByText("Weekly digest 2026-10-04").closest("section")!;
     expect(within(clean).getByText("AI-generated")).toHaveAttribute("title", expect.stringContaining("can contain mistakes"));
     expect(within(clean).queryByTestId("compliance-banner")).toBeNull();
+    expect(calls.some((c) => c.url === "/api/v1/meta/disclaimers?lang=en")).toBe(true);      // the wording comes from the server, in the interface language
+  });
+
+  it("prefers the label the server wrote in the answer's language", async () => {
+    items = [coachItem({ ai_generated: true, ai_label: "Contenu généré par une IA : il peut contenir des erreurs.", ai_label_short: "Généré par IA" })];
+    renderApp(<Insights />);
+    const card = (await screen.findByText("Weekly digest 2026-10-04")).closest("section")!;
+    expect(within(card).getByText("Généré par IA")).toHaveAttribute("title", expect.stringContaining("Contenu généré"));
   });
 });

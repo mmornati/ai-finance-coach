@@ -1,0 +1,152 @@
+{
+  "group": {
+    "income": "Income",
+    "transfer": "Transfer",
+    "housing": "Housing",
+    "food": "Food",
+    "transport": "Transport",
+    "shopping": "Shopping",
+    "health": "Health",
+    "personal_care": "Personal care",
+    "leisure": "Leisure",
+    "subscriptions": "Subscriptions",
+    "travel": "Travel",
+    "kids": "Kids",
+    "education": "Education",
+    "insurance": "Insurance",
+    "pets": "Pets",
+    "debt": "Debt",
+    "cash": "Cash",
+    "fees": "Fees",
+    "taxes": "Taxes",
+    "charity": "Charity",
+    "other": "Other"
+  },
+  "cat": {
+    "income": {
+      "salary": "Salary",
+      "refund": "Refunds",
+      "bonus": "Bonuses and rewards",
+      "gift": "Gifts received",
+      "interest": "Interest and dividends",
+      "rental": "Rent received",
+      "other": "Other"
+    },
+    "transfer": {
+      "internal": "Internal",
+      "to_people": "To people",
+      "from_people": "From people"
+    },
+    "housing": {
+      "mortgage": "Mortgage",
+      "rent": "Rent",
+      "energy": "Electricity and gas",
+      "water": "Water",
+      "home_insurance": "Home insurance",
+      "maintenance_diy": "DIY and repairs",
+      "renovation": "Renovation works",
+      "furniture": "Furniture and appliances",
+      "property_charges": "Property charges",
+      "rental_property_loan": "Rental property loan",
+      "property_tax": "Property tax",
+      "property_management": "Property management",
+      "property_insurance": "Landlord insurance"
+    },
+    "food": {
+      "groceries": "Groceries",
+      "restaurants": "Restaurants",
+      "fast_food": "Fast food",
+      "cafes_bars": "Cafés and bars",
+      "food_delivery": "Food delivery",
+      "work_meals": "Work meals"
+    },
+    "transport": {
+      "fuel": "Fuel and charging",
+      "parking_tolls": "Parking and tolls",
+      "public_transport": "Public transport",
+      "taxi_rideshare": "Taxi and ride-hailing",
+      "car_maintenance": "Car maintenance",
+      "car_loan_lease": "Car loan and lease",
+      "car_insurance": "Car insurance"
+    },
+    "shopping": {
+      "marketplace": "Online marketplaces",
+      "clothing": "Clothing",
+      "electronics": "Electronics",
+      "sports_gear": "Sports gear",
+      "books_media": "Books, music and games",
+      "gifts_flowers": "Gifts and flowers",
+      "tobacco_press": "Tobacco and newsagents",
+      "department_general": "Department stores"
+    },
+    "health": {
+      "pharmacy": "Pharmacy",
+      "doctors": "Doctors and care",
+      "health_insurance": "Health insurance",
+      "optician": "Optician"
+    },
+    "personal_care": {
+      "hair_beauty": "Hair and beauty"
+    },
+    "leisure": {
+      "cinema_events": "Cinema and events",
+      "sports_activities": "Sports and activities",
+      "hobbies": "Hobbies"
+    },
+    "subscriptions": {
+      "video_streaming": "Video streaming",
+      "music_streaming": "Music streaming",
+      "software_cloud": "Software and cloud",
+      "telecom": "Phone and internet",
+      "news_media": "News and magazines",
+      "memberships": "Memberships"
+    },
+    "travel": {
+      "lodging": "Lodging",
+      "flights": "Flights",
+      "trains": "Trains",
+      "car_rental": "Car rental",
+      "activities": "Activities"
+    },
+    "kids": {
+      "childcare": "Childcare",
+      "school": "School",
+      "activities_toys": "Activities and toys"
+    },
+    "education": {
+      "courses": "Courses and training"
+    },
+    "insurance": {
+      "life": "Life insurance",
+      "borrower": "Borrower insurance",
+      "pet": "Pet insurance",
+      "other": "Other insurance"
+    },
+    "pets": {
+      "pets": "Pets"
+    },
+    "debt": {
+      "bnpl": "Buy now, pay later",
+      "personal_loan": "Personal loan",
+      "loan_repayment": "Loan repayment",
+      "credit_card": "Credit card"
+    },
+    "cash": {
+      "atm_withdrawal": "Cash withdrawals"
+    },
+    "fees": {
+      "bank_fees": "Bank fees"
+    },
+    "taxes": {
+      "taxes": "Taxes"
+    },
+    "charity": {
+      "donations": "Donations"
+    },
+    "other": {
+      "uncategorized": "Uncategorized"
+    }
+  },
+  "withGroup": "{{group}}: {{leaf}}",
+  "allOfGroup": "all {{group}}"
+}

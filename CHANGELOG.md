@@ -5,6 +5,17 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4a (see `docs/i18n.md`, "Server text")
+- Server text the web translates: next to an English sentence the API can send `<field>_msg` = `{code, params, text}` (built by `coach.i18n_msg.server_msg`, raw params typed by their name:
+  `*_date`, `*_month`, `*_amount`, `*_pct`, `*_category`, `*_group`, `count`); the web renders it with `tServer()` (new namespace `server`) and falls back to the English text. The CLI, the MCP finance tools and the stored rows keep the English.
+  First use: the balances note of the Dashboard.
+- Fixed vocabularies sent as codes are named in the interface language: alert kinds, subscription groups, balance types, the first-run wizard steps, the onboarding steps, account purposes, the household line of the forecast,
+  and the kinds of assets, loans and contracts in Memory and Wealth.
+- Category and group names are translated by id (new namespace `taxonomy`, every group and leaf of the built-in taxonomy); a custom leaf keeps its title-cased id. A few English names changed too ("Electricity and gas", "Online marketplaces", ...).
+- API errors are shown in the interface language for the generic codes (session, CSRF, rate limit, not found, validation, migration pending...); a domain rule keeps the server's own message.
+- `GET /meta/disclaimers?lang=` returns the AI-generated label in one language (its wording still lives only in `src/coach/disclaimers.py`); the web no longer copies it, and a coach insight carries `ai_label_short`.
+- The forecast flag "N account(s) without balance left out" is now the code `accounts_without_balance:N` (the MCP `forecast` / `what_if` output shows the code; the insight id of a household forecast card changes once).
+
 ### Added: multi-language web app, part 3 of 5 (see `docs/i18n.md`)
 - Translated into French and Italian: the pages Alerts, Loans & net worth, Rental property, Memory, Set up, Connections, Household, Who pays what, Kids' money, the child's home page, Gold set and AI usage
   (namespaces `alerts`, `wealth`, `rental`, `memory`, `setup`, `connections`, `household`, `kids`, `quality`). Text sent by the server, the `coach ...` commands and the legal terms of a rental scheme stay as they are.

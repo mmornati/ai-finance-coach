@@ -1,0 +1,103 @@
+{
+  "balances": {
+    "oneBalance": "Un solde par compte, le type le plus comptabilisé que fournit la banque.",
+    "mixedTypes_one": "Un solde par compte, le type le plus comptabilisé que fournit la banque. {{count}} compte ne donne qu'un solde non comptabilisé ({{accounts}}) : le total mélange les types.",
+    "mixedTypes_many": "Un solde par compte, le type le plus comptabilisé que fournit la banque. {{count}} comptes ne donnent qu'un solde non comptabilisé ({{accounts}}) : le total mélange les types.",
+    "mixedTypes_other": "Un solde par compte, le type le plus comptabilisé que fournit la banque. {{count}} comptes ne donnent qu'un solde non comptabilisé ({{accounts}}) : le total mélange les types."
+  },
+  "labels": {
+    "alertKind": {
+      "consent": "Consentement bancaire expiré ou bientôt expiré",
+      "sync_failing": "Synchronisation bancaire en échec",
+      "unusual_charge": "Prélèvement inhabituel",
+      "price_increase": "Hausse de prix",
+      "low_balance": "Solde prévu insuffisant",
+      "budget": "Budget dépassé ou menacé",
+      "loan_alert": "Alerte sur une échéance de prêt",
+      "loa_end": "Rappel de fin de location",
+      "unused_subscription": "Abonnement inutilisé",
+      "contract_notice": "Date limite de préavis d'un contrat",
+      "decision_contradicted": "Service résilié toujours prélevé",
+      "llm_usage_high": "Usage de l'IA au-dessus de votre seuil mensuel",
+      "scheme_end": "Fin d'engagement du dispositif locatif",
+      "scheme_check": "Condition du dispositif locatif à vérifier",
+      "rent_missing": "Loyer non reçu",
+      "kid_budget": "Limite du budget d'un enfant"
+    },
+    "subsGroup": {
+      "streaming_media": "Streaming et médias",
+      "software_cloud": "Logiciels et cloud",
+      "telecom": "Télécoms",
+      "memberships": "Adhésions",
+      "other_subscriptions": "Autres abonnements",
+      "insurance": "Assurances",
+      "energy_utilities": "Énergie et eau"
+    },
+    "balanceType": {
+      "CLBD": "comptabilisé",
+      "ITBD": "comptabilisé (provisoire)",
+      "XPCD": "prévisionnel",
+      "CLAV": "disponible (clôture)",
+      "ITAV": "disponible (provisoire)",
+      "OPBD": "comptabilisé (ouverture)",
+      "OPAV": "disponible (ouverture)",
+      "FWAV": "disponible à terme"
+    },
+    "setupStep": {
+      "init": "Dossier, secrets et base de données chiffrée",
+      "enablebanking": "Votre application Enable Banking",
+      "connect": "Connecter votre première banque",
+      "sync": "Première synchronisation (historique le plus long)",
+      "classify": "Normaliser et catégoriser (choix de confidentialité)",
+      "onboarding": "Entretien de démarrage",
+      "schedule": "Tâche quotidienne et alertes (facultatif)"
+    },
+    "onboardingStep": {
+      "household": "Foyer et déclarations de confidentialité",
+      "accounts": "Comptes : titulaire et usage",
+      "loans": "Prêts et crédit immobilier (champs dont mortgage-check a besoin)",
+      "contracts": "Contrats derrière les paiements récurrents",
+      "preferences": "Préférences et objectifs",
+      "budgets": "Budgets",
+      "questions": "Questions ouvertes"
+    },
+    "forecast": {
+      "household": "Foyer",
+      "accountUnresolved": "(compte non identifié)"
+    },
+    "forecastFlag": {
+      "no_variable_history": "pas d'historique de dépenses variables",
+      "no_balance": "pas de solde",
+      "balance_stale": "solde ancien",
+      "projected_negative": "passage sous zéro prévu",
+      "at_risk": "risque de découvert",
+      "accounts_without_balance_one": "{{count}} compte sans solde laissé de côté",
+      "accounts_without_balance_many": "{{count}} comptes sans solde laissés de côté",
+      "accounts_without_balance_other": "{{count}} comptes sans solde laissés de côté"
+    },
+    "accountPurpose": {
+      "main": "Courant",
+      "cards": "Cartes",
+      "rental": "Location",
+      "kids": "Enfants",
+      "savings": "Épargne"
+    }
+  },
+  "error": {
+    "unauthorized": "Vous n'êtes pas connecté : ouvrez le lien de connexion à usage unique affiché par `coach ui`.",
+    "invalid_login_token": "Ce lien de connexion est invalide, déjà utilisé ou expiré : lancez `coach ui --login-link` dans votre terminal pour en obtenir un nouveau.",
+    "csrf": "La page n'est plus à jour : rechargez-la et réessayez.",
+    "rate_limited": "Trop de tentatives en peu de temps : patientez un instant puis réessayez.",
+    "forbidden": "Cette requête a été refusée.",
+    "forbidden_scope": "Cette connexion ne peut voir que ses propres données.",
+    "bad_host": "Ce nom d'hôte n'est pas autorisé.",
+    "unsupported_media_type": "La requête n'a pas été envoyée en JSON.",
+    "method_not_allowed": "Cette action n'est pas disponible ici.",
+    "not_found": "Introuvable : l'élément a peut-être été supprimé ou modifié. Rechargez la page.",
+    "validation_error": "Certaines valeurs ne sont pas valides : vérifiez le formulaire.",
+    "migration_pending": "La base de données doit être mise à jour : lancez `coach db migrate` dans votre terminal.",
+    "alerts_disabled": "Les alertes sont désactivées ([alerts] enabled = false dans config.toml).",
+    "coach_busy": "Le coach répond déjà à une question : attendez qu'il ait terminé.",
+    "internal_error": "Erreur inattendue : consultez le terminal où tourne `coach ui`."
+  }
+}

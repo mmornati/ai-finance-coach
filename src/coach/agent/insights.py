@@ -68,6 +68,7 @@ def _row(r) -> dict:
     d["ai_generated"] = bool(d["ai_generated"])
     lang = compliance.detect_lang(d.get("body") or "")
     d["ai_label"] = compliance.label(lang) if d["ai_generated"] else None
+    d["ai_label_short"] = compliance.label(lang, short=True) if d["ai_generated"] else None
     d["compliance_banner"] = compliance.banner(d["compliance"], lang) if d["compliance"] else None
     return d
 

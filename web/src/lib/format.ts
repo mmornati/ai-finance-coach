@@ -1,6 +1,7 @@
 // Presentation only: the API sends money as decimal strings ("-12.34") computed by the Python analytics; these helpers
 // parse them for display and charts and format them for the chosen locale. Nothing here computes a business figure.
 
+import i18next from "i18next";
 import { LOCALES, type Locale } from "@/i18n/languages";
 
 // The dates-and-numbers locale follows the interface language (src/i18n/languages.ts lists each language with the locale it implies).
@@ -148,21 +149,39 @@ export function tone(v: string | number | null | undefined): "pos" | "neg" | "ze
   return n > 0 ? "pos" : "neg";
 }
 
-const CAT_NAMES: Record<string, string> = {};
-/** "food.groceries" -> "Groceries" (the id is the source of truth; the label is for reading). */
-export function catLabel(id: string | null | undefined): string {
-  if (!id) return "–";
-  if (CAT_NAMES[id]) return CAT_NAMES[id];
-  const [group, ...rest] = id.split(".");
-  const leaf = rest.length ? rest.join(" ") : group;
-  const s = leaf.replace(/_/g, " ");
-  const label = s.charAt(0).toUpperCase() + s.slice(1);
-  // "internal" or "salary" alone say nothing: income and transfers keep their group in front
-  return rest.length && (group === "transfer" || group === "income") ? `${group.charAt(0).toUpperCase() + group.slice(1)}: ${s}` : label;
+/** A key of the `taxonomy` namespace (src/locales/<lang>/taxonomy.json) in the current language, or null when it has none (a custom leaf). */
+function taxonomyText(key: string, vars?: Record<string, string>): string | null {
+  const t = i18next as unknown as { exists: (k: string, o: object) => boolean; t: (k: string, o: object) => string };
+  return t.exists(key, { ns: "taxonomy" }) ? t.t(key, { ns: "taxonomy", ...vars }) : null;
 }
-export function groupLabel(id: string): string {
+function titleCase(id: string): string {
   const s = id.replace(/_/g, " ");
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+function lowerFirst(s: string): string {
+  return s.charAt(0).toLocaleLowerCase(i18next.language || undefined) + s.slice(1);
+}
+
+/** "food.groceries" -> "Groceries" / "Courses" / "Spesa" in the interface language (the id is the source of truth; the label is for reading).
+ *  A leaf the built-in taxonomy does not have (one the household added) falls back to its id, title-cased. Called at render time, so it
+ *  follows the language. */
+export function catLabel(id: string | null | undefined): string {
+  if (!id) return "–";
+  const [group, ...rest] = id.split(".");
+  if (!rest.length) return groupLabel(group);
+  const leaf = taxonomyText(`cat.${group}.${rest.join(".")}`) ?? titleCase(rest.join(" "));
+  // "internal" or "salary" alone say nothing: income and transfers keep their group in front ("Transfer: internal")
+  if (group === "transfer" || group === "income") return taxonomyText("withGroup", { group: groupLabel(group), leaf: lowerFirst(leaf) }) ?? leaf;
+  return leaf;
+}
+/** "personal_care" -> "Personal care" (a category group of the taxonomy; any other id is title-cased). */
+export function groupLabel(id: string): string {
+  return taxonomyText(`group.${id}`) ?? titleCase(id);
+}
+/** "all groceries": the whole of a category group, inside a sentence. */
+export function allOfGroupLabel(id: string): string {
+  const group = groupLabel(id).toLocaleLowerCase(i18next.language || undefined);
+  return taxonomyText("allOfGroup", { group }) ?? `all ${group}`;
 }
 
 export function initialsOf(s: string): string {

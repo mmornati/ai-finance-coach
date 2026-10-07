@@ -3,6 +3,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { KeyRound, Terminal } from "lucide-react";
 import { Button, Notice, Spinner } from "./ui";
 import { ApiError, exchangeToken } from "@/lib/api";
+import { errorText } from "@/i18n/server";
 import { CommandBox } from "./CopyCommand";
 
 /** The only screen before a session. No cookie is ever given to a plain page load: the person opens the one-time link that
@@ -23,7 +24,7 @@ export function Login({ onDone }: { onDone: () => void }) {
       })
       .catch((e: unknown) => {
         setState("failed");
-        setMessage(e instanceof ApiError ? e.message : t("login.unreachable"));
+        setMessage(e instanceof ApiError ? errorText(e) : t("login.unreachable"));
         window.history.replaceState(null, "", window.location.pathname + window.location.search);
       });
   }, [token]); // eslint-disable-line react-hooks/exhaustive-deps

@@ -5,6 +5,7 @@ import { Async, Badge, Card, Dot, EmptyState, Money, Notice, PageHeader, Progres
 import { CashflowChart, ForecastChart, ShareBar } from "@/components/charts";
 import { useAlerts, useBalances, useBudgets, useCashflow, useForecast, useGet, useHealth, useHumanize, useInsights, useMonthCategories, useQuestions, useScoped } from "@/api/hooks";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, fmtRelativeDays, parseMoney } from "@/lib/format";
+import { forecastLabel, serverLabel, tServer } from "@/i18n/server";
 import type { CalendarResult, SavingsView } from "@/api/types";
 import { cn } from "@/lib/utils";
 
@@ -53,14 +54,14 @@ function BalanceCard() {
                   <span className="min-w-0 truncate">
                     {a.label}
                     {a.stale && <Badge tone="warn" className="ml-2" title={t("balances.oldTitle", { count: a.age_days })}>{t("balances.old")}</Badge>}
-                    {a.balance !== null && !a.booked && <Badge className="ml-2" title={t("balances.typeTitle")}>{a.balance_type_label}</Badge>}
+                    {a.balance !== null && !a.booked && <Badge className="ml-2" title={t("balances.typeTitle")}>{serverLabel("balanceType", a.balance_type, a.balance_type_label)}</Badge>}
                   </span>
                   <Money v={a.balance} colored className="font-medium" />
                 </li>
               ))}
             </ul>
             {d.accounts.length > 6 && <p className="mt-2 text-xs text-faint">{t("balances.more", { count: d.accounts.length - 6 })}</p>}
-            {d.mixed_types && <p className="mt-2 text-xs text-faint">{d.note}</p>}
+            {d.mixed_types && <p className="mt-2 text-xs text-faint">{tServer(d.note_msg, d.note)}</p>}
           </>
         )}
       </Async>
@@ -169,7 +170,7 @@ function ForecastCard() {
                   {risky.slice(0, 3).map((a) => (
                     <li key={a.label}>
                       <Notice tone={a.first_negative ? "neg" : "warn"}>
-                        <b>{a.label}</b>: {a.first_negative ? t("forecast.belowZero", { date: fmtDate(a.first_negative, "dayMonth") }) : t("forecast.short", { date: fmtDate(a.first_at_risk, "dayMonth") })}
+                        <b>{forecastLabel(a)}</b>: {a.first_negative ? t("forecast.belowZero", { date: fmtDate(a.first_negative, "dayMonth") }) : t("forecast.short", { date: fmtDate(a.first_at_risk, "dayMonth") })}
                       </Notice>
                     </li>
                   ))}

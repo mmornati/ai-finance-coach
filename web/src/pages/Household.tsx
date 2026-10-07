@@ -8,7 +8,8 @@ import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useHousehold, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { useUser } from "@/lib/app";
-import { fmtDateTime, groupLabel } from "@/lib/format";
+import { fmtDateTime } from "@/lib/format";
+import { purposeLabel } from "@/i18n/server";
 import i18n from "@/i18n";
 import type { AttributionRule, AuditRows, EditResult, HouseholdAccount, HouseholdOverview } from "@/api/types";
 
@@ -138,7 +139,7 @@ function AccountRow({ a, d, onSave }: { a: HouseholdAccount; d: HouseholdOvervie
         <Select aria-label={t("household.accounts.purposeOf", { account: a.label })} value={a.purpose ?? ""} onChange={(e) => e.target.value && onSave({ purpose: e.target.value })} className="!min-h-9">
           {!a.purpose && <option value="">{t("household.accounts.notSet")}</option>}
           {d.purposes.map((p) => (
-            <option key={p} value={p}>{groupLabel(p)}</option>
+            <option key={p} value={p}>{purposeLabel(p)}</option>
           ))}
         </Select>
       </td>

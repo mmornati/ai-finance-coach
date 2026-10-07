@@ -1,0 +1,101 @@
+{
+  "balances": {
+    "oneBalance": "One balance per account, the most booked type the bank provides.",
+    "mixedTypes_one": "One balance per account, the most booked type the bank provides. {{count}} account only gives a non-booked balance ({{accounts}}): the total mixes types.",
+    "mixedTypes_other": "One balance per account, the most booked type the bank provides. {{count}} accounts only give a non-booked balance ({{accounts}}): the total mixes types."
+  },
+  "labels": {
+    "alertKind": {
+      "consent": "Bank consent expiring or expired",
+      "sync_failing": "Bank sync failing",
+      "unusual_charge": "Unusual charge",
+      "price_increase": "Price increase",
+      "low_balance": "Low balance forecast",
+      "budget": "Budget over or at risk",
+      "loan_alert": "Loan payment alert",
+      "loa_end": "Lease end reminder",
+      "unused_subscription": "Unused subscription",
+      "contract_notice": "Contract notice deadline",
+      "decision_contradicted": "Cancelled service still charged",
+      "llm_usage_high": "LLM usage above your monthly threshold",
+      "scheme_end": "Rental scheme commitment ending",
+      "scheme_check": "Rental scheme condition to check",
+      "rent_missing": "Rent not received",
+      "kid_budget": "Kid budget limit"
+    },
+    "subsGroup": {
+      "streaming_media": "Streaming & media",
+      "software_cloud": "Software & cloud",
+      "telecom": "Telecom",
+      "memberships": "Memberships",
+      "other_subscriptions": "Other subscriptions",
+      "insurance": "Insurance",
+      "energy_utilities": "Energy & utilities"
+    },
+    "balanceType": {
+      "CLBD": "booked",
+      "ITBD": "booked (interim)",
+      "XPCD": "expected",
+      "CLAV": "available (closing)",
+      "ITAV": "available (interim)",
+      "OPBD": "booked (opening)",
+      "OPAV": "available (opening)",
+      "FWAV": "forward available"
+    },
+    "setupStep": {
+      "init": "Home, secrets and encrypted database",
+      "enablebanking": "Your Enable Banking application",
+      "connect": "Connect your first bank",
+      "sync": "First sync (longest history)",
+      "classify": "Normalize and categorize (privacy choice)",
+      "onboarding": "Onboarding interview",
+      "schedule": "Daily job and alerts (optional)"
+    },
+    "onboardingStep": {
+      "household": "Household and privacy declarations",
+      "accounts": "Accounts: owner and purpose",
+      "loans": "Loans and mortgage (fields mortgage-check needs)",
+      "contracts": "Contracts behind the recurring payments",
+      "preferences": "Preferences and goals",
+      "budgets": "Budgets",
+      "questions": "Open questions"
+    },
+    "forecast": {
+      "household": "Household",
+      "accountUnresolved": "(account unresolved)"
+    },
+    "forecastFlag": {
+      "no_variable_history": "no history of variable spending",
+      "no_balance": "no balance",
+      "balance_stale": "balance out of date",
+      "projected_negative": "projected below zero",
+      "at_risk": "could run short",
+      "accounts_without_balance_one": "{{count}} account without a balance left out",
+      "accounts_without_balance_other": "{{count}} accounts without a balance left out"
+    },
+    "accountPurpose": {
+      "main": "Main",
+      "cards": "Cards",
+      "rental": "Rental",
+      "kids": "Kids",
+      "savings": "Savings"
+    }
+  },
+  "error": {
+    "unauthorized": "You are not signed in: open the one-time login link printed by `coach ui`.",
+    "invalid_login_token": "This login link is invalid, already used or expired: run `coach ui --login-link` in your terminal for a fresh one.",
+    "csrf": "The page is out of date: reload it and try again.",
+    "rate_limited": "Too many attempts in a short time: wait a moment and try again.",
+    "forbidden": "This request was refused.",
+    "forbidden_scope": "This login can only see its own data.",
+    "bad_host": "This host name is not allowed.",
+    "unsupported_media_type": "The request was not sent as JSON.",
+    "method_not_allowed": "This action is not available here.",
+    "not_found": "Not found: it may have been removed or changed. Reload the page.",
+    "validation_error": "Some values are not valid: check the form.",
+    "migration_pending": "The database needs an update: run `coach db migrate` in your terminal.",
+    "alerts_disabled": "Alerts are turned off ([alerts] enabled = false in config.toml).",
+    "coach_busy": "The coach is already answering a question: wait for it to finish.",
+    "internal_error": "Unexpected error: see the terminal running `coach ui`."
+  }
+}

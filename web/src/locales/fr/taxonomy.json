@@ -1,0 +1,152 @@
+{
+  "group": {
+    "income": "Revenus",
+    "transfer": "Virements",
+    "housing": "Logement",
+    "food": "Alimentation",
+    "transport": "Transports",
+    "shopping": "Achats",
+    "health": "Santé",
+    "personal_care": "Soins personnels",
+    "leisure": "Loisirs",
+    "subscriptions": "Abonnements",
+    "travel": "Voyages",
+    "kids": "Enfants",
+    "education": "Éducation",
+    "insurance": "Assurances",
+    "pets": "Animaux",
+    "debt": "Crédits",
+    "cash": "Espèces",
+    "fees": "Frais",
+    "taxes": "Impôts",
+    "charity": "Dons",
+    "other": "Autre"
+  },
+  "cat": {
+    "income": {
+      "salary": "Salaires",
+      "refund": "Remboursements",
+      "bonus": "Primes et récompenses",
+      "gift": "Cadeaux reçus",
+      "interest": "Intérêts et dividendes",
+      "rental": "Loyers perçus",
+      "other": "Autres"
+    },
+    "transfer": {
+      "internal": "Entre vos comptes",
+      "to_people": "Vers des proches",
+      "from_people": "De proches"
+    },
+    "housing": {
+      "mortgage": "Crédit immobilier",
+      "rent": "Loyer",
+      "energy": "Électricité et gaz",
+      "water": "Eau",
+      "home_insurance": "Assurance habitation",
+      "maintenance_diy": "Bricolage et réparations",
+      "renovation": "Travaux de rénovation",
+      "furniture": "Meubles et électroménager",
+      "property_charges": "Charges de copropriété",
+      "rental_property_loan": "Prêt du bien locatif",
+      "property_tax": "Taxe foncière",
+      "property_management": "Gestion locative",
+      "property_insurance": "Assurance propriétaire (PNO, GLI)"
+    },
+    "food": {
+      "groceries": "Courses",
+      "restaurants": "Restaurants",
+      "fast_food": "Restauration rapide",
+      "cafes_bars": "Cafés et bars",
+      "food_delivery": "Livraison de repas",
+      "work_meals": "Repas au travail"
+    },
+    "transport": {
+      "fuel": "Carburant et recharge",
+      "parking_tolls": "Parking et péages",
+      "public_transport": "Transports en commun",
+      "taxi_rideshare": "Taxi et VTC",
+      "car_maintenance": "Entretien auto",
+      "car_loan_lease": "Crédit et location auto",
+      "car_insurance": "Assurance auto"
+    },
+    "shopping": {
+      "marketplace": "Achats en ligne",
+      "clothing": "Vêtements",
+      "electronics": "High-tech",
+      "sports_gear": "Articles de sport",
+      "books_media": "Livres, musique et jeux",
+      "gifts_flowers": "Cadeaux et fleurs",
+      "tobacco_press": "Tabac-presse",
+      "department_general": "Grands magasins"
+    },
+    "health": {
+      "pharmacy": "Pharmacie",
+      "doctors": "Médecins et soins",
+      "health_insurance": "Mutuelle",
+      "optician": "Opticien"
+    },
+    "personal_care": {
+      "hair_beauty": "Coiffure et beauté"
+    },
+    "leisure": {
+      "cinema_events": "Cinéma et sorties",
+      "sports_activities": "Sport et activités",
+      "hobbies": "Passe-temps"
+    },
+    "subscriptions": {
+      "video_streaming": "Streaming vidéo",
+      "music_streaming": "Streaming musical",
+      "software_cloud": "Logiciels et cloud",
+      "telecom": "Téléphone et internet",
+      "news_media": "Presse et magazines",
+      "memberships": "Adhésions"
+    },
+    "travel": {
+      "lodging": "Hébergement",
+      "flights": "Avion",
+      "trains": "Train",
+      "car_rental": "Location de voiture",
+      "activities": "Activités"
+    },
+    "kids": {
+      "childcare": "Garde d'enfants",
+      "school": "École",
+      "activities_toys": "Activités et jouets"
+    },
+    "education": {
+      "courses": "Cours et formations"
+    },
+    "insurance": {
+      "life": "Assurance vie et prévoyance",
+      "borrower": "Assurance emprunteur",
+      "pet": "Assurance animaux",
+      "other": "Autres assurances"
+    },
+    "pets": {
+      "pets": "Animaux"
+    },
+    "debt": {
+      "bnpl": "Paiement fractionné",
+      "personal_loan": "Crédit à la consommation",
+      "loan_repayment": "Remboursement de prêt",
+      "credit_card": "Carte à débit différé"
+    },
+    "cash": {
+      "atm_withdrawal": "Retraits d'espèces"
+    },
+    "fees": {
+      "bank_fees": "Frais bancaires"
+    },
+    "taxes": {
+      "taxes": "Impôts et taxes"
+    },
+    "charity": {
+      "donations": "Dons"
+    },
+    "other": {
+      "uncategorized": "Non catégorisé"
+    }
+  },
+  "withGroup": "{{group}} : {{leaf}}",
+  "allOfGroup": "toute la catégorie {{group}}"
+}

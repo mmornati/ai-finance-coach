@@ -35,7 +35,8 @@ CATEGORY_BUCKET = {
 }
 PROPERTY_CATEGORIES = tuple(CATEGORY_BUCKET)
 REVIEW_EXEMPT = frozenset({"fees.bank_fees"})            # in the "other flows" line, but nothing to label
-LABEL = {"rent": "rent received", "loan": "loan instalments", "charges": "co-ownership charges", "fees": "management fees",
+# English bucket names (no API payload carries them: the web names a bucket with its own pnl.row.* keys of rental.json)
+LABEL = {"rent":"rent received", "loan": "loan instalments", "charges": "co-ownership charges", "fees": "management fees",
          "taxes": "property tax", "insurance": "insurance (PNO, GLI)", "works": "works and repairs", "other": "other flows"}
 
 

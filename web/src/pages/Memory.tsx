@@ -8,7 +8,8 @@ import { ItemDialog, Kind } from "@/components/ItemForm";
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useProposals, useQuestions, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { fmtDate, fmtDateTime, fmtMoney, groupLabel } from "@/lib/format";
+import { errorText, holdingKindLabel } from "@/i18n/server";
+import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
 import type { Annotation, Asset, Change, CheckIssue, EditResult, EventMeta, Liability, MemoryOverview, Member, Proposal, Question } from "@/api/types";
 import { cn } from "@/lib/utils";
 
@@ -206,13 +207,13 @@ function ItemsTab() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card title={t("items.loans")} action={<Button size="sm" onClick={() => setEdit({ kind: "liabilities" })}><Plus className="size-3.5" aria-hidden /> {t("items.addLoan")}</Button>}>
-        <Async q={liab}>{(d) => d.liabilities.length ? <ul className="divide-y divide-border">{d.liabilities.map((l) => <Row key={l.id} title={l.lender ?? l.id} sub={`${groupLabel(l.kind)}${l.monthly_payment ? t("items.perMonth", { amount: fmtMoney(l.monthly_payment) }) : ""}`} warn={l.missing.length ? t("items.missing", { fields: l.missing.join(", ") }) : undefined} onEdit={() => setEdit({ kind: "liabilities", id: l.id, initial: l })} />)}</ul> : <EmptyState title={t("items.noLoan")} />}</Async>
+        <Async q={liab}>{(d) => d.liabilities.length ? <ul className="divide-y divide-border">{d.liabilities.map((l) => <Row key={l.id} title={l.lender ?? l.id} sub={`${holdingKindLabel(l.kind)}${l.monthly_payment ? t("items.perMonth", { amount: fmtMoney(l.monthly_payment) }) : ""}`} warn={l.missing.length ? t("items.missing", { fields: l.missing.join(", ") }) : undefined} onEdit={() => setEdit({ kind: "liabilities", id: l.id, initial: l })} />)}</ul> : <EmptyState title={t("items.noLoan")} />}</Async>
       </Card>
       <Card title={t("items.contracts")} action={<Button size="sm" onClick={() => setEdit({ kind: "contracts" })}><Plus className="size-3.5" aria-hidden /> {t("items.addContract")}</Button>}>
-        <Async q={con}>{(d) => d.contracts.length ? <ul className="divide-y divide-border">{d.contracts.map((c) => <Row key={c.id} title={c.provider ?? c.id} sub={`${groupLabel(c.kind ?? "other")}${c.billing?.amount ? ` · ${fmtMoney(c.billing.amount)}` : ""}${c.renewal ? t("items.renews", { date: fmtDate(c.renewal) }) : ""}`} onEdit={() => setEdit({ kind: "contracts", id: c.id, initial: c })} />)}</ul> : <EmptyState title={t("items.noContract")}>{t("items.noContractBody")}</EmptyState>}</Async>
+        <Async q={con}>{(d) => d.contracts.length ? <ul className="divide-y divide-border">{d.contracts.map((c) => <Row key={c.id} title={c.provider ?? c.id} sub={`${holdingKindLabel(c.kind ?? "other")}${c.billing?.amount ? ` · ${fmtMoney(c.billing.amount)}` : ""}${c.renewal ? t("items.renews", { date: fmtDate(c.renewal) }) : ""}`} onEdit={() => setEdit({ kind: "contracts", id: c.id, initial: c })} />)}</ul> : <EmptyState title={t("items.noContract")}>{t("items.noContractBody")}</EmptyState>}</Async>
       </Card>
       <Card title={t("items.assets")} className="lg:col-span-2" action={<Button size="sm" onClick={() => setEdit({ kind: "assets" })}><Plus className="size-3.5" aria-hidden /> {t("items.addAsset")}</Button>}>
-        <Async q={ast}>{(d) => d.assets.length ? <ul className="divide-y divide-border">{d.assets.map((a) => <Row key={a.id} title={a.description ?? a.id} sub={`${groupLabel(a.kind)}${a.value ? ` · ${fmtMoney(a.value, { round: true })}` : ""}${a.as_of ? t("items.asOf", { date: fmtDate(a.as_of) }) : ""}`} warn={a.unknown_value ? t("items.valueUnknown") : a.stale ? t("items.valueOld") : undefined} onEdit={() => setEdit({ kind: "assets", id: a.id, initial: a })} />)}</ul> : <EmptyState title={t("items.noAsset")} />}</Async>
+        <Async q={ast}>{(d) => d.assets.length ? <ul className="divide-y divide-border">{d.assets.map((a) => <Row key={a.id} title={a.description ?? a.id} sub={`${holdingKindLabel(a.kind)}${a.value ? ` · ${fmtMoney(a.value, { round: true })}` : ""}${a.as_of ? t("items.asOf", { date: fmtDate(a.as_of) }) : ""}`} warn={a.unknown_value ? t("items.valueUnknown") : a.stale ? t("items.valueOld") : undefined} onEdit={() => setEdit({ kind: "assets", id: a.id, initial: a })} />)}</ul> : <EmptyState title={t("items.noAsset")} />}</Async>
       </Card>
       {edit && <ItemDialog {...edit} onClose={() => setEdit(null)} />}
     </div>
@@ -296,7 +297,7 @@ function ViewChange({ c, onClose }: { c: Change; onClose: () => void }) {
   const q = useGet<{ diff: string; revert_command: string }>(`/memory/history/${c.id}/diff`);
   return (
     <Dialog open onClose={onClose} size="lg" title={c.subject} description={`${fmtDateTime(c.date)} · ${c.id}`}>
-      {q.isPending ? <Spinner /> : q.isError ? <Notice tone="neg">{q.error.message}</Notice> : (
+      {q.isPending ? <Spinner /> : q.isError ? <Notice tone="neg">{errorText(q.error)}</Notice> : (
         <div className="grid gap-4">
           <DiffView diff={q.data.diff} />
           <div className="grid gap-1.5">
