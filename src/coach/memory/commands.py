@@ -721,4 +721,4 @@ def cmd_explain(a, cfg):
                 print(f"  {r[0]}  {r[1]}  {r[2]:+9.2f}  {r[3]}  {r[4]}")
         sys.exit(1)
     x = explain_mod.explain(con, store, rows[0][0])
-    print(_j(x) if a.json else explain_mod.format_explanation(x))
+    print(_j(explain_mod.plain(x)) if a.json else explain_mod.format_explanation(x))

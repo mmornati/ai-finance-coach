@@ -44,6 +44,21 @@
       "body": "The transactions of this account are not up to date. Run `coach health` to see the error; an expired consent needs `coach reconnect`."
     }
   },
+  "annotation": {
+    "allMatch": "all criteria match",
+    "amountMax": "amount {{tx_amount}} is above amount_max {{max_amount}}",
+    "amountMin": "amount {{tx_amount}} is below amount_min {{min_amount}}",
+    "categoryIn": "category_in ({{categories}}) does not include the pre-memory category {{pre_category}}",
+    "dateFrom": "date {{tx_date}} is before date_from {{from_date}}",
+    "dateTo": "date {{tx_date}} is after date_to {{to_date}}",
+    "description": "description /{{pattern}}/ does not match the bank description",
+    "matchesNothing": "it matches no transaction",
+    "merchantKey": "merchant_key /{{pattern}}/ does not match '{{merchant_key}}'",
+    "neverApplies": "it would never apply: earlier annotations already take every transaction it matches",
+    "tooBroad": "it matches {{share_pct}} of the transactions of one account: too broad?",
+    "txKeys": "tx_keys does not list this transaction",
+    "weekdays": "weekdays ({{weekdays}}) does not include {{weekday}} ({{payment_date}})"
+  },
   "anomaly": {
     "categorySpike_one": "Spending in {{spike_category}} in {{spike_month}} is {{spent_amount}}, versus a typical {{typical_amount}} per month (robust z-score {{z}}, {{count}} earlier month).",
     "categorySpike_other": "Spending in {{spike_category}} in {{spike_month}} is {{spent_amount}}, versus a typical {{typical_amount}} per month (robust z-score {{z}}, {{count}} earlier months).",
@@ -53,6 +68,16 @@
     "duplicateCharge_other": "{{payments}} payments of {{payment_amount}} to {{merchant}} within {{count}} days ({{first_date}} to {{last_date}}).",
     "newMerchant": "New merchant {{merchant}} (first seen {{first_date}}) with a payment of {{payment_amount}}.",
     "largeTransaction": "A payment of {{payment_amount}} to {{merchant}} on {{payment_date}} is far above the usual {{usual_category}} payments (median {{median_amount}}, threshold {{threshold_amount}})."
+  },
+  "attribution": {
+    "account": "the account is not '{{account}}'",
+    "amountAbove": "the amount is above {{max_amount}}",
+    "amountBelow": "the amount is below {{min_amount}}",
+    "card": "the card ending {{last4}} is not printed on it",
+    "description": "the description does not match",
+    "directionIn": "the direction is not 'in' (money coming in)",
+    "directionOut": "the direction is not 'out' (money going out)",
+    "merchantKey": "the merchant key does not match"
   },
   "balances": {
     "oneBalance": "One balance per account, the most booked type the bank provides.",
@@ -170,6 +195,19 @@
       "startLowerBound": "contract start date (only the first payment seen is known, and it is less than a year old)"
     }
   },
+  "categoryEdit": {
+    "keptByAnnotation_one": "{{count}} transaction keeps its category because of the memory annotation '{{annotation}}'",
+    "keptByAnnotation_other": "{{count}} transactions keep their category because of the memory annotation '{{annotation}}'",
+    "keptByOverride_one": "{{count}} transaction keeps its category because of a per-transaction override",
+    "keptByOverride_other": "{{count}} transactions keep their category because of a per-transaction override",
+    "keptBySource_one": "{{count}} transaction keeps its {{source}} category",
+    "keptBySource_other": "{{count}} transactions keep their {{source}} category",
+    "keptByTransferLink_one": "{{count}} transaction keeps its category because of a linked internal transfer",
+    "keptByTransferLink_other": "{{count}} transactions keep their category because of a linked internal transfer",
+    "keptByTypeRule_one": "{{count}} transaction keeps its category because of a rule on the kind of operation (card, direct debit...)",
+    "keptByTypeRule_other": "{{count}} transactions keep their category because of a rule on the kind of operation (card, direct debit...)",
+    "splitKeeps": "A split transaction keeps its split parts; clear the split to use this category."
+  },
   "coverage": {
     "accountsLacking": "Accounts without full data (months lacking data / months listed): {{accounts}}.",
     "budgetLeftOut": "One-offs, capital and savings are left out.",
@@ -197,6 +235,49 @@
     "yearPartial_other": "{{year}} is partial: {{count}} complete months of {{listed}} listed.",
     "yearPartialOngoing_one": "{{year}} is partial: {{count}} complete month of {{listed}} listed, the year is not over (data to {{end_month}}).",
     "yearPartialOngoing_other": "{{year}} is partial: {{count}} complete months of {{listed}} listed, the year is not over (data to {{end_month}})."
+  },
+  "error": {
+    "unauthorized": "You are not signed in: open the one-time login link printed by `coach ui`.",
+    "invalid_login_token": "This login link is invalid, already used or expired: run `coach ui --login-link` in your terminal for a fresh one.",
+    "csrf": "The page is out of date: reload it and try again.",
+    "rate_limited": "Too many attempts in a short time: wait a moment and try again.",
+    "forbidden": "This request was refused.",
+    "forbidden_scope": "This login can only see its own data.",
+    "bad_host": "This host name is not allowed.",
+    "unsupported_media_type": "The request was not sent as JSON.",
+    "method_not_allowed": "This action is not available here.",
+    "not_found": "Not found: it may have been removed or changed. Reload the page.",
+    "validation_error": "Some values are not valid: check the form.",
+    "migration_pending": "The database needs an update: run `coach db migrate` in your terminal.",
+    "alerts_disabled": "Alerts are turned off ([alerts] enabled = false in config.toml).",
+    "coach_busy": "The coach is already answering a question: wait for it to finish.",
+    "internal_error": "Unexpected error: see the terminal running `coach ui`."
+  },
+  "explain": {
+    "entity": "canonical merchant '{{merchant}}' has the default category {{default_category}}",
+    "entityByYou": "canonical merchant '{{merchant}}' has the default category {{default_category}} set by you",
+    "entityNoCategory": "canonical merchant '{{merchant}}' has no category",
+    "entityOutranked": "canonical merchant '{{merchant}}' has the default category {{default_category}} (an LLM/kNN label of the key outranks an automatic entity default)",
+    "knnLabel": "similarity (kNN) label {{label_category}} (confidence {{confidence}}, model {{model}}, {{updated}})",
+    "llmLabel": "LLM label {{label_category}} (confidence {{confidence}}, model {{model}}, {{updated}})",
+    "llmWebLabel": "LLM with web evidence label {{label_category}} (confidence {{confidence}}, model {{model}}, {{updated}}); the web evidence note is not stored in the database (only the label)",
+    "noAutoLabel": "no automatic label for this merchant key",
+    "noEntity": "the key is not grouped under a canonical merchant with a category",
+    "noOverride": "no per-transaction override",
+    "noRule": "no merchant rule matches the key",
+    "noTransferLink": "not linked to another own account",
+    "noTypeRule": "no rule for type '{{tx_type}}'",
+    "noUserLabel": "no label of yours for this merchant key",
+    "otherLabel": "{{source}} label {{label_category}} (confidence {{confidence}}, model {{model}}, {{updated}})",
+    "override": "per-transaction override {{override_category}}",
+    "overrideNote": "per-transaction override {{override_category}} ({{note}})",
+    "rule": "merchant rule /{{pattern}}/",
+    "ruleIn": "merchant rule /{{pattern}}/ (in only)",
+    "ruleOut": "merchant rule /{{pattern}}/ (out only)",
+    "transferLink": "leg of an internal transfer with {{other}} ({{method}}, confidence {{confidence}})",
+    "typeRule": "transaction type '{{tx_type}}'",
+    "typeRulePurpose": "transaction type '{{tx_type}}' on an account with purpose '{{purpose}}'",
+    "userLabel": "you labelled '{{merchant_key}}' as {{label_category}} ({{updated}})"
   },
   "insight": {
     "anomaly": {
@@ -314,67 +395,19 @@
       "quarterly": "quarterly",
       "semiannual": "every 6 months",
       "yearly": "yearly"
+    },
+    "explainStep": {
+      "override": "override",
+      "transferLink": "transfer link",
+      "typeRule": "type rule",
+      "userLabel": "user merchant label",
+      "rule": "rule",
+      "entity": "entity",
+      "llm": "LLM label",
+      "llmWeb": "LLM with web evidence label",
+      "knn": "similarity (kNN) label",
+      "autoLabel": "LLM / kNN label"
     }
-  },
-  "subs": {
-    "alternatives": {
-      "note": "quotes older than 30 days are outdated and excluded from the best; prices change: verify on the provider's page before acting",
-      "staleWarning": "price older than 30 days: re-check before relying on it"
-    },
-    "decision": {
-      "ambiguous_one": "the contract covers {{count}} recurring series: record the decision on one series (name it) so the bank data can be checked",
-      "ambiguous_other": "the contract covers {{count}} recurring series: record the decision on one series (name it) so the bank data can be checked",
-      "asRecorded": "the payment of {{payment_date}} is {{monthly_amount}} a month, as recorded",
-      "kept": "nothing to verify: the subscription was kept",
-      "nextNotOverdue": "no later payment yet, but the next one is not overdue",
-      "noPaymentNextOverdue": "no payment since {{last_date}}, the next one is overdue",
-      "noPaymentSeriesEnded": "no payment since {{last_date}} (the series ended)",
-      "noPaymentSinceEffective": "no payment on or after the effective date yet",
-      "otherAmount": "the payment of {{payment_date}} is {{monthly_amount}} a month, not the {{recorded_amount}} recorded",
-      "paymentsAfter_one": "{{count}} payment after the effective date {{effective_date}}; latest {{last_date}} ({{last_amount}})",
-      "paymentsAfter_other": "{{count}} payments after the effective date {{effective_date}}; latest {{last_date}} ({{last_amount}})",
-      "seriesNotFound": "the recurring series is not in the bank data (not found): confirm it by hand",
-      "stillOldAmount": "the payment of {{payment_date}} is still about the old amount ({{monthly_amount}} a month)",
-      "takesEffectLater": "the decision takes effect later"
-    },
-    "draft": {
-      "indistinguishable_one": "{{count}} other recurring series cannot be told apart from this one by label and amount ({{series}}): one contract file covers both; give it a more specific merchant_match if they are separate contracts",
-      "indistinguishable_other": "{{count}} other recurring series cannot be told apart from this one by label and amount ({{series}}): one contract file covers them all; give it a more specific merchant_match if they are separate contracts",
-      "matchedBy_one": "{{series}} would be matched by {{count}} contract file (expected exactly one)",
-      "matchedBy_other": "{{series}} would be matched by {{count}} contract files (expected exactly one)",
-      "noBillingPeriod": "the payment ({{cadence}}) has no matching billing period: billing left empty",
-      "noMerchantMatch": "no merchant_match regex could be built that links to this series' payments"
-    },
-    "inventory": {
-      "cancellationSummary": "cancellation info is a general summary of consumer-law rules: verify with your contract",
-      "costSource": "the cost comes from the detected payments; a contract file without payments in the bank data uses its billing amount",
-      "notSubscriptions": "loans, mortgages, rent and taxes are not subscriptions and are not listed"
-    },
-    "savings": {
-      "note": "only decisions the bank data confirms count as realised; pending ones are claims (a cancelled service still being paid is flagged). Months are whole calendar months from the effective date."
-    },
-    "usage": {
-      "fromLastUsed": "from the last-used date you recorded",
-      "neverAndPaying": "you recorded 'never' and the payments continue",
-      "notMeasurable": "Whether a service is used is not in the bank data: only what you record (frequency, last used) is counted. Without it the usage stays unknown."
-    }
-  },
-  "error": {
-    "unauthorized": "You are not signed in: open the one-time login link printed by `coach ui`.",
-    "invalid_login_token": "This login link is invalid, already used or expired: run `coach ui --login-link` in your terminal for a fresh one.",
-    "csrf": "The page is out of date: reload it and try again.",
-    "rate_limited": "Too many attempts in a short time: wait a moment and try again.",
-    "forbidden": "This request was refused.",
-    "forbidden_scope": "This login can only see its own data.",
-    "bad_host": "This host name is not allowed.",
-    "unsupported_media_type": "The request was not sent as JSON.",
-    "method_not_allowed": "This action is not available here.",
-    "not_found": "Not found: it may have been removed or changed. Reload the page.",
-    "validation_error": "Some values are not valid: check the form.",
-    "migration_pending": "The database needs an update: run `coach db migrate` in your terminal.",
-    "alerts_disabled": "Alerts are turned off ([alerts] enabled = false in config.toml).",
-    "coach_busy": "The coach is already answering a question: wait for it to finish.",
-    "internal_error": "Unexpected error: see the terminal running `coach ui`."
   },
   "loanAlert": {
     "missed": {
@@ -486,6 +519,49 @@
     "tenantIncome": {
       "title": "{{property}}: the tenant income is above the limit you declared",
       "body": "Tenant income {{income_amount}} against a limit of {{limit_amount}}. Check the scheme's rules for the tenant household's size."
+    }
+  },
+  "subs": {
+    "alternatives": {
+      "note": "quotes older than 30 days are outdated and excluded from the best; prices change: verify on the provider's page before acting",
+      "staleWarning": "price older than 30 days: re-check before relying on it"
+    },
+    "decision": {
+      "ambiguous_one": "the contract covers {{count}} recurring series: record the decision on one series (name it) so the bank data can be checked",
+      "ambiguous_other": "the contract covers {{count}} recurring series: record the decision on one series (name it) so the bank data can be checked",
+      "asRecorded": "the payment of {{payment_date}} is {{monthly_amount}} a month, as recorded",
+      "kept": "nothing to verify: the subscription was kept",
+      "nextNotOverdue": "no later payment yet, but the next one is not overdue",
+      "noPaymentNextOverdue": "no payment since {{last_date}}, the next one is overdue",
+      "noPaymentSeriesEnded": "no payment since {{last_date}} (the series ended)",
+      "noPaymentSinceEffective": "no payment on or after the effective date yet",
+      "otherAmount": "the payment of {{payment_date}} is {{monthly_amount}} a month, not the {{recorded_amount}} recorded",
+      "paymentsAfter_one": "{{count}} payment after the effective date {{effective_date}}; latest {{last_date}} ({{last_amount}})",
+      "paymentsAfter_other": "{{count}} payments after the effective date {{effective_date}}; latest {{last_date}} ({{last_amount}})",
+      "seriesNotFound": "the recurring series is not in the bank data (not found): confirm it by hand",
+      "stillOldAmount": "the payment of {{payment_date}} is still about the old amount ({{monthly_amount}} a month)",
+      "takesEffectLater": "the decision takes effect later"
+    },
+    "draft": {
+      "indistinguishable_one": "{{count}} other recurring series cannot be told apart from this one by label and amount ({{series}}): one contract file covers both; give it a more specific merchant_match if they are separate contracts",
+      "indistinguishable_other": "{{count}} other recurring series cannot be told apart from this one by label and amount ({{series}}): one contract file covers them all; give it a more specific merchant_match if they are separate contracts",
+      "matchedBy_one": "{{series}} would be matched by {{count}} contract file (expected exactly one)",
+      "matchedBy_other": "{{series}} would be matched by {{count}} contract files (expected exactly one)",
+      "noBillingPeriod": "the payment ({{cadence}}) has no matching billing period: billing left empty",
+      "noMerchantMatch": "no merchant_match regex could be built that links to this series' payments"
+    },
+    "inventory": {
+      "cancellationSummary": "cancellation info is a general summary of consumer-law rules: verify with your contract",
+      "costSource": "the cost comes from the detected payments; a contract file without payments in the bank data uses its billing amount",
+      "notSubscriptions": "loans, mortgages, rent and taxes are not subscriptions and are not listed"
+    },
+    "savings": {
+      "note": "only decisions the bank data confirms count as realised; pending ones are claims (a cancelled service still being paid is flagged). Months are whole calendar months from the effective date."
+    },
+    "usage": {
+      "fromLastUsed": "from the last-used date you recorded",
+      "neverAndPaying": "you recorded 'never' and the payments continue",
+      "notMeasurable": "Whether a service is used is not in the bank data: only what you record (frequency, last used) is counted. Without it the usage stays unknown."
     }
   }
 }

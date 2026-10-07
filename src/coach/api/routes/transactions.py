@@ -24,6 +24,7 @@ from coach.api.routes._write import edit_out, run_edit
 from coach.api.state import UI_SOURCE, AppState, Snapshot
 from coach.classify import corrections, rules as R, splits as splits_mod
 from coach.classify.rules import CATEGORIES
+from coach.i18n_msg import server_msg
 from coach.memory import explain as explain_mod, schemas, txmatch
 from coach.memory.edit import jsonable
 from coach import transfers as transfers_mod
@@ -322,15 +323,26 @@ def _annotation_effect(state: AppState, model, category: Optional[str] = None) -
     shadowed = sum(pv.already_matched.values())
     eff.update({"applies_to": pv.count - shadowed, "shadowed": shadowed, "samples": pv.to_dict()["samples"],
                 "max_account_share": pv.to_dict()["max_account_share"]})
-    warnings = []
+    warnings, msgs = [], []                                  # English (CLI, stored) and the web's messages, same order
     if pv.count == 0:
         warnings.append("it matches no transaction")
+        msgs.append(server_msg("annotation.matchesNothing", warnings[-1]))
     elif pv.count - shadowed == 0:
         warnings.append("it would never apply: earlier annotations already take every transaction it matches")
+        msgs.append(server_msg("annotation.neverApplies", warnings[-1]))
     if pv.share_of_account > 0.5:
         warnings.append(f"it matches {pv.share_of_account:.0%} of the transactions of one account: too broad?")
-    eff["warnings"] = warnings
+        msgs.append(server_msg("annotation.tooBroad", warnings[-1], share_pct=pv.share_of_account))
+    eff["warnings"], eff["warnings_msg"] = warnings, msgs
     return eff
+
+
+def _with_warnings(out: dict, warnings: list, msgs: list) -> dict:
+    """`out`'s warnings (the edit's own, English only) followed by `warnings`, and `warnings_msg` in the same order (None: no message)."""
+    own = list(out.get("warnings", []))
+    own_msgs = list(out.get("warnings_msg") or [None] * len(own))
+    out["warnings"], out["warnings_msg"] = own + list(warnings), own_msgs + list(msgs)
+    return out
 
 
 def _merchant_tx_keys(con, mkey: str) -> list[str]:
@@ -361,9 +373,11 @@ def change_category(req: CategoryChange, dry_run: bool = False, snap: Snapshot =
         eff = simulate.summarise(before, after, req.category)
         if mkey:
             eff["merchant_key"] = mkey
-        warns = [f"{b['n']} transaction(s) keep their category because of {b['reason']}" for b in eff["blocked"]]
+        pairs = [simulate.blocked_warning(b) for b in eff["blocked"]]
+        warns, warns_msg = [w for w, _ in pairs], [m for _, m in pairs]
         if split and req.scope == "transaction":
             warns.append("A split transaction keeps its split parts; clear the split to use this category.")
+            warns_msg.append(server_msg("categoryEdit.splitKeeps", warns[-1]))
         changed = eff["count"] > 0
         if not dry_run:
             with state.write() as con:
@@ -372,7 +386,7 @@ def change_category(req: CategoryChange, dry_run: bool = False, snap: Snapshot =
                 else:
                     corrections.correct_merchant(con, mkey, req.category, exact=True)
         return {"dry_run": dry_run, "scope": req.scope, "category": req.category, "changed": changed, "affected": eff,
-                "diff": "", "warnings": warns}
+                "diff": "", "warnings": warns, "warnings_msg": warns_msg}
     # memory annotation
     areq = AnnotationRequest(tx_keys=[req.tx_key] if req.match == "transaction" else [], merchant_key=mkey,
                              category=req.category, tags=req.tags, event=req.event, note=req.note,
@@ -382,8 +396,7 @@ def change_category(req: CategoryChange, dry_run: bool = False, snap: Snapshot =
     out = run_edit(state, "categorization.yaml", ops, action="annotate", reason=areq.reason, detail=aid, dry_run=dry_run,
                    extra={"id": aid})
     out.update({"scope": req.scope, "category": req.category, "affected": pv})
-    out["warnings"] = out.get("warnings", []) + pv["warnings"]
-    return out
+    return _with_warnings(out, pv["warnings"], pv["warnings_msg"])
 
 
 class TxRef(BaseModel):
@@ -450,8 +463,7 @@ def create_annotation(req: AnnotationRequest, dry_run: bool = False, state: AppS
     pv = _annotation_effect(state, model)
     out = run_edit(state, "categorization.yaml", ops, action="annotate", reason=req.reason or req.note or "annotation from the web app",
                    detail=aid, dry_run=dry_run, extra={"id": aid, "affected": pv})
-    out["warnings"] = out.get("warnings", []) + pv["warnings"]
-    return out
+    return _with_warnings(out, pv["warnings"], pv["warnings_msg"])
 
 
 @router.post("/annotations/{annotation_id}/delete", summary="Remove an annotation (dry_run=true: preview)")

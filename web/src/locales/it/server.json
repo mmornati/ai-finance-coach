@@ -50,6 +50,21 @@
       "body": "Le transazioni di questo conto non sono aggiornate. Esegui `coach health` per vedere l'errore; un consenso scaduto richiede `coach reconnect`."
     }
   },
+  "annotation": {
+    "allMatch": "tutti i criteri corrispondono",
+    "amountMax": "l'importo {{tx_amount}} è superiore a amount_max {{max_amount}}",
+    "amountMin": "l'importo {{tx_amount}} è inferiore a amount_min {{min_amount}}",
+    "categoryIn": "category_in ({{categories}}) non include la categoria prima della memoria, {{pre_category}}",
+    "dateFrom": "la data {{tx_date}} è precedente a date_from {{from_date}}",
+    "dateTo": "la data {{tx_date}} è successiva a date_to {{to_date}}",
+    "description": "description /{{pattern}}/ non corrisponde alla descrizione della banca",
+    "matchesNothing": "non corrisponde a nessuna transazione",
+    "merchantKey": "merchant_key /{{pattern}}/ non corrisponde a «{{merchant_key}}»",
+    "neverApplies": "non si applicherebbe mai: annotazioni precedenti prendono già tutte le transazioni che copre",
+    "tooBroad": "copre il {{share_pct}} delle transazioni di un conto: troppo ampia?",
+    "txKeys": "tx_keys non elenca questa transazione",
+    "weekdays": "weekdays ({{weekdays}}) non include {{weekday}} ({{payment_date}})"
+  },
   "anomaly": {
     "categorySpike_one": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (z-score robusto {{z}}, {{count}} mese precedente).",
     "categorySpike_many": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (z-score robusto {{z}}, {{count}} mesi precedenti).",
@@ -62,6 +77,16 @@
     "duplicateCharge_other": "{{payments}} pagamenti di {{payment_amount}} a {{merchant}} in {{count}} giorni (dal {{first_date}} al {{last_date}}).",
     "newMerchant": "Nuovo esercente {{merchant}} (visto per la prima volta il {{first_date}}) con un pagamento di {{payment_amount}}.",
     "largeTransaction": "Un pagamento di {{payment_amount}} a {{merchant}} il {{payment_date}} è molto sopra i pagamenti abituali in {{usual_category}} (mediana {{median_amount}}, soglia {{threshold_amount}})."
+  },
+  "attribution": {
+    "account": "il conto non è «{{account}}»",
+    "amountAbove": "l'importo è superiore a {{max_amount}}",
+    "amountBelow": "l'importo è inferiore a {{min_amount}}",
+    "card": "la carta che termina con {{last4}} non è indicata",
+    "description": "la descrizione non corrisponde",
+    "directionIn": "non è un'entrata di denaro (direzione «in»)",
+    "directionOut": "non è un'uscita di denaro (direzione «out»)",
+    "merchantKey": "la chiave dell'esercente non corrisponde"
   },
   "balances": {
     "oneBalance": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca.",
@@ -180,6 +205,24 @@
       "startLowerBound": "data di inizio del contratto (si conosce solo il primo pagamento visto, e risale a meno di un anno fa)"
     }
   },
+  "categoryEdit": {
+    "keptByAnnotation_many": "{{count}} transazioni mantengono la loro categoria a causa dell'annotazione della memoria «{{annotation}}»",
+    "keptByAnnotation_one": "{{count}} transazione mantiene la sua categoria a causa dell'annotazione della memoria «{{annotation}}»",
+    "keptByAnnotation_other": "{{count}} transazioni mantengono la loro categoria a causa dell'annotazione della memoria «{{annotation}}»",
+    "keptByOverride_many": "{{count}} transazioni mantengono la loro categoria a causa di una correzione per questa singola transazione",
+    "keptByOverride_one": "{{count}} transazione mantiene la sua categoria a causa di una correzione per questa singola transazione",
+    "keptByOverride_other": "{{count}} transazioni mantengono la loro categoria a causa di una correzione per questa singola transazione",
+    "keptBySource_many": "{{count}} transazioni mantengono la loro categoria ({{source}})",
+    "keptBySource_one": "{{count}} transazione mantiene la sua categoria ({{source}})",
+    "keptBySource_other": "{{count}} transazioni mantengono la loro categoria ({{source}})",
+    "keptByTransferLink_many": "{{count}} transazioni mantengono la loro categoria a causa di un bonifico interno collegato",
+    "keptByTransferLink_one": "{{count}} transazione mantiene la sua categoria a causa di un bonifico interno collegato",
+    "keptByTransferLink_other": "{{count}} transazioni mantengono la loro categoria a causa di un bonifico interno collegato",
+    "keptByTypeRule_many": "{{count}} transazioni mantengono la loro categoria a causa di una regola sul tipo di operazione (carta, addebito diretto…)",
+    "keptByTypeRule_one": "{{count}} transazione mantiene la sua categoria a causa di una regola sul tipo di operazione (carta, addebito diretto…)",
+    "keptByTypeRule_other": "{{count}} transazioni mantengono la loro categoria a causa di una regola sul tipo di operazione (carta, addebito diretto…)",
+    "splitKeeps": "Una transazione suddivisa mantiene le sue parti: rimuovi la suddivisione per usare questa categoria."
+  },
   "coverage": {
     "accountsLacking": "Conti senza dati completi (mesi senza dati / mesi elencati): {{accounts}}.",
     "budgetLeftOut": "Spese una tantum, capitale e risparmi sono esclusi.",
@@ -216,6 +259,49 @@
     "yearPartialOngoing_one": "Il {{year}} è parziale: {{count}} mese completo su {{listed}} elencati, l'anno non è finito (dati fino a {{end_month}}).",
     "yearPartialOngoing_many": "Il {{year}} è parziale: {{count}} mesi completi su {{listed}} elencati, l'anno non è finito (dati fino a {{end_month}}).",
     "yearPartialOngoing_other": "Il {{year}} è parziale: {{count}} mesi completi su {{listed}} elencati, l'anno non è finito (dati fino a {{end_month}})."
+  },
+  "error": {
+    "unauthorized": "Non hai effettuato l'accesso: apri il link di accesso monouso stampato da `coach ui`.",
+    "invalid_login_token": "Questo link di accesso non è valido, è già stato usato o è scaduto: esegui `coach ui --login-link` nel terminale per averne uno nuovo.",
+    "csrf": "La pagina non è aggiornata: ricaricala e riprova.",
+    "rate_limited": "Troppi tentativi in poco tempo: aspetta un momento e riprova.",
+    "forbidden": "Questa richiesta è stata rifiutata.",
+    "forbidden_scope": "Questo accesso può vedere solo i propri dati.",
+    "bad_host": "Questo nome host non è consentito.",
+    "unsupported_media_type": "La richiesta non è stata inviata come JSON.",
+    "method_not_allowed": "Questa azione non è disponibile qui.",
+    "not_found": "Non trovato: potrebbe essere stato rimosso o modificato. Ricarica la pagina.",
+    "validation_error": "Alcuni valori non sono validi: controlla il modulo.",
+    "migration_pending": "Il database va aggiornato: esegui `coach db migrate` nel terminale.",
+    "alerts_disabled": "Gli avvisi sono disattivati ([alerts] enabled = false in config.toml).",
+    "coach_busy": "Il coach sta già rispondendo a una domanda: aspetta che finisca.",
+    "internal_error": "Errore imprevisto: guarda il terminale in cui gira `coach ui`."
+  },
+  "explain": {
+    "entity": "l'esercente canonico «{{merchant}}» ha la categoria predefinita {{default_category}}",
+    "entityByYou": "l'esercente canonico «{{merchant}}» ha la categoria predefinita {{default_category}}, impostata da te",
+    "entityNoCategory": "l'esercente canonico «{{merchant}}» non ha una categoria",
+    "entityOutranked": "l'esercente canonico «{{merchant}}» ha la categoria predefinita {{default_category}} (un'etichetta IA o kNN della chiave viene prima della categoria predefinita automatica dell'esercente)",
+    "knnLabel": "etichetta per somiglianza (kNN) {{label_category}} (affidabilità {{confidence}}, modello {{model}}, {{updated}})",
+    "llmLabel": "etichetta IA {{label_category}} (affidabilità {{confidence}}, modello {{model}}, {{updated}})",
+    "llmWebLabel": "etichetta IA con riscontri web {{label_category}} (affidabilità {{confidence}}, modello {{model}}, {{updated}}); la nota dei riscontri web non è salvata nel database (solo l'etichetta)",
+    "noAutoLabel": "nessuna etichetta automatica per questa chiave esercente",
+    "noEntity": "la chiave non è raggruppata sotto un esercente canonico con una categoria",
+    "noOverride": "nessuna correzione per questa singola transazione",
+    "noRule": "nessuna regola esercente corrisponde alla chiave",
+    "noTransferLink": "non collegata a un altro dei tuoi conti",
+    "noTypeRule": "nessuna regola per il tipo «{{tx_type}}»",
+    "noUserLabel": "nessuna tua etichetta per questa chiave esercente",
+    "otherLabel": "etichetta {{source}} {{label_category}} (affidabilità {{confidence}}, modello {{model}}, {{updated}})",
+    "override": "correzione per questa singola transazione: {{override_category}}",
+    "overrideNote": "correzione per questa singola transazione: {{override_category}} ({{note}})",
+    "rule": "regola esercente /{{pattern}}/",
+    "ruleIn": "regola esercente /{{pattern}}/ (solo entrate)",
+    "ruleOut": "regola esercente /{{pattern}}/ (solo uscite)",
+    "transferLink": "parte di un bonifico interno con {{other}} ({{method}}, affidabilità {{confidence}})",
+    "typeRule": "tipo di operazione «{{tx_type}}»",
+    "typeRulePurpose": "tipo di operazione «{{tx_type}}» su un conto con uso «{{purpose}}»",
+    "userLabel": "hai etichettato «{{merchant_key}}» come {{label_category}} ({{updated}})"
   },
   "insight": {
     "anomaly": {
@@ -334,71 +420,19 @@
       "quarterly": "trimestrale",
       "semiannual": "semestrale",
       "yearly": "annuale"
+    },
+    "explainStep": {
+      "override": "correzione della transazione",
+      "transferLink": "bonifico interno",
+      "typeRule": "regola sul tipo di operazione",
+      "userLabel": "la tua etichetta dell'esercente",
+      "rule": "regola esercente",
+      "entity": "esercente canonico",
+      "llm": "etichetta IA",
+      "llmWeb": "etichetta IA con riscontri web",
+      "knn": "etichetta per somiglianza (kNN)",
+      "autoLabel": "etichetta automatica (IA / kNN)"
     }
-  },
-  "subs": {
-    "alternatives": {
-      "note": "le offerte di oltre 30 giorni sono superate ed escluse dalla migliore; i prezzi cambiano: verifica sulla pagina del fornitore prima di agire",
-      "staleWarning": "prezzo di oltre 30 giorni fa: ricontrollalo prima di farci affidamento"
-    },
-    "decision": {
-      "ambiguous_one": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
-      "ambiguous_many": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
-      "ambiguous_other": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
-      "asRecorded": "il pagamento del {{payment_date}} corrisponde a {{monthly_amount}} al mese, come registrato",
-      "kept": "niente da verificare: l'abbonamento è stato mantenuto",
-      "nextNotOverdue": "ancora nessun pagamento successivo, ma il prossimo non è in ritardo",
-      "noPaymentNextOverdue": "nessun pagamento dal {{last_date}}, il prossimo è in ritardo",
-      "noPaymentSeriesEnded": "nessun pagamento dal {{last_date}} (la serie è terminata)",
-      "noPaymentSinceEffective": "ancora nessun pagamento dalla data di efficacia in poi",
-      "otherAmount": "il pagamento del {{payment_date}} corrisponde a {{monthly_amount}} al mese, non ai {{recorded_amount}} registrati",
-      "paymentsAfter_one": "{{count}} pagamento dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
-      "paymentsAfter_many": "{{count}} pagamenti dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
-      "paymentsAfter_other": "{{count}} pagamenti dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
-      "seriesNotFound": "la serie di pagamenti ricorrenti non è nei dati bancari (non trovata): confermalo a mano",
-      "stillOldAmount": "il pagamento del {{payment_date}} è ancora circa il vecchio importo ({{monthly_amount}} al mese)",
-      "takesEffectLater": "la decisione ha effetto più avanti"
-    },
-    "draft": {
-      "indistinguishable_one": "{{count}} altra serie ricorrente non si distingue da questa per descrizione e importo ({{series}}): un solo file del contratto le copre entrambe; dagli un merchant_match più specifico se sono contratti distinti",
-      "indistinguishable_many": "{{count}} altre serie ricorrenti non si distinguono da questa per descrizione e importo ({{series}}): un solo file del contratto le copre tutte; dagli un merchant_match più specifico se sono contratti distinti",
-      "indistinguishable_other": "{{count}} altre serie ricorrenti non si distinguono da questa per descrizione e importo ({{series}}): un solo file del contratto le copre tutte; dagli un merchant_match più specifico se sono contratti distinti",
-      "matchedBy_one": "{{series}} verrebbe collegata a {{count}} file del contratto (ne è atteso esattamente uno)",
-      "matchedBy_many": "{{series}} verrebbe collegata a {{count}} file di contratto (ne è atteso esattamente uno)",
-      "matchedBy_other": "{{series}} verrebbe collegata a {{count}} file di contratto (ne è atteso esattamente uno)",
-      "noBillingPeriod": "il pagamento ({{cadence}}) non ha un periodo di fatturazione corrispondente: fatturazione lasciata vuota",
-      "noMerchantMatch": "non è stato possibile costruire un'espressione merchant_match collegata ai pagamenti di questa serie"
-    },
-    "inventory": {
-      "cancellationSummary": "le informazioni sulla disdetta sono una sintesi generale delle regole a tutela dei consumatori: verifica con il tuo contratto",
-      "costSource": "il costo viene dai pagamenti rilevati; un file del contratto senza pagamenti nei dati bancari usa il suo importo fatturato",
-      "notSubscriptions": "prestiti, mutui, affitti e tasse non sono abbonamenti e non sono elencati"
-    },
-    "savings": {
-      "note": "contano come realizzate solo le decisioni confermate dai dati bancari; quelle in attesa sono dichiarazioni (un servizio disdetto ancora pagato viene segnalato). I mesi sono mesi di calendario interi dalla data di efficacia."
-    },
-    "usage": {
-      "fromLastUsed": "dalla data di ultimo uso che hai registrato",
-      "neverAndPaying": "hai indicato « mai » e i pagamenti continuano",
-      "notMeasurable": "Se un servizio viene usato non risulta dai dati bancari: conta solo ciò che registri (frequenza, ultimo uso). Senza questo l'uso resta sconosciuto."
-    }
-  },
-  "error": {
-    "unauthorized": "Non hai effettuato l'accesso: apri il link di accesso monouso stampato da `coach ui`.",
-    "invalid_login_token": "Questo link di accesso non è valido, è già stato usato o è scaduto: esegui `coach ui --login-link` nel terminale per averne uno nuovo.",
-    "csrf": "La pagina non è aggiornata: ricaricala e riprova.",
-    "rate_limited": "Troppi tentativi in poco tempo: aspetta un momento e riprova.",
-    "forbidden": "Questa richiesta è stata rifiutata.",
-    "forbidden_scope": "Questo accesso può vedere solo i propri dati.",
-    "bad_host": "Questo nome host non è consentito.",
-    "unsupported_media_type": "La richiesta non è stata inviata come JSON.",
-    "method_not_allowed": "Questa azione non è disponibile qui.",
-    "not_found": "Non trovato: potrebbe essere stato rimosso o modificato. Ricarica la pagina.",
-    "validation_error": "Alcuni valori non sono validi: controlla il modulo.",
-    "migration_pending": "Il database va aggiornato: esegui `coach db migrate` nel terminale.",
-    "alerts_disabled": "Gli avvisi sono disattivati ([alerts] enabled = false in config.toml).",
-    "coach_busy": "Il coach sta già rispondendo a una domanda: aspetta che finisca.",
-    "internal_error": "Errore imprevisto: guarda il terminale in cui gira `coach ui`."
   },
   "loanAlert": {
     "missed": {
@@ -520,6 +554,53 @@
     "tenantIncome": {
       "title": "{{property}}: il reddito dell'inquilino supera il limite che hai dichiarato",
       "body": "Reddito dell'inquilino di {{income_amount}} contro un limite di {{limit_amount}}. Verifica le regole dell'agevolazione in base alla composizione del nucleo dell'inquilino."
+    }
+  },
+  "subs": {
+    "alternatives": {
+      "note": "le offerte di oltre 30 giorni sono superate ed escluse dalla migliore; i prezzi cambiano: verifica sulla pagina del fornitore prima di agire",
+      "staleWarning": "prezzo di oltre 30 giorni fa: ricontrollalo prima di farci affidamento"
+    },
+    "decision": {
+      "ambiguous_one": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
+      "ambiguous_many": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
+      "ambiguous_other": "il contratto copre {{count}} serie di pagamenti ricorrenti: registra la decisione su una sola serie (indicala) così i dati bancari possono verificarla",
+      "asRecorded": "il pagamento del {{payment_date}} corrisponde a {{monthly_amount}} al mese, come registrato",
+      "kept": "niente da verificare: l'abbonamento è stato mantenuto",
+      "nextNotOverdue": "ancora nessun pagamento successivo, ma il prossimo non è in ritardo",
+      "noPaymentNextOverdue": "nessun pagamento dal {{last_date}}, il prossimo è in ritardo",
+      "noPaymentSeriesEnded": "nessun pagamento dal {{last_date}} (la serie è terminata)",
+      "noPaymentSinceEffective": "ancora nessun pagamento dalla data di efficacia in poi",
+      "otherAmount": "il pagamento del {{payment_date}} corrisponde a {{monthly_amount}} al mese, non ai {{recorded_amount}} registrati",
+      "paymentsAfter_one": "{{count}} pagamento dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
+      "paymentsAfter_many": "{{count}} pagamenti dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
+      "paymentsAfter_other": "{{count}} pagamenti dopo la data di efficacia del {{effective_date}}; l'ultimo il {{last_date}} ({{last_amount}})",
+      "seriesNotFound": "la serie di pagamenti ricorrenti non è nei dati bancari (non trovata): confermalo a mano",
+      "stillOldAmount": "il pagamento del {{payment_date}} è ancora circa il vecchio importo ({{monthly_amount}} al mese)",
+      "takesEffectLater": "la decisione ha effetto più avanti"
+    },
+    "draft": {
+      "indistinguishable_one": "{{count}} altra serie ricorrente non si distingue da questa per descrizione e importo ({{series}}): un solo file del contratto le copre entrambe; dagli un merchant_match più specifico se sono contratti distinti",
+      "indistinguishable_many": "{{count}} altre serie ricorrenti non si distinguono da questa per descrizione e importo ({{series}}): un solo file del contratto le copre tutte; dagli un merchant_match più specifico se sono contratti distinti",
+      "indistinguishable_other": "{{count}} altre serie ricorrenti non si distinguono da questa per descrizione e importo ({{series}}): un solo file del contratto le copre tutte; dagli un merchant_match più specifico se sono contratti distinti",
+      "matchedBy_one": "{{series}} verrebbe collegata a {{count}} file del contratto (ne è atteso esattamente uno)",
+      "matchedBy_many": "{{series}} verrebbe collegata a {{count}} file di contratto (ne è atteso esattamente uno)",
+      "matchedBy_other": "{{series}} verrebbe collegata a {{count}} file di contratto (ne è atteso esattamente uno)",
+      "noBillingPeriod": "il pagamento ({{cadence}}) non ha un periodo di fatturazione corrispondente: fatturazione lasciata vuota",
+      "noMerchantMatch": "non è stato possibile costruire un'espressione merchant_match collegata ai pagamenti di questa serie"
+    },
+    "inventory": {
+      "cancellationSummary": "le informazioni sulla disdetta sono una sintesi generale delle regole a tutela dei consumatori: verifica con il tuo contratto",
+      "costSource": "il costo viene dai pagamenti rilevati; un file del contratto senza pagamenti nei dati bancari usa il suo importo fatturato",
+      "notSubscriptions": "prestiti, mutui, affitti e tasse non sono abbonamenti e non sono elencati"
+    },
+    "savings": {
+      "note": "contano come realizzate solo le decisioni confermate dai dati bancari; quelle in attesa sono dichiarazioni (un servizio disdetto ancora pagato viene segnalato). I mesi sono mesi di calendario interi dalla data di efficacia."
+    },
+    "usage": {
+      "fromLastUsed": "dalla data di ultimo uso che hai registrato",
+      "neverAndPaying": "hai indicato « mai » e i pagamenti continuano",
+      "notMeasurable": "Se un servizio viene usato non risulta dai dati bancari: conta solo ciò che registri (frequenza, ultimo uso). Senza questo l'uso resta sconosciuto."
     }
   }
 }

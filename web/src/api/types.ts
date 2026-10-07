@@ -77,13 +77,14 @@ export interface TxItem {
   type: string | null; split: boolean; overridden: boolean; transfer_linked: boolean; person?: string | null;
 }
 export interface TxList { items: TxItem[]; totals: { count: number; sum: Money; income: Money; outflow: Money }; limit: number; offset: number; total: number; next_offset: number | null }
-export interface ExplainStep { step: string; applies: boolean; detail: string; category: string | null; source: string | null; decides: boolean }
+/** One step of the decision chain: `step` / `detail` in English, `step_code` (labels.explainStep) and `detail_msg` for the web (i18n step 4d). */
+export interface ExplainStep { step: string; step_code?: string; applies: boolean; detail: string; detail_msg?: ServerMsg | null; category: string | null; source: string | null; decides: boolean }
 export interface TxDetail {
   transaction: { tx_key: string; date: string; amount: Money; description: string; bank: string | null; account: string | null; account_purpose: string | null };
   parsed: Record<string, string | number | null>;
   steps: ExplainStep[];
   split: { amount: Money; category: string; note: string | null }[] | null;
-  memory: { annotations: { id: string; matched: boolean; reason: string; line: number | null; winner?: boolean }[]; winner: string | null };
+  memory: { annotations: { id: string; matched: boolean; reason: string; reason_msg?: ServerMsg | null; line: number | null; winner?: boolean }[]; winner: string | null };
   final: { category: string; source: string; tags: string[]; event: string | null; before_memory: { category: string; source: string } };
   consistent: boolean;
   override: { category: string; note: string | null } | null;
@@ -92,11 +93,11 @@ export interface TxDetail {
   item: TxItem | null;
 }
 export interface CategoryChangePreview {
-  dry_run: boolean; scope: string; category: string; changed: boolean; diff: string; warnings: string[]; id?: string; change_id?: string | null;
-  affected: { count: number; total: Money; from_categories?: { category: string; n: number }[]; blocked?: { reason: string; n: number }[]; samples?: { merchant: string; count: number; total: number }[];
-    already?: number; matched?: number; tag_changes?: number; applies_to?: number; shadowed?: number; date_min?: string | null; date_max?: string | null; merchant_key?: string; warnings?: string[]; max_account_share?: number };
+  dry_run: boolean; scope: string; category: string; changed: boolean; diff: string; warnings: string[]; warnings_msg?: (ServerMsg | null)[]; id?: string; change_id?: string | null;
+  affected: { count: number; total: Money; from_categories?: { category: string; n: number }[]; blocked?: { reason: string; n: number; kind?: string; value?: string }[]; samples?: { merchant: string; count: number; total: number }[];
+    already?: number; matched?: number; tag_changes?: number; applies_to?: number; shadowed?: number; date_min?: string | null; date_max?: string | null; merchant_key?: string; warnings?: string[]; warnings_msg?: (ServerMsg | null)[]; max_account_share?: number };
 }
-export interface EditResult { dry_run: boolean; changed: boolean; diff: string; change_id: string | null; warnings: string[]; id?: string; file?: string; affected?: CategoryChangePreview["affected"] }
+export interface EditResult { dry_run: boolean; changed: boolean; diff: string; change_id: string | null; warnings: string[]; warnings_msg?: (ServerMsg | null)[]; id?: string; file?: string; affected?: CategoryChangePreview["affected"] }
 
 export interface CategoryRow { category: string; group: string; monthly_avg: Money | null; monthly_avg_with_one_offs: Money | null; n_months: number; low_confidence: boolean; lumpy: boolean; this_month: Money; last_month: Money; accounts: string[] }
 export interface GroupRow { group: string; monthly_avg: Money | null; n_months: number; low_confidence: boolean; this_month: Money; last_month: Money }
@@ -352,7 +353,7 @@ export interface AllocationReport { as_of: string; window: { months: string[] };
 export interface AttributionWhy {
   tx_key: string; person: string | null; source: "manual" | "rule" | "account" | "none"; rule: string | null; reason: string;
   manual: { member: string; set_at: string; set_by: string; note: string | null } | null;
-  rules: { id: string; member: string; matched: boolean; why_not: string | null }[];
+  rules: { id: string; member: string; matched: boolean; why_not: string | null; why_not_msg?: ServerMsg | null }[];
   account: string | null; account_owner: string | null; account_owner_member: string | null; card_last4: string | null;
   history: { id: number; action: string; old_member: string | null; new_member: string | null; at: string; by: string }[];
 }

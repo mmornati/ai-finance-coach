@@ -11,6 +11,7 @@ import re
 from typing import Optional
 
 from coach.classify import rules as R
+from coach.i18n_msg import MessageError, server_msg, strip_msgs
 from coach.memory.store import MemoryStore, MemoryStoreError
 
 
@@ -48,6 +49,23 @@ def annotation_lines(store: MemoryStore) -> dict[str, int]:
         return {}
 
 
+def _msg(code: str, text: str, **params) -> Optional[dict]:
+    """The web's message for one sentence of the chain (:func:`coach.i18n_msg.server_msg`), or None when a value read from the database
+    or a hand-written file cannot be one (an odd category id): the web then shows the English ``detail``. Never blocks an explanation."""
+    try:
+        return server_msg(code, text, **params)
+    except MessageError:
+        return None
+
+
+def plain(x: dict) -> dict:
+    """An explanation as the CLI's ``--json`` prints it: without the web's messages (``*_msg``) and step codes."""
+    out = strip_msgs(x)
+    for s in out["steps"]:
+        s.pop("step_code", None)
+    return out
+
+
 def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) -> dict:
     rules = R.load_rules() if rules is None else rules
     row = con.execute("""SELECT t.tx_key, t.booking_date, t.amount, t.description, t.counterparty, e.tx_type, e.op_date,
@@ -70,15 +88,23 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
     steps: list[dict] = []
     direction = "in" if amount > 0 else "out"
 
-    def step(name, applies: bool, detail: str, category=None, edit=None, source=None):
-        steps.append({"step": name, "applies": applies, "detail": detail, "category": category, "edit": edit,
-                      "source": source})
+    def step(name, code, applies: bool, detail: str, detail_msg, category=None, edit=None, source=None):
+        # `step_code`: labels.explainStep.<code> of the web (the English `step` stays what the CLI and the MCP tool read);
+        # `detail_msg`: the web's message for `detail` (docs/i18n.md "Server text"); merchant names, keys and patterns are params, never translated
+        steps.append({"step": name, "step_code": code, "applies": applies, "detail": detail, "detail_msg": detail_msg,
+                      "category": category, "edit": edit, "source": source})
 
     # 1. override
     o = con.execute("SELECT category, note FROM tx_overrides WHERE tx_key=?", (tx_key,)).fetchone()
-    step("override", bool(o), f"per-transaction override {o[0]}" + (f" ({o[1]})" if o and o[1] else "") if o else
-         "no per-transaction override", o[0] if o else None,
-         "delete the row of tx_overrides for this tx_key (database)" if o else None, "override")
+    if o:
+        text = f"per-transaction override {o[0]}" + (f" ({o[1]})" if o[1] else "")
+        step("override", "override", True, text,
+             _msg("explain.overrideNote", text, override_category=o[0], note=o[1]) if o[1] else
+             _msg("explain.override", text, override_category=o[0]),
+             o[0], "delete the row of tx_overrides for this tx_key (database)", "override")
+    else:
+        step("override", "override", False, "no per-transaction override", _msg("explain.noOverride", "no per-transaction override"),
+             source="override")
     # 2. split (not part of resolve(): parts replace the category afterwards)
     parts = con.execute("SELECT amount, category, note FROM tx_splits WHERE tx_key=? ORDER BY id", (tx_key,)).fetchall()
     # 3. transfer link
@@ -86,28 +112,37 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
                      (tx_key, tx_key)).fetchone()
     if lk:
         other = lk[1] if lk[0] == tx_key else lk[0]
-        step("transfer link", True, f"leg of an internal transfer with {other} ({lk[3]}, confidence {lk[2]:.2f})",
+        text = f"leg of an internal transfer with {other} ({lk[3]}, confidence {lk[2]:.2f})"
+        step("transfer link", "transferLink", True, text,
+             _msg("explain.transferLink", text, other=other, method=lk[3], confidence=f"{lk[2]:.2f}"),
              "transfer.internal", f"`coach transfers unlink {tx_key}`", "transfer_link")
     else:
-        step("transfer link", False, "not linked to another own account")
+        step("transfer link", "transferLink", False, "not linked to another own account",
+             _msg("explain.noTransferLink", "not linked to another own account"))
     # 4. type rule
     by_p = (rules.get("type_rules_by_account_purpose") or {}).get(purpose or "", {})
     if ttype in by_p:
-        step("type rule", True, f"transaction type {ttype!r} on an account with purpose {purpose!r}", by_p[ttype],
+        text = f"transaction type {ttype!r} on an account with purpose {purpose!r}"
+        step("type rule", "typeRule", True, text, _msg("explain.typeRulePurpose", text, tx_type=ttype, purpose=purpose), by_p[ttype],
              f"type_rules_by_account_purpose.{purpose}.{ttype} in {rules_hint()}, or override it with `coach memory annotate`", "type_rule")
     elif ttype in rules["type_rules"]:
-        step("type rule", True, f"transaction type {ttype!r}", rules["type_rules"][ttype],
+        text = f"transaction type {ttype!r}"
+        step("type rule", "typeRule", True, text, _msg("explain.typeRule", text, tx_type=ttype), rules["type_rules"][ttype],
              f"type_rules.{ttype} in {rules_hint()}, or override it with `coach memory annotate`", "type_rule")
     else:
-        step("type rule", False, f"no rule for type {ttype!r}")
+        text = f"no rule for type {ttype!r}"
+        step("type rule", "typeRule", False, text, _msg("explain.noTypeRule", text, tx_type=ttype))
     # 5. user label
     m = con.execute("SELECT merchant_name, category, confidence, source, model, updated_at FROM merchants WHERE merchant_key=?",
                     (mkey,)).fetchone()
     if m and m[3] == "user":
-        step("user merchant label", True, f"you labelled {mkey!r} as {m[1]} ({m[5]})", m[1],
+        text = f"you labelled {mkey!r} as {m[1]} ({m[5]})"
+        step("user merchant label", "userLabel", True, text,
+             _msg("explain.userLabel", text, merchant_key=mkey, label_category=m[1], updated=str(m[5] or "")), m[1],
              f"`coach classify correct \"{mkey}\" <category>`", "user")
     else:
-        step("user merchant label", False, "no label of yours for this merchant key")
+        step("user merchant label", "userLabel", False, "no label of yours for this merchant key",
+             _msg("explain.noUserLabel", "no label of yours for this merchant key"))
     # 6. rule
     rule_hit = None
     for r in rules["merchant_rules"]:
@@ -117,32 +152,55 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
             rule_hit = r
             break
     if rule_hit:
-        step("rule", True, f"merchant rule /{rule_hit['match']}/" + (f" ({rule_hit['direction']} only)" if rule_hit.get("direction") else ""),
-             rule_hit["category"], f"merchant_rules in {rules_hint()}, or override it with `coach memory annotate`", "rule")
+        rdir = rule_hit.get("direction")
+        text = f"merchant rule /{rule_hit['match']}/" + (f" ({rdir} only)" if rdir else "")
+        dmsg = (_msg("explain.ruleIn", text, pattern=rule_hit["match"]) if rdir == "in" else
+                _msg("explain.ruleOut", text, pattern=rule_hit["match"]) if rdir == "out" else
+                None if rdir else _msg("explain.rule", text, pattern=rule_hit["match"]))
+        step("rule", "rule", True, text, dmsg, rule_hit["category"],
+             f"merchant_rules in {rules_hint()}, or override it with `coach memory annotate`", "rule")
     else:
-        step("rule", False, "no merchant rule matches the key")
+        step("rule", "rule", False, "no merchant rule matches the key", _msg("explain.noRule", "no merchant rule matches the key"))
     # 7. entity
     e = con.execute("""SELECT e.name, e.category, e.category_user FROM merchant_aliases a
                        JOIN merchant_entities e ON e.id=a.entity_id WHERE a.merchant_key=?""", (mkey,)).fetchone()
     entity_applies = bool(e and e[1] and (not m or e[2]))
     if e and e[1]:
         why = "" if entity_applies else " (an LLM/kNN label of the key outranks an automatic entity default)"
-        step("entity", entity_applies, f"canonical merchant {e[0]!r} has the default category {e[1]}"
-             + (" set by you" if e[2] else "") + why, e[1] if entity_applies else None,
+        text = f"canonical merchant {e[0]!r} has the default category {e[1]}" + (" set by you" if e[2] else "") + why
+        if not entity_applies:
+            dmsg = _msg("explain.entityOutranked", text, merchant=e[0], default_category=e[1])
+        elif e[2]:
+            dmsg = _msg("explain.entityByYou", text, merchant=e[0], default_category=e[1])
+        else:
+            dmsg = _msg("explain.entity", text, merchant=e[0], default_category=e[1])
+        step("entity", "entity", entity_applies, text, dmsg, e[1] if entity_applies else None,
              f"`coach merchants category \"{e[0]}\" <category>`", "entity")
+    elif not e:
+        text = "the key is not grouped under a canonical merchant with a category"
+        step("entity", "entity", False, text, _msg("explain.noEntity", text))
     else:
-        step("entity", False, "the key is not grouped under a canonical merchant with a category" if not e else
-             f"canonical merchant {e[0]!r} has no category")
+        text = f"canonical merchant {e[0]!r} has no category"
+        step("entity", "entity", False, text, _msg("explain.entityNoCategory", text, merchant=e[0]))
     # 8. LLM / kNN / web label
     if m and m[3] != "user":
         conf = f"{m[2]:.2f}" if m[2] is not None else "?"
         kind = {"llm": "LLM", "llm_web": "LLM with web evidence", "knn": "similarity (kNN)"}.get(m[3], str(m[3]))
-        step(f"{kind} label", True, f"{kind} label {m[1]} (confidence {conf}, model {m[4]}, {m[5]})", m[1],
-             f"`coach classify correct \"{mkey}\" <category>`", m[3])
+        text = f"{kind} label {m[1]} (confidence {conf}, model {m[4]}, {m[5]})"
+        params = {"label_category": m[1], "confidence": conf, "model": str(m[4] or ""), "updated": str(m[5] or "")}
+        if m[3] == "llm":
+            code, dmsg = "llm", _msg("explain.llmLabel", text, **params)
+        elif m[3] == "llm_web":
+            text += "; the web evidence note is not stored in the database (only the label)"
+            code, dmsg = "llmWeb", _msg("explain.llmWebLabel", text, **params)
+        elif m[3] == "knn":
+            code, dmsg = "knn", _msg("explain.knnLabel", text, **params)
+        else:
+            code, dmsg = "autoLabel", _msg("explain.otherLabel", text, source=str(m[3]), **params)
+        step(f"{kind} label", code, True, text, dmsg, m[1], f"`coach classify correct \"{mkey}\" <category>`", m[3])
     else:
-        step("LLM / kNN label", False, "no automatic label for this merchant key")
-    if m and m[3] == "llm_web":
-        steps[-1]["detail"] += "; the web evidence note is not stored in the database (only the label)"
+        step("LLM / kNN label", "autoLabel", False, "no automatic label for this merchant key",
+             _msg("explain.noAutoLabel", "no automatic label for this merchant key"))
 
     # decider = first applicable (resolve() order), else uncategorized
     decider = next((s for s in steps if s["applies"]), None)
@@ -159,8 +217,8 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
     considered, winner = [], None
     lines = annotation_lines(store)
     for a in anns:
-        why = R.annotation_mismatch(a, tx_key, mkey, desc, bdate, amount, real_cat, op_date, aliases)
-        entry = {"id": a.get("id"), "matched": why is None, "reason": why or "all criteria match",
+        why, why_msg = R.annotation_mismatch_msg(a, tx_key, mkey, desc, bdate, amount, real_cat, op_date, aliases)
+        entry = {"id": a.get("id"), "matched": why is None, "reason": why or "all criteria match", "reason_msg": why_msg,
                  "line": lines.get(str(a.get("id")))}
         if why is None and winner is None:
             winner = a

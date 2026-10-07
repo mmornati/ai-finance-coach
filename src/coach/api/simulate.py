@@ -19,26 +19,55 @@ def decide(con, annotations: list, tx_keys: Iterable[str]) -> dict[str, dict]:
     return {r["tx_key"]: r for r in R.categorised(con, annotations=annotations, only_tx_keys=set(tx_keys), use_splits=False)}
 
 
-def _reason(row: dict) -> str:
+def _blocker(row: dict) -> tuple[str, str]:
+    """What keeps a transaction's category: ("memory", annotation id), (one of SOURCE_REASON, ""), or ("source", the pipeline source)."""
     if row["source"] == "memory":
-        return f"the memory annotation {row.get('annotation')!r}"
+        return "memory", str(row.get("annotation"))
     if row["pre_source"] in SOURCE_REASON:
-        return SOURCE_REASON[row["pre_source"]]
-    return f"its {row['pre_source']} category"
+        return row["pre_source"], ""
+    return "source", str(row["pre_source"])
+
+
+def _reason_text(kind: str, value: str) -> str:
+    if kind == "memory":
+        return f"the memory annotation {value!r}"
+    if kind in SOURCE_REASON:
+        return SOURCE_REASON[kind]
+    return f"its {value} category"
+
+
+def _reason(row: dict) -> str:
+    return _reason_text(*_blocker(row))
+
+
+def blocked_warning(b: dict) -> tuple[str, dict]:
+    """One `blocked` entry of :func:`summarise` as a warning: (English sentence, the web's message, docs/i18n.md "Server text")."""
+    from coach.i18n_msg import server_msg
+    n, kind, value = b["n"], b.get("kind"), b.get("value") or ""
+    text = f"{n} transaction(s) keep their category because of {b['reason']}"
+    if kind == "memory":
+        return text, server_msg("categoryEdit.keptByAnnotation", text, count=n, annotation=value)
+    if kind == "override":
+        return text, server_msg("categoryEdit.keptByOverride", text, count=n)
+    if kind == "transfer_link":
+        return text, server_msg("categoryEdit.keptByTransferLink", text, count=n)
+    if kind == "type_rule":
+        return text, server_msg("categoryEdit.keptByTypeRule", text, count=n)
+    return text, server_msg("categoryEdit.keptBySource", text, count=n, source=value)
 
 
 def summarise(before: dict, after: dict, category: str) -> dict:
     """What a change to `category` really does to these transactions."""
     changing = [k for k in after if after[k]["category"] != before[k]["category"]]
     already = [k for k in after if before[k]["category"] == category]
-    blocked = Counter(_reason(after[k]) for k in after if after[k]["category"] != category and before[k]["category"] != category)
+    blocked = Counter(_blocker(after[k]) for k in after if after[k]["category"] != category and before[k]["category"] != category)
     froms = Counter(before[k]["category"] for k in changing)
     tos = Counter(after[k]["category"] for k in changing)
     return {"count": len(changing), "already": len(already), "matched": len(after),
             "total": money_str(sum(to_cents(after[k]["amount"]) for k in changing)),
             "from_categories": [{"category": c, "n": n} for c, n in froms.most_common(6)],
             "to_categories": [{"category": c, "n": n} for c, n in tos.most_common(6)],
-            "blocked": [{"reason": r, "n": n} for r, n in blocked.items()],
+            "blocked": [{"reason": _reason_text(kind, value), "n": n, "kind": kind, "value": value} for (kind, value), n in blocked.items()],
             "tag_changes": sum(1 for k in after if after[k]["tags"] != before[k]["tags"]),
             "date_min": min((after[k]["date"] for k in after), default=None),
             "date_max": max((after[k]["date"] for k in after), default=None)}
