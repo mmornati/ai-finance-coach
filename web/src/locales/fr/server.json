@@ -742,7 +742,7 @@
       "value": "l'estimation pour le valeur nette (la dernière valeur que vous retenez, avec as_of)"
     },
     "rate": {
-      "above": "Le taux du prêt dépasse de {{gap}} point(s) le taux du marché que vous avez saisi : demander un devis peut valoir la peine.",
+      "above": "Le taux du prêt dépasse de {{gap_num}} point(s) le taux du marché que vous avez saisi : demander un devis peut valoir la peine.",
       "below": "Le taux du prêt est inférieur au taux du marché que vous avez saisi : une renégociation le ferait monter.",
       "close": "Le taux du prêt est proche du taux du marché que vous avez saisi : peu à gagner d'une renégociation portant sur le seul taux.",
       "missingLoan": "le prêt et son taux nominal",

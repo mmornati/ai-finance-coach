@@ -48,6 +48,18 @@ describe("server text: code + params, the English text as fallback", () => {
     expect(tServerList(notes.slice(0, 1), [{ code: "coverage.nonEur", params: { count: 3 }, text: "x" }])).toEqual(["3 transazioni non in EUR escluse."]);
   });
 
+  it("formats a plain decimal (*_num) in the reader's language, keeping the decimals the server sent", async () => {
+    await setLanguage("en", { persist: false });
+    expect(formatParams({ gap_num: "2.4" })).toEqual({ gap_num: "2.4" });
+    expect(formatParams({ gap_num: "2.40", n_num: 3 })).toEqual({ gap_num: "2.40", n_num: "3" });
+    await setLanguage("fr", { persist: false });
+    expect(formatParams({ gap_num: "2.4" })).toEqual({ gap_num: "2,4" });
+    expect(tServer({ code: "rental.rate.above", params: { gap_num: "2.40" }, text: "x" })).toContain("dépasse de 2,40 point(s)");
+    await setLanguage("it", { persist: false });
+    expect(formatParams({ gap_num: "2.4" })).toEqual({ gap_num: "2,4" });
+    expect(formatParams({ gap_num: null })).toEqual({ gap_num: "–" });
+  });
+
   it("follows the interface language", async () => {
     await setLanguage("fr", { persist: false });
     expect(tServer({ code: "balances.oneBalance", params: {}, text: "x" })).toBe("Un solde par compte, le type le plus comptabilisé que fournit la banque.");

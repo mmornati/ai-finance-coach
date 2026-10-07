@@ -698,7 +698,7 @@
       "value": "the valuation for the net equity (the latest value you believe, with as_of)"
     },
     "rate": {
-      "above": "The loan rate is {{gap}} point(s) above the market rate you entered: a quote may be worth asking for.",
+      "above": "The loan rate is {{gap_num}} point(s) above the market rate you entered: a quote may be worth asking for.",
       "below": "The loan rate is below the market rate you entered: a renegotiation would raise it.",
       "close": "The loan rate is close to the market rate you entered: little to gain from a renegotiation on the rate alone.",
       "missingLoan": "the loan and its nominal rate",

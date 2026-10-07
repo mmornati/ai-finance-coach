@@ -46,13 +46,14 @@ def test_a_message_carries_the_code_raw_params_and_the_english_text():
 
 def test_dates_months_and_decimals_are_normalised():
     m = server_msg("a.b", "x", end_date=dt.datetime(2026, 1, 2, 10, 30), first_month=dt.date(2026, 3, 9), cap_amount=Decimal("10.50"),
-                   gone_date=None)
-    assert m["params"] == {"end_date": "2026-01-02", "first_month": "2026-03", "cap_amount": "10.50", "gone_date": None}
+                   gone_date=None, gap_num=Decimal("2.40"), n_num=2.4, k_num=3)
+    assert m["params"] == {"end_date": "2026-01-02", "first_month": "2026-03", "cap_amount": "10.50", "gone_date": None, "gap_num": "2.40",
+                           "n_num": 2.4, "k_num": 3}
 
 
 @pytest.mark.parametrize("params", [
     {"count": "2"}, {"count": True}, {"due_date": "05/10/2026"}, {"due_month": "2026-13"}, {"rent_amount": 1234},
-    {"rent_amount": 12.5}, {"rent_amount": "12,50"}, {"rise_pct": "12%"}, {"top_category": "groceries"}, {"top_group": "food.groceries"},
+    {"rent_amount": 12.5}, {"rent_amount": "12,50"}, {"rise_pct": "12%"}, {"gap_num": "2,4"}, {"gap_num": True}, {"gap_num": "two"}, {"top_category": "groceries"}, {"top_group": "food.groceries"},
     {"label": ["a"]}, {"label": True}, {"BadName": "x"},
 ])
 def test_a_param_of_the_wrong_type_is_refused(params):

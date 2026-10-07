@@ -284,7 +284,7 @@ describe("rental property: translations", () => {
   it("keeps the English reading, with its general-advice line, until the disclaimers are known", async () => {
     const t = "the loan rate is 0.80 point(s) above the market rate you entered: a quote may be worth asking for.";
     indBody = indicators({ signals: [{ id: "rate_above_market", reading: `${t} This is general information, not financial advice.`,
-      reading_msg: { ...msg("rental.rate.above", t, { gap: 0.8 }), disclaimer: "general_advice" } }] });
+      reading_msg: { ...msg("rental.rate.above", t, { gap_num: "0.80" }), disclaimer: "general_advice" } }] });
     renderApp(<Rental />);
     await userEvent.click(await screen.findByRole("button", { name: /Renegotiate or sell/ }));
     expect(await screen.findByText(/a quote may be worth asking for\. This is general information, not financial advice\./)).toBeInTheDocument();

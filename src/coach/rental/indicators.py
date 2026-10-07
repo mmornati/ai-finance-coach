@@ -137,7 +137,7 @@ def rate_check(ds, prop, market: dict, fees: Optional[dict] = None) -> dict:
     if gap >= thr:
         t = f"the loan rate is {gap:.2f} point(s) above the market rate you entered: a quote may be worth asking for."
         out["reading"] = f"{t} {GENERAL}"
-        out["reading_msg"] = _with_advice(server_msg("rental.rate.above", t, gap=round(gap, 2)))
+        out["reading_msg"] = _with_advice(server_msg("rental.rate.above", t, gap_num=f"{gap:.2f}"))
     elif gap > -thr:
         t = "the loan rate is close to the market rate you entered: little to gain from a renegotiation on the rate alone"
         out["reading"], out["reading_msg"] = t, server_msg("rental.rate.close", t)

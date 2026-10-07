@@ -2,13 +2,13 @@
 //
 // The API keeps its English sentence and sends, next to it, a CODE and RAW parameters: `{ code, params, text }` (built by
 // `coach.i18n_msg.server_msg` in Python). The code is a key of the `server` namespace (src/locales/<lang>/server.json); a param is
-// formatted from its NAME (`*_date`, `*_month`, `*_amount`, `*_pct`, `*_category`, `*_group`, `count`); an unknown code shows the English
+// formatted from its NAME (`*_date`, `*_month`, `*_amount`, `*_pct`, `*_num`, `*_category`, `*_group`, `count`); an unknown code shows the English
 // `text`. A fixed vocabulary (an alert kind, a balance type, a setup step...) is a code the payload already carries: `serverLabel(family, code,
 // english)` looks up `labels.<family>.<code>`. An API error is translated by its `code` (`error.<code>`), else its own message.
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { ApiError } from "@/lib/api";
-import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel } from "@/lib/format";
+import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtNumber, fmtPct, groupLabel } from "@/lib/format";
 
 export type ServerParam = string | number | null;
 /** A sentence of the server: translated by `code` when the web knows it, else `text` (English). */
@@ -43,6 +43,12 @@ export function formatParam(name: string, v: ServerParam): string | number {
   if (name.endsWith("_month")) return fmtMonth(String(v), "long");
   if (name.endsWith("_amount")) return fmtMoney(v);
   if (name.endsWith("_pct")) return fmtPct(Number(v));
+  if (name.endsWith("_num")) {
+    // a plain decimal in the reader's format, with the decimals the server sent ("2.40" stays two decimals, 2.4 one)
+    const s = String(v);
+    const n = Number(s);
+    return Number.isFinite(n) ? fmtNumber(n, s.includes(".") ? s.length - s.indexOf(".") - 1 : 0) : s;
+  }
   if (name.endsWith("_category")) return catLabel(String(v));
   if (name.endsWith("_group")) return groupLabel(String(v));
   return v;

@@ -742,7 +742,7 @@
       "value": "la stima per il valore netto (l'ultimo valore che ritieni valido, con as_of)"
     },
     "rate": {
-      "above": "Il tasso del prestito supera di {{gap}} punti il tasso di mercato che hai inserito: potrebbe valere la pena chiedere un preventivo.",
+      "above": "Il tasso del prestito supera di {{gap_num}} punti il tasso di mercato che hai inserito: potrebbe valere la pena chiedere un preventivo.",
       "below": "Il tasso del prestito è inferiore al tasso di mercato che hai inserito: una rinegoziazione lo farebbe salire.",
       "close": "Il tasso del prestito è vicino al tasso di mercato che hai inserito: poco da guadagnare da una rinegoziazione sul solo tasso.",
       "missingLoan": "il prestito e il suo tasso nominale",
