@@ -338,10 +338,14 @@ def _annotation_effect(state: AppState, model, category: Optional[str] = None) -
 
 
 def _with_warnings(out: dict, warnings: list, msgs: list) -> dict:
-    """`out`'s warnings (the edit's own, English only) followed by `warnings`, and `warnings_msg` in the same order (None: no message)."""
+    """`out`'s warnings (the memory edit's issues, with their `warnings_msg` from `_write.edit_out`) followed by `warnings`, and `warnings_msg`
+    in the same order: each side's message list is padded with None to its own length, so neither side is overwritten nor shifted."""
+    def padded(texts: list, ms) -> list:
+        ms = list(ms or [])[:len(texts)]
+        return ms + [None] * (len(texts) - len(ms))
     own = list(out.get("warnings", []))
-    own_msgs = list(out.get("warnings_msg") or [None] * len(own))
-    out["warnings"], out["warnings_msg"] = own + list(warnings), own_msgs + list(msgs)
+    out["warnings"] = own + list(warnings)
+    out["warnings_msg"] = padded(own, out.get("warnings_msg")) + padded(list(warnings), msgs)
     return out
 
 

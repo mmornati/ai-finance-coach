@@ -181,3 +181,25 @@ def test_no_message_reaches_the_mcp_budget_and_goal_tools(cfg):
     finally:
         s.close()
         con.close()
+
+
+def test_a_category_preview_keeps_both_kinds_of_warnings_aligned(ctx, monkeypatch):  # noqa: F811
+    """The memory edit's own warnings (run_edit, with messages) come first, the preview's (it matches no transaction) after: the two lists
+    have the same length and order, neither side overwrites the other."""
+    orig = MemoryStore.semantic_issues
+
+    def with_warning(self, rel, model, strict=True):
+        return orig(self, rel, model, strict) + [Issue.of("warning", "household_no_adult", rel, {
+            "code": "memoryCheck.householdNoAdult", "params": {}, "text": "no adult member is declared"})]
+    monkeypatch.setattr(MemoryStore, "semantic_issues", with_warning)
+    pv = ctx.post("/annotations", {"merchant_key": "^NOBODY$", "category": "food.groceries"}, dry_run=True).json()
+    assert len(pv["warnings"]) == len(pv["warnings_msg"]) == 2
+    assert pv["warnings"][0] == "no adult member is declared" and pv["warnings_msg"][0]["code"] == "memoryCheck.householdNoAdult"
+    assert pv["warnings"][1] == "it matches no transaction" and pv["warnings_msg"][1]["code"] == "annotation.matchesNothing"
+
+
+def test_with_warnings_pads_a_side_without_messages():
+    from coach.api.routes.transactions import _with_warnings
+    m = {"code": "x.y", "params": {}, "text": "a"}
+    out = _with_warnings({"warnings": ["a", "b"], "warnings_msg": [m]}, ["c"], [])
+    assert out["warnings"] == ["a", "b", "c"] and out["warnings_msg"] == [m, None, None]
