@@ -303,6 +303,53 @@
     "typeRulePurpose": "tipo di operazione «{{tx_type}}» su un conto con uso «{{purpose}}»",
     "userLabel": "hai etichettato «{{merchant_key}}» come {{label_category}} ({{updated}})"
   },
+  "infer": {
+    "lease": "un leasing / noleggio non ha un piano di ammortamento da risolvere: registra il canone, la data di fine e il valore residuo",
+    "varies_one": "la rata varia del {{spread_pct}} sull'ultimo addebito ({{count}}) (tasso variabile, modulazione o un addebito diverso): si usa l'importo più recente e l'affidabilità è bassa",
+    "varies_many": "la rata varia del {{spread_pct}} sugli ultimi {{count}} addebiti (tasso variabile, modulazione o un addebito diverso): si usa l'importo più recente e l'affidabilità è bassa",
+    "varies_other": "la rata varia del {{spread_pct}} sugli ultimi {{count}} addebiti (tasso variabile, modulazione o un addebito diverso): si usa l'importo più recente e l'affidabilità è bassa",
+    "insuranceSubtracted": "si presume che l'assicurazione del mutuatario ({{insurance_amount}} al mese) sia addebitata INSIEME alla rata e viene sottratta: se è addebitata a parte, le cifre qui sotto sono troppo basse",
+    "insuranceRateSubtracted": "si presume che il premio assicurativo calcolato dal suo tasso sia addebitato INSIEME alla rata e viene sottratto",
+    "mayIncludeInsurance": "la rata potrebbe includere l'assicurazione del mutuatario (non registrata): il capitale e il tasso dedotti sarebbero allora un po' troppo alti",
+    "variableRate": "tasso variabile / misto: il tasso dedotto è quello che corrisponde alla rata attuale",
+    "notLargerThanInsurance": "la rata non è superiore all'assicurazione",
+    "noRateFits": "nessun tasso va bene: le rate sulla durata sommano meno del capitale (capitale o durata sbagliati?)",
+    "noTermFits": "la rata non copre gli interessi sul capitale: capitale, tasso o rata sbagliati",
+    "allRecorded": "capitale, tasso e durata sono tutti registrati: niente da dedurre (il controllo del piano li confronta con gli addebiti)",
+    "principalNotDerivable": "il capitale iniziale non si può ricavare dal solo debito residuo: riprendilo dall'offerta del prestito",
+    "method": {
+      "median": "mediana degli addebiti bancari osservati",
+      "latest": "ultimo addebito bancario osservato",
+      "principal_one": "rata costante: capitale ricavato dalla rata, dal tasso del {{rate}} % e da {{count}} mese",
+      "principal_many": "rata costante: capitale ricavato dalla rata, dal tasso del {{rate}} % e da {{count}} mesi",
+      "principal_other": "rata costante: capitale ricavato dalla rata, dal tasso del {{rate}} % e da {{count}} mesi",
+      "rate_one": "metodo di Newton sulla rata costante di {{principal_amount}} su {{count}} mese",
+      "rate_many": "metodo di Newton sulla rata costante di {{principal_amount}} su {{count}} mesi",
+      "rate_other": "metodo di Newton sulla rata costante di {{principal_amount}} su {{count}} mesi",
+      "term": "rata costante: mesi necessari per rimborsare {{principal_amount}} al {{rate}} % con questa rata",
+      "startPlusTerm": "data di inizio + la durata dedotta",
+      "rateOutstanding_one": "metodo di Newton sul debito residuo ({{outstanding_amount}} al {{as_of_date}}) sul {{count}} mese fino alla data di fine",
+      "rateOutstanding_many": "metodo di Newton sul debito residuo ({{outstanding_amount}} al {{as_of_date}}) sui {{count}} mesi fino alla data di fine",
+      "rateOutstanding_other": "metodo di Newton sul debito residuo ({{outstanding_amount}} al {{as_of_date}}) sui {{count}} mesi fino alla data di fine",
+      "endOutstanding_one": "rata costante: {{count}} mese per rimborsare {{outstanding_amount}} (al {{as_of_date}}) al {{rate}} %",
+      "endOutstanding_many": "rata costante: {{count}} mesi per rimborsare {{outstanding_amount}} (al {{as_of_date}}) al {{rate}} %",
+      "endOutstanding_other": "rata costante: {{count}} mesi per rimborsare {{outstanding_amount}} (al {{as_of_date}}) al {{rate}} %",
+      "endMinusTerm": "data di fine - la durata"
+    },
+    "note": {
+      "roundedEuro": "arrotondato all'euro; verificalo con il contratto",
+      "nominalRate": "tasso nominale annuo, assicurazione esclusa",
+      "exact": "valore esatto {{value}}",
+      "exactMismatch": "valore esatto {{value}}; la durata arrotondata non riproduce la rata entro l'1 %"
+    },
+    "missing": {
+      "payments": "addebiti bancari riconosciuti dalla causale di pagamento (impostala o collega la serie di pagamenti)",
+      "twoOfNone": "due tra capitale iniziale, tasso nominale, data di fine / durata (nessuno registrato) - oppure debito residuo + la sua data + data di fine per la via del debito residuo",
+      "twoOf_one": "due tra capitale iniziale, tasso nominale, data di fine / durata (solo {{count}} registrato) - oppure debito residuo + la sua data + data di fine per la via del debito residuo",
+      "twoOf_many": "due tra capitale iniziale, tasso nominale, data di fine / durata (solo {{count}} registrati) - oppure debito residuo + la sua data + data di fine per la via del debito residuo",
+      "twoOf_other": "due tra capitale iniziale, tasso nominale, data di fine / durata (solo {{count}} registrati) - oppure debito residuo + la sua data + data di fine per la via del debito residuo"
+    }
+  },
   "insight": {
     "anomaly": {
       "categorySpike": "Picco di spesa",
@@ -432,6 +479,73 @@
       "llmWeb": "etichetta IA con riscontri web",
       "knn": "etichetta per somiglianza (kNN)",
       "autoLabel": "etichetta automatica (IA / kNN)"
+    },
+    "loanField": {
+      "monthly_payment": "rata mensile",
+      "outstanding": "debito residuo",
+      "outstanding_as_of": "data del debito residuo",
+      "end_date": "data di fine",
+      "debited_account": "conto di addebito",
+      "payment_match": "come si riconoscono i suoi addebiti",
+      "rate": "tasso di interesse"
+    },
+    "loanOption": {
+      "keep_payment": "mantieni la rata, finisci prima",
+      "keep_term": "mantieni la data di fine, abbassa la rata"
+    },
+    "loanVerdict": {
+      "saves_money": "fa risparmiare sulla durata del prestito",
+      "penalty_exceeds_saving": "la penale supera quanto si risparmia di interessi e assicurazione",
+      "no_saving": "nessun risparmio",
+      "costs_exceed_saving": "i costi superano il risparmio",
+      "break_even_after_the_loan_ends": "il pareggio arriva dopo la fine del prestito",
+      "worth_asking_for_quotes": "vale la pena chiedere delle offerte",
+      "small_saving_check_the_costs": "piccolo risparmio: controlla i costi",
+      "fees_exceed_saving": "le spese superano il risparmio",
+      "saving": "risparmio"
+    }
+  },
+  "lease": {
+    "basisReadings": "la prima e l'ultima lettura (il chilometraggio iniziale non è registrato)",
+    "marketAbove": "il valore di mercato supera il prezzo di riscatto: comprare e rivendere lascerebbe la differenza, prima delle spese",
+    "marketNotAbove": "il prezzo di riscatto non è inferiore al valore di mercato: restituire l'auto non è peggio considerando solo il prezzo",
+    "giveMarketValue": "indica il valore di mercato della stessa auto (una quotazione datata che hai consultato) per confrontarlo con il prezzo di riscatto",
+    "reminderTitle_one": "{{who}}: {{count}} mese alla fine: riscattare o restituire?",
+    "reminderTitle_many": "{{who}}: {{count}} mesi alla fine: riscattare o restituire?",
+    "reminderTitle_other": "{{who}}: {{count}} mesi alla fine: riscattare o restituire?",
+    "reminderNote": "il contratto termina il {{end_date}}",
+    "needs": {
+      "endDate": "la data di fine",
+      "mileageLimit": "il chilometraggio massimo del contratto",
+      "initialKm": "il chilometraggio iniziale (il contachilometri all'inizio del contratto; 0 per un'auto nuova)",
+      "reading": "una lettura del contachilometri (data + km)",
+      "secondReading": "una seconda lettura, oppure data di inizio + chilometraggio iniziale",
+      "readingsApart_one": "letture distanti almeno {{count}} giorno dall'inizio della misura",
+      "readingsApart_many": "letture distanti almeno {{count}} giorni dall'inizio della misura",
+      "readingsApart_other": "letture distanti almeno {{count}} giorni dall'inizio della misura",
+      "excessFee": "il costo per km in eccesso (per stimare l'eccedenza)",
+      "residualValue": "il valore residuo (il prezzo di riscatto previsto dal contratto)"
+    },
+    "factor": {
+      "financing": "il finanziamento del prezzo di riscatto (in contanti o con un nuovo prestito)",
+      "condition": "lo stato e il chilometraggio rispetto al contratto",
+      "replacement": "il costo di un veicolo sostitutivo"
+    },
+    "checklist": {
+      "clauses": "leggi le clausole di fine contratto: il preavviso per comunicare la restituzione, il luogo di restituzione e la finestra di date",
+      "inspection": "prenota l'ispezione prima della restituzione se la società la offre: i danni sono addebitati secondo la sua tabella (la normale usura è ammessa)",
+      "documents": "raccogli i documenti: carta di circolazione, libretto di manutenzione e fatture, entrambe le chiavi, i manuali, i cavi di ricarica / gli accessori consegnati con l'auto",
+      "condition": "controlla pneumatici, parabrezza, carrozzeria e interni rispetto alla tabella; ripara i piccoli danni quando costa meno del prezzo della società",
+      "mileage": "registra il chilometraggio finale (foto del contachilometri) e confrontalo con il limite del contratto; ogni km in più costa la tariffa per km in eccesso",
+      "insurance": "disdici l'assicurazione auto e gli addebiti diretti solo dopo che la società ha confermato la restituzione; conserva il verbale di restituzione",
+      "buy": "se riscatti l'auto: il prezzo di riscatto è il valore residuo; chiedi alla società il conteggio di estinzione e la scadenza per esercitare l'opzione"
+    }
+  },
+  "loan": {
+    "source": {
+      "schedule": "dal piano di ammortamento",
+      "scheduleApprox": "dal piano di ammortamento (approssimato: tasso variabile)",
+      "memory": "dalla memoria: la rata nel giorno della data di inizio"
     }
   },
   "loanAlert": {
@@ -495,6 +609,41 @@
       "body": "Nei 6 mesi prima della fine del contratto i chilometri contano: registra il contachilometri (data e km) così il coach può stimare il costo dei chilometri in eccesso."
     }
   },
+  "netWorth": {
+    "noBalance": "nessun saldo ancora sincronizzato",
+    "nonBooked": "saldo {{balance_type}} (non contabilizzato)",
+    "noValue": "nessun valore registrato",
+    "valueDateUnknown": "data del valore sconosciuta",
+    "lease": "leasing / noleggio: nessun capitale dovuto, non conteggiato",
+    "leaseRents": "leasing / noleggio: nessun capitale dovuto, non conteggiato; i canoni rimanenti sono un impegno, mostrato come importo",
+    "fromSchedule": "calcolato dal piano di ammortamento",
+    "fromScheduleApprox": "calcolato dal piano di ammortamento (tasso variabile: approssimato)",
+    "declaredRolled": "il debito residuo dichiarato al {{declared_date}}, portato avanti con il tasso e le rate del prestito",
+    "declaredAsIs": "il debito residuo dichiarato al {{declared_date}} (non si può portare avanti)",
+    "fromScheduleDiffers": "calcolato dal piano di ammortamento; differisce dal piano teorico ({{theoretical_amount}} oggi): estinzione anticipata o rinegoziazione? aggiorna il prestito",
+    "fromScheduleApproxDiffers": "calcolato dal piano di ammortamento (tasso variabile: approssimato); differisce dal piano teorico ({{theoretical_amount}} oggi): estinzione anticipata o rinegoziazione? aggiorna il prestito",
+    "declaredRolledDiffers": "il debito residuo dichiarato al {{declared_date}}, portato avanti con il tasso e le rate del prestito; differisce dal piano teorico ({{theoretical_amount}} oggi): estinzione anticipata o rinegoziazione? aggiorna il prestito",
+    "declaredAsIsDiffers": "il debito residuo dichiarato al {{declared_date}} (non si può portare avanti); differisce dal piano teorico ({{theoretical_amount}} oggi): estinzione anticipata o rinegoziazione? aggiorna il prestito",
+    "declaredNoSchedule": "debito residuo dichiarato, nessun piano",
+    "capitalUnknown": "debito residuo sconosciuto",
+    "capitalUnknownFields": "debito residuo sconosciuto: {{fields}}",
+    "knownOnly": "si somma solo ciò che è noto: una voce sconosciuta è elencata e NON conteggiata, quindi la cifra reale è diversa",
+    "balanceNotKnownOnDate": "saldo non noto a quella data",
+    "valueKnownFrom": "valore noto solo dal {{from_date}}",
+    "valueKnownFromUnknownDate": "valore noto solo da una data sconosciuta",
+    "noSchedule": "nessun piano di ammortamento",
+    "capitalNotKnownOnDate": "debito residuo non noto a quella data",
+    "nonBookedCaveat_one": "{{count}} saldo di conto è un saldo disponibile / previsto (ITAV, XPCD...), non contabilizzato: le operazioni in sospeso possono far differire leggermente questo mese dalla cifra della banca",
+    "nonBookedCaveat_many": "{{count}} saldi di conto sono saldi disponibili / previsti (ITAV, XPCD...), non contabilizzati: le operazioni in sospeso possono far differire leggermente questo mese dalla cifra della banca",
+    "nonBookedCaveat_other": "{{count}} saldi di conto sono saldi disponibili / previsti (ITAV, XPCD...), non contabilizzati: le operazioni in sospeso possono far differire leggermente questo mese dalla cifra della banca",
+    "liabilitiesNote": "Il debito residuo viene dal piano di ammortamento quando è calcolabile, altrimenti dalla cifra dichiarata.",
+    "syncedAsset": "sincronizzato da una banca: conteggiato tramite il suo saldo",
+    "total": "Il totale conta solo ciò che è noto. I debiti vengono dal piano di ammortamento quando è calcolabile, altrimenti dal debito residuo dichiarato.",
+    "totalPartial_one": "Il totale conta solo ciò che è noto; {{count}} voce non ha un valore e NON è inclusa, quindi la cifra reale è diversa. I debiti vengono dal piano di ammortamento quando è calcolabile, altrimenti dal debito residuo dichiarato.",
+    "totalPartial_many": "Il totale conta solo ciò che è noto; {{count}} voci non hanno un valore e NON sono incluse, quindi la cifra reale è diversa. I debiti vengono dal piano di ammortamento quando è calcolabile, altrimenti dal debito residuo dichiarato.",
+    "totalPartial_other": "Il totale conta solo ciò che è noto; {{count}} voci non hanno un valore e NON sono incluse, quindi la cifra reale è diversa. I debiti vengono dal piano di ammortamento quando è calcolabile, altrimenti dal debito residuo dichiarato.",
+    "historyNote": "«Registrato» = salvato in quel giorno; «ricostruito» = ricalcolato da saldi e movimenti bancari (solo conti bancari), piani di ammortamento e beni inseriti a mano dalla loro data. Un mese con voci sconosciute è solo la parte nota."
+  },
   "reminder": {
     "unused": {
       "title_one": "{{service}}: non usato da {{count}} giorno",
@@ -554,6 +703,58 @@
     "tenantIncome": {
       "title": "{{property}}: il reddito dell'inquilino supera il limite che hai dichiarato",
       "body": "Reddito dell'inquilino di {{income_amount}} contro un limite di {{limit_amount}}. Verifica le regole dell'agevolazione in base alla composizione del nucleo dell'inquilino."
+    }
+  },
+  "scenario": {
+    "needsSchedule": "il piano di ammortamento non si può calcolare: registra questi dati (o accetta le domande che propone il coach)",
+    "nothingLeft": "dopo quella data non resta nessuna rata",
+    "payoff": "l'importo copre tutto il capitale: chiedi al finanziatore un conteggio di estinzione (capitale + interessi maturati + penale)",
+    "deferralNotModelled": "un rimborso anticipato durante un preammortamento non è modellato: chiedi al finanziatore",
+    "missingInsurance": "la rata dell'assicurazione (o il suo tasso e la base di calcolo)",
+    "missingSchedule": "il piano di ammortamento",
+    "flatInsurance": "un premio assicurativo fisso non si riduce con un rimborso parziale, a meno che il finanziatore lo ricalcoli: solo i mesi risparmiati (mantenendo la rata) cambiano quanto si paga di assicurazione",
+    "estimate": "stima dal piano registrato al tasso nominale attuale; fa fede il piano del finanziatore.",
+    "penalty": {
+      "override": "l'importo che hai indicato (dal tuo contratto)",
+      "ira": "IRA (Code de la consommation L313-47): il minore tra sei mesi di interessi sull'importo rimborsato ({{six_months_amount}}) e il 3 % del capitale dovuto prima del rimborso ({{cap_amount}}); il tuo contratto può escluderla o applicarla solo in alcuni casi",
+      "itMortgage": "nessuna penale per legge per l'estinzione anticipata di un mutuo di una persona fisica per l'acquisto o la ristrutturazione di un immobile abitativo (art. 120-ter TUB, dal decreto Bersani): controlla il tuo contratto",
+      "frConsumerFree": "credito al consumo francese (Code de la consommation L312-34): nessun indennizzo quando l'importo rimborsato in 12 mesi non supera {{free_amount}}; i rimborsi anticipati degli stessi 12 mesi si sommano: in quel caso indica la penale del tuo contratto",
+      "frConsumerLong": "credito al consumo francese (L312-34): al massimo l'1 % dell'importo rimborsato (resta più di un anno di contratto) = {{penalty_amount}}; il tuo contratto può escluderla",
+      "frConsumerShort": "credito al consumo francese (L312-34): al massimo lo 0,5 % dell'importo rimborsato (resta meno di un anno di contratto) = {{penalty_amount}}; il tuo contratto può escluderla",
+      "other": "per questo tipo di prestito non è modellata nessuna penale di legge: indica l'importo del tuo contratto nel campo della penale"
+    }
+  },
+  "schedule": {
+    "paymentDiffersHint": "tasso variabile, rate modulate, spese o una cifra sbagliata: controlla il piano del prestito",
+    "tableDiffersHint": "il piano differisce dal debito residuo dichiarato: il tasso, la durata, un preammortamento o un'estinzione anticipata potrebbero non essere quelli della memoria",
+    "declaredWinsHint": "il debito residuo dichiarato prevale sul piano teorico: c'è stata un'estinzione anticipata o una rinegoziazione? aggiorna il prestito",
+    "variableRate": "tasso variabile / misto: il tasso nominale attuale è applicato a tutta la durata (il piano della banca sarà diverso quando l'indice si muove)",
+    "leaseAlternative": "un leasing / noleggio ha canoni e un valore residuo, non un piano di ammortamento né un capitale dovuto: vedi la vista di fine contratto",
+    "outstandingAlternative": "debito residuo + la sua data + tasso nominale + (data di fine o rata) danno il piano FUTURO: manca {{fields}}",
+    "declaredRolled": "il debito residuo dichiarato differisce dal piano teorico: la cifra dichiarata è portata avanti dalla sua data",
+    "declaredAsIs": "il debito residuo dichiarato differisce dal piano e non si può portare avanti: la cifra dichiarata è usata così com'è; le rate elencate sono quelle teoriche",
+    "annuity": "prestito a rata costante, interessi = capitale x tasso nominale / 12 per rata",
+    "firstDue": "prima rata il {{first_date}}",
+    "firstDueDay": "prima rata il {{first_date}}, addebitata il giorno {{day}}",
+    "deferralPartial_one": "preammortamento di {{count}} mese (solo interessi): il capitale non cambia; l'assicurazione si paga comunque",
+    "deferralPartial_many": "preammortamento di {{count}} mesi (solo interessi): il capitale non cambia; l'assicurazione si paga comunque",
+    "deferralPartial_other": "preammortamento di {{count}} mesi (solo interessi): il capitale non cambia; l'assicurazione si paga comunque",
+    "deferralTotal_one": "sospensione totale di {{count}} mese: gli interessi si aggiungono al capitale; l'assicurazione si paga comunque",
+    "deferralTotal_many": "sospensione totale di {{count}} mesi: gli interessi si aggiungono al capitale; l'assicurazione si paga comunque",
+    "deferralTotal_other": "sospensione totale di {{count}} mesi: gli interessi si aggiungono al capitale; l'assicurazione si paga comunque",
+    "outstandingStart": "il debito residuo al {{as_of_date}} è il punto di partenza; le rate precedenti non sono note",
+    "instalmentDay": "rate ipotizzate il giorno {{day}}",
+    "instalmentDayAssumed": "rate ipotizzate il giorno {{day}} (il giorno di addebito non è registrato)",
+    "termFromPayment": "data di fine sconosciuta: la durata deriva dalla rata (che si presume senza assicurazione quando l'importo dell'assicurazione è sconosciuto)",
+    "termFromPaymentFlatInsurance": "data di fine sconosciuta: la durata deriva dalla rata meno l'assicurazione fissa",
+    "totalsUnknown": "i totali e gli interessi pagati finora sono sconosciuti (il piano parte dal debito residuo dichiarato); gli interessi rimanenti e le cifre annuali future sono esatti",
+    "missing": {
+      "principal": "il capitale iniziale",
+      "rateNominal": "il tasso nominale",
+      "startDate": "la data di inizio",
+      "endDateOrTerm": "la data di fine o la durata in mesi",
+      "principalPositive": "il capitale iniziale (deve essere positivo)",
+      "deferralShorter": "il preammortamento (deve essere più breve della durata)"
     }
   },
   "subs": {

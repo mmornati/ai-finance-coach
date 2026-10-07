@@ -5,6 +5,11 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4f (see `docs/i18n.md`, "Server text")
+- Loans and net worth: the unknown values and their reasons, the missing loan fields, the schedule hints and assumptions, the scenarios (early repayment, renegotiation,
+  insurance: notes, penalty explanations, options, verdicts), the fields inferred from the payments and the lease checks are shown in the interface language.
+  Legal citations stay as written; the loan disclaimer comes from `disclaimers.py`. The MCP tools and the CLI keep the English.
+
 ### Added: multi-language web app, part 4d (see `docs/i18n.md`, "Server text")
 - The transaction panel shows why a transaction has its category (the steps of the decision chain and their details), why an annotation or an attribution rule does not match,
   and the warnings of a category change in the interface language. `coach explain` and the MCP `explain_transaction` output are byte-identical to before.

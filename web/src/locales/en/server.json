@@ -279,6 +279,47 @@
     "typeRulePurpose": "transaction type '{{tx_type}}' on an account with purpose '{{purpose}}'",
     "userLabel": "you labelled '{{merchant_key}}' as {{label_category}} ({{updated}})"
   },
+  "infer": {
+    "lease": "a lease has no amortization table to solve: record the rent, the end date and the residual value",
+    "varies_one": "the instalment varies by {{spread_pct}} over the last {{count}} payment (variable rate, modulation or a different debit): the latest amount is used and the confidence is low",
+    "varies_other": "the instalment varies by {{spread_pct}} over the last {{count}} payments (variable rate, modulation or a different debit): the latest amount is used and the confidence is low",
+    "insuranceSubtracted": "the borrower insurance ({{insurance_amount}} a month) is assumed to be debited WITH the instalment and is subtracted: if it is debited separately the figures below are too low",
+    "insuranceRateSubtracted": "the insurance premium computed from its rate is assumed to be debited WITH the instalment and is subtracted",
+    "mayIncludeInsurance": "the instalment may include the borrower insurance (not recorded): the capital and the rate inferred would then be a little too high",
+    "variableRate": "variable / mixed rate: the inferred rate is the one that fits the current instalment",
+    "notLargerThanInsurance": "the instalment is not larger than the insurance",
+    "noRateFits": "no rate fits: the instalments over the term total less than the capital (a wrong capital or term?)",
+    "noTermFits": "the instalment does not cover the interest on the capital: a wrong capital, rate or instalment",
+    "allRecorded": "principal, rate and term are all recorded: nothing to infer (the schedule check compares them with the payments)",
+    "principalNotDerivable": "principal is not derivable from the remaining capital alone: record it from the loan offer",
+    "method": {
+      "median": "median of the observed bank payments",
+      "latest": "latest observed bank payment",
+      "principal_one": "annuity: capital from the instalment, the rate {{rate}} % and {{count}} month",
+      "principal_other": "annuity: capital from the instalment, the rate {{rate}} % and {{count}} months",
+      "rate_one": "Newton's method on the annuity of {{principal_amount}} over {{count}} month",
+      "rate_other": "Newton's method on the annuity of {{principal_amount}} over {{count}} months",
+      "term": "annuity: months needed to repay {{principal_amount}} at {{rate}} % with this instalment",
+      "startPlusTerm": "start_date + the inferred term",
+      "rateOutstanding_one": "Newton's method on the capital still due ({{outstanding_amount}} as of {{as_of_date}}) over the {{count}} month to end_date",
+      "rateOutstanding_other": "Newton's method on the capital still due ({{outstanding_amount}} as of {{as_of_date}}) over the {{count}} months to end_date",
+      "endOutstanding_one": "annuity: {{count}} month to repay {{outstanding_amount}} (as of {{as_of_date}}) at {{rate}} %",
+      "endOutstanding_other": "annuity: {{count}} months to repay {{outstanding_amount}} (as of {{as_of_date}}) at {{rate}} %",
+      "endMinusTerm": "end_date - the term"
+    },
+    "note": {
+      "roundedEuro": "rounded to the euro; check against the contract",
+      "nominalRate": "nominal annual rate, excluding insurance",
+      "exact": "exact value {{value}}",
+      "exactMismatch": "exact value {{value}}; the rounded term does not reproduce the instalment within 1 %"
+    },
+    "missing": {
+      "payments": "bank payments matched by payment_match (set payment_match or link the series)",
+      "twoOfNone": "two of principal, rate.nominal, end_date/term_months (none recorded) - or outstanding + outstanding_as_of + end_date for the remaining-capital route",
+      "twoOf_one": "two of principal, rate.nominal, end_date/term_months (only {{count}} recorded) - or outstanding + outstanding_as_of + end_date for the remaining-capital route",
+      "twoOf_other": "two of principal, rate.nominal, end_date/term_months (only {{count}} recorded) - or outstanding + outstanding_as_of + end_date for the remaining-capital route"
+    }
+  },
   "insight": {
     "anomaly": {
       "categorySpike": "Spending spike",
@@ -407,6 +448,71 @@
       "llmWeb": "LLM with web evidence label",
       "knn": "similarity (kNN) label",
       "autoLabel": "LLM / kNN label"
+    },
+    "loanField": {
+      "monthly_payment": "monthly payment",
+      "outstanding": "outstanding capital",
+      "outstanding_as_of": "date of the outstanding capital",
+      "end_date": "end date",
+      "debited_account": "debited account",
+      "payment_match": "how its payments are recognised",
+      "rate": "interest rate"
+    },
+    "loanOption": {
+      "keep_payment": "keep the instalment, finish earlier",
+      "keep_term": "keep the end date, lower the instalment"
+    },
+    "loanVerdict": {
+      "saves_money": "saves money over the life of the loan",
+      "penalty_exceeds_saving": "the penalty exceeds what the interest and insurance save",
+      "no_saving": "no saving",
+      "costs_exceed_saving": "the costs exceed the saving",
+      "break_even_after_the_loan_ends": "the break-even comes after the loan ends",
+      "worth_asking_for_quotes": "worth asking for quotes",
+      "small_saving_check_the_costs": "a small saving: check the costs",
+      "fees_exceed_saving": "the fees exceed the saving",
+      "saving": "saving"
+    }
+  },
+  "lease": {
+    "basisReadings": "the first and the latest reading (initial_km is not recorded)",
+    "marketAbove": "the market value is above the option price: buying and reselling would leave the difference, before fees",
+    "marketNotAbove": "the option price is not below the market value: returning the car is not worse on price alone",
+    "giveMarketValue": "give the market value of the same car (a dated quote you looked up) to compare it with the option price",
+    "reminderTitle_one": "{{who}}: {{count}} month before the end: buy or return?",
+    "reminderTitle_other": "{{who}}: {{count}} months before the end: buy or return?",
+    "reminderNote": "contract ends {{end_date}}",
+    "needs": {
+      "endDate": "end_date",
+      "mileageLimit": "mileage_limit_km",
+      "initialKm": "initial_km (the odometer at the start of the contract; 0 for a new car)",
+      "reading": "an odometer reading (date + km)",
+      "secondReading": "a second reading, or start_date + initial_km",
+      "readingsApart_one": "readings at least {{count}} day apart from the start of the measure",
+      "readingsApart_other": "readings at least {{count}} days apart from the start of the measure",
+      "excessFee": "excess_km_fee (to price the excess)",
+      "residualValue": "residual_value (the purchase-option price in the contract)"
+    },
+    "factor": {
+      "financing": "the financing of the option price (cash or a new loan)",
+      "condition": "the condition and the mileage against the contract",
+      "replacement": "the cost of a replacement vehicle"
+    },
+    "checklist": {
+      "clauses": "read the end-of-contract clauses: the notice period to announce the return, the return place and the date window",
+      "inspection": "book the pre-return inspection if the lender offers one: damage is billed against its grid (wear and tear is allowed)",
+      "documents": "gather the documents: registration card, service book and invoices of the maintenance, both keys, the manuals, the charging cables / accessories delivered with the car",
+      "condition": "check the tyres, the windscreen, the bodywork and the interior against the grid; repair small damages where it is cheaper than the lender's price",
+      "mileage": "record the final mileage (photo of the odometer) and compare it with the contractual limit; each km above it costs the excess fee",
+      "insurance": "end the car insurance and any direct debit only after the lender confirms the return; keep the return receipt (PV de restitution)",
+      "buy": "if you buy the car: the option price is the residual value; ask the lender for the payoff letter and the deadline to exercise it"
+    }
+  },
+  "loan": {
+    "source": {
+      "schedule": "from the amortization schedule",
+      "scheduleApprox": "from the amortization schedule (approximate: variable rate)",
+      "memory": "from memory: monthly_payment on the start_date day"
     }
   },
   "loanAlert": {
@@ -465,6 +571,39 @@
       "body": "Within 6 months of the end of the contract the mileage matters: record the odometer (date and km) so the coach can project the excess-mileage cost."
     }
   },
+  "netWorth": {
+    "noBalance": "no balance synced yet",
+    "nonBooked": "{{balance_type}} balance (not a booked one)",
+    "noValue": "no value recorded",
+    "valueDateUnknown": "value date unknown",
+    "lease": "lease: no capital owed, not counted",
+    "leaseRents": "lease: no capital owed, not counted; the remaining rents are a commitment shown as the amount",
+    "fromSchedule": "computed from the amortization schedule",
+    "fromScheduleApprox": "computed from the amortization schedule (variable rate: approximate)",
+    "declaredRolled": "the declared capital of {{declared_date}} rolled forward with the loan's rate and instalments",
+    "declaredAsIs": "the declared capital of {{declared_date}} (it cannot be rolled forward)",
+    "fromScheduleDiffers": "computed from the amortization schedule; it differs from the theoretical table ({{theoretical_amount}} today): early repayment or renegotiation? update the loan",
+    "fromScheduleApproxDiffers": "computed from the amortization schedule (variable rate: approximate); it differs from the theoretical table ({{theoretical_amount}} today): early repayment or renegotiation? update the loan",
+    "declaredRolledDiffers": "the declared capital of {{declared_date}} rolled forward with the loan's rate and instalments; it differs from the theoretical table ({{theoretical_amount}} today): early repayment or renegotiation? update the loan",
+    "declaredAsIsDiffers": "the declared capital of {{declared_date}} (it cannot be rolled forward); it differs from the theoretical table ({{theoretical_amount}} today): early repayment or renegotiation? update the loan",
+    "declaredNoSchedule": "declared capital, no schedule",
+    "capitalUnknown": "capital unknown",
+    "capitalUnknownFields": "capital unknown: {{fields}}",
+    "knownOnly": "only what is known is added up: an unknown item is listed and NOT counted, so the real figure differs",
+    "balanceNotKnownOnDate": "balance not known on that date",
+    "valueKnownFrom": "value only known from {{from_date}}",
+    "valueKnownFromUnknownDate": "value only known from an unknown date",
+    "noSchedule": "no amortization schedule",
+    "capitalNotKnownOnDate": "capital not known on that date",
+    "nonBookedCaveat_one": "{{count}} account balance is an available / expected balance (ITAV, XPCD...), not a booked one: pending items can make this month differ slightly from the bank's own figure",
+    "nonBookedCaveat_other": "{{count}} account balances are available / expected balances (ITAV, XPCD...), not booked ones: pending items can make this month differ slightly from the bank's own figure",
+    "liabilitiesNote": "Remaining capital comes from the amortization schedule when it is computable, else the declared figure.",
+    "syncedAsset": "synced from a bank: counted through its balance",
+    "total": "The total counts only what is known. Liabilities come from the amortization schedule when it is computable, else the declared capital.",
+    "totalPartial_one": "The total counts only what is known; {{count}} item has no value and is NOT included, so the real figure differs. Liabilities come from the amortization schedule when it is computable, else the declared capital.",
+    "totalPartial_other": "The total counts only what is known; {{count}} items have no value and are NOT included, so the real figure differs. Liabilities come from the amortization schedule when it is computable, else the declared capital.",
+    "historyNote": "'snapshot' = recorded on that day; 'backfill' = rebuilt from bank balances and transactions (bank accounts only), amortization schedules and manual assets from their own as_of date. A month with unknown items is the known part only."
+  },
   "reminder": {
     "unused": {
       "title_one": "{{service}}: unused for {{count}} day",
@@ -519,6 +658,56 @@
     "tenantIncome": {
       "title": "{{property}}: the tenant income is above the limit you declared",
       "body": "Tenant income {{income_amount}} against a limit of {{limit_amount}}. Check the scheme's rules for the tenant household's size."
+    }
+  },
+  "scenario": {
+    "needsSchedule": "the amortization schedule cannot be computed: record these fields (or accept the questions the coach proposes)",
+    "nothingLeft": "no instalment remains after that date",
+    "payoff": "the amount covers the whole capital: ask the lender for a payoff quote (capital + accrued interest + penalty)",
+    "deferralNotModelled": "a prepayment during a deferral is not modelled: ask the lender",
+    "missingInsurance": "insurance.monthly (or insurance.rate_pct and basis)",
+    "missingSchedule": "schedule",
+    "flatInsurance": "a flat insurance premium is not reduced by a partial prepayment unless the lender recalculates it: only the months saved (keep the instalment) change what is paid in insurance",
+    "estimate": "estimate from the stored schedule at the current nominal rate; the lender's table decides.",
+    "penalty": {
+      "override": "the amount you gave (from your contract)",
+      "ira": "IRA (Code de la consommation L313-47): the lower of six months of interest on the amount prepaid ({{six_months_amount}}) and 3 % of the capital due before the prepayment ({{cap_amount}}); your contract may waive it, or apply it only to some cases",
+      "itMortgage": "no penalty by law for the early repayment of a mortgage of a natural person for the purchase or renovation of residential property (art. 120-ter TUB, from the Bersani decree): check your contract",
+      "frConsumerFree": "FR consumer credit (Code de la consommation L312-34): no indemnity when the amount repaid over 12 months is at most {{free_amount}}; earlier prepayments of the same 12 months add up: give the penalty of your contract if they do",
+      "frConsumerLong": "FR consumer credit (L312-34): at most 1 % of the amount repaid (more than a year of the contract is left) = {{penalty_amount}}; your contract may waive it",
+      "frConsumerShort": "FR consumer credit (L312-34): at most 0.5 % of the amount repaid (less than a year of the contract is left) = {{penalty_amount}}; your contract may waive it",
+      "other": "no legal penalty is modelled for this kind of loan: give the amount of your contract in the penalty field"
+    }
+  },
+  "schedule": {
+    "paymentDiffersHint": "variable rate, modulated instalments, fees or a wrong figure: check the loan table",
+    "tableDiffersHint": "the table differs from the declared capital: the rate, the term, a deferral or an early repayment may not be what the memory says",
+    "declaredWinsHint": "the declared capital wins over the theoretical table: was there an early repayment or a renegotiation? update the loan",
+    "variableRate": "variable / mixed rate: the current nominal rate is applied to the whole term (the bank's table will differ when the index moves)",
+    "leaseAlternative": "a lease has rents and a residual value, not an amortization table and no capital owed: see the end-of-contract view",
+    "outstandingAlternative": "outstanding + outstanding_as_of + rate.nominal + (end_date or monthly_payment) give the FUTURE table: missing {{fields}}",
+    "declaredRolled": "the declared capital differs from the theoretical table: the declared figure is rolled forward from its date",
+    "declaredAsIs": "the declared capital differs from the table and cannot be rolled forward: the declared figure is used as it is; the instalments listed are the theoretical ones",
+    "annuity": "annuity loan, interest = capital x nominal rate / 12 per instalment",
+    "firstDue": "first instalment due {{first_date}}",
+    "firstDueDay": "first instalment due {{first_date}}, debited on day {{day}}",
+    "deferralPartial_one": "interest-only deferral of {{count}} month: the capital does not move; the insurance is still paid",
+    "deferralPartial_other": "interest-only deferral of {{count}} months: the capital does not move; the insurance is still paid",
+    "deferralTotal_one": "total deferral of {{count}} month: the interest is added to the capital; the insurance is still paid",
+    "deferralTotal_other": "total deferral of {{count}} months: the interest is added to the capital; the insurance is still paid",
+    "outstandingStart": "the capital still due on {{as_of_date}} is the starting point; earlier instalments are not known",
+    "instalmentDay": "instalments assumed on day {{day}}",
+    "instalmentDayAssumed": "instalments assumed on day {{day}} (payment_day is not recorded)",
+    "termFromPayment": "end_date unknown: the term follows from monthly_payment (assumed to exclude insurance when the insurance amount is unknown)",
+    "termFromPaymentFlatInsurance": "end_date unknown: the term follows from monthly_payment minus the flat insurance",
+    "totalsUnknown": "totals and interest paid to date are unknown (the table starts at the declared capital); remaining interest and the yearly figures of the future are exact",
+    "missing": {
+      "principal": "principal",
+      "rateNominal": "rate.nominal",
+      "startDate": "start_date",
+      "endDateOrTerm": "end_date or term_months",
+      "principalPositive": "principal (must be positive)",
+      "deferralShorter": "deferral (not shorter than the term)"
     }
   },
   "subs": {
