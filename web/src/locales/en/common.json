@@ -664,5 +664,10 @@
       "checklist": "Return checklist",
       "checklistNote": "General checklist: verify the notice period and the return conditions in your own contract."
     }
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "back": "Back to the dashboard",
+    "body": "Check the address, or use the menu."
   }
 }

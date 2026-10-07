@@ -1,0 +1,59 @@
+{
+  "title": "Transactions",
+  "subtitle": "Every operation across your accounts. Click one to see why it has its category and to change it.",
+  "exportCsv": "Export CSV",
+  "search": "Search transactions",
+  "searchPlaceholder": "Search merchant, description, tag…",
+  "filters": "Filters",
+  "preset": {
+    "month": "This month",
+    "prev": "Last month",
+    "days90": "90 days",
+    "year": "This year"
+  },
+  "filter": {
+    "from": "From",
+    "to": "To",
+    "account": "Account",
+    "allAccounts": "All accounts",
+    "person": "Person",
+    "anyone": "Anyone",
+    "purpose": "Account purpose",
+    "any": "Any",
+    "category": "Category",
+    "merchant": "Merchant contains",
+    "direction": "Direction",
+    "inAndOut": "In and out",
+    "out": "Money out",
+    "in": "Money in",
+    "amountMin": "Amount from (EUR)",
+    "amountMax": "Amount up to (EUR)",
+    "tag": "Tag",
+    "source": "Decided by",
+    "anySource": "Any source",
+    "event": "Event",
+    "hideTransfers": "Hide internal transfers",
+    "sort": "Sort",
+    "newest": "Newest first",
+    "oldest": "Oldest first",
+    "largest": "Largest first",
+    "smallest": "Smallest first",
+    "clear": "Clear filters"
+  },
+  "totals": {
+    "matching": "Matching",
+    "net": "Net",
+    "in": "In",
+    "out": "Out"
+  },
+  "emptyTitle": "No transaction matches",
+  "emptyBody": "Try removing a filter.",
+  "loadingMore": "Loading more",
+  "loadMore": "Load more",
+  "shown": "{{n}} shown",
+  "row": {
+    "transfer": "transfer",
+    "attributedTo": "Attributed to",
+    "split": "split"
+  }
+}

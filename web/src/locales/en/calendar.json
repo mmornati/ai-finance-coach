@@ -1,0 +1,27 @@
+{
+  "title": "Calendar",
+  "subtitle": "Upcoming payments, renewals, bank consents and reminders. Add it to your phone's calendar with the download.",
+  "download": "Download .ics",
+  "previous": "Previous month",
+  "next": "Next month",
+  "today": "Today",
+  "source": {
+    "recurring": "Recurring payment",
+    "liability": "Loan instalment",
+    "contract": "Contract renewal",
+    "consent": "Bank consent",
+    "asset": "Asset to update"
+  },
+  "pastMonths": "Past months are not listed: the calendar looks ahead from today.",
+  "grid": "Calendar {{month}}",
+  "amountTitle": "{{title}} {{amount}} EUR",
+  "more": "+{{n}} more",
+  "empty": "Nothing this month",
+  "agenda": "Agenda",
+  "certainty": {
+    "observed": "observed",
+    "scheduled": "scheduled",
+    "deadline": "deadline",
+    "assumed": "assumed"
+  }
+}

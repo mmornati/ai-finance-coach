@@ -1,0 +1,59 @@
+{
+  "title": "Transazioni",
+  "subtitle": "Tutte le operazioni dei tuoi conti. Clicca su una per vedere perché ha la sua categoria e per cambiarla.",
+  "exportCsv": "Esporta CSV",
+  "search": "Cerca transazioni",
+  "searchPlaceholder": "Cerca esercente, descrizione, tag…",
+  "filters": "Filtri",
+  "preset": {
+    "month": "Questo mese",
+    "prev": "Mese scorso",
+    "days90": "90 giorni",
+    "year": "Quest'anno"
+  },
+  "filter": {
+    "from": "Dal",
+    "to": "Al",
+    "account": "Conto",
+    "allAccounts": "Tutti i conti",
+    "person": "Persona",
+    "anyone": "Chiunque",
+    "purpose": "Uso del conto",
+    "any": "Qualsiasi",
+    "category": "Categoria",
+    "merchant": "L'esercente contiene",
+    "direction": "Direzione",
+    "inAndOut": "Entrate e uscite",
+    "out": "Soldi in uscita",
+    "in": "Soldi in entrata",
+    "amountMin": "Importo da (EUR)",
+    "amountMax": "Importo fino a (EUR)",
+    "tag": "Tag",
+    "source": "Deciso da",
+    "anySource": "Qualsiasi fonte",
+    "event": "Evento",
+    "hideTransfers": "Nascondi i bonifici interni",
+    "sort": "Ordina",
+    "newest": "Più recenti prima",
+    "oldest": "Meno recenti prima",
+    "largest": "Importi più alti prima",
+    "smallest": "Importi più bassi prima",
+    "clear": "Azzera i filtri"
+  },
+  "totals": {
+    "matching": "Corrispondenti",
+    "net": "Saldo",
+    "in": "Entrate",
+    "out": "Uscite"
+  },
+  "emptyTitle": "Nessuna transazione corrisponde",
+  "emptyBody": "Prova a togliere un filtro.",
+  "loadingMore": "Caricamento di altre transazioni",
+  "loadMore": "Carica altre",
+  "shown": "{{n}} mostrate",
+  "row": {
+    "transfer": "bonifico",
+    "attributedTo": "Attribuita a",
+    "split": "suddivisa"
+  }
+}

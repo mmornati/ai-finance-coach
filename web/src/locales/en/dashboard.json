@@ -1,0 +1,120 @@
+{
+  "title": "Dashboard",
+  "subtitle": "Where the money is, where it goes, and what is coming.",
+  "balances": {
+    "title": "Balances",
+    "netWorth": "Net worth",
+    "total": "Across all accounts",
+    "withoutBalance_one": "{{count}} account without a balance yet",
+    "withoutBalance_other": "{{count}} accounts without a balance yet",
+    "old": "old",
+    "oldTitle_one": "Last balance {{count}} day ago",
+    "oldTitle_other": "Last balance {{count}} days ago",
+    "typeTitle": "The bank only gives this kind of balance for this account",
+    "more_one": "+ {{count}} smaller or older account",
+    "more_other": "+ {{count}} smaller or older accounts"
+  },
+  "month": {
+    "title": "This month so far",
+    "progress": "Spent compared with a usual month",
+    "usual_one": "A usual month is <amount/> (average of {{count}} fully covered month, one-offs left out). The tick shows how far into the month we are.",
+    "usual_other": "A usual month is <amount/> (average of {{count}} fully covered months, one-offs left out). The tick shows how far into the month we are.",
+    "noAverage": "No month is fully covered by every account yet, so there is no fair average to compare with."
+  },
+  "savings": {
+    "title": "Savings rate",
+    "subtitle": "Complete months only",
+    "emptyTitle": "Not enough complete months",
+    "emptyBody": "A month counts once every account carrying income or spending has all its days.",
+    "over_one": "Over {{count}} month",
+    "over_other": "Over {{count}} months",
+    "netOfIncome": "Net <net/> of <income/> income",
+    "saved": "Saved, in total",
+    "debtService": "Debt service, in total",
+    "principal": "Repaying loan principal (about <amount/>) is also wealth you build: the rate including it is {{rate}}.",
+    "principalUnknown": "Part of the debt service is principal, which builds wealth, but it cannot be estimated until the loans' rate and outstanding capital are known."
+  },
+  "cashflow": {
+    "title": "Cash flow",
+    "subtitle": "Income and spending per month; lighter bars are months not fully covered by every account"
+  },
+  "forecast": {
+    "title": "Next 90 days",
+    "calendar": "Calendar",
+    "emptyTitle": "No forecast yet",
+    "emptyBody": "A balance snapshot is needed.",
+    "lowest": "Lowest expected balance <amount/>, around {{date}}",
+    "belowZero": "projected below zero from {{date}}",
+    "short": "could run short around {{date}}",
+    "allGood": "No account is projected to run short."
+  },
+  "top": {
+    "title": "Top categories this month",
+    "subtitle": "The tick marks a usual month for that category",
+    "all": "All categories",
+    "empty": "No spending yet this month",
+    "avg": "avg {{amount}}"
+  },
+  "budgets": {
+    "title": "Budgets",
+    "manage": "Manage",
+    "emptyTitle": "No budgets yet",
+    "emptyBody": "Suggestions are based on your last months of spending.",
+    "allOf": "All {{group}}",
+    "used": "{{target}} budget used"
+  },
+  "upcoming": {
+    "title": "Upcoming, next 14 days",
+    "calendar": "Calendar",
+    "empty": "Nothing expected"
+  },
+  "subsSavings": {
+    "title": "Subscription savings",
+    "link": "Subscriptions",
+    "emptyTitle": "No decision recorded yet",
+    "emptyBody": "When you cancel or renegotiate a subscription, record it on the Subscriptions page: the bank data then confirms the saving.",
+    "confirmedMonthly": "Saved per month, confirmed",
+    "hint": "<since/> since the decisions · <yearly/> a year at this rate",
+    "claimed": " Claimed but not confirmed: <amount/> a month.",
+    "confirmed_one": "{{count}} confirmed",
+    "confirmed_other": "{{count}} confirmed",
+    "pending_one": ", {{count}} waiting for the bank data",
+    "pending_other": ", {{count}} waiting for the bank data",
+    "contradicted_one": ", {{count}} still being charged",
+    "contradicted_other": ", {{count}} still being charged"
+  },
+  "alerts": {
+    "title": "Alerts",
+    "open": "Open",
+    "emptyTitle": "No open alert",
+    "emptyBody": "Nothing needs your attention.",
+    "openCount_one": "{{count}} open",
+    "openCount_other": "{{count}} open",
+    "highCount_one": "{{count}} high",
+    "highCount_other": "{{count}} high"
+  },
+  "insights": {
+    "title": "Latest insights",
+    "all": "All",
+    "emptyTitle": "All quiet",
+    "emptyBody": "Nothing unusual to report.",
+    "severity": {
+      "high": "high severity",
+      "medium": "medium severity",
+      "low": "low severity"
+    }
+  },
+  "questions": {
+    "title": "Questions for you",
+    "open_one": "open question: answers make the figures more accurate",
+    "open_other": "open questions: answers make the figures more accurate",
+    "none": "Nothing to answer right now."
+  },
+  "health": {
+    "title": "Connections",
+    "details": "Details",
+    "daysLeft": "{{days}} d left",
+    "manual": "manual",
+    "memory": "Memory: {{errors}} error(s), {{warnings}} warning(s)"
+  }
+}

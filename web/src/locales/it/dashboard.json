@@ -1,0 +1,131 @@
+{
+  "title": "Panoramica",
+  "subtitle": "Dove sono i soldi, dove vanno e cosa sta arrivando.",
+  "balances": {
+    "title": "Saldi",
+    "netWorth": "Patrimonio netto",
+    "total": "Su tutti i conti",
+    "withoutBalance_one": "{{count}} conto ancora senza saldo",
+    "withoutBalance_many": "{{count}} conti ancora senza saldo",
+    "withoutBalance_other": "{{count}} conti ancora senza saldo",
+    "old": "vecchio",
+    "oldTitle_one": "Ultimo saldo {{count}} giorno fa",
+    "oldTitle_many": "Ultimo saldo {{count}} giorni fa",
+    "oldTitle_other": "Ultimo saldo {{count}} giorni fa",
+    "typeTitle": "Per questo conto la banca fornisce solo questo tipo di saldo",
+    "more_one": "+ {{count}} conto più piccolo o meno recente",
+    "more_many": "+ {{count}} conti più piccoli o meno recenti",
+    "more_other": "+ {{count}} conti più piccoli o meno recenti"
+  },
+  "month": {
+    "title": "Questo mese finora",
+    "progress": "Speso rispetto a un mese tipico",
+    "usual_one": "Un mese tipico vale <amount/> (media di {{count}} mese coperto per intero, spese una tantum escluse). Il segno indica a che punto del mese siamo.",
+    "usual_many": "Un mese tipico vale <amount/> (media di {{count}} mesi coperti per intero, spese una tantum escluse). Il segno indica a che punto del mese siamo.",
+    "usual_other": "Un mese tipico vale <amount/> (media di {{count}} mesi coperti per intero, spese una tantum escluse). Il segno indica a che punto del mese siamo.",
+    "noAverage": "Nessun mese è ancora coperto per intero da tutti i conti, quindi non c'è una media affidabile con cui confrontare."
+  },
+  "savings": {
+    "title": "Tasso di risparmio",
+    "subtitle": "Solo mesi completi",
+    "emptyTitle": "Mesi completi insufficienti",
+    "emptyBody": "Un mese conta quando ogni conto con entrate o uscite ha tutti i suoi giorni.",
+    "over_one": "Su {{count}} mese",
+    "over_many": "Su {{count}} mesi",
+    "over_other": "Su {{count}} mesi",
+    "netOfIncome": "Saldo <net/> su <income/> di entrate",
+    "saved": "Risparmiato, in totale",
+    "debtService": "Rate dei prestiti, in totale",
+    "principal": "Rimborsare il capitale dei prestiti (circa <amount/>) è anche patrimonio che costruisci: includendolo, il tasso è {{rate}}.",
+    "principalUnknown": "Una parte delle rate è capitale, che costruisce patrimonio, ma non si può stimare finché tasso e capitale residuo dei prestiti non sono noti."
+  },
+  "cashflow": {
+    "title": "Flusso di cassa",
+    "subtitle": "Entrate e uscite per mese; le barre più chiare sono i mesi non coperti per intero da tutti i conti"
+  },
+  "forecast": {
+    "title": "Prossimi 90 giorni",
+    "calendar": "Calendario",
+    "emptyTitle": "Ancora nessuna previsione",
+    "emptyBody": "Serve una rilevazione del saldo.",
+    "lowest": "Saldo minimo previsto <amount/>, intorno al {{date}}",
+    "belowZero": "sotto zero previsto dal {{date}}",
+    "short": "potrebbe restare scoperto intorno al {{date}}",
+    "allGood": "Nessun conto dovrebbe restare scoperto."
+  },
+  "top": {
+    "title": "Categorie principali di questo mese",
+    "subtitle": "Il segno indica un mese tipico per quella categoria",
+    "all": "Tutte le categorie",
+    "empty": "Ancora nessuna spesa questo mese",
+    "avg": "media {{amount}}"
+  },
+  "budgets": {
+    "title": "Budget",
+    "manage": "Gestisci",
+    "emptyTitle": "Ancora nessun budget",
+    "emptyBody": "I suggerimenti si basano sulle tue spese degli ultimi mesi.",
+    "allOf": "Tutto: {{group}}",
+    "used": "Budget {{target}} usato"
+  },
+  "upcoming": {
+    "title": "In arrivo, prossimi 14 giorni",
+    "calendar": "Calendario",
+    "empty": "Niente in programma"
+  },
+  "subsSavings": {
+    "title": "Risparmi sugli abbonamenti",
+    "link": "Abbonamenti",
+    "emptyTitle": "Ancora nessuna decisione registrata",
+    "emptyBody": "Quando disdici o rinegozi un abbonamento, registralo nella pagina Abbonamenti: i dati bancari confermeranno poi il risparmio.",
+    "confirmedMonthly": "Risparmiato al mese, confermato",
+    "hint": "<since/> dalle decisioni · <yearly/> all'anno a questo ritmo",
+    "claimed": " Dichiarato ma non confermato: <amount/> al mese.",
+    "confirmed_one": "{{count}} confermata",
+    "confirmed_many": "{{count}} confermate",
+    "confirmed_other": "{{count}} confermate",
+    "pending_one": ", {{count}} in attesa dei dati bancari",
+    "pending_many": ", {{count}} in attesa dei dati bancari",
+    "pending_other": ", {{count}} in attesa dei dati bancari",
+    "contradicted_one": ", {{count}} ancora addebitata",
+    "contradicted_many": ", {{count}} ancora addebitate",
+    "contradicted_other": ", {{count}} ancora addebitate"
+  },
+  "alerts": {
+    "title": "Avvisi",
+    "open": "Apri",
+    "emptyTitle": "Nessun avviso aperto",
+    "emptyBody": "Niente richiede la tua attenzione.",
+    "openCount_one": "{{count}} aperto",
+    "openCount_many": "{{count}} aperti",
+    "openCount_other": "{{count}} aperti",
+    "highCount_one": "{{count}} alto",
+    "highCount_many": "{{count}} alti",
+    "highCount_other": "{{count}} alti"
+  },
+  "insights": {
+    "title": "Ultime analisi",
+    "all": "Tutte",
+    "emptyTitle": "Tutto tranquillo",
+    "emptyBody": "Niente di insolito da segnalare.",
+    "severity": {
+      "high": "gravità alta",
+      "medium": "gravità media",
+      "low": "gravità bassa"
+    }
+  },
+  "questions": {
+    "title": "Domande per te",
+    "open_one": "domanda aperta: le tue risposte rendono le cifre più precise",
+    "open_many": "domande aperte: le tue risposte rendono le cifre più precise",
+    "open_other": "domande aperte: le tue risposte rendono le cifre più precise",
+    "none": "Niente a cui rispondere per ora."
+  },
+  "health": {
+    "title": "Connessioni",
+    "details": "Dettagli",
+    "daysLeft": "{{days}} g rimanenti",
+    "manual": "manuale",
+    "memory": "Memoria: {{errors}} errore/i, {{warnings}} avviso/i"
+  }
+}

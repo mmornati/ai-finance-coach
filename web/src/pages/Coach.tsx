@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { Trans, useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { Bot, Eye, Send, ShieldAlert, Sparkles, Square } from "lucide-react";
 import { Badge, Button, Card, Disclosure, Notice, PageHeader } from "@/components/ui";
 import { CopyCommand } from "@/components/CopyCommand";
@@ -27,17 +29,16 @@ interface Msg {
 }
 let n = 0;
 // EU AI Act transparency (E11-5): every coach text is labelled; the server sends the label in the answer's language, this one shows while it streams
+// (its wording lives in src/coach/disclaimers.py: not a translation key)
 const AI_LABEL = "AI-generated content: it can contain mistakes. Check the figures against your accounts.";
 
-const TOOL_LABEL: Record<string, string> = {
-  coverage: "data coverage", category_averages: "usual spending", cashflow: "cash flow", recurring: "recurring payments", price_changes: "price changes",
-  anomalies: "unusual payments", forecast: "forecast", budget_status: "budgets", budget_suggestions: "budget suggestions", calendar: "upcoming payments",
-  goals: "goals", year_review: "year in review", transactions_search: "transactions", explain_transaction: "a categorisation", memory_context: "household memory",
-  open_questions: "open questions", memory_propose: "a memory proposal", add_insight: "an insight",
-  monthly_review: "monthly review", explain_spike: "spike breakdown", subscription_audit: "subscription audit", cancellability: "cancellation rules",
-  savings_estimate: "savings estimate", mortgage_check: "mortgage check", what_if: "what-if scenario", tax_candidates: "tax candidates",
-  onboarding_status: "setup checklist", questions_propose: "proposed questions",
-};
+const TOOLS = [
+  "coverage", "category_averages", "cashflow", "recurring", "price_changes", "anomalies", "forecast", "budget_status", "budget_suggestions", "calendar",
+  "goals", "year_review", "transactions_search", "explain_transaction", "memory_context", "open_questions", "memory_propose", "add_insight",
+  "monthly_review", "explain_spike", "subscription_audit", "cancellability", "savings_estimate", "mortgage_check", "what_if", "tax_candidates",
+  "onboarding_status", "questions_propose",
+] as const;
+const toolKey = (name: string): ParseKeys<"coach"> | null => ((TOOLS as readonly string[]).includes(name) ? (`tool.${name}` as ParseKeys<"coach">) : null);
 interface QuickPrompt { id: string; text: string; skill?: string }
 
 export default function Coach() {
@@ -49,6 +50,7 @@ export default function Coach() {
   const jobRef = useRef<string | null>(null);
   const end = useRef<HTMLDivElement>(null);
   const ctl = useRef<AbortController | null>(null);
+  const { t } = useTranslation("coach");
   useEffect(() => end.current?.scrollIntoView?.({ block: "end", behavior: "smooth" }), [msgs]);
   useEffect(() => () => ctl.current?.abort(), []);
 
@@ -98,16 +100,16 @@ export default function Coach() {
   const st = status.data;
   return (
     <>
-      <PageHeader title="Ask the coach" subtitle="Questions about your money, answered from your own figures with the transactions cited." />
-      {st && !st.configured && <Notice tone="warn" className="mb-4" title="The coach is not available">{st.message}</Notice>}
-      {st?.configured && <p className="mb-3 text-xs text-faint">Answered by <b>{st.backend}</b> ({st.model}), up to {st.max_tool_calls} look-ups per question. The coach only sees redacted, already computed figures, and can only <em>propose</em> changes to your memory.</p>}
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
+      {st && !st.configured && <Notice tone="warn" className="mb-4" title={t("unavailable")}>{st.message}</Notice>}
+      {st?.configured && <p className="mb-3 text-xs text-faint"><Trans t={t} i18nKey="status" values={{ backend: st.backend, model: st.model, max: st.max_tool_calls }} components={{ b: <b />, em: <em /> }} /></p>}
       <Card pad={false} className="flex min-h-[55dvh] flex-col">
-        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5" aria-live="polite" aria-label="Conversation">
+        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5" aria-live="polite" aria-label={t("conversation")}>
           {msgs.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 py-10 text-center">
               <Sparkles className="size-8 text-accent" aria-hidden />
-              <p className="max-w-sm text-sm text-muted">Try one of these, or type your own question.</p>
-              <div className="flex max-w-xl flex-wrap justify-center gap-2">{prompts.data?.prompts.map((p) => <button key={p.id} onClick={() => void ask(p.text, p.skill)} className="rounded-full border border-border-strong px-3 py-1.5 text-sm hover:bg-surface-2" title={p.skill ? `Runs the ${p.skill} skill` : undefined}>{p.text}</button>)}</div>
+              <p className="max-w-sm text-sm text-muted">{t("try")}</p>
+              <div className="flex max-w-xl flex-wrap justify-center gap-2">{prompts.data?.prompts.map((p) => <button key={p.id} onClick={() => void ask(p.text, p.skill)} className="rounded-full border border-border-strong px-3 py-1.5 text-sm hover:bg-surface-2" title={p.skill ? t("runsSkill", { skill: p.skill }) : undefined}>{p.text}</button>)}</div>
             </div>
           ) : (
             <ul className="grid gap-3">
@@ -120,34 +122,34 @@ export default function Coach() {
                       {(m.tools?.length ?? 0) > 0 && (
                         <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[12px] text-muted" data-testid="coach-tools">
                           <Eye className="size-3.5" aria-hidden />
-                          {m.tools!.map((t) => <Badge key={t.id} tone={t.suspicious ? "warn" : t.ok === false ? "neg" : "neutral"} title={t.args || undefined}>{TOOL_LABEL[t.name] ?? t.name}</Badge>)}
+                          {m.tools!.map((x) => <Badge key={x.id} tone={x.suspicious ? "warn" : x.ok === false ? "neg" : "neutral"} title={x.args || undefined}>{toolKey(x.name) ? t(toolKey(x.name)!) : x.name}</Badge>)}
                         </div>
                       )}
-                      {m.text ? <CoachText text={m.text} /> : m.pending ? <span className="text-muted">{m.tools?.length ? "Looking at your figures…" : "Thinking…"}</span> : null}
+                      {m.text ? <CoachText text={m.text} /> : m.pending ? <span className="text-muted">{m.tools?.length ? t("lookingAtFigures") : t("thinking")}</span> : null}
                       {m.compliance?.flagged && (
-                        <Notice tone="warn" className="mt-2" title="General information only">
+                        <Notice tone="warn" className="mt-2" title={t("generalInfo")}>
                           <span data-testid="compliance-banner">{m.compliance.banner}</span>
                         </Notice>
                       )}
                       {m.text && <p className="mt-2 flex items-start gap-1.5 text-[12px] text-faint" data-testid="ai-label"><Bot className="mt-0.5 size-3.5 shrink-0" aria-hidden /><span>{m.compliance?.label ?? AI_LABEL}</span></p>}
                       {m.suspicious && (
-                        <Notice tone="warn" className="mt-2" title="Suspicious text in your data">
-                          <span className="inline-flex items-center gap-1"><ShieldAlert className="size-3.5" aria-hidden /></span> A merchant name or description looked like an instruction aimed at the coach. It was treated as data and ignored; a memory proposal from this answer needs a separate confirmation of each field.
+                        <Notice tone="warn" className="mt-2" title={t("suspiciousTitle")}>
+                          <span className="inline-flex items-center gap-1"><ShieldAlert className="size-3.5" aria-hidden /></span> {t("suspiciousBody")}
                         </Notice>
                       )}
-                      {(m.unverified?.length ?? 0) > 0 && <p className="mt-2 text-[12px] text-warn" data-testid="unverified">{m.unverified!.length} number{m.unverified!.length > 1 ? "s" : ""} in this answer could not be traced to a computed figure ({m.unverified!.slice(0, 5).join(", ")}): check before relying on {m.unverified!.length > 1 ? "them" : "it"}.</p>}
+                      {(m.unverified?.length ?? 0) > 0 && <p className="mt-2 text-[12px] text-warn" data-testid="unverified">{t("unverified", { count: m.unverified!.length, list: m.unverified!.slice(0, 5).join(", ") })}</p>}
                       {m.proposals?.map((p) => (
                         <div key={p.id} className="mt-3 grid gap-1.5 rounded-lg border border-border bg-surface p-2.5">
-                          <div className="text-[13px] font-medium">Proposal <Link className="text-accent hover:underline" to="/memory">{p.id}</Link>: nothing is changed yet</div>
-                          <div className="text-[12px] text-muted">Review it in Memory, then accept it yourself in a terminal:</div>
+                          <div className="text-[13px] font-medium"><Trans t={t} i18nKey="proposal" values={{ id: p.id }} components={{ link: <Link className="text-accent hover:underline" to="/memory" /> }} /></div>
+                          <div className="text-[12px] text-muted">{t("proposalHint")}</div>
                           {p.command && <CopyCommand command={p.command} />}
                         </div>
                       ))}
                       {m.usage && (
-                        <Disclosure summary={<span className="text-[12px]">How this was answered</span>}>
+                        <Disclosure summary={<span className="text-[12px]">{t("howAnswered")}</span>}>
                           <p className="text-[12px] text-muted" data-testid="coach-usage">
-                            {m.usage.backend} · {m.usage.model} · {m.usage.tool_calls} look-up{m.usage.tool_calls === 1 ? "" : "s"} · {m.usage.tokens_in.toLocaleString()} tokens in / {m.usage.tokens_out.toLocaleString()} out
-                            {m.usage.cost_usd ? ` · about $${m.usage.cost_usd.toFixed(4)}${m.usage.cost_is_estimate ? " (estimate" + (m.usage.backend === "claude-code" ? ", notional on a subscription)" : ")") : ""}` : ""} · {m.usage.duration_s.toFixed(1)} s
+                            {m.usage.backend} · {m.usage.model} · {t("usage.lookups", { count: m.usage.tool_calls })} · {t("usage.tokens", { in: m.usage.tokens_in.toLocaleString(), out: m.usage.tokens_out.toLocaleString() })}
+                            {m.usage.cost_usd ? t("usage.cost", { cost: `$${m.usage.cost_usd.toFixed(4)}` }) + (m.usage.cost_is_estimate ? t(m.usage.backend === "claude-code" ? "usage.estimateNotional" : "usage.estimate") : "") : ""} · {t("usage.seconds", { s: m.usage.duration_s.toFixed(1) })}
                           </p>
                         </Disclosure>
                       )}
@@ -160,12 +162,12 @@ export default function Coach() {
           )}
         </div>
         <form onSubmit={submit} className="flex gap-2 border-t border-border p-3 sm:p-4">
-          <label className="sr-only" htmlFor="coach-q">Your question</label>
-          <input id="coach-q" value={text} onChange={(e) => setText(e.target.value)} placeholder="Why was September high?" maxLength={4000} disabled={busy} className="min-h-11 flex-1 rounded-lg border border-border-strong bg-surface px-3 text-sm" />
+          <label className="sr-only" htmlFor="coach-q">{t("question")}</label>
+          <input id="coach-q" value={text} onChange={(e) => setText(e.target.value)} placeholder={t("placeholder")} maxLength={4000} disabled={busy} className="min-h-11 flex-1 rounded-lg border border-border-strong bg-surface px-3 text-sm" />
           {busy ? (
-            <Button type="button" onClick={() => void cancel()}><Square className="size-4" aria-hidden /> Cancel</Button>
+            <Button type="button" onClick={() => void cancel()}><Square className="size-4" aria-hidden /> {t("cancel")}</Button>
           ) : (
-            <Button type="submit" variant="primary" disabled={!text.trim() || st?.configured === false}><Send className="size-4" aria-hidden /> Ask</Button>
+            <Button type="submit" variant="primary" disabled={!text.trim() || st?.configured === false}><Send className="size-4" aria-hidden /> {t("ask")}</Button>
           )}
         </form>
       </Card>
