@@ -472,6 +472,32 @@
       "small_saving_check_the_costs": "a small saving: check the costs",
       "fees_exceed_saving": "the fees exceed the saving",
       "saving": "saving"
+    },
+    "rentalDocument": {
+      "manager-statement": "Annual statement of the property manager (rents collected, fees withheld, charges paid)",
+      "leases": "The lease(s) of the year, rent revisions and the tenant's rent receipts",
+      "property-tax-notice": "Property tax notice (taxe fonciere), to separate the household-waste part the tenant reimburses",
+      "charges-statement": "Co-ownership statement of charges with the recoverable / non-recoverable split",
+      "insurance": "Insurance certificates and premium receipts (PNO, unpaid-rent cover)",
+      "works-invoices": "Invoices of repairs, maintenance and improvement works (not building or enlargement)",
+      "loan-statement": "The lender's annual statement of interest and borrower insurance paid",
+      "bank-statements": "Bank statements of the property account for the year",
+      "deed": "Deed of purchase and the scheme's commitment form",
+      "scheme-declaration": "The scheme's own annual declaration or certificate, if the scheme asks for one",
+      "tenant-evidence": "The tenant's income evidence at the signature of each lease (against the income limit)"
+    },
+    "rentalDocumentFrom": {
+      "manager-statement": "your property manager",
+      "leases": "your files",
+      "property-tax-notice": "impots.gouv.fr, your tax space",
+      "charges-statement": "your syndic",
+      "insurance": "your insurers",
+      "works-invoices": "your contractors",
+      "loan-statement": "your lender",
+      "bank-statements": "your bank, or this app (coverage)",
+      "deed": "your notary",
+      "scheme-declaration": "the scheme's rules",
+      "tenant-evidence": "the tenant / your manager"
     }
   },
   "lease": {
@@ -631,6 +657,129 @@
         "downgraded": "{{service}}: still charged the old price after you downgraded",
         "kept": "{{service}}: the charge differs from what you decided to keep"
       }
+    }
+  },
+  "rental": {
+    "basis": {
+      "capMonthly": "the monthly cap you declared",
+      "capPerM2": "the cap per m² you declared × the surface you declared",
+      "rentDeclared": "the lease rent you declared",
+      "rentObserved": "the last rent received (it may be net of management fees: the cap applies to the lease rent)"
+    },
+    "equity": {
+      "beforeCosts": "Before the selling costs, the early-repayment penalty and any tax on a capital gain: none of them is modelled.",
+      "missingCapital": "the capital still due of a loan (its terms or a declared outstanding)",
+      "missingLoan": "the loan (link it with `loan`), or record that there is none",
+      "missingValue": "the value (the valuation you believe, with as_of)",
+      "valueOld": "The valuation dates from {{value_date}}: update it.",
+      "valueUndated": "The valuation has no as_of date."
+    },
+    "links": {
+      "accountNotInData": "The account named on the property is not in the data (excluded, to review, or a wrong uid / label).",
+      "loanNotOnFile": "The loan named on the property is not in the loan files."
+    },
+    "market": {
+      "future": "The date of the market rate is in the future.",
+      "missing": "Enter the current market rate for a loan of similar duration (your own quote or a comparator you looked at, with its date): the coach never looks it up.",
+      "old_one": "The market rate is {{count}} day old (more than {{max_days}}): do not present it as current.",
+      "old_other": "The market rate is {{count}} days old (more than {{max_days}}): do not present it as current.",
+      "undated": "The date of the market rate was not given: treat it as possibly outdated."
+    },
+    "need": {
+      "account": "the property's bank account (its flows, the P&L)",
+      "commitmentStart": "the end date of the commitment and its reminders",
+      "commitmentYears": "the end date of the commitment (6, 9 or 12 years for a Pinel-type scheme)",
+      "loan": "the loan that financed it (interest, outstanding capital, equity)",
+      "purchase": "the figures of the tax return and the scheme reduction",
+      "reductionRate": "the scheme reduction candidate of the tax return",
+      "rentCap": "the rent cap check",
+      "rentMonthly": "the expected rent (vacancy and rent cap checks)",
+      "tenantIncome": "the tenant income check",
+      "value": "the valuation for the net equity (the latest value you believe, with as_of)"
+    },
+    "rate": {
+      "above": "The loan rate is {{gap_num}} point(s) above the market rate you entered: a quote may be worth asking for.",
+      "below": "The loan rate is below the market rate you entered: a renegotiation would raise it.",
+      "close": "The loan rate is close to the market rate you entered: little to gain from a renegotiation on the rate alone.",
+      "missingLoan": "the loan and its nominal rate",
+      "missingMarket": "a market rate you entered",
+      "missingNominal": "the nominal rate of the loan (rate.nominal)",
+      "noFees": "No fee was given: add the bank fees, the guarantee fees and the penalty of your contract to price it (`coach rental indicators --bank-fees ...`)."
+    },
+    "reduction": {
+      "assumption": "Assumption: the total rate is spread evenly over the commitment years; declare `commitment.reduction_schedule` (segments of years at a yearly rate) if the scheme spreads it differently.",
+      "cappedDeclared": "The price is capped by the ceiling you declared ({{cap_amount}}).",
+      "cappedM2": "The price is capped by {{m2_cap_amount}}/m² × {{surface}} m² ({{cap_amount}}).",
+      "cappedPinel": "The price is capped by the Pinel ceiling of {{cap_amount}}.",
+      "declaredSchedule": "The yearly schedule is the one you declared (commitment.reduction_schedule).",
+      "missingFirstYear": "{{field}} (or purchase_date / commitment.start_date)",
+      "missingRate": "{{field}} (the total reduction over the commitment, from the scheme's table)",
+      "notADeduction": "The reduction lowers the tax: it is not a deduction from the rental income, and it does not depend on the micro-foncier / régime réel choice.",
+      "nothingLookedUp": "The rate, the price and the ceilings are the ones recorded on the property (declared by you, or the dated Pinel table): nothing is looked up.",
+      "ratesClassic": "Pinel rates of a purchase up to 2022.",
+      "ratesOfYear": "Pinel rates of a {{purchase_year}} purchase.",
+      "shapeKept": "Your declared total rate differs from the Pinel table: its 9 + 3 year shape is kept in the table's proportion.",
+      "spreadEvenly": "Your declared total rate differs from the Pinel table: it is spread evenly over the commitment.",
+      "verify": "The Pinel split (rates by purchase year, 9 + 3 years for a 12-year commitment, ceilings of {{price_cap_amount}} and {{m2_cap_amount}}/m²) is the one known in {{reviewed_month}}: verify it on impots.gouv.fr."
+    },
+    "scenario": {
+      "prepay": "`coach loans scenario prepay <loan> --amount N` or the `what_if` tool (`prepay_loan`): a prepayment on the exact schedule.",
+      "renegotiate": "`coach loans scenario renegotiate <loan> --new-rate R` (or the `mortgage_check` tool with `market_rate_pct`): the renegotiation priced on the real schedule."
+    },
+    "scheme": {
+      "endComputed": "start + length",
+      "endDeclared": "declared",
+      "pinelYears": "A Pinel-type commitment usually lasts 6, 9 or 12 years: {{years}} was recorded, check the deed."
+    },
+    "signal": {
+      "commitmentEnding_one": "The commitment ends in about {{count}} month ({{end_date}}): extend it (if the scheme allows it), keep renting under the ordinary rules, or sell. Check the consequences of each with the scheme's rules or an adviser.",
+      "commitmentEnding_other": "The commitment ends in about {{count}} months ({{end_date}}): extend it (if the scheme allows it), keep renting under the ordinary rules, or sell. Check the consequences of each with the scheme's rules or an adviser.",
+      "commitmentOver": "The commitment ended on {{end_date}}: the scheme's constraints (rent cap, tenant limits) may no longer apply; verify what changes for the property.",
+      "commitmentRunning": "The commitment is running: ending it early (selling, stopping the rental) can call the scheme's advantage into question. Verify with the scheme's rules before any decision.",
+      "equityNegative": "The declared valuation is below the capital still due: selling would not repay the loan.",
+      "equityPositive": "The declared valuation is above the capital still due."
+    },
+    "tax": {
+      "bound": {
+        "asPaid": "As paid",
+        "borrowerInsurance": "Theoretical table: the lender's statement decides.",
+        "charges": "Upper bound: only the non-recoverable part counts (the syndic's statement splits it).",
+        "flatAllowance": "A candidate line: a flat {{flat_amount}} per property in the régime réel; verify that it applies to you.",
+        "interest": "Theoretical table: report the lender's annual statement.",
+        "interestPartial": "Theoretical table: report the lender's annual statement (partial year: the table starts mid-year).",
+        "propertyTax": "Upper bound: the household-waste part reimbursed by the tenant is not deductible.",
+        "works": "Upper bound: building or enlargement works are not deductible; check each invoice."
+      },
+      "deficit": "A candidate déficit foncier computed with the rules known in {{reviewed_month}} ({{ceiling_amount}} a year on the global income; the part due to the loan interest and the excess are carried forward on the rental income of the next ten years): verify the conditions (a ceiling and a holding period apply) with the tax office or an adviser.",
+      "incomeYear": "{{year}} is the income year: declared in the spring of {{filing_year}}.",
+      "item": {
+        "borrowerInsurance": "Borrower insurance",
+        "charges": "Co-ownership charges",
+        "fees": "Management fees",
+        "flatAllowance": "Flat management allowance (per property)",
+        "insurance": "Insurance (PNO, unpaid-rent cover)",
+        "interest": "Loan interest",
+        "propertyTax": "Property tax",
+        "works": "Repairs, maintenance and improvement works"
+      },
+      "notDeductible": {
+        "ownTransfers": "the owner's own transfers into the account",
+        "principal": "the loan principal repaid"
+      },
+      "notModelled": "Only the French rental-income return is modelled (micro-foncier / régime réel); the Italian one is not.",
+      "note": {
+        "flows": "Candidates computed from the bank flows of the property account: a payment in the wrong category moves them.",
+        "netRent": "If the manager pays the rent net of its fees, the gross rent is higher than the rent received: the manager's annual statement gives it.",
+        "overCeiling": "The household's gross rents are above the micro-foncier ceiling: that regime would not apply.",
+        "rules": "The ceiling and the abatement are those known in {{reviewed_month}}: verify them, and the consequences of choosing the régime réel (it binds you for several years), with the tax office or an adviser.",
+        "yearInProgress": "{{year}} is not over: only its closed months are counted."
+      },
+      "source": {
+        "bankFlows": "bank flows ({{categories}})",
+        "flatAmount": "flat amount known in {{reviewed_month}}",
+        "schedule": "amortization schedule of the loan file"
+      },
+      "unknownInterest": "loan interest and borrower insurance: the loan is not known or its schedule cannot be computed for this year (link the loan, see `coach rental scheme`); the lender's annual statement gives them"
     }
   },
   "rentalAlert": {

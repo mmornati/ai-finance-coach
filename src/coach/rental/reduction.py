@@ -17,7 +17,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from coach.analytics.common import div_cents, mul_cents, to_cents
+from coach.analytics.common import div_cents, money_str, mul_cents, to_cents
+from coach.i18n_msg import server_msg
 
 LAST_REVIEWED = "2026-10"
 PINEL_PRICE_CAP_C = 30_000_000       # EUR 300,000 per property
@@ -30,6 +31,10 @@ PINEL_TABLE = {
 }
 VERIFY = (f"the Pinel split (rates by purchase year, 9 + 3 years for a 12 year commitment, 300,000 EUR and 5,500 EUR/m2 ceilings) is the one known in "
           f"{LAST_REVIEWED}: verify it on impots.gouv.fr")
+# Every note below is a message of the web (i18n step 4, docs/i18n.md "Server text"): ``notes`` keeps the English (its ``text``) for the CLI,
+# the tools and ``tax_candidates``; ``notes_msg`` (same order) is what the web translates.
+VERIFY_MSG = server_msg("rental.reduction.verify", VERIFY, reviewed_month=LAST_REVIEWED, price_cap_amount=money_str(PINEL_PRICE_CAP_C),
+                        m2_cap_amount=money_str(PINEL_M2_CAP_C))
 
 
 def is_pinel(asset) -> bool:
@@ -56,13 +61,14 @@ def _table(asset, years: int, purchase_year: Optional[int]):
 
 
 def _segments(asset, years: int, purchase_year: Optional[int]) -> tuple[Optional[list], str, list]:
-    """([(years, total %)], basis, notes)."""
+    """([(years, total %)], basis, notes): the notes are messages (``server_msg``)."""
     com = getattr(asset, "commitment", None)
     notes: list = []
     sched = getattr(com, "reduction_schedule", None) if com else None
     if sched:
         segs = [(s.years, round(s.years * s.yearly_rate_pct, 6)) for s in sched]
-        return segs, "declared_schedule", ["the yearly schedule is the one you declared (commitment.reduction_schedule)"]
+        return segs, "declared_schedule", [server_msg("rental.reduction.declaredSchedule",
+                                                      "the yearly schedule is the one you declared (commitment.reduction_schedule)")]
     declared = com.reduction_rate_pct if com else None
     if is_pinel(asset):
         tbl, bucket = _table(asset, years, purchase_year)
@@ -71,35 +77,44 @@ def _segments(asset, years: int, purchase_year: Optional[int]) -> tuple[Optional
                 if len(tbl) == 2:
                     k = declared / sum(p for _y, p in tbl)
                     tbl = [(y, p * k) for y, p in tbl]
-                    notes.append("your declared total rate differs from the Pinel table: its 9 + 3 year shape is kept in the table's proportion")
+                    notes.append(server_msg("rental.reduction.shapeKept",
+                                            "your declared total rate differs from the Pinel table: its 9 + 3 year shape is kept in the table's proportion"))
                 else:
                     tbl = [(years, declared)]
-                    notes.append("your declared total rate differs from the Pinel table: it is spread evenly over the commitment")
-                return tbl, "pinel_table", notes + [VERIFY]
-            return tbl, "pinel_table", [f"Pinel rates of {'a purchase up to 2022' if bucket == 'classic' else 'a ' + str(bucket) + ' purchase'}", VERIFY]
+                    notes.append(server_msg("rental.reduction.spreadEvenly",
+                                            "your declared total rate differs from the Pinel table: it is spread evenly over the commitment"))
+                return tbl, "pinel_table", notes + [VERIFY_MSG]
+            rates = (server_msg("rental.reduction.ratesClassic", "Pinel rates of a purchase up to 2022") if bucket == "classic"
+                     else server_msg("rental.reduction.ratesOfYear", f"Pinel rates of a {bucket} purchase", purchase_year=bucket))
+            return tbl, "pinel_table", [rates, VERIFY_MSG]
     if declared is None:
         return None, "none", []
-    return [(years, declared)], "even_spread", [
+    return [(years, declared)], "even_spread", [server_msg(
+        "rental.reduction.assumption",
         "ASSUMPTION: the total rate is spread evenly over the commitment years; declare `commitment.reduction_schedule` (segments of years at a yearly rate) "
-        "if the scheme spreads it differently"]
+        "if the scheme spreads it differently")]
 
 
 def eligible_base_c(asset) -> tuple[int, int, bool, list]:
-    """(base, price, capped, notes) in cents."""
+    """(base, price, capped, notes) in cents; the notes are messages (``server_msg``)."""
     com = getattr(asset, "commitment", None)
     price_c = to_cents(asset.purchase_price)
     base, notes = price_c, []
     caps = []
     if com and com.reduction_base_cap is not None:
-        caps.append(("the ceiling you declared", to_cents(com.reduction_base_cap)))
+        c = to_cents(com.reduction_base_cap)
+        caps.append((c, server_msg("rental.reduction.cappedDeclared", "the price is capped by the ceiling you declared", cap_amount=money_str(c))))
     if is_pinel(asset):
-        caps.append(("the Pinel ceiling of 300,000 EUR", PINEL_PRICE_CAP_C))
+        caps.append((PINEL_PRICE_CAP_C, server_msg("rental.reduction.cappedPinel", "the price is capped by the Pinel ceiling of 300,000 EUR",
+                                                   cap_amount=money_str(PINEL_PRICE_CAP_C))))
         if com and com.surface_m2:
-            caps.append((f"5,500 EUR/m2 x {com.surface_m2} m2", mul_cents(PINEL_M2_CAP_C, com.surface_m2)))
-    for label, c in caps:
+            c = mul_cents(PINEL_M2_CAP_C, com.surface_m2)
+            caps.append((c, server_msg("rental.reduction.cappedM2", f"the price is capped by 5,500 EUR/m2 x {com.surface_m2} m2",
+                                       m2_cap_amount=money_str(PINEL_M2_CAP_C), surface=com.surface_m2, cap_amount=money_str(c))))
+    for c, msg in caps:
         if c < base:
             base = c
-            notes.append(f"the price is capped by {label}")
+            notes.append(msg)
     return base, price_c, base < price_c, notes
 
 
@@ -117,10 +132,13 @@ def compute(asset, year: int) -> dict:
     if first is None:
         need.append("commitment.reduction_first_year (or purchase_date / commitment.start_date)")
     if need:
-        return {"status": "needs_fields", "missing": need}
+        return {"status": "needs_fields", "missing": need, "missing_msg": [
+            server_msg("rental.reduction.missingFirstYear", m, field="commitment.reduction_first_year") if m.startswith("commitment.reduction_first_year")
+            else None for m in need]}
     segs, basis, notes = _segments(asset, years, py)
     if segs is None:
-        return {"status": "needs_fields", "missing": ["commitment.reduction_rate_pct (the total reduction over the commitment, from the scheme's table)"]}
+        m = "commitment.reduction_rate_pct (the total reduction over the commitment, from the scheme's table)"
+        return {"status": "needs_fields", "missing": [m], "missing_msg": [server_msg("rental.reduction.missingRate", m, field="commitment.reduction_rate_pct")]}
     base_c, price_c, capped, cap_notes = eligible_base_c(asset)
     schedule, y = [], first
     for n, total_pct in segs:
@@ -144,7 +162,11 @@ def compute(asset, year: int) -> dict:
     if hit and hit.get("extension"):
         out["via_extension"] = True
     out["years_elapsed_including_this"] = max(0, min(year - first + 1, years))
-    out["notes"] = cap_notes + notes + [
-        "the reduction lowers the tax, it is not a deduction from the rental income, and it does not depend on the micro-foncier / reel choice"]
-    out["notes"].append("the rate, the price and the ceilings are the ones recorded on the property (declared by you, or the dated Pinel table): nothing is looked up")
+    msgs = cap_notes + notes + [
+        server_msg("rental.reduction.notADeduction", "the reduction lowers the tax, it is not a deduction from the rental income, and it does not "
+                   "depend on the micro-foncier / reel choice"),
+        server_msg("rental.reduction.nothingLookedUp", "the rate, the price and the ceilings are the ones recorded on the property (declared by you, "
+                   "or the dated Pinel table): nothing is looked up")]
+    out["notes"] = [m["text"] for m in msgs]
+    out["notes_msg"] = msgs
     return out

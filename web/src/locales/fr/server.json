@@ -503,6 +503,32 @@
       "small_saving_check_the_costs": "petite économie : vérifiez les frais",
       "fees_exceed_saving": "les frais dépassent l'économie",
       "saving": "économie"
+    },
+    "rentalDocument": {
+      "manager-statement": "Relevé annuel du gestionnaire (loyers encaissés, frais retenus, charges payées)",
+      "leases": "Le ou les baux de l'année, les révisions de loyer et les quittances du locataire",
+      "property-tax-notice": "Avis de taxe foncière, pour isoler la taxe d'enlèvement des ordures ménagères que le locataire rembourse",
+      "charges-statement": "Décompte des charges de copropriété avec la répartition récupérable / non récupérable",
+      "insurance": "Attestations d'assurance et avis d'échéance (PNO, garantie loyers impayés)",
+      "works-invoices": "Factures des travaux de réparation, d'entretien et d'amélioration (hors construction ou agrandissement)",
+      "loan-statement": "Relevé annuel du prêteur indiquant les intérêts et l'assurance emprunteur payés",
+      "bank-statements": "Relevés bancaires du compte du bien pour l'année",
+      "deed": "Acte d'achat et engagement de location du dispositif",
+      "scheme-declaration": "La déclaration ou l'attestation annuelle propre au dispositif, s'il en demande une",
+      "tenant-evidence": "Les justificatifs de ressources du locataire à la signature de chaque bail (au regard du plafond de ressources)"
+    },
+    "rentalDocumentFrom": {
+      "manager-statement": "votre gestionnaire",
+      "leases": "vos dossiers",
+      "property-tax-notice": "impots.gouv.fr, votre espace particulier",
+      "charges-statement": "votre syndic",
+      "insurance": "vos assureurs",
+      "works-invoices": "vos artisans",
+      "loan-statement": "votre prêteur",
+      "bank-statements": "votre banque, ou cette application (couverture)",
+      "deed": "votre notaire",
+      "scheme-declaration": "les règles du dispositif",
+      "tenant-evidence": "le locataire / votre gestionnaire"
     }
   },
   "lease": {
@@ -674,6 +700,131 @@
         "downgraded": "{{service}} : toujours prélevé à l'ancien prix après votre passage à une offre inférieure",
         "kept": "{{service}} : le prélèvement diffère de ce que vous avez décidé de garder"
       }
+    }
+  },
+  "rental": {
+    "basis": {
+      "capMonthly": "le plafond mensuel que vous avez déclaré",
+      "capPerM2": "le plafond au m² que vous avez déclaré × la surface que vous avez déclarée",
+      "rentDeclared": "le loyer du bail que vous avez déclaré",
+      "rentObserved": "le dernier loyer encaissé (il peut être net des frais de gestion : le plafond s'applique au loyer du bail)"
+    },
+    "equity": {
+      "beforeCosts": "Avant frais de vente, indemnités de remboursement anticipé et impôt sur une éventuelle plus-value : aucun n'est modélisé.",
+      "missingCapital": "le capital restant dû d'un prêt (ses conditions ou un encours déclaré)",
+      "missingLoan": "le prêt (reliez-le avec `loan`), ou indiquez qu'il n'y en a pas",
+      "missingValue": "la valeur (l'estimation que vous retenez, avec as_of)",
+      "valueOld": "L'estimation date du {{value_date}} : mettez-la à jour.",
+      "valueUndated": "L'estimation n'a pas de date as_of."
+    },
+    "links": {
+      "accountNotInData": "Le compte indiqué pour le bien n'est pas dans les données (exclu, à revoir, ou uid / libellé erroné).",
+      "loanNotOnFile": "Le prêt indiqué pour le bien n'est pas dans les fiches de prêt."
+    },
+    "market": {
+      "future": "La date du taux du marché est dans le futur.",
+      "missing": "Saisissez le taux actuel du marché pour un prêt de durée comparable (votre propre devis ou un comparateur consulté, avec sa date) : le coach ne le recherche jamais.",
+      "old_one": "Le taux du marché date de {{count}} jour (plus de {{max_days}}) : ne le présentez pas comme actuel.",
+      "old_many": "Le taux du marché date de {{count}} jours (plus de {{max_days}}) : ne le présentez pas comme actuel.",
+      "old_other": "Le taux du marché date de {{count}} jours (plus de {{max_days}}) : ne le présentez pas comme actuel.",
+      "undated": "La date du taux du marché n'a pas été indiquée : considérez-le comme possiblement dépassé."
+    },
+    "need": {
+      "account": "le compte bancaire du bien (ses flux, le résultat)",
+      "commitmentStart": "la date de fin de l'engagement et ses rappels",
+      "commitmentYears": "la date de fin de l'engagement (6, 9 ou 12 ans pour un dispositif de type Pinel)",
+      "loan": "le prêt qui l'a financé (intérêts, capital restant dû, valeur nette)",
+      "purchase": "les montants de la déclaration de revenus et de la réduction d'impôt du dispositif",
+      "reductionRate": "le montant candidat de la réduction d'impôt du dispositif",
+      "rentCap": "le contrôle du plafond de loyer",
+      "rentMonthly": "le loyer attendu (contrôles de vacance locative et du plafond de loyer)",
+      "tenantIncome": "le contrôle des ressources du locataire",
+      "value": "l'estimation pour le valeur nette (la dernière valeur que vous retenez, avec as_of)"
+    },
+    "rate": {
+      "above": "Le taux du prêt dépasse de {{gap_num}} point(s) le taux du marché que vous avez saisi : demander un devis peut valoir la peine.",
+      "below": "Le taux du prêt est inférieur au taux du marché que vous avez saisi : une renégociation le ferait monter.",
+      "close": "Le taux du prêt est proche du taux du marché que vous avez saisi : peu à gagner d'une renégociation portant sur le seul taux.",
+      "missingLoan": "le prêt et son taux nominal",
+      "missingMarket": "un taux du marché que vous avez saisi",
+      "missingNominal": "le taux nominal du prêt (rate.nominal)",
+      "noFees": "Aucun frais indiqué : ajoutez les frais de dossier, les frais de garantie et les indemnités de remboursement anticipé de votre contrat pour la chiffrer (`coach rental indicators --bank-fees ...`)."
+    },
+    "reduction": {
+      "assumption": "Hypothèse : le taux total est réparti également sur les années d'engagement ; déclarez `commitment.reduction_schedule` (des tranches d'années à un taux annuel) si le dispositif le répartit autrement.",
+      "cappedDeclared": "Le prix est plafonné par le plafond que vous avez déclaré ({{cap_amount}}).",
+      "cappedM2": "Le prix est plafonné à {{m2_cap_amount}}/m² × {{surface}} m² ({{cap_amount}}).",
+      "cappedPinel": "Le prix est plafonné par le plafond Pinel de {{cap_amount}}.",
+      "declaredSchedule": "La répartition annuelle est celle que vous avez déclarée (commitment.reduction_schedule).",
+      "missingFirstYear": "{{field}} (ou purchase_date / commitment.start_date)",
+      "missingRate": "{{field}} (la réduction totale sur l'engagement, d'après le barème du dispositif)",
+      "notADeduction": "La réduction diminue l'impôt : ce n'est pas une charge déductible des revenus fonciers, et elle ne dépend pas du choix entre micro-foncier et régime réel.",
+      "nothingLookedUp": "Le taux, le prix et les plafonds sont ceux enregistrés pour le bien (déclarés par vous, ou le barème Pinel daté) : rien n'est recherché.",
+      "ratesClassic": "Taux Pinel d'un achat jusqu'en 2022.",
+      "ratesOfYear": "Taux Pinel d'un achat en {{purchase_year}}.",
+      "shapeKept": "Le taux total que vous avez déclaré diffère du barème Pinel : sa répartition 9 + 3 ans est conservée dans la proportion du barème.",
+      "spreadEvenly": "Le taux total que vous avez déclaré diffère du barème Pinel : il est réparti également sur l'engagement.",
+      "verify": "La répartition Pinel (taux selon l'année d'achat, 9 + 3 ans pour un engagement de 12 ans, plafonds de {{price_cap_amount}} et de {{m2_cap_amount}}/m²) est celle connue en {{reviewed_month}} : vérifiez-la sur impots.gouv.fr."
+    },
+    "scenario": {
+      "prepay": "`coach loans scenario prepay <loan> --amount N` ou l'outil `what_if` (`prepay_loan`) : un remboursement anticipé sur l'échéancier exact.",
+      "renegotiate": "`coach loans scenario renegotiate <loan> --new-rate R` (ou l'outil `mortgage_check` avec `market_rate_pct`) : la renégociation chiffrée sur l'échéancier réel."
+    },
+    "scheme": {
+      "endComputed": "début + durée",
+      "endDeclared": "déclarée",
+      "pinelYears": "Un engagement de type Pinel dure en général 6, 9 ou 12 ans : {{years}} a été enregistré, vérifiez l'acte."
+    },
+    "signal": {
+      "commitmentEnding_one": "L'engagement se termine dans environ {{count}} mois ({{end_date}}) : le proroger (si le dispositif le permet), continuer à louer selon les règles ordinaires, ou vendre. Vérifiez les conséquences de chaque option avec les règles du dispositif ou un conseiller.",
+      "commitmentEnding_many": "L'engagement se termine dans environ {{count}} mois ({{end_date}}) : le proroger (si le dispositif le permet), continuer à louer selon les règles ordinaires, ou vendre. Vérifiez les conséquences de chaque option avec les règles du dispositif ou un conseiller.",
+      "commitmentEnding_other": "L'engagement se termine dans environ {{count}} mois ({{end_date}}) : le proroger (si le dispositif le permet), continuer à louer selon les règles ordinaires, ou vendre. Vérifiez les conséquences de chaque option avec les règles du dispositif ou un conseiller.",
+      "commitmentOver": "L'engagement a pris fin le {{end_date}} : les contraintes du dispositif (plafond de loyer, plafonds de ressources du locataire) peuvent ne plus s'appliquer ; vérifiez ce qui change pour le bien.",
+      "commitmentRunning": "L'engagement est en cours : y mettre fin de manière anticipée (vente, arrêt de la location) peut remettre en cause l'avantage du dispositif. Vérifiez avec les règles du dispositif avant toute décision.",
+      "equityNegative": "L'estimation déclarée est inférieure au capital restant dû : une vente ne rembourserait pas le prêt.",
+      "equityPositive": "L'estimation déclarée est supérieure au capital restant dû."
+    },
+    "tax": {
+      "bound": {
+        "asPaid": "Montant payé",
+        "borrowerInsurance": "Tableau théorique : le relevé du prêteur fait foi.",
+        "charges": "Montant maximal : seule la part non récupérable compte (le décompte du syndic la sépare).",
+        "flatAllowance": "Ligne candidate : un forfait de {{flat_amount}} par bien au régime réel ; vérifiez qu'il vous concerne.",
+        "interest": "Tableau théorique : reportez le relevé annuel du prêteur.",
+        "interestPartial": "Tableau théorique : reportez le relevé annuel du prêteur (année partielle : le tableau commence en cours d'année).",
+        "propertyTax": "Montant maximal : la taxe d'enlèvement des ordures ménagères remboursée par le locataire n'est pas déductible.",
+        "works": "Montant maximal : les travaux de construction ou d'agrandissement ne sont pas déductibles ; vérifiez chaque facture."
+      },
+      "deficit": "Un déficit foncier candidat, calculé avec les règles connues en {{reviewed_month}} ({{ceiling_amount}} par an imputables sur le revenu global ; la part due aux intérêts d'emprunt et l'excédent sont reportés sur les revenus fonciers des dix années suivantes) : vérifiez les conditions (un plafond et une durée minimale de location s'appliquent) auprès du service des impôts ou d'un conseiller.",
+      "incomeYear": "{{year}} est l'année des revenus : déclarée au printemps {{filing_year}}.",
+      "item": {
+        "borrowerInsurance": "Assurance emprunteur",
+        "charges": "Charges de copropriété",
+        "fees": "Frais de gestion",
+        "flatAllowance": "Forfait de frais de gestion (par bien)",
+        "insurance": "Assurances (PNO, loyers impayés)",
+        "interest": "Intérêts d'emprunt",
+        "propertyTax": "Taxe foncière",
+        "works": "Travaux de réparation, d'entretien et d'amélioration"
+      },
+      "notDeductible": {
+        "ownTransfers": "vos propres virements vers le compte",
+        "principal": "le capital du prêt remboursé"
+      },
+      "notModelled": "Seule la déclaration française des revenus fonciers est modélisée (micro-foncier / régime réel) ; la déclaration italienne ne l'est pas.",
+      "note": {
+        "flows": "Montants candidats calculés à partir des flux bancaires du compte du bien : un paiement mal catégorisé les fait varier.",
+        "netRent": "Si le gestionnaire verse le loyer net de ses frais, le loyer brut est supérieur au loyer encaissé : le relevé annuel du gestionnaire l'indique.",
+        "overCeiling": "Les loyers bruts du foyer dépassent le plafond du micro-foncier : ce régime ne s'appliquerait pas.",
+        "rules": "Le plafond et l'abattement sont ceux connus en {{reviewed_month}} : vérifiez-les, ainsi que les conséquences du choix du régime réel (il vous engage pour plusieurs années), auprès du service des impôts ou d'un conseiller.",
+        "yearInProgress": "{{year}} n'est pas terminée : seuls ses mois clos sont comptés."
+      },
+      "source": {
+        "bankFlows": "flux bancaires ({{categories}})",
+        "flatAmount": "forfait connu en {{reviewed_month}}",
+        "schedule": "tableau d'amortissement du dossier de prêt"
+      },
+      "unknownInterest": "les intérêts d'emprunt et l'assurance emprunteur : le prêt n'est pas connu ou son échéancier ne peut pas être calculé pour cette année (reliez le prêt, voir `coach rental scheme`) ; le relevé annuel du prêteur les indique"
     }
   },
   "rentalAlert": {

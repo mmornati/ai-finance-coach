@@ -503,6 +503,32 @@
       "small_saving_check_the_costs": "piccolo risparmio: controlla i costi",
       "fees_exceed_saving": "le spese superano il risparmio",
       "saving": "risparmio"
+    },
+    "rentalDocument": {
+      "manager-statement": "Rendiconto annuale del gestore (affitti incassati, spese trattenute, oneri pagati)",
+      "leases": "Il contratto o i contratti di locazione dell'anno, gli adeguamenti del canone e le ricevute dell'inquilino",
+      "property-tax-notice": "Avviso della taxe foncière, per separare la parte per i rifiuti domestici che l'inquilino rimborsa",
+      "charges-statement": "Rendiconto delle spese condominiali con la ripartizione recuperabile / non recuperabile",
+      "insurance": "Certificati assicurativi e quietanze dei premi (PNO, garanzia affitti non pagati)",
+      "works-invoices": "Fatture dei lavori di riparazione, manutenzione e miglioria (non di costruzione o ampliamento)",
+      "loan-statement": "Estratto annuale del finanziatore con gli interessi e l'assicurazione del mutuatario pagati",
+      "bank-statements": "Estratti conto del conto dell'immobile per l'anno",
+      "deed": "Atto di acquisto e modulo di vincolo dell'agevolazione",
+      "scheme-declaration": "La dichiarazione o il certificato annuale dell'agevolazione, se l'agevolazione lo richiede",
+      "tenant-evidence": "I documenti sul reddito dell'inquilino alla firma di ogni contratto (rispetto al limite di reddito)"
+    },
+    "rentalDocumentFrom": {
+      "manager-statement": "il tuo gestore",
+      "leases": "i tuoi documenti",
+      "property-tax-notice": "impots.gouv.fr, il tuo spazio personale",
+      "charges-statement": "l'amministratore di condominio (syndic)",
+      "insurance": "i tuoi assicuratori",
+      "works-invoices": "le tue imprese",
+      "loan-statement": "il tuo finanziatore",
+      "bank-statements": "la tua banca, o questa app (copertura)",
+      "deed": "il tuo notaio",
+      "scheme-declaration": "le regole dell'agevolazione",
+      "tenant-evidence": "l'inquilino / il tuo gestore"
     }
   },
   "lease": {
@@ -674,6 +700,131 @@
         "downgraded": "{{service}}: ancora addebitato al vecchio prezzo dopo il passaggio a un'offerta inferiore",
         "kept": "{{service}}: l'addebito è diverso da quanto hai deciso di tenere"
       }
+    }
+  },
+  "rental": {
+    "basis": {
+      "capMonthly": "il tetto mensile che hai dichiarato",
+      "capPerM2": "il tetto al m² che hai dichiarato × la superficie che hai dichiarato",
+      "rentDeclared": "il canone del contratto che hai dichiarato",
+      "rentObserved": "l'ultimo affitto incassato (può essere al netto delle spese di gestione: il tetto si applica al canone del contratto)"
+    },
+    "equity": {
+      "beforeCosts": "Prima delle spese di vendita, della penale di estinzione anticipata e di eventuali imposte sulla plusvalenza: nessuna è modellata.",
+      "missingCapital": "il capitale residuo di un prestito (le sue condizioni o un debito residuo dichiarato)",
+      "missingLoan": "il prestito (collegalo con `loan`), oppure indica che non c'è",
+      "missingValue": "il valore (la stima che ritieni valida, con as_of)",
+      "valueOld": "La stima risale al {{value_date}}: aggiornala.",
+      "valueUndated": "La stima non ha una data as_of."
+    },
+    "links": {
+      "accountNotInData": "Il conto indicato per l'immobile non è nei dati (escluso, da rivedere, oppure uid / etichetta errati).",
+      "loanNotOnFile": "Il prestito indicato per l'immobile non è nelle schede dei prestiti."
+    },
+    "market": {
+      "future": "La data del tasso di mercato è nel futuro.",
+      "missing": "Inserisci il tasso di mercato attuale per un prestito di durata simile (un tuo preventivo o un comparatore che hai consultato, con la data): il coach non lo cerca mai.",
+      "old_one": "Il tasso di mercato risale a {{count}} giorno fa (più di {{max_days}}): non presentarlo come attuale.",
+      "old_many": "Il tasso di mercato risale a {{count}} giorni fa (più di {{max_days}}): non presentarlo come attuale.",
+      "old_other": "Il tasso di mercato risale a {{count}} giorni fa (più di {{max_days}}): non presentarlo come attuale.",
+      "undated": "La data del tasso di mercato non è stata indicata: consideralo potenzialmente superato."
+    },
+    "need": {
+      "account": "il conto bancario dell'immobile (i suoi movimenti, il conto economico)",
+      "commitmentStart": "la data di fine del vincolo e i suoi promemoria",
+      "commitmentYears": "la data di fine del vincolo (6, 9 o 12 anni per un'agevolazione di tipo Pinel)",
+      "loan": "il prestito che lo ha finanziato (interessi, capitale residuo, valore netto)",
+      "purchase": "gli importi della dichiarazione dei redditi e della riduzione d'imposta dell'agevolazione",
+      "reductionRate": "l'importo candidato della riduzione d'imposta dell'agevolazione",
+      "rentCap": "il controllo del tetto dell'affitto",
+      "rentMonthly": "il canone atteso (controlli di sfitto e del tetto dell'affitto)",
+      "tenantIncome": "il controllo del reddito dell'inquilino",
+      "value": "la stima per il valore netto (l'ultimo valore che ritieni valido, con as_of)"
+    },
+    "rate": {
+      "above": "Il tasso del prestito supera di {{gap_num}} punti il tasso di mercato che hai inserito: potrebbe valere la pena chiedere un preventivo.",
+      "below": "Il tasso del prestito è inferiore al tasso di mercato che hai inserito: una rinegoziazione lo farebbe salire.",
+      "close": "Il tasso del prestito è vicino al tasso di mercato che hai inserito: poco da guadagnare da una rinegoziazione sul solo tasso.",
+      "missingLoan": "il prestito e il suo tasso nominale",
+      "missingMarket": "un tasso di mercato inserito da te",
+      "missingNominal": "il tasso nominale del prestito (rate.nominal)",
+      "noFees": "Nessuna spesa indicata: aggiungi le spese bancarie, le spese di garanzia e la penale del tuo contratto per stimarla (`coach rental indicators --bank-fees ...`)."
+    },
+    "reduction": {
+      "assumption": "Ipotesi: il tasso totale è ripartito in modo uniforme sugli anni del vincolo; dichiara `commitment.reduction_schedule` (tranche di anni a un tasso annuo) se l'agevolazione lo ripartisce diversamente.",
+      "cappedDeclared": "Il prezzo è limitato dal tetto che hai dichiarato ({{cap_amount}}).",
+      "cappedM2": "Il prezzo è limitato a {{m2_cap_amount}}/m² × {{surface}} m² ({{cap_amount}}).",
+      "cappedPinel": "Il prezzo è limitato dal tetto Pinel di {{cap_amount}}.",
+      "declaredSchedule": "La ripartizione annua è quella che hai dichiarato (commitment.reduction_schedule).",
+      "missingFirstYear": "{{field}} (oppure purchase_date / commitment.start_date)",
+      "missingRate": "{{field}} (la riduzione totale sul vincolo, dalla tabella dell'agevolazione)",
+      "notADeduction": "La riduzione abbassa l'imposta: non è una deduzione dai redditi da locazione e non dipende dalla scelta tra micro-foncier e régime réel.",
+      "nothingLookedUp": "Il tasso, il prezzo e i tetti sono quelli registrati per l'immobile (dichiarati da te, o la tabella Pinel datata): non viene cercato nulla.",
+      "ratesClassic": "Aliquote Pinel di un acquisto fino al 2022.",
+      "ratesOfYear": "Aliquote Pinel di un acquisto del {{purchase_year}}.",
+      "shapeKept": "Il tasso totale che hai dichiarato è diverso dalla tabella Pinel: la ripartizione 9 + 3 anni è mantenuta nella proporzione della tabella.",
+      "spreadEvenly": "Il tasso totale che hai dichiarato è diverso dalla tabella Pinel: è ripartito in modo uniforme sul vincolo.",
+      "verify": "La ripartizione Pinel (aliquote per anno di acquisto, 9 + 3 anni per un vincolo di 12 anni, tetti di {{price_cap_amount}} e {{m2_cap_amount}}/m²) è quella nota a {{reviewed_month}}: verificala su impots.gouv.fr."
+    },
+    "scenario": {
+      "prepay": "`coach loans scenario prepay <loan> --amount N` o lo strumento `what_if` (`prepay_loan`): un rimborso anticipato sul piano di ammortamento esatto.",
+      "renegotiate": "`coach loans scenario renegotiate <loan> --new-rate R` (o lo strumento `mortgage_check` con `market_rate_pct`): la rinegoziazione calcolata sul piano di ammortamento reale."
+    },
+    "scheme": {
+      "endComputed": "inizio + durata",
+      "endDeclared": "dichiarata",
+      "pinelYears": "Un vincolo di tipo Pinel dura di solito 6, 9 o 12 anni: è stato registrato {{years}}, verifica l'atto."
+    },
+    "signal": {
+      "commitmentEnding_one": "Il vincolo termina tra circa {{count}} mese ({{end_date}}): prorogarlo (se l'agevolazione lo consente), continuare ad affittare con le regole ordinarie, oppure vendere. Verifica le conseguenze di ogni opzione con le regole dell'agevolazione o con un consulente.",
+      "commitmentEnding_many": "Il vincolo termina tra circa {{count}} mesi ({{end_date}}): prorogarlo (se l'agevolazione lo consente), continuare ad affittare con le regole ordinarie, oppure vendere. Verifica le conseguenze di ogni opzione con le regole dell'agevolazione o con un consulente.",
+      "commitmentEnding_other": "Il vincolo termina tra circa {{count}} mesi ({{end_date}}): prorogarlo (se l'agevolazione lo consente), continuare ad affittare con le regole ordinarie, oppure vendere. Verifica le conseguenze di ogni opzione con le regole dell'agevolazione o con un consulente.",
+      "commitmentOver": "Il vincolo è terminato il {{end_date}}: gli obblighi dell'agevolazione (tetto dell'affitto, limiti di reddito dell'inquilino) potrebbero non applicarsi più; verifica cosa cambia per l'immobile.",
+      "commitmentRunning": "Il vincolo è in corso: interromperlo in anticipo (vendita, fine della locazione) può rimettere in discussione il vantaggio dell'agevolazione. Verifica con le regole dell'agevolazione prima di qualsiasi decisione.",
+      "equityNegative": "La stima dichiarata è inferiore al capitale residuo: una vendita non rimborserebbe il prestito.",
+      "equityPositive": "La stima dichiarata è superiore al capitale residuo."
+    },
+    "tax": {
+      "bound": {
+        "asPaid": "Importo pagato",
+        "borrowerInsurance": "Piano teorico: fa fede l'estratto del finanziatore.",
+        "charges": "Importo massimo: conta solo la parte non recuperabile (il rendiconto dell'amministratore la separa).",
+        "flatAllowance": "Riga candidata: un forfait di {{flat_amount}} per immobile nel régime réel; verifica che ti riguardi.",
+        "interest": "Piano teorico: riporta l'estratto annuale del finanziatore.",
+        "interestPartial": "Piano teorico: riporta l'estratto annuale del finanziatore (anno parziale: il piano inizia a metà anno).",
+        "propertyTax": "Importo massimo: la parte per i rifiuti domestici rimborsata dall'inquilino non è deducibile.",
+        "works": "Importo massimo: i lavori di costruzione o di ampliamento non sono deducibili; verifica ogni fattura."
+      },
+      "deficit": "Un déficit foncier candidato, calcolato con le regole note a {{reviewed_month}} ({{ceiling_amount}} all'anno sul reddito complessivo; la parte dovuta agli interessi del prestito e l'eccedenza sono riportate sui redditi da locazione dei dieci anni successivi): verifica le condizioni (si applicano un tetto e una durata minima di locazione) con l'ufficio delle imposte o con un consulente.",
+      "incomeYear": "Il {{year}} è l'anno dei redditi: si dichiara nella primavera del {{filing_year}}.",
+      "item": {
+        "borrowerInsurance": "Assicurazione del mutuatario",
+        "charges": "Spese condominiali",
+        "fees": "Spese di gestione",
+        "flatAllowance": "Forfait spese di gestione (per immobile)",
+        "insurance": "Assicurazioni (PNO, canoni non pagati)",
+        "interest": "Interessi del prestito",
+        "propertyTax": "Imposta fondiaria (taxe foncière)",
+        "works": "Lavori di riparazione, manutenzione e miglioria"
+      },
+      "notDeductible": {
+        "ownTransfers": "i bonifici del proprietario verso il conto",
+        "principal": "il capitale del prestito rimborsato"
+      },
+      "notModelled": "È modellata solo la dichiarazione francese dei redditi da locazione (micro-foncier / régime réel); quella italiana no.",
+      "note": {
+        "flows": "Importi candidati calcolati dai movimenti bancari del conto dell'immobile: un pagamento nella categoria sbagliata li sposta.",
+        "netRent": "Se il gestore versa l'affitto al netto delle sue spese, l'affitto lordo è più alto di quello incassato: lo indica il rendiconto annuale del gestore.",
+        "overCeiling": "Gli affitti lordi della famiglia superano il tetto del micro-foncier: quel regime non si applicherebbe.",
+        "rules": "Il tetto e l'abbattimento sono quelli noti a {{reviewed_month}}: verificali, insieme alle conseguenze della scelta del régime réel (ti vincola per diversi anni), con l'ufficio delle imposte o con un consulente.",
+        "yearInProgress": "Il {{year}} non è finito: sono contati solo i mesi chiusi."
+      },
+      "source": {
+        "bankFlows": "movimenti bancari ({{categories}})",
+        "flatAmount": "forfait noto a {{reviewed_month}}",
+        "schedule": "piano di ammortamento della scheda del prestito"
+      },
+      "unknownInterest": "gli interessi del prestito e l'assicurazione del mutuatario: il prestito non è noto o il suo piano non può essere calcolato per quest'anno (collega il prestito, vedi `coach rental scheme`); li indica l'estratto annuale del finanziatore"
     }
   },
   "rentalAlert": {

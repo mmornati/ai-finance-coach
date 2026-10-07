@@ -18,7 +18,7 @@ def overview(ds, prop, *, months: int = 12) -> dict:
     sch = SC.status(ds, prop, ds.settings.rental_reminder_months, rent_row.rent_c if rent_row else None)
     return {"id": prop.id, "kind": "rental property",
             "links": {"account": prop.account_link, "accounts": len(prop.accounts), "loan": prop.loan_link, "loans": len(prop.loans),
-                      "notes": prop.notes},
+                      "notes": prop.notes, "notes_msg": prop.notes_msg},
             "cashflow": cm, "current_month": CF.current_month(ds, prop, ds.settings.rental_rent_grace_days),
             "pnl": CF.year_pnl(ds, prop, pnl_year),
             "scheme": sch}

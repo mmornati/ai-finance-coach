@@ -82,7 +82,8 @@ def taxonomy(snap: Snapshot = Depends(get_snapshot)):
     return views.taxonomy()
 
 
-WEB_DISCLAIMERS = ("ai_label", "ai_label_short", "contract", "contract_verify", "loan", "tax_short")   # the disclaimers the web app shows itself (its locale files never copy them)
+# the disclaimers the web app shows itself (its locale files never copy them); general_advice, loan, tax: also the Rental page (4g)
+WEB_DISCLAIMERS = ("ai_label", "ai_label_short", "contract", "contract_verify", "general_advice", "loan", "tax", "tax_short")
 
 
 @router.get("/meta/disclaimers", tags=["core"], summary="The legal labels the web app shows, in one language")
