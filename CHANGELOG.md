@@ -5,6 +5,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: multi-language web app, part 4d (see `docs/i18n.md`, "Server text")
+- The transaction panel shows why a transaction has its category (the steps of the decision chain and their details), why an annotation or an attribution rule does not match,
+  and the warnings of a category change in the interface language. `coach explain` and the MCP `explain_transaction` output are byte-identical to before.
+
 ### Added: multi-language web app, part 4c (see `docs/i18n.md`, "Server text")
 - Insight cards (anomalies, price changes, forecast, budgets, subscription reminders, loan and rental alerts) and alert events (bank consent, failing sync, kid budgets, AI usage)
   carry `title_msg` / `body_msg` and are shown in the interface language on Insights, the Dashboard, Alerts and the loan pages. New rows store the codes in the existing
