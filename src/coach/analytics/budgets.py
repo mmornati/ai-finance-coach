@@ -31,6 +31,7 @@ from typing import Optional
 
 from coach.analytics.common import (CoverageInfo, Result, Scope, add_months_key, days_in_month, div_cents, median_c,
                                     month_end, month_key, month_start, months_between, pct, round_to)
+from coach.analytics.common import note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset, Tx, is_spending
 from coach.analytics.recurring import RecurringResult, detect_recurring, occurrences
@@ -145,7 +146,7 @@ def suggest_budgets(ds: Dataset, months: Optional[int] = None, scope: Optional[S
         rows = rows[:limit]
     cov = ds.coverage.info(used, last_n(sorted({m for r in rows for m in r.months}), n),
                            "median of the last N months covered by every account carrying the category",
-                           ["one-offs, capital and savings left out"])
+                           [note("coverage.budgetLeftOut", "one-offs, capital and savings left out")])
     return SuggestionsResult(ds.today, rows, skipped, (scope or Scope()).describe(), cov)
 
 
@@ -248,7 +249,7 @@ def budget_status(ds: Dataset, as_of: Optional[dt.date] = None, recurring: Optio
         u["spent"] = f"{u['spent_c'] // 100}.{u['spent_c'] % 100:02d}"
         del u["spent_c"]
     cov = ds.coverage.info(all_uids, [], f"month to date: {month_start(month)} to {as_of}",
-                           [] if ds.memory.budgets else ["no budgets set: see `coach budget suggest`"])
+                           [] if ds.memory.budgets else [note("coverage.noBudgets", "no budgets set: see `coach budget suggest`")])
     refunds = sum(t.amount_c for t in ds.txs if t.month == month and t.category == "income.refund" and t.amount_c > 0)
     return BudgetStatusResult(as_of, month, out, counts, unbudgeted, cov, refunds, warnings=_problem_lines(ds.memory.budget_problems, "budget"),
                               evidence=sorted({k for p in out for k in p.evidence}))

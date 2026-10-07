@@ -28,6 +28,7 @@ import re
 
 from coach.analytics import identity
 from coach.analytics.regions import strip_regions
+from coach.i18n_msg import strip_msgs
 from typing import Callable, Optional
 
 
@@ -339,6 +340,7 @@ class RedactedRegistry:
             params["scope"] = scope
         res = self._raw[name](ds, **params)
         data = res if isinstance(res, (list, dict)) else res.to_dict()
+        data = strip_msgs(data)                  # the web's *_msg siblings: raw params, English only for a model
         return self.red.walk(data)
 
     def __getitem__(self, name: str):

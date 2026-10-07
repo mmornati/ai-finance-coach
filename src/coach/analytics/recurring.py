@@ -44,6 +44,7 @@ from datetime import date, timedelta
 from typing import Optional
 
 from coach.analytics.common import (CoverageInfo, Result, Scope, add_months, median_c, mul_cents)
+from coach.analytics.common import non_eur_note
 from coach.analytics.dataset import Dataset, Tx, is_income, is_transfer
 
 # name -> (nominal days, (min gap, max gap), step in months or days, occurrences per year)
@@ -590,7 +591,7 @@ def detect_recurring(ds: Dataset, scope: Optional[Scope] = None, include_ended: 
     uids = sorted({x.account for x in series})
     notes = []
     if ds.foreign:
-        notes.append(f"{len(ds.foreign)} non-EUR transaction(s) left out")
+        notes.append(non_eur_note(len(ds.foreign)))
     cov = ds.coverage.info(uids, [], "history of each series; a series needs >= "
                            f"{ds.settings.recurring_min_occurrences} occurrences (2 for yearly, low confidence)", notes)
     return RecurringResult(ds.today, series, by_cadence, counts, (scope or Scope()).describe(), cov,

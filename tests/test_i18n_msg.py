@@ -77,8 +77,10 @@ def test_every_literal_code_built_in_the_package_exists_in_the_english_server_na
     en = _bundle("en", "server")
     used = set()
     for p in (ROOT / "src" / "coach").rglob("*.py"):
-        used |= set(re.findall(r"server_msg\(\s*\"([a-zA-Z0-9_.]+)\"", p.read_text(encoding="utf-8")))
+        # server_msg(...) and the coverage notes' analytics.common.note(...)
+        used |= set(re.findall(r"\b(?:server_msg|note)\(\s*\"([a-zA-Z0-9_.]+)\"", p.read_text(encoding="utf-8")))
     assert "balances.oneBalance" in used and "balances.mixedTypes" in used     # the guard sees the real calls
+    assert "coverage.nonEur" in used and "coverage.incompleteMonths" in used
     missing = sorted(c for c in used if not _has(en, c))
     assert not missing, f"add these codes to web/src/locales/en/server.json (and fr, it): {missing}"
 

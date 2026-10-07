@@ -9,6 +9,7 @@ import { useGet, useScoped, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { catLabel, fmtDate, fmtMoney, fmtPct, fmtRelativeDays, groupLabel, parseMoney } from "@/lib/format";
 import type { Series, Subscriptions as Subs } from "@/api/types";
+import { tServerList } from "@/i18n/server";
 
 const CADENCES = ["weekly", "biweekly", "monthly", "bimonthly", "quarterly", "semiannual", "yearly"] as const;
 const isCadence = (c: string): c is (typeof CADENCES)[number] => (CADENCES as readonly string[]).includes(c);
@@ -58,7 +59,7 @@ function Detected() {
             {d.series.length === 0 ? <Card><EmptyState title={t("detected.nothing")} /></Card> : (
               <ul className="grid gap-3">{d.series.map((s) => <li key={s.id}><SeriesRow s={s} /></li>)}</ul>
             )}
-            {d.coverage.notes.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+            {tServerList(d.coverage.notes, d.coverage.notes_msg).map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
           </div>
         )}
       </Async>

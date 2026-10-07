@@ -15,7 +15,8 @@ import datetime as dt
 from dataclasses import dataclass, field
 from typing import Optional
 
-from coach.analytics.common import CoverageInfo, Result, Scope, div_cents
+from coach.analytics.common import CoverageInfo, Result, Scope, div_cents, money_str
+from coach.analytics.common import non_eur_note, note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import CAPITAL_TAG, NO_AVERAGE_TAGS, Dataset, Tx, is_spending
 
@@ -138,11 +139,13 @@ def category_averages(ds: Dataset, scope: Optional[Scope] = None, window: Option
     mismatch = bool(hh_run is not None and by_acc and abs(total_alt - hh_run) > s.household_mismatch_pct * max(abs(hh_run), 1))
     excluded = [_item(t) for t in sp if t.tags & NO_AVERAGE_TAGS]
     capital = [_item(t) for t in sp if CAPITAL_TAG in t.tags and not t.tags & NO_AVERAGE_TAGS]
-    notes = [f"{len(ds.foreign)} non-EUR transaction(s) left out"] if ds.foreign else []
-    notes += [f"memory: {w}" for w in ds.memory.warnings[:3]]
+    notes = [non_eur_note(len(ds.foreign))] if ds.foreign else []
+    notes += [note("coverage.memoryWarning", f"memory: {w}", warning=w) for w in ds.memory.warnings[:3]]
     if mismatch:
-        notes.append(f"the household estimate ({hh_run / 100:.2f}) and the sum of per-account averages ({total_alt / 100:.2f}) "
-                     f"differ by more than {s.household_mismatch_pct:.0%}: the accounts' histories do not overlap enough")
+        notes.append(note("coverage.householdMismatch",
+                          f"the household estimate ({hh_run / 100:.2f}) and the sum of per-account averages ({total_alt / 100:.2f}) "
+                          f"differ by more than {s.household_mismatch_pct:.0%}: the accounts' histories do not overlap enough",
+                          household_amount=money_str(hh_run), sum_amount=money_str(total_alt), limit_pct=float(s.household_mismatch_pct)))
     cov = ds.coverage.info(used_accounts | set(carriers), hh_months,
                            "per category: months covered by every account that carries the category; "
                            "household: months covered by every account that carries any spending", notes)

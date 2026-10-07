@@ -28,7 +28,7 @@ export type { ServerMsg };
 export interface BalanceRow { uid: string; label: string; bank: string | null; owner: string | null; purpose: string | null; balance: Money | null; balance_type: string | null; balance_type_label: string | null; booked: boolean; as_of: string | null; age_days: number | null; stale: boolean }
 export interface Balances { as_of: string; household_total: Money; n_accounts: number; n_without_balance: number; mixed_types: boolean; non_booked: string[]; accounts: BalanceRow[]; note: string; note_msg?: ServerMsg }
 
-export interface Coverage { rule: string; months: string[]; n_months: number; accounts: { uid: string; label: string }[]; skipped_months: string[]; partial_current_month: string | null; notes: string[] }
+export interface Coverage { rule: string; months: string[]; n_months: number; accounts: { uid: string; label: string }[]; skipped_months: string[]; partial_current_month: string | null; notes: string[]; notes_msg?: (ServerMsg | null)[] }
 
 export interface MonthFlow {
   month: string; income: Money; refunds: Money; spending_gross: Money; spending: Money; one_off_spending: Money; spending_ex_one_offs: Money;
@@ -108,7 +108,7 @@ export interface CategoryDetail {
   trend: { recent_avg: Money; prior_avg: Money; delta: Money; pct: number | null; recent_months: string[]; prior_months: string[] } | null;
   entities: { entity: string; total: Money; one_off: Money; n_tx: number; last_date: string; share: number; accounts: string[]; categories: string[] }[];
   one_offs: { tx_key: string; date: string; amount: Money; entity: string; category: string; tags: string[]; event: string | null; account: string }[];
-  notes: string[]; coverage: Coverage; totals: { last_12_months: Money; n_tx: number };
+  notes: string[]; notes_msg?: (ServerMsg | null)[]; coverage: Coverage; totals: { last_12_months: Money; n_tx: number };
 }
 
 export interface PriceChange { id: string; series_id: string; entity: string; account_label: string; category: string; cadence: string; date: string; tx_key: string; old: Money; new: Money; delta: Money; pct: number; direction: "increase" | "decrease"; effect: string; yearly_impact: Money; confirmed: boolean; variable: boolean; dismissed: boolean }
