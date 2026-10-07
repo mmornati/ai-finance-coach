@@ -1,0 +1,345 @@
+{
+  "common": {
+    "editFacts": "Modifier les informations",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "note": "Note (facultative)",
+    "dateHint": "AAAA-MM-JJ",
+    "unknown": "inconnu",
+    "missing": "Manquant : {{fields}}.",
+    "pct": "{{pct}} %",
+    "months_one": "{{count}} mois",
+    "months_many": "{{count}} mois",
+    "months_other": "{{count}} mois",
+    "days_one": "{{count}} jour",
+    "days_many": "{{count}} jours",
+    "days_other": "{{count}} jours"
+  },
+  "header": {
+    "title": "Bien locatif",
+    "subtitle": "La trésorerie et le compte de résultat d'un logement loué, l'engagement de son dispositif de défiscalisation, les chiffres de la déclaration des revenus fonciers et les indicateurs pour renégocier ou vendre. Tout est calculé à partir de son compte bancaire, de l'échéancier de son prêt et des informations que vous avez enregistrées : une information manquante est signalée, jamais devinée.",
+    "declare": "Déclarer un bien",
+    "property": "Bien",
+    "unlinked": "{{n}} compte(s) marqué(s) « rental » n'appartiennent à aucun bien : renseignez <code>account</code> sur un bien (Modifier les informations)."
+  },
+  "empty": {
+    "title": "Pas encore de bien locatif",
+    "body": "Un bien locatif est un actif de type real_estate_rental. Indiquez son compte bancaire (usage « rental »), son prêt et, pour un dispositif de défiscalisation, l'engagement que vous avez signé.",
+    "flagged": "{{n}} compte(s) sont déjà marqués « rental »."
+  },
+  "tabs": {
+    "label": "Sections du bien locatif",
+    "cashflow": "Trésorerie et résultat",
+    "scheme": "Engagement du dispositif",
+    "tax": "Année fiscale",
+    "sell": "Renégocier ou vendre",
+    "decide": "à décider"
+  },
+  "status": {
+    "received": "loyer reçu",
+    "missing": "pas de loyer",
+    "partial": "loyer partiel",
+    "latePaid": "payé en retard",
+    "declaredVacancy": "vacance déclarée",
+    "unknown": "données incomplètes",
+    "notLetYet": "pas encore loué"
+  },
+  "link": {
+    "declared": "défini sur le bien",
+    "onlyOne": "le seul compte locatif (à confirmer)",
+    "none": "non lié",
+    "unknown": "introuvable dans les données",
+    "asset": "désigné par le prêt",
+    "account": "prélevé sur le compte du bien"
+  },
+  "state": {
+    "unknown": "inconnu",
+    "notStarted": "pas commencé",
+    "active": "en cours",
+    "ended": "terminé"
+  },
+  "decision": {
+    "extend": "prolonger",
+    "notExtend": "ne pas prolonger",
+    "undecided": "non décidé"
+  },
+  "cashflow": {
+    "emptyTitle": "Pas encore de mois clos avec des données pour ce bien",
+    "empty": "Liez son compte bancaire (Modifier les informations, champ « account »), ou marquez les paiements faits depuis un autre compte avec <code>{{tag}}</code>.",
+    "title": "Les douze derniers mois clos",
+    "subtitle": "Une trésorerie : le capital remboursé du prêt compte comme une sortie. L'effort d'épargne est ce que vous avez dû ajouter chaque mois quand le loyer ne couvrait pas les charges.",
+    "rentExpected": "Loyer attendu",
+    "rentDeclared": "le loyer que vous avez déclaré",
+    "rentMedian": "médiane des loyers constatés",
+    "averageNet": "Net mensuel moyen",
+    "overMonths": "sur {{n}} mois complet(s)",
+    "noCompleteMonth": "pas encore de mois complet",
+    "averageEffort": "Effort d'épargne mensuel moyen",
+    "outOfPocket": "de votre poche",
+    "occupancy": "Occupation",
+    "occupancyHint": "{{missing}} mois sans loyer, {{declared}} déclaré(s)",
+    "flowsToLabel": "{{n}} flux du compte du bien ne sont dans aucune catégorie du bien et restent dans « autres flux ». Étiquetez-les avec une annotation de la mémoire (loyer, prêt, charges, taxe, frais, assurance, travaux), ou marquez un coût payé depuis un autre compte avec <code>{{tag}}</code>."
+  },
+  "links": {
+    "title": "Bien {{id}}",
+    "account": "compte : {{value}}",
+    "loan": "prêt : {{value}}",
+    "scheme": "dispositif : {{value}}",
+    "recorded": "enregistré",
+    "missing": "{{n}} information(s) manquante(s)",
+    "hint": "Liez le compte et le prêt pour obtenir la trésorerie complète, les intérêts de la déclaration et la valeur nette."
+  },
+  "table": {
+    "month": "Mois",
+    "rent": "Loyer",
+    "loan": "Prêt",
+    "otherCosts": "Autres charges",
+    "net": "Net",
+    "effort": "Effort",
+    "rentStatus": "Statut du loyer",
+    "partialTitle": "les données du compte ne couvrent pas tout le mois",
+    "partialNote": "* les données bancaires ne couvrent pas tout le mois : ses chiffres sont plus clairs dans le graphique et ne sont pas inclus dans les moyennes."
+  },
+  "vacancy": {
+    "title": "Vacance locative",
+    "subtitle": "Un mois sans le loyer attendu, une fois le bien loué. Les mois que les données ne couvrent pas ne sont jamais comptés.",
+    "declare": "Déclarer une vacance",
+    "none": "Aucun mois sans loyer depuis la mise en location ({{n}} mois suivis).",
+    "declared": "déclaré",
+    "thisMonth": "ce mois-ci",
+    "late": "le loyer de {{month}} n'est pas encore arrivé"
+  },
+  "pnl": {
+    "title": "Résultat {{year}}",
+    "months": "{{n}} mois clos",
+    "monthsIncomplete": "{{n}} mois clos : pas une année complète",
+    "year": "Année",
+    "row": {
+      "rent": "Loyers perçus",
+      "loan": "Échéances du prêt",
+      "charges": "Charges de copropriété",
+      "fees": "Frais de gestion",
+      "taxes": "Taxe foncière",
+      "insurance": "Assurances (PNO, GLI)",
+      "works": "Travaux et réparations",
+      "other": "Autres flux"
+    },
+    "net": "Résultat net de trésorerie",
+    "effortWithAverage": "Effort d'épargne : <total/> (environ <average/> par mois). Vos propres virements vers le compte (<owner/>) ne sont pas des loyers.",
+    "effort": "Effort d'épargne : <total/>. Vos propres virements vers le compte (<owner/>) ne sont pas des loyers.",
+    "loanSplit": "Prêt de l'année d'après son échéancier : intérêts <interest/>, assurance emprunteur <insurance/>, capital <principal/>.",
+    "economic": "Résultat si le capital remboursé n'est pas compté comme une charge : <result/>.",
+    "grossYield": "Rendement brut sur la valeur que vous avez déclarée : {{pct}} %.",
+    "notCovered": "Pas entièrement couverts par les données du compte : {{months}}.",
+    "noData": "Mois clos sans aucune donnée : {{months}}."
+  },
+  "scheme": {
+    "emptyTitle": "Aucun dispositif enregistré pour ce bien",
+    "record": "Enregistrer le dispositif",
+    "empty": "Indiquez le nom du dispositif, le début de l'engagement et sa durée en années (6, 9 ou 12 pour un dispositif de type Pinel) ; la date de fin et ses rappels en découlent. Le plafond de loyer et le plafond de ressources du locataire sont les chiffres que vous lisez dans votre acte : rien n'est recherché.",
+    "title": "{{scheme}} : engagement",
+    "fallbackName": "Dispositif",
+    "subtitle": "La date de fin compte l'engagement à partir de sa date de début ; vérifiez-la avec votre acte."
+  },
+  "rentCap": {
+    "title": "Plafond de loyer",
+    "subtitle": "Vos propres chiffres : le plafond déclaré face au loyer",
+    "notChecked": "Non vérifié : enregistrez un plafond de loyer et le loyer du bail.",
+    "above": "au-dessus du plafond",
+    "within": "sous le plafond",
+    "compare": "loyer <rent/> pour un plafond de <cap/>",
+    "basis": "Loyer : {{rent}}. Plafond : {{cap}}."
+  },
+  "tenantIncome": {
+    "title": "Ressources du locataire",
+    "subtitle": "Le plafond et les ressources que vous avez déclarés",
+    "notChecked": "Non vérifié : enregistrez le plafond de ressources et le revenu fiscal de référence du locataire.",
+    "above": "au-dessus du plafond",
+    "within": "sous le plafond",
+    "compare": "<income/> pour un plafond de <limit/>"
+  },
+  "missingFacts": {
+    "title": "Informations que le coach ne connaît pas",
+    "subtitle": "Jamais devinées : enregistrez-les, ou laissez le coach vous les demander (Mémoire > Questions).",
+    "neededFor": "pour {{what}}"
+  },
+  "schemeBody": {
+    "start": "Début",
+    "length": "Durée",
+    "years_one": "{{count}} an",
+    "years_many": "{{count}} ans",
+    "years_other": "{{count}} ans",
+    "end": "Fin",
+    "left": "Restant",
+    "progress": "Part de l'engagement écoulée",
+    "extension": "prorogation : {{decision}}",
+    "extensionYears": "{{n}} an(s)",
+    "extensionYearsDecided": "{{n}} an(s), décidé le {{date}}",
+    "recordDecision": "Enregistrer la décision",
+    "reminders": "Rappels tant qu'aucune décision n'est enregistrée : {{list}}. Ils passent par les alertes (type « Fin d'engagement du dispositif locatif ») ; un message externe dit seulement qu'une alerte existe.",
+    "reminder": "{{n}} mois avant ({{date}})"
+  },
+  "extension": {
+    "saved": "Décision enregistrée",
+    "title": "Décision à la fin de l'engagement",
+    "description": "Enregistrée dans la mémoire (avec son historique) ; les rappels s'arrêtent dès qu'une décision est enregistrée.",
+    "decision": "Décision",
+    "option": {
+      "extend": "Proroger l'engagement",
+      "notExtend": "Ne pas proroger",
+      "undecided": "Pas encore décidé"
+    },
+    "years": "Prorogation (années)",
+    "rate": "Taux de réduction supplémentaire de la prorogation (%)",
+    "rateHint": "tel que le dispositif l'indique, facultatif"
+  },
+  "vacancyDialog": {
+    "saved": "Vacance enregistrée",
+    "title": "Déclarer une vacance",
+    "description": "Une période où vous savez que le bien n'était pas loué (travaux, entre deux locataires). Les mois concernés ne sont pas signalés comme loyer manquant.",
+    "from": "Du",
+    "to": "Au (vide : toujours vacant)"
+  },
+  "tax": {
+    "incomeYear": "Année des revenus",
+    "declaredNextSpring": "Les revenus d'une année se déclarent au printemps suivant.",
+    "notModelled": "Non modélisé",
+    "candidates": "Montants candidats pour la déclaration des revenus fonciers, calculés à partir des flux bancaires : ce n'est pas une déclaration, rien n'est déposé, ce n'est pas un conseil fiscal.",
+    "notCovered": "L'année n'est pas entièrement couverte par le compte du bien{{details}} : les chiffres sont un minimum pour les loyers et pour les charges.",
+    "partialMonths": " (partiels : {{months}})",
+    "noDataMonths": " (sans données : {{months}})",
+    "grossRents": "Loyers bruts",
+    "micro": {
+      "title": "Micro-foncier",
+      "subtitle": "Abattement forfaitaire de {{pct}} % sur les loyers bruts",
+      "abatement": "Abattement",
+      "taxable": "Imposable (candidat)",
+      "overCeiling": "Les loyers bruts du foyer (<rents/>) dépassent le plafond (<ceiling/>) : ce régime ne s'appliquerait pas."
+    },
+    "reel": {
+      "title": "Régime réel",
+      "subtitle": "Loyers bruts moins les charges que la déclaration permet de déduire",
+      "net": "Net (candidat)",
+      "unknown": "Inconnu : {{what}}"
+    },
+    "lower": {
+      "title": "Lequel est le plus bas ?",
+      "subtitle": "Le montant imposable le plus bas entre les deux candidats ; le choix d'un régime a des conséquences sur plusieurs années : vérifiez auprès du centre des impôts ou d'un conseiller.",
+      "text": "Le <b>{{regime}}</b> donne le montant imposable le plus bas ({{reel}} contre {{micro}} ; différence <difference/>).",
+      "reel": "régime réel",
+      "micro": "micro-foncier"
+    },
+    "documents": {
+      "title": "Documents à rassembler",
+      "subtitle": "Une liste de contrôle pour vous (non enregistrée)"
+    }
+  },
+  "reduction": {
+    "title": "Réduction du dispositif (candidate)",
+    "subtitle": "Calculée à partir du prix et du taux total que vous avez déclarés ; une réduction d'impôt, pas une déduction des revenus fonciers",
+    "forYear": "Pour {{year}} : <b><amount/></b>.",
+    "forYearOutside": "Pour {{year}} : <b><amount/></b> (l'année est hors de l'engagement).",
+    "calc": "{{rate}} % de <base/> = <total/> répartis sur {{n}} an(s), de {{first}} à {{last}}."
+  },
+  "market": {
+    "title": "Taux du marché",
+    "subtitle": "Un taux que vous avez trouvé pour un prêt de durée similaire (votre propre devis, un comparateur). Le coach ne le recherche jamais.",
+    "rate": "Taux du marché (%)",
+    "asOf": "En date du",
+    "fees": "Frais d'un nouveau prêt (EUR)",
+    "feesHint": "banque + garantie, facultatif",
+    "remember": "Retenir ce taux"
+  },
+  "vsMarket": {
+    "title": "Taux du prêt face au marché",
+    "yourLoan": "Votre prêt",
+    "gap": "marché {{market}} %, écart {{gap}} point(s)",
+    "enterRate": "saisissez un taux du marché"
+  },
+  "commitmentEnd": {
+    "title": "Fin de l'engagement",
+    "state": "État",
+    "ends": "se termine le {{date}}",
+    "endsAbout_one": "se termine le {{date}}, dans environ {{count}} mois",
+    "endsAbout_many": "se termine le {{date}}, dans environ {{count}} mois",
+    "endsAbout_other": "se termine le {{date}}, dans environ {{count}} mois",
+    "recordStart": "enregistrez le début et la durée"
+  },
+  "equity": {
+    "title": "Valeur nette",
+    "subtitle": "Valeur déclarée − capital restant dû, avant frais de vente, pénalités et impôts",
+    "hint": "valeur {{value}} − capital dû {{due}} ({{pct}} % de la valeur)",
+    "unknown": "Inconnue : il manque {{fields}}."
+  },
+  "renegotiation": {
+    "title": "Renégociation sur l'échéancier réel",
+    "subtitle": "Une estimation avec les frais que vous avez indiqués (aucun par défaut) : votre banque ou un courtier donne les chiffres qui engagent",
+    "instalment": "Échéance",
+    "perMonth": "EUR par mois",
+    "costs": "Coûts",
+    "penalty": "pénalité {{amount}}",
+    "netSaving": "Économie nette",
+    "breakEven": "Seuil de rentabilité",
+    "never": "jamais"
+  },
+  "indicators": {
+    "title": "Indicateurs",
+    "subtitle": "Effort d'épargne récent : {{amount}} par mois",
+    "none": "Pas encore d'indicateur : enregistrez le prêt, l'estimation, l'engagement et un taux du marché."
+  },
+  "marketDialog": {
+    "saved": "Taux du marché enregistré",
+    "title": "Retenir ce taux du marché",
+    "description": "Écrit sur le bien dans la mémoire avec sa date ; après 30 jours, il est signalé comme peut-être dépassé.",
+    "source": "D'où vient-il ? (facultatif)",
+    "sourcePlaceholder": "un devis, un comparateur, une date"
+  },
+  "facts": {
+    "saved": "Informations enregistrées",
+    "title": "Informations sur le bien",
+    "description": "Seul ce que vous modifiez est écrit (les champs vides restent tels quels). Ce sont VOS chiffres, tirés de l'acte et du barème du dispositif : le coach ne les recherche jamais.",
+    "invalid": "Valeur non valide : {{fields}}.",
+    "field": {
+      "account": "Compte bancaire (uid ou libellé)",
+      "loan": "Identifiant du prêt",
+      "value": "Valeur aujourd'hui (EUR)",
+      "asOf": "Valeur au",
+      "rentMonthly": "Loyer mensuel du bail (EUR)",
+      "purchasePrice": "Prix d'achat (EUR)",
+      "purchaseDate": "Date d'achat",
+      "scheme": "Nom du dispositif",
+      "commitmentStart": "Début de l'engagement",
+      "commitmentYears": "Durée de l'engagement (années)",
+      "surface": "Surface (m²)",
+      "rentCapM2": "Plafond de loyer au m² (EUR par mois)",
+      "rentCapMonthly": "Plafond de loyer mensuel (EUR)",
+      "tenantIncomeLimit": "Plafond de ressources du locataire (EUR par an)",
+      "tenantIncome": "Revenu fiscal de référence du locataire (EUR par an)",
+      "reductionRate": "Taux de réduction total sur l'engagement (%)",
+      "reductionBaseCap": "Plafond du prix éligible (EUR)",
+      "reductionFirstYear": "Première année fiscale de la réduction"
+    },
+    "hint": {
+      "account": "son usage doit être rental (page Foyer)",
+      "loan": "le fichier du prêt qui l'a financé",
+      "scheme": "p. ex. le nom figurant sur votre acte : texte libre",
+      "commitmentStart": "AAAA-MM-JJ, le premier bail",
+      "commitmentYears": "6, 9 ou 12 pour un dispositif de type Pinel",
+      "rentCapM2": "tel que vous l'avez calculé d'après le barème du dispositif",
+      "rentCapMonthly": "prime sur le plafond au m²",
+      "reductionRate": "d'après le barème du dispositif",
+      "reductionBaseCap": "facultatif, tel que le dispositif l'indique"
+    }
+  },
+  "declare": {
+    "saved": "Bien déclaré",
+    "title": "Déclarer un bien locatif",
+    "description": "Un actif de type real_estate_rental dans votre mémoire. Ajoutez ensuite le dispositif et les autres informations (Modifier les informations).",
+    "submit": "Déclarer",
+    "id": "Identifiant",
+    "idHint": "lettres minuscules, chiffres, - ou _ (pas d'adresse)",
+    "account": "Compte bancaire (facultatif)",
+    "accountHint": "uid ou libellé",
+    "loan": "Identifiant du prêt (facultatif)"
+  }
+}

@@ -10,6 +10,7 @@ import KidHome from "./KidHome";
 import { App } from "@/App";
 import { ScopeSwitch } from "@/components/Layout";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 
 const members = [
   { id: "anna", name: "Anna Rossi", role: "adult" },
@@ -78,7 +79,7 @@ describe("household page", () => {
     expect(screen.getByText(/owner 'Somebody' is not 'joint' or a declared member/)).toBeInTheDocument();
     expect(screen.getByText(/card ending 4242/)).toBeInTheDocument();
     expect(screen.getByText("mia-kid")).toBeInTheDocument();
-    expect(screen.getByText(/2 transaction\(s\) reassigned by hand/)).toBeInTheDocument();
+    expect(screen.getByText(/2 transactions reassigned by hand/)).toBeInTheDocument();
     await userEvent.selectOptions(screen.getByLabelText("Owner of Old account"), "joint");
     await waitFor(() => expect(calls.some((c) => c.method === "PATCH" && c.url.endsWith("/accounts/xx") && c.body?.includes('"owner":"joint"'))).toBe(true));
     // logins are created in a terminal only: the page offers the commands, never a form
@@ -171,5 +172,44 @@ describe("the child's own view", () => {
     expect((await screen.findAllByText("Household")).length).toBeGreaterThan(0);
     expect(screen.getAllByText("Kids' money").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Who pays what").length).toBeGreaterThan(0);
+  });
+});
+
+describe("the people pages in other languages", () => {
+  it("shows the household page in Italian, with the plural and the role translated", async () => {
+    await setLanguage("it");
+    serve({ "/household/overview": overview, "/meta/filters": filters });
+    renderApp(<Household />);
+    expect(await screen.findByRole("heading", { name: "Famiglia" })).toBeInTheDocument();
+    expect(await screen.findByText(/2 transazioni riattribuite a mano/)).toBeInTheDocument();
+    expect(screen.getAllByText("bambino").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Intestatario di Old account")).toBeInTheDocument();
+  });
+
+  it("shows the who-pays page in French", async () => {
+    await setLanguage("fr");
+    serve({ "/household/allocation": allocation, "/meta/filters": filters, "/household/overview": overview, "/meta/taxonomy": { groups: [] } });
+    renderApp(<WhoPays />);
+    expect(await screen.findByRole("heading", { name: "Qui paie quoi" })).toBeInTheDocument();
+    expect(await screen.findByText(/au prorata des revenus · .* sur 4 paiements/)).toBeInTheDocument();
+  });
+
+  it("speaks to the child in French with tu", async () => {
+    await setLanguage("fr");
+    serve({ "/me/summary": me, "/me/transactions": { total: 0, limit: 30, offset: 0, items: [] } });
+    renderApp(<KidHome />);
+    expect(await screen.findByRole("heading", { name: "Mon argent" })).toBeInTheDocument();
+    expect(await screen.findByText(/Bonjour Mia\. Ici, c'est seulement ton argent/)).toBeInTheDocument();
+    expect(screen.getByText(/Tu as dépassé cette limite/)).toBeInTheDocument();
+    expect(await screen.findByText("Tes paiements apparaîtront ici.")).toBeInTheDocument();
+  });
+
+  it("shows the kids' money page in Italian", async () => {
+    await setLanguage("it");
+    serve({ "/household/kids": { as_of: "2026-10-04", children: [kid] }, "/household/kid-budgets": { as_of: "2026-10-04", budgets: budgetRows }, "/meta/filters": filters, "/meta/taxonomy": { groups: [] } });
+    renderApp(<Kids />);
+    expect(await screen.findByRole("heading", { name: "Soldi dei bambini" })).toBeInTheDocument();
+    expect(await screen.findByText(/al mese da Anna Rossi/)).toBeInTheDocument();
+    expect(screen.getByText("giroconto")).toBeInTheDocument();
   });
 });

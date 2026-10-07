@@ -1,0 +1,114 @@
+{
+  "title": "Alertes",
+  "subtitle": "Les événements importants : un consentement bancaire sur le point d'expirer, une synchronisation qui échoue sans cesse, un prélèvement inhabituel, une hausse de prix, un solde qui risque d'être insuffisant. Accuser réception, reporter ou mettre en sourdine change seulement ce que vous voyez ici et ce qui est envoyé.",
+  "checkNow": "Vérifier maintenant",
+  "notReady": "Les alertes ne sont pas encore configurées",
+  "checked": "Vérification faite",
+  "checkedBody": "Nouvelles : {{new}}, aggravées : {{escalated}}, résolues : {{resolved}}. Rien n'a été envoyé en dehors de l'application.",
+  "disabled": "Les alertes sont désactivées dans config.toml ([alerts] enabled = false) : rien n'est évalué.",
+  "toast": {
+    "acknowledged": "Alerte lue",
+    "snoozed": "Reportée de 7 jours",
+    "restored": "Rétablie",
+    "kindMuted": "Type mis en sourdine",
+    "updated": "Mis à jour"
+  },
+  "filter": {
+    "status": "Statut",
+    "openCount": "Ouvertes {{count}}",
+    "severity": "Gravité",
+    "kind": "Type",
+    "all": "Toutes"
+  },
+  "status": {
+    "open": "Ouvertes",
+    "snoozed": "Reportées",
+    "acked": "Lues",
+    "suppressed": "Écartées"
+  },
+  "severity": {
+    "high": "élevée",
+    "medium": "moyenne",
+    "low": "faible"
+  },
+  "severityOption": {
+    "high": "Élevée",
+    "medium": "Moyenne",
+    "low": "Faible"
+  },
+  "empty": {
+    "openTitle": "Aucune alerte ouverte",
+    "openBody": "Les nouvelles alertes apparaissent après chaque passage quotidien, ou cliquez sur Vérifier maintenant.",
+    "snoozed": "Aucune alerte reportée",
+    "acked": "Aucune alerte lue",
+    "suppressed": "Aucune alerte écartée",
+    "body": "Rien dans cette liste."
+  },
+  "list": "Alertes",
+  "event": {
+    "new": "nouvelle",
+    "snoozedUntil": "reportée jusqu'au {{date}}",
+    "acknowledged": "lue",
+    "suppressed": "écartée",
+    "suppressedTitle": "Sous votre gravité minimale, ou son type est en sourdine : conservée ici, jamais envoyée.",
+    "escalated": "aggravée",
+    "escalatedTitle": "Sa gravité a augmenté depuis sa première apparition",
+    "resolved": "résolue",
+    "resolvedTitle": "La situation n'existe plus",
+    "firstSeen": "Vue pour la première fois le {{date}}",
+    "firstSeenSent": "Vue pour la première fois le {{date}} · envoyée à {{channels}}",
+    "acknowledge": "Marquer comme lue",
+    "snooze": "Reporter de 7 jours",
+    "restore": "Rétablir",
+    "muteKind": "Mettre ce type en sourdine",
+    "muteKindTitle": "Ne plus recevoir d'alertes de ce type ({{kind}}) jusqu'à ce que vous le réactiviez"
+  },
+  "kinds": {
+    "title": "Types d'alerte",
+    "subtitle": "Mettez en sourdine un type dont vous ne voulez pas, ou suspendez-le une semaine. Les seuils et les interrupteurs par type se trouvent dans config.toml ([alerts]).",
+    "offInConfig": "désactivé dans la config",
+    "offInConfigTitle": "[alerts] disabled_kinds dans config.toml",
+    "digestOnly": "résumé uniquement",
+    "digestOnlyTitle": "[alerts] digest_only_kinds : affiché ici et dans le résumé hebdomadaire, jamais envoyé un par un",
+    "muted": "en sourdine",
+    "heldUntil": "suspendu jusqu'au {{date}}",
+    "unmute": "Réactiver",
+    "unmuteAria": "Réactiver {{kind}}",
+    "mute": "Sourdine",
+    "muteAria": "Mettre {{kind}} en sourdine",
+    "wake": "Reprendre",
+    "wakeAria": "Reprendre {{kind}}",
+    "hold": "Suspendre 7 jours",
+    "holdAria": "Suspendre {{kind}} pendant 7 jours"
+  },
+  "channels": {
+    "title": "Canaux",
+    "subtitle": "En lecture seule. Le fil dans l'application est toujours actif ; tous les autres canaux sont désactivés jusqu'à ce que vous les activiez dans config.toml.",
+    "list": "Canaux",
+    "macos": "Notification macOS",
+    "email": "E-mail (SMTP)",
+    "sentLastWeek_one": "{{count}} message ces 7 derniers jours",
+    "sentLastWeek_many": "{{count}} messages ces 7 derniers jours",
+    "sentLastWeek_other": "{{count}} messages ces 7 derniers jours",
+    "ready": "prêt",
+    "notReady": "pas prêt",
+    "off": "désactivé",
+    "test": "Tester (simulation)",
+    "testAria": "Prévisualiser un message de test pour {{channel}} (simulation)",
+    "privacyMinimal": "Les messages vers ntfy, l'e-mail et Telegram sont en mode <strong>{{detail}}</strong> : seulement un nombre (« 2 nouvelles alertes, 1 élevée. Ouvrez l'application. »), sans montant, nom ni marchand.",
+    "privacyOther": "Les messages vers ntfy, l'e-mail et Telegram sont en mode <strong>{{detail}}</strong> : le type d'alerte et un montant arrondi à 10 EUR, jamais un nom, un marchand, une banque ou un IBAN.",
+    "limits": "Gravité minimale {{severity}}, au plus {{max}} messages par semaine et par canal.",
+    "limitsQuiet": "Gravité minimale {{severity}}, au plus {{max}} messages par semaine et par canal, heures calmes {{quiet}}.",
+    "testTitle": "Message de test : {{channel}}",
+    "close": "Fermer",
+    "dryRun": "Simulation : rien n'a été envoyé",
+    "dryRunBody": "{{sample}}. C'est exactement ce que contiendrait un envoi ; les secrets sont masqués.",
+    "disabledInConfig": "Ce canal est désactivé dans config.toml : un vrai test n'enverrait rien non plus."
+  },
+  "digest": {
+    "title": "Résumé hebdomadaire",
+    "subtitle": "Construit chaque semaine par l'application à partir de vos données (rien n'est rédigé par un modèle) et placé dans Analyses.",
+    "hide": "Masquer l'aperçu",
+    "show": "Aperçu du résumé de cette semaine"
+  }
+}

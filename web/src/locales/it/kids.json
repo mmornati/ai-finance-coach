@@ -1,0 +1,158 @@
+{
+  "kids": {
+    "header": {
+      "title": "Soldi dei bambini",
+      "subtitle": "Paghetta, ricariche extra e quanto spende ogni bambino. La ricarica di un genitore è un giroconto per la famiglia (né spesa né entrata), ma qui è un'entrata del bambino."
+    },
+    "period": "Periodo",
+    "months_one": "{{count}} mese",
+    "months_many": "{{count}} mesi",
+    "months_other": "{{count}} mesi",
+    "child": "Bambino",
+    "empty": {
+      "title": "Nessun bambino dichiarato",
+      "body": "Dichiara un membro con il ruolo bambino (<code>coach memory member add --role child</code>), poi assegna un intestatario al suo conto nella pagina Famiglia."
+    },
+    "cadence": {
+      "weekly": "a settimana",
+      "fortnightly": "ogni due settimane",
+      "monthly": "al mese"
+    },
+    "stat": {
+      "balance": "Saldo",
+      "unknown": "sconosciuto",
+      "asOf": "al {{date}}",
+      "noBalance": "nessun saldo sincronizzato",
+      "noAccount": "il bambino non ha conti",
+      "pocket": "Paghetta",
+      "pocketHint": "al mese, nel periodo",
+      "extra": "Ricariche extra",
+      "credits_one": "{{count}} accredito",
+      "credits_many": "{{count}} accrediti",
+      "credits_other": "{{count}} accrediti",
+      "ratio": "Paghetta / extra",
+      "ratioHint": "paghetta / extra",
+      "noCredit": "nessun accredito nel periodo",
+      "ratioBar": "Quota degli accrediti che è paghetta regolare"
+    },
+    "pocket": {
+      "title": "Paghetta",
+      "subtitle": "Un accredito regolare: almeno tre di importo simile, dalla stessa fonte, con ritmo settimanale, quindicinale o mensile.",
+      "declare": "Dichiara",
+      "empty": "Nessuna ricarica regolare rilevata per ora.",
+      "series_one": "<b><amount/></b> {{cadence}} da {{source}} <muted>· {{count}} pagamento, l'ultimo il {{last}}</muted>",
+      "series_many": "<b><amount/></b> {{cadence}} da {{source}} <muted>· {{count}} pagamenti, l'ultimo il {{last}}</muted>",
+      "series_other": "<b><amount/></b> {{cadence}} da {{source}} <muted>· {{count}} pagamenti, l'ultimo il {{last}}</muted>",
+      "next": "prossimo verso il {{date}}",
+      "declared_one": "Dichiarata: {{amount}} {{period}}; {{count}} accredito corrisponde.",
+      "declared_many": "Dichiarata: {{amount}} {{period}}; {{count}} accrediti corrispondono.",
+      "declared_other": "Dichiarata: {{amount}} {{period}}; {{count}} accrediti corrispondono."
+    },
+    "extra": {
+      "title": "Ricariche extra",
+      "subtitle": "Tutti gli altri accrediti, con la loro provenienza.",
+      "empty": "Nessuna nel periodo.",
+      "internal": "giroconto"
+    },
+    "spending": {
+      "title": "Spese per categoria",
+      "subtitle": "{{total}} nel periodo · {{avg}} al mese",
+      "empty": "Nessuna spesa attribuita a questo bambino nel periodo."
+    },
+    "trend": {
+      "title": "Andamento del saldo",
+      "subtitle": "Fine mese, ricostruiti a ritroso dal saldo più recente (una stima).",
+      "short": "Storico insufficiente per tracciare un andamento.",
+      "label": "Saldo a ogni fine mese"
+    },
+    "budgets": {
+      "title": "Budget",
+      "subtitle": "Limiti settimanali o mensili. Avvisi gentili compaiono solo nel feed locale degli avvisi: niente su un bambino viene mai inviato fuori da questo computer.",
+      "add": "Budget",
+      "empty": "Nessun budget per questo bambino.",
+      "thisWeek": "Questa settimana",
+      "thisMonth": "Questo mese",
+      "remove": "Elimina il budget {{id}}",
+      "confirmRemove": "Eliminare il budget del bambino \"{{id}}\"?",
+      "removed": "Budget del bambino eliminato",
+      "used": "{{id}} usato"
+    },
+    "status": {
+      "over": "superato",
+      "close": "quasi",
+      "ok": "ok"
+    },
+    "pocketDialog": {
+      "title": "Dichiara la paghetta",
+      "description": "L'importo che un bambino dovrebbe ricevere. Un accredito di circa questo importo conta come paghetta anche prima che venga rilevato un ritmo.",
+      "remove": "Elimina la dichiarazione",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "saved": "Paghetta dichiarata",
+      "removed": "Dichiarazione eliminata",
+      "amount": "Importo (EUR)",
+      "every": "Ogni",
+      "week": "settimana",
+      "month": "mese"
+    },
+    "budgetDialog": {
+      "title": "Nuovo budget del bambino",
+      "description": "Un limite a quanto spende questo bambino; lascia vuota la categoria per tutte le sue spese.",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "saved": "Budget del bambino salvato",
+      "id": "Id",
+      "idHint": "lettere minuscole, cifre, - o _",
+      "limit": "Limite (EUR)",
+      "period": "Periodo",
+      "weekly": "Settimanale (da lunedì a domenica)",
+      "monthly": "Mensile",
+      "onlyFor": "Solo per",
+      "all": "Tutte le spese"
+    }
+  },
+  "kidHome": {
+    "title": "I miei soldi",
+    "signOut": "Esci da questo browser",
+    "greeting": "Ciao {{name}}. Qui ci sono solo i tuoi soldi: puoi guardare, ma niente si può cambiare.",
+    "balance": "Il mio saldo",
+    "unknown": "sconosciuto",
+    "asOf": "al {{date}}",
+    "spent": "Speso questo mese",
+    "spentHint": "{{amount}} al mese in media",
+    "pocket": {
+      "title": "Paghetta",
+      "empty": "Ancora nessuna paghetta regolare.",
+      "series": "<b><amount/></b> {{cadence}}, da {{source}}. La prossima verso il {{date}}.",
+      "extra": "Soldi extra che hai ricevuto: {{total}} ({{sources}}).",
+      "fromSource": "{{amount}} da {{source}}"
+    },
+    "spending": {
+      "title": "Dove vanno i miei soldi",
+      "empty": "Niente speso negli ultimi mesi."
+    },
+    "trend": {
+      "title": "Il mio saldo nel tempo",
+      "subtitle": "Una stima alla fine di ogni mese.",
+      "label": "Il mio saldo a ogni fine mese"
+    },
+    "payments": {
+      "title": "I miei ultimi pagamenti",
+      "empty": "Ancora nessun pagamento",
+      "emptyBody": "I tuoi pagamenti compariranno qui."
+    },
+    "budget": {
+      "weekly": "Il limite di questa settimana",
+      "monthly": "Il limite di questo mese",
+      "over": "Hai superato questo limite. Non preoccuparti: guardalo insieme a un genitore.",
+      "close_one": "Ci sei quasi: restano {{left}}, ancora {{count}} giorno.",
+      "close_many": "Ci sei quasi: restano {{left}}, ancora {{count}} giorni.",
+      "close_other": "Ci sei quasi: restano {{left}}, ancora {{count}} giorni.",
+      "ok_one": "Restano {{left}}, ancora {{count}} giorno.",
+      "ok_many": "Restano {{left}}, ancora {{count}} giorni.",
+      "ok_other": "Restano {{left}}, ancora {{count}} giorni.",
+      "spentOf": "<spent/> su <limit/>",
+      "used": "Limite usato"
+    }
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "title": "Mémoire",
+  "subtitle": "Ce que le coach sait de votre foyer, dans de simples fichiers qui vous appartiennent. Chaque modification est validée, prévisualisée et enregistrée dans un historique que vous pouvez annuler.",
+  "tabs": {
+    "label": "Sections de la mémoire",
+    "questions": "Questions",
+    "proposals": "Propositions",
+    "household": "Foyer",
+    "events": "Événements",
+    "items": "Prêts, contrats, actifs",
+    "annotations": "Annotations",
+    "check": "Contrôle",
+    "history": "Historique"
+  },
+  "questions": {
+    "show": "Afficher",
+    "filter": {
+      "open": "Ouvertes",
+      "answered": "Répondues",
+      "dismissed": "Écartées",
+      "all": "Toutes"
+    },
+    "hint": "Une réponse est seulement enregistrée. La transformer en modification de la mémoire est une étape distincte, avec aperçu.",
+    "emptyTitle": "Aucune question ici",
+    "emptyBody": "De nouvelles questions apparaissent après une synchronisation, quand le coach trouve quelque chose qu'il ne peut pas déduire.",
+    "answerRecorded": "Réponse enregistrée",
+    "dismissedToast": "Question écartée",
+    "reopened": "Question rouverte",
+    "atStake": "{{amount}} en jeu",
+    "status": {
+      "open": "ouverte",
+      "answered": "répondue",
+      "dismissed": "écartée"
+    },
+    "dismissedNote": "Écartée : {{note}}",
+    "answer": "Répondre",
+    "fillLoan": "Compléter le prêt",
+    "openTransactions": "Ouvrir les transactions",
+    "reason": "Motif (facultatif)",
+    "dismiss": "Écarter",
+    "yourAnswer": "Votre réponse",
+    "answerPlaceholder": "Votre réponse, avec vos propres mots",
+    "cancel": "Annuler",
+    "record": "Enregistrer la réponse",
+    "reopen": "Rouvrir"
+  },
+  "proposals": {
+    "terminalTitle": "L'acceptation se fait dans votre terminal, volontairement",
+    "terminalBody": "Le coach et l'extraction de documents peuvent seulement proposer des modifications. Rien n'est écrit tant que <b>vous</b> n'avez pas lancé, dans votre propre terminal, la commande d'acceptation affichée sur chaque proposition (elle montre le même diff et demande une confirmation saisie au clavier). Cette page ne peut pas accepter à votre place : rien de ce qui arrive sur cette page ne peut écrire dans votre mémoire.",
+    "empty": "Aucune proposition en attente",
+    "modified": "modifiée après sa création : elle ne peut pas être acceptée",
+    "source": "source : « {{snippet}} »",
+    "instructionLike": "texte qui ressemble à une instruction",
+    "noChange": "Aucune modification.",
+    "suspiciousTitle": "La source contient un texte qui ressemble à une instruction",
+    "suspiciousBody": "La source (un document, ou des données lues par le coach pour cette proposition) contient un texte qui ressemble à une instruction. Vérifiez vous-même ces champs avant d'accepter ; chacun demande son propre --confirm-field : {{paths}}.",
+    "notApplicable": "Ne peut pas être appliquée au fichier dans son état actuel : {{error}}",
+    "toAccept": "Pour accepter, lancez ceci dans votre propre terminal :",
+    "reject": "Refuser…"
+  },
+  "reject": {
+    "done": "Proposition refusée",
+    "title": "Refuser cette proposition ?",
+    "keep": "La garder",
+    "confirm": "Refuser",
+    "body": "Rien n'est écrit dans votre mémoire. La proposition est close et ne pourra plus être acceptée.",
+    "why": "Pourquoi ? (facultatif)"
+  },
+  "household": {
+    "title": "Membres du foyer",
+    "subtitle": "Les noms restent sur cet ordinateur ; le coach ne voit que des pseudonymes.",
+    "add": "Membre",
+    "empty": "Aucun membre pour l'instant",
+    "role": {
+      "adult": "adulte",
+      "child": "enfant"
+    },
+    "born": "né(e) en {{year}}",
+    "birthUnknown": "année de naissance inconnue",
+    "seenAs": " · vu comme {{aliases}}",
+    "edit": "Modifier {{name}}"
+  },
+  "events": {
+    "title": "Événements",
+    "subtitle": "Voyages, travaux et projets. Associez-leur des transactions pour sortir leur coût du mois habituel.",
+    "add": "Événement",
+    "empty": "Aucun événement pour l'instant",
+    "status": {
+      "planned": "prévu",
+      "ongoing": "en cours",
+      "done": "terminé"
+    },
+    "noStatus": "sans statut",
+    "noDates": "sans dates",
+    "budget": " · budget {{amount}}",
+    "transactions": "Transactions",
+    "edit": "Modifier {{name}}"
+  },
+  "items": {
+    "edit": "Modifier {{name}}",
+    "loans": "Prêts",
+    "addLoan": "Prêt",
+    "perMonth": " · {{amount}}/mois",
+    "missing": "manquant : {{fields}}",
+    "noLoan": "Aucun prêt",
+    "contracts": "Contrats",
+    "addContract": "Contrat",
+    "renews": " · renouvellement le {{date}}",
+    "noContract": "Aucun contrat enregistré",
+    "noContractBody": "Ajoutez ceux qui se cachent derrière vos abonnements pour voir leurs dates de renouvellement.",
+    "assets": "Actifs",
+    "addAsset": "Actif",
+    "asOf": " au {{date}}",
+    "valueUnknown": "valeur inconnue",
+    "valueOld": "valeur ancienne : mettez-la à jour",
+    "noAsset": "Aucun actif"
+  },
+  "annotations": {
+    "title": "Annotations",
+    "subtitle": "Les règles que vous avez apprises au coach : quelles transactions reçoivent quelle catégorie, quels tags ou quel événement. La première qui correspond l'emporte.",
+    "emptyTitle": "Aucune annotation",
+    "emptyBody": "Corrigez une catégorie dans Transactions et choisissez « Mémoriser avec une annotation ».",
+    "transactions_one": "{{count}} transaction",
+    "transactions_many": "{{count}} transactions",
+    "transactions_other": "{{count}} transactions",
+    "decided_one": "{{count}} décidée",
+    "decided_many": "{{count}} décidées",
+    "decided_other": "{{count}} décidées",
+    "matched_one": "{{count}} correspondante",
+    "matched_many": "{{count}} correspondantes",
+    "matched_other": "{{count}} correspondantes",
+    "remove": "Supprimer {{id}}",
+    "removed": "Annotation supprimée",
+    "removeTitle": "Supprimer « {{id}} » ?",
+    "follow_one": "{{count}} transaction la suit actuellement.",
+    "follow_many": "{{count}} transactions la suivent actuellement.",
+    "follow_other": "{{count}} transactions la suivent actuellement.",
+    "keep": "Garder",
+    "confirm": "Supprimer"
+  },
+  "check": {
+    "errors_one": "{{count}} erreur",
+    "errors_many": "{{count}} erreurs",
+    "errors_other": "{{count}} erreurs",
+    "warnings_one": "{{count}} avertissement",
+    "warnings_many": "{{count}} avertissements",
+    "warnings_other": "{{count}} avertissements",
+    "notes_one": "{{count}} remarque",
+    "notes_many": "{{count}} remarques",
+    "notes_other": "{{count}} remarques",
+    "consistent": "La mémoire est cohérente",
+    "level": {
+      "error": "erreur",
+      "warning": "avertissement",
+      "info": "info"
+    },
+    "line": " · ligne {{line}}"
+  },
+  "history": {
+    "title": "Historique des modifications",
+    "subtitle": "Chaque écriture dans la mémoire, quel qu'en soit l'auteur (vous dans l'application, la ligne de commande, le coach). L'annulation se fait dans un terminal.",
+    "offTitle": "L'historique est désactivé",
+    "offBody": "Mettez [memory] history = true dans config.toml pour enregistrer les modifications.",
+    "empty": "Aucune modification enregistrée pour l'instant",
+    "view": "Voir",
+    "toUndo": "Pour annuler cette modification, lancez ceci dans votre propre terminal (l'annulation est une action délibérée, uniquement dans le terminal) :"
+  }
+}

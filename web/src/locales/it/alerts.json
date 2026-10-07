@@ -1,0 +1,114 @@
+{
+  "title": "Avvisi",
+  "subtitle": "Gli eventi importanti: un consenso bancario in scadenza, una sincronizzazione che continua a fallire, un addebito insolito, un aumento di prezzo, un saldo che potrebbe non bastare. Segnare come letto, rimandare o silenziare cambia solo ciò che vedi qui e ciò che viene inviato.",
+  "checkNow": "Controlla ora",
+  "notReady": "Gli avvisi non sono ancora configurati",
+  "checked": "Controllo fatto",
+  "checkedBody": "Nuovi: {{new}}, aggravati: {{escalated}}, risolti: {{resolved}}. Nulla è stato inviato fuori dall'app.",
+  "disabled": "Gli avvisi sono disattivati in config.toml ([alerts] enabled = false): non viene valutato nulla.",
+  "toast": {
+    "acknowledged": "Segnato come letto",
+    "snoozed": "Rimandato di 7 giorni",
+    "restored": "Ripristinato",
+    "kindMuted": "Tipo silenziato",
+    "updated": "Aggiornato"
+  },
+  "filter": {
+    "status": "Stato",
+    "openCount": "Aperti {{count}}",
+    "severity": "Gravità",
+    "kind": "Tipo",
+    "all": "Tutti"
+  },
+  "status": {
+    "open": "Aperti",
+    "snoozed": "Rimandati",
+    "acked": "Letti",
+    "suppressed": "Scartati"
+  },
+  "severity": {
+    "high": "alta",
+    "medium": "media",
+    "low": "bassa"
+  },
+  "severityOption": {
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Bassa"
+  },
+  "empty": {
+    "openTitle": "Nessun avviso aperto",
+    "openBody": "I nuovi avvisi compaiono dopo ogni controllo giornaliero, oppure premi Controlla ora.",
+    "snoozed": "Nessun avviso rimandato",
+    "acked": "Nessun avviso letto",
+    "suppressed": "Nessun avviso scartato",
+    "body": "Niente in questo elenco."
+  },
+  "list": "Avvisi",
+  "event": {
+    "new": "nuovo",
+    "snoozedUntil": "rimandato fino al {{date}}",
+    "acknowledged": "letto",
+    "suppressed": "scartato",
+    "suppressedTitle": "Sotto la tua gravità minima, o il suo tipo è silenziato: resta qui, non viene mai inviato.",
+    "escalated": "aggravato",
+    "escalatedTitle": "La sua gravità è aumentata da quando è comparso",
+    "resolved": "risolto",
+    "resolvedTitle": "La situazione non esiste più",
+    "firstSeen": "Visto per la prima volta il {{date}}",
+    "firstSeenSent": "Visto per la prima volta il {{date}} · inviato a {{channels}}",
+    "acknowledge": "Segna come letto",
+    "snooze": "Rimanda di 7 giorni",
+    "restore": "Ripristina",
+    "muteKind": "Silenzia questo tipo",
+    "muteKindTitle": "Non ricevere più avvisi di questo tipo ({{kind}}) finché non lo riattivi"
+  },
+  "kinds": {
+    "title": "Tipi di avviso",
+    "subtitle": "Silenzia un tipo che non vuoi, o sospendilo per una settimana. Le soglie e gli interruttori per tipo sono in config.toml ([alerts]).",
+    "offInConfig": "disattivato nella config",
+    "offInConfigTitle": "[alerts] disabled_kinds in config.toml",
+    "digestOnly": "solo riepilogo",
+    "digestOnlyTitle": "[alerts] digest_only_kinds: mostrato qui e nel riepilogo settimanale, mai inviato singolarmente",
+    "muted": "silenziato",
+    "heldUntil": "sospeso fino al {{date}}",
+    "unmute": "Riattiva",
+    "unmuteAria": "Riattiva {{kind}}",
+    "mute": "Silenzia",
+    "muteAria": "Silenzia {{kind}}",
+    "wake": "Riprendi",
+    "wakeAria": "Riprendi {{kind}}",
+    "hold": "Sospendi 7 giorni",
+    "holdAria": "Sospendi {{kind}} per 7 giorni"
+  },
+  "channels": {
+    "title": "Canali",
+    "subtitle": "Sola lettura. Il feed nell'app è sempre attivo; tutti gli altri canali restano spenti finché non li attivi in config.toml.",
+    "list": "Canali",
+    "macos": "Notifica macOS",
+    "email": "E-mail (SMTP)",
+    "sentLastWeek_one": "{{count}} messaggio negli ultimi 7 giorni",
+    "sentLastWeek_many": "{{count}} messaggi negli ultimi 7 giorni",
+    "sentLastWeek_other": "{{count}} messaggi negli ultimi 7 giorni",
+    "ready": "pronto",
+    "notReady": "non pronto",
+    "off": "spento",
+    "test": "Prova (simulazione)",
+    "testAria": "Anteprima di un messaggio di prova per {{channel}} (simulazione)",
+    "privacyMinimal": "I messaggi verso ntfy, e-mail e Telegram sono in modalità <strong>{{detail}}</strong>: solo un conteggio («2 nuovi avvisi, 1 alto. Apri l'app.»), nessun importo, nome o esercente.",
+    "privacyOther": "I messaggi verso ntfy, e-mail e Telegram sono in modalità <strong>{{detail}}</strong>: il tipo di avviso e un importo arrotondato a 10 EUR, mai un nome, un esercente, una banca o un IBAN.",
+    "limits": "Gravità minima {{severity}}, al massimo {{max}} messaggi a settimana per canale.",
+    "limitsQuiet": "Gravità minima {{severity}}, al massimo {{max}} messaggi a settimana per canale, ore di silenzio {{quiet}}.",
+    "testTitle": "Messaggio di prova: {{channel}}",
+    "close": "Chiudi",
+    "dryRun": "Simulazione: non è stato inviato nulla",
+    "dryRunBody": "{{sample}}. È esattamente ciò che conterrebbe un invio; i segreti sono mascherati.",
+    "disabledInConfig": "Questo canale è disattivato in config.toml, quindi neanche una prova reale invierebbe nulla."
+  },
+  "digest": {
+    "title": "Riepilogo settimanale",
+    "subtitle": "Costruito ogni settimana dall'app a partire dai tuoi dati (niente è scritto da un modello) e messo in Analisi.",
+    "hide": "Nascondi l'anteprima",
+    "show": "Anteprima del riepilogo di questa settimana"
+  }
+}

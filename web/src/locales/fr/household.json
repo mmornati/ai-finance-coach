@@ -1,0 +1,174 @@
+{
+  "household": {
+    "header": {
+      "title": "Foyer",
+      "subtitle": "Qui compose le foyer, à qui appartient chaque compte, et comment les transactions sont attribuées à une personne. Les noms restent sur cet ordinateur."
+    },
+    "role": {
+      "adult": "adulte",
+      "child": "enfant"
+    },
+    "members": {
+      "title": "Membres",
+      "subtitle": "Déclarés dans memory/household.yaml. Un modèle ne voit jamais que adult-1, kid-1 ... jamais un nom ni un alias.",
+      "empty": "Aucun membre déclaré pour l'instant",
+      "col": {
+        "name": "Nom",
+        "role": "Rôle",
+        "born": "Année de naissance",
+        "accounts": "Comptes",
+        "transactions": "Transactions"
+      },
+      "footer": "Ajoutez ou modifiez des membres avec <code>coach memory member add</code> ou sur la page <memory>Mémoire</memory>. L'argent de poche des enfants est sur <kids>Argent des enfants</kids>."
+    },
+    "accounts": {
+      "title": "Comptes : titulaire et usage",
+      "subtitle": "Le titulaire est la personne à qui appartient le compte (commun, ou un membre). C'est la valeur par défaut de chaque transaction du compte.",
+      "saved": "Compte mis à jour",
+      "col": {
+        "account": "Compte",
+        "owner": "Titulaire",
+        "purpose": "Usage",
+        "attributed": "Attribué à"
+      },
+      "ownerOf": "Titulaire de {{account}}",
+      "purposeOf": "Usage de {{account}}",
+      "notMember": "{{owner}} (pas un membre)",
+      "noOwner": "Aucun titulaire",
+      "joint": "Commun",
+      "notSet": "Non défini"
+    },
+    "rules": {
+      "title": "Règles d'attribution",
+      "subtitle": "À qui appartient une transaction : une réattribution manuelle, sinon la première règle qui correspond, sinon le titulaire du compte.",
+      "add": "Règle",
+      "empty": "Aucune règle : le titulaire du compte décide. Règles typiques : un compte de carte prépayée par enfant, ou les quatre derniers chiffres d'une carte sur un compte partagé.",
+      "item": "<b>{{name}}</b> quand {{conditions}}",
+      "remove": "Supprimer la règle {{id}}",
+      "confirmRemove": "Supprimer la règle « {{id}} » ? La suppression est enregistrée dans l'historique de la mémoire.",
+      "removed": "Règle supprimée",
+      "manual_one": "{{count}} transaction réattribuée à la main (ouvrez une transaction pour en modifier ou annuler une).",
+      "manual_many": "{{count}} transactions réattribuées à la main (ouvrez une transaction pour en modifier ou annuler une).",
+      "manual_other": "{{count}} transactions réattribuées à la main (ouvrez une transaction pour en modifier ou annuler une).",
+      "match": {
+        "account": "compte {{value}}",
+        "card": "carte se terminant par {{value}}",
+        "merchant": "commerçant /{{value}}/",
+        "description": "libellé /{{value}}/",
+        "moneyIn": "argent entrant",
+        "moneyOut": "argent sortant",
+        "direction": "sens {{value}}",
+        "atLeast": "au moins {{value}}",
+        "atMost": "au plus {{value}}"
+      }
+    },
+    "ruleDialog": {
+      "title": "Nouvelle règle d'attribution",
+      "description": "Chaque condition remplie doit correspondre (ET). L'aperçu indique combien de transactions elle attribuerait.",
+      "cancel": "Annuler",
+      "save": "Enregistrer la règle",
+      "saved": "Règle enregistrée",
+      "id": "Identifiant de la règle",
+      "idHint": "lettres minuscules, chiffres, - ou _",
+      "member": "Attribuer à",
+      "joint": "Commun",
+      "account": "Compte (uid ou libellé)",
+      "anyAccount": "N'importe quel compte",
+      "card": "Quatre derniers chiffres de la carte",
+      "cardHint": "seulement si la banque les indique dans le libellé",
+      "merchantMatch": "Le commerçant correspond à (regex)",
+      "descriptionMatch": "Le libellé correspond à (regex)",
+      "preview_one": "Elle correspond à <b>{{count}}</b> transaction ; <b>{{change}}</b> changerait de personne.",
+      "preview_many": "Elle correspond à <b>{{count}}</b> transactions ; <b>{{change}}</b> changeraient de personne.",
+      "preview_other": "Elle correspond à <b>{{count}}</b> transactions ; <b>{{change}}</b> changeraient de personne."
+    },
+    "logins": {
+      "title": "Identifiants de connexion",
+      "subtitle": "Chaque personne peut avoir son propre accès : un adulte voit tout, un enfant ne voit que son propre argent. Les accès se créent dans un terminal, jamais ici.",
+      "empty": "Aucun accès pour l'instant : l'application s'ouvre avec l'accès du propriétaire (tout).",
+      "disabled": "désactivé"
+    },
+    "prefs": {
+      "title": "Mes préférences",
+      "subtitle": "Enregistrées pour l'accès {{user}}.",
+      "saved": "Préférences enregistrées pour cet accès",
+      "theme": "Thème",
+      "unchanged": "Inchangé",
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre",
+      "locale": "Dates et nombres",
+      "landing": "Page d'accueil",
+      "save": "Enregistrer"
+    },
+    "audit": {
+      "title": "Qui a modifié quoi",
+      "subtitle": "Les modifications faites dans l'application web (méthode, adresse, auteur : jamais le contenu) et l'historique de la mémoire avec la source de chaque modification.",
+      "show": "Afficher le journal",
+      "requests": "Modifications faites dans l'application web",
+      "requestsEmpty": "Rien pour l'instant.",
+      "memory": "Modifications de la mémoire et leur source",
+      "memoryEmpty": "Aucun historique."
+    }
+  },
+  "whoPays": {
+    "header": {
+      "title": "Qui paie quoi",
+      "subtitle": "Les dépenses partagées (maison, voitures, assurances) réparties selon vos règles. Une dépense payée depuis le compte commun ne solde rien ; ce qu'une personne a payé avec son propre argent est comparé à sa juste part."
+    },
+    "period": "Période",
+    "months_one": "{{count}} mois",
+    "months_many": "{{count}} mois",
+    "months_other": "{{count}} mois",
+    "addRule": "Règle",
+    "method": {
+      "equal": "à parts égales",
+      "income": "au prorata des revenus",
+      "custom": "selon les pourcentages que vous avez fixés"
+    },
+    "empty": {
+      "title": "Aucune règle de répartition pour l'instant",
+      "action": "Ajouter une règle",
+      "body": "Une règle indique les dépenses qu'elle couvre (une catégorie, un groupe, une étiquette, un commerçant), comment elles sont partagées (50/50, selon les revenus, pourcentages personnalisés) et entre qui."
+    },
+    "total": {
+      "title": "Toutes les règles ensemble",
+      "subtitle": "Positif : les autres doivent à cette personne. Négatif : cette personne doit.",
+      "line": "part due <owed/> · payé <paid/> · solde <net/>"
+    },
+    "confirmRemove": "Supprimer la règle de répartition « {{id}} » ?",
+    "removed": "Règle de répartition supprimée",
+    "footnote": "Une répartition du passé, calculée par le code à partir des transactions attribuées à chaque personne. Elle ne déplace aucun argent et n'est pas un conseil juridique ou fiscal sur les finances d'un couple.",
+    "rule": {
+      "subtitle_one": "{{method}} · {{total}} sur {{count}} paiement",
+      "subtitle_many": "{{method}} · {{total}} sur {{count}} paiements",
+      "subtitle_other": "{{method}} · {{total}} sur {{count}} paiements",
+      "remove": "Supprimer la répartition {{id}}",
+      "col": {
+        "member": "Membre",
+        "share": "Part",
+        "owed": "Juste part du coût",
+        "paid": "Payé personnellement",
+        "settlement": "Solde"
+      },
+      "jointPaid": "compte commun {{amount}}",
+      "personalPaid": "payé personnellement {{amount}}",
+      "unattributed": "hors de la règle {{amount}}"
+    },
+    "dialog": {
+      "title": "Nouvelle règle de répartition",
+      "description": "Partagée entre tous les adultes, sauf si vous choisissez des pourcentages personnalisés. La première règle qui correspond à un paiement le prend.",
+      "cancel": "Annuler",
+      "save": "Enregistrer la règle",
+      "saved": "Règle de répartition enregistrée",
+      "id": "Identifiant",
+      "idHint": "lettres minuscules, chiffres, - ou _",
+      "ruleTitle": "Titre (facultatif)",
+      "group": "Dépenses couvertes (groupe de catégories)",
+      "method": "Répartition",
+      "equal": "À parts égales",
+      "income": "Au prorata des revenus",
+      "custom": "Pourcentages personnalisés"
+    }
+  }
+}

@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
+import { Trans, useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { Plus, Trash2, UserRound } from "lucide-react";
 import { Async, Badge, Button, Card, Dialog, DiffView, Disclosure, EmptyState, Field, Input, Notice, PageHeader, Select, Skeleton } from "@/components/ui";
 import { CopyCommand } from "@/components/CopyCommand";
@@ -7,13 +9,17 @@ import { useDryRun, useGet, useHousehold, usePeople, useWrite } from "@/api/hook
 import { api } from "@/lib/api";
 import { useUser } from "@/lib/app";
 import { fmtDateTime, groupLabel } from "@/lib/format";
+import i18n from "@/i18n";
 import type { AttributionRule, AuditRows, EditResult, HouseholdAccount, HouseholdOverview } from "@/api/types";
 
+const ROLE: Record<string, ParseKeys<"household">> = { adult: "household.role.adult", child: "household.role.child" };
+
 export default function Household() {
+  const { t } = useTranslation("household");
   const q = useHousehold();
   return (
     <>
-      <PageHeader title="Household" subtitle="Who is in the household, who owns each account, and how transactions are attributed to a person. Names stay on this machine." />
+      <PageHeader title={t("household.header.title")} subtitle={t("household.header.subtitle")} />
       <Async q={q} skeleton={<Skeleton className="h-96 w-full" />}>
         {(d) => (
           <div className="grid gap-4">
@@ -34,10 +40,11 @@ export default function Household() {
 }
 
 function Members({ d }: { d: HouseholdOverview }) {
+  const { t } = useTranslation("household");
   return (
-    <Card title="Members" subtitle="Declared in memory/household.yaml. A model only ever sees adult-1, kid-1 ... never a name or an alias.">
+    <Card title={t("household.members.title")} subtitle={t("household.members.subtitle")}>
       {d.members.length === 0 ? (
-        <EmptyState icon={<UserRound className="size-6" />} title="No member declared yet">
+        <EmptyState icon={<UserRound className="size-6" />} title={t("household.members.empty")}>
           <CopyCommand command="uv run coach memory member add --id anna --name 'Anna Rossi' --role adult" />
         </EmptyState>
       ) : (
@@ -45,11 +52,11 @@ function Members({ d }: { d: HouseholdOverview }) {
           <table className="w-full min-w-[520px] text-sm">
             <thead className="text-left text-xs text-muted">
               <tr>
-                <th scope="col" className="py-2 pr-3 font-medium">Name</th>
-                <th scope="col" className="px-2 py-2 font-medium">Role</th>
-                <th scope="col" className="px-2 py-2 font-medium">Born</th>
-                <th scope="col" className="px-2 py-2 font-medium">Accounts</th>
-                <th scope="col" className="px-2 py-2 text-right font-medium">Transactions</th>
+                <th scope="col" className="py-2 pr-3 font-medium">{t("household.members.col.name")}</th>
+                <th scope="col" className="px-2 py-2 font-medium">{t("household.members.col.role")}</th>
+                <th scope="col" className="px-2 py-2 font-medium">{t("household.members.col.born")}</th>
+                <th scope="col" className="px-2 py-2 font-medium">{t("household.members.col.accounts")}</th>
+                <th scope="col" className="px-2 py-2 text-right font-medium">{t("household.members.col.transactions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -59,7 +66,7 @@ function Members({ d }: { d: HouseholdOverview }) {
                     {m.name}
                     <span className="ml-2 text-xs font-normal text-faint">{m.id}</span>
                   </td>
-                  <td className="px-2 py-2"><Badge tone={m.role === "child" ? "info" : "neutral"}>{m.role}</Badge></td>
+                  <td className="px-2 py-2"><Badge tone={m.role === "child" ? "info" : "neutral"}>{ROLE[m.role] ? t(ROLE[m.role]) : m.role}</Badge></td>
                   <td className="num px-2 py-2 text-muted">{m.birth_year ?? "-"}</td>
                   <td className="px-2 py-2 text-muted">{m.accounts.length}</td>
                   <td className="num px-2 py-2 text-right">{m.attributed_transactions}</td>
@@ -70,25 +77,31 @@ function Members({ d }: { d: HouseholdOverview }) {
         </div>
       )}
       <p className="mt-3 text-xs text-muted">
-        Add or change members with <code>coach memory member add</code> or on the <Link to="/memory" className="underline">Memory</Link> page. Children's pocket money is on{" "}
-        <Link to="/kids" className="underline">Kids' money</Link>.
+        <Trans
+          t={t}
+          i18nKey="household.members.footer"
+          components={{ code: <code />, memory: <Link to="/memory" className="underline" />, kids: <Link to="/kids" className="underline" /> }}
+        />
       </p>
     </Card>
   );
 }
 
 function Accounts({ d }: { d: HouseholdOverview }) {
-  const save = useWrite((v: { uid: string; owner?: string; purpose?: string }) => api.patch(`/accounts/${v.uid}`, { owner: v.owner, purpose: v.purpose }), { success: "Account updated" });
+  const { t } = useTranslation("household");
+  const save = useWrite((v: { uid: string; owner?: string; purpose?: string }) => api.patch(`/accounts/${v.uid}`, { owner: v.owner, purpose: v.purpose }), {
+    success: t("household.accounts.saved"),
+  });
   return (
-    <Card title="Accounts: owner and purpose" subtitle="The owner is who the account belongs to (joint, or one member). It is the default for every transaction on it." pad={false}>
+    <Card title={t("household.accounts.title")} subtitle={t("household.accounts.subtitle")} pad={false}>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">
           <thead className="text-left text-xs text-muted">
             <tr>
-              <th scope="col" className="px-4 py-2 font-medium">Account</th>
-              <th scope="col" className="px-2 py-2 font-medium">Owner</th>
-              <th scope="col" className="px-2 py-2 font-medium">Used for</th>
-              <th scope="col" className="px-4 py-2 font-medium">Attributed to</th>
+              <th scope="col" className="px-4 py-2 font-medium">{t("household.accounts.col.account")}</th>
+              <th scope="col" className="px-2 py-2 font-medium">{t("household.accounts.col.owner")}</th>
+              <th scope="col" className="px-2 py-2 font-medium">{t("household.accounts.col.purpose")}</th>
+              <th scope="col" className="px-4 py-2 font-medium">{t("household.accounts.col.attributed")}</th>
             </tr>
           </thead>
           <tbody>
@@ -103,6 +116,7 @@ function Accounts({ d }: { d: HouseholdOverview }) {
 }
 
 function AccountRow({ a, d, onSave }: { a: HouseholdAccount; d: HouseholdOverview; onSave: (v: { owner?: string; purpose?: string }) => void }) {
+  const { t } = useTranslation("household");
   const people = usePeople();
   const current = a.joint ? "joint" : (a.owner_member ?? "");
   return (
@@ -112,17 +126,17 @@ function AccountRow({ a, d, onSave }: { a: HouseholdAccount; d: HouseholdOvervie
         <div className="text-xs text-muted">{a.bank}</div>
       </td>
       <td className="px-2 py-2">
-        <Select aria-label={`Owner of ${a.label}`} value={current} onChange={(e) => e.target.value && onSave({ owner: e.target.value })} className="!min-h-9">
-          {!current && <option value="">{a.owner ? `${a.owner} (not a member)` : "No owner"}</option>}
-          <option value="joint">Joint</option>
+        <Select aria-label={t("household.accounts.ownerOf", { account: a.label })} value={current} onChange={(e) => e.target.value && onSave({ owner: e.target.value })} className="!min-h-9">
+          {!current && <option value="">{a.owner ? t("household.accounts.notMember", { owner: a.owner }) : t("household.accounts.noOwner")}</option>}
+          <option value="joint">{t("household.accounts.joint")}</option>
           {d.members.map((m) => (
             <option key={m.id} value={m.id}>{m.name}</option>
           ))}
         </Select>
       </td>
       <td className="px-2 py-2">
-        <Select aria-label={`Purpose of ${a.label}`} value={a.purpose ?? ""} onChange={(e) => e.target.value && onSave({ purpose: e.target.value })} className="!min-h-9">
-          {!a.purpose && <option value="">Not set</option>}
+        <Select aria-label={t("household.accounts.purposeOf", { account: a.label })} value={a.purpose ?? ""} onChange={(e) => e.target.value && onSave({ purpose: e.target.value })} className="!min-h-9">
+          {!a.purpose && <option value="">{t("household.accounts.notSet")}</option>}
           {d.purposes.map((p) => (
             <option key={p} value={p}>{groupLabel(p)}</option>
           ))}
@@ -137,58 +151,73 @@ function AccountRow({ a, d, onSave }: { a: HouseholdAccount; d: HouseholdOvervie
   );
 }
 
+/** The conditions of a rule in the current language (called at render time, never at import time). */
 function describeRule(r: AttributionRule): string {
   const m = r.match;
+  const tt = (key: ParseKeys<"household">, value: unknown) => i18n.t(key, { ns: "household", value: String(value) });
+  const direction =
+    m.direction === "in"
+      ? i18n.t("household.rules.match.moneyIn", { ns: "household" })
+      : m.direction === "out"
+        ? i18n.t("household.rules.match.moneyOut", { ns: "household" })
+        : m.direction && tt("household.rules.match.direction", m.direction);
   const bits = [
-    m.account && `account ${m.account}`,
-    m.card_last4 && `card ending ${m.card_last4}`,
-    m.merchant_key && `merchant /${m.merchant_key}/`,
-    m.description && `description /${m.description}/`,
-    m.direction && `money ${m.direction}`,
-    m.amount_min != null && `at least ${m.amount_min}`,
-    m.amount_max != null && `at most ${m.amount_max}`,
+    m.account && tt("household.rules.match.account", m.account),
+    m.card_last4 && tt("household.rules.match.card", m.card_last4),
+    m.merchant_key && tt("household.rules.match.merchant", m.merchant_key),
+    m.description && tt("household.rules.match.description", m.description),
+    direction,
+    m.amount_min != null && tt("household.rules.match.atLeast", m.amount_min),
+    m.amount_max != null && tt("household.rules.match.atMost", m.amount_max),
   ];
   return bits.filter(Boolean).join(", ");
 }
 
 function Rules({ d }: { d: HouseholdOverview }) {
+  const { t } = useTranslation("household");
   const people = usePeople();
   const [open, setOpen] = useState(false);
-  const del = useWrite((id: string) => api.post<EditResult>(`/household/attribution/rules/${id}/delete`, {}), { success: "Rule removed" });
+  const del = useWrite((id: string) => api.post<EditResult>(`/household/attribution/rules/${id}/delete`, {}), { success: t("household.rules.removed") });
   return (
     <Card
-      title="Attribution rules"
-      subtitle="Who a transaction belongs to: a manual reassignment, then the first matching rule, then the account's owner."
+      title={t("household.rules.title")}
+      subtitle={t("household.rules.subtitle")}
       action={
         <Button size="sm" onClick={() => setOpen(true)}>
-          <Plus className="size-3.5" aria-hidden /> Rule
+          <Plus className="size-3.5" aria-hidden /> {t("household.rules.add")}
         </Button>
       }
     >
       {d.rules.length === 0 ? (
-        <p className="text-[13px] text-muted">No rule: the owner of the account decides. Typical rules: a prepaid card account per child, or a card's last four digits on a shared account.</p>
+        <p className="text-[13px] text-muted">{t("household.rules.empty")}</p>
       ) : (
         <ul className="divide-y divide-border">
           {d.rules.map((r) => (
             <li key={r.id} className="flex items-center justify-between gap-3 py-2 text-sm">
               <span className="min-w-0">
-                <b>{people.name(r.member)}</b> when {describeRule(r)}
+                <Trans t={t} i18nKey="household.rules.item" values={{ name: people.name(r.member), conditions: describeRule(r) }} components={{ b: <b /> }} />
                 {r.note && <span className="ml-2 text-xs text-faint">{r.note}</span>}
               </span>
-              <Button size="sm" variant="ghost" aria-label={`Remove rule ${r.id}`} onClick={() => confirm(`Remove the rule "${r.id}"? It is recorded in the memory history.`) && del.mutate(r.id)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                aria-label={t("household.rules.remove", { id: r.id })}
+                onClick={() => confirm(t("household.rules.confirmRemove", { id: r.id })) && del.mutate(r.id)}
+              >
                 <Trash2 className="size-3.5" />
               </Button>
             </li>
           ))}
         </ul>
       )}
-      <p className="mt-3 text-xs text-muted">{d.attribution.manual} transaction(s) reassigned by hand (open a transaction to change or undo one).</p>
+      <p className="mt-3 text-xs text-muted">{t("household.rules.manual", { count: d.attribution.manual })}</p>
       {open && <RuleDialog d={d} onClose={() => setOpen(false)} />}
     </Card>
   );
 }
 
 function RuleDialog({ d, onClose }: { d: HouseholdOverview; onClose: () => void }) {
+  const { t } = useTranslation("household");
   const [id, setId] = useState("");
   const [member, setMember] = useState(d.members.find((m) => m.role === "child")?.id ?? d.members[0]?.id ?? "");
   const [account, setAccount] = useState("");
@@ -198,55 +227,59 @@ function RuleDialog({ d, onClose }: { d: HouseholdOverview; onClose: () => void 
   const body = useMemo(() => ({ member, match: { account, card_last4: card, merchant_key: merchant, description: desc } }), [member, account, card, merchant, desc]);
   const ready = /^[a-z0-9][a-z0-9_-]*$/.test(id) && !!member && !!(account || card || merchant || desc);
   const pv = useDryRun<EditResult & { matches: number; would_change: number }>(`/household/attribution/rules/${id}`, body, ready, "put");
-  const save = useWrite(() => api.put<EditResult>(`/household/attribution/rules/${id}`, body), { success: "Rule saved", onSuccess: onClose });
+  const save = useWrite(() => api.put<EditResult>(`/household/attribution/rules/${id}`, body), { success: t("household.ruleDialog.saved"), onSuccess: onClose });
   return (
     <Dialog
       open
       onClose={onClose}
-      title="New attribution rule"
+      title={t("household.ruleDialog.title")}
       size="lg"
-      description="Every condition you fill must match (AND). The preview shows how many transactions it would attribute."
+      description={t("household.ruleDialog.description")}
       footer={
         <>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button variant="primary" disabled={!ready || !!pv.error} busy={save.isPending} onClick={() => save.mutate(undefined as never)}>Save rule</Button>
+          <Button onClick={onClose}>{t("household.ruleDialog.cancel")}</Button>
+          <Button variant="primary" disabled={!ready || !!pv.error} busy={save.isPending} onClick={() => save.mutate(undefined as never)}>
+            {t("household.ruleDialog.save")}
+          </Button>
         </>
       }
     >
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Rule id" hint="lowercase letters, digits, - or _">{(fid) => <Input id={fid} value={id} onChange={(e) => setId(e.target.value)} placeholder="mia-card" />}</Field>
-        <Field label="Attribute to">
+        <Field label={t("household.ruleDialog.id")} hint={t("household.ruleDialog.idHint")}>
+          {(fid) => <Input id={fid} value={id} onChange={(e) => setId(e.target.value)} placeholder="mia-card" />}
+        </Field>
+        <Field label={t("household.ruleDialog.member")}>
           {(fid) => (
             <Select id={fid} value={member} onChange={(e) => setMember(e.target.value)}>
               {d.members.map((m) => (
                 <option key={m.id} value={m.id}>{m.name}</option>
               ))}
-              <option value="joint">Joint</option>
+              <option value="joint">{t("household.ruleDialog.joint")}</option>
             </Select>
           )}
         </Field>
-        <Field label="Account (uid or label)">
+        <Field label={t("household.ruleDialog.account")}>
           {(fid) => (
             <Select id={fid} value={account} onChange={(e) => setAccount(e.target.value)}>
-              <option value="">Any account</option>
+              <option value="">{t("household.ruleDialog.anyAccount")}</option>
               {d.accounts.map((a) => (
                 <option key={a.uid} value={a.uid}>{a.label}</option>
               ))}
             </Select>
           )}
         </Field>
-        <Field label="Card's last four digits" hint="only when the bank prints them in the description">
+        <Field label={t("household.ruleDialog.card")} hint={t("household.ruleDialog.cardHint")}>
           {(fid) => <Input id={fid} value={card} onChange={(e) => setCard(e.target.value)} inputMode="numeric" maxLength={4} placeholder="4242" />}
         </Field>
-        <Field label="Merchant matches (regex)">{(fid) => <Input id={fid} value={merchant} onChange={(e) => setMerchant(e.target.value)} placeholder="^SKATE SHOP" />}</Field>
-        <Field label="Description matches (regex)">{(fid) => <Input id={fid} value={desc} onChange={(e) => setDesc(e.target.value)} />}</Field>
+        <Field label={t("household.ruleDialog.merchantMatch")}>{(fid) => <Input id={fid} value={merchant} onChange={(e) => setMerchant(e.target.value)} placeholder="^SKATE SHOP" />}</Field>
+        <Field label={t("household.ruleDialog.descriptionMatch")}>{(fid) => <Input id={fid} value={desc} onChange={(e) => setDesc(e.target.value)} />}</Field>
       </div>
       <div className="mt-4">
         {pv.error && <Notice tone="neg">{pv.error}</Notice>}
         {pv.data && (
           <>
             <p className="mb-2 text-sm">
-              It matches <b>{pv.data.matches}</b> transaction(s); <b>{pv.data.would_change}</b> would change person.
+              <Trans t={t} i18nKey="household.ruleDialog.preview" count={pv.data.matches} values={{ change: pv.data.would_change }} components={{ b: <b /> }} />
             </p>
             <DiffView diff={pv.data.diff} />
           </>
@@ -257,11 +290,12 @@ function RuleDialog({ d, onClose }: { d: HouseholdOverview; onClose: () => void 
 }
 
 function Logins({ d }: { d: HouseholdOverview }) {
+  const { t } = useTranslation("household");
   const people = usePeople();
   return (
-    <Card title="Logins" subtitle="Each person can have their own login: an adult sees everything, a child sees only their own money. Logins are created in a terminal, never here.">
+    <Card title={t("household.logins.title")} subtitle={t("household.logins.subtitle")}>
       {d.users.length === 0 ? (
-        <p className="mb-3 text-[13px] text-muted">No login yet: the app opens with the owner's login (everything).</p>
+        <p className="mb-3 text-[13px] text-muted">{t("household.logins.empty")}</p>
       ) : (
         <ul className="mb-3 divide-y divide-border">
           {d.users.map((u) => (
@@ -271,8 +305,8 @@ function Logins({ d }: { d: HouseholdOverview }) {
                 {u.member_id && <span className="text-muted"> · {people.name(u.member_id)}</span>}
               </span>
               <span className="flex gap-1.5">
-                <Badge tone={u.role === "child" ? "info" : "neutral"}>{u.role}</Badge>
-                {u.disabled && <Badge tone="neg">disabled</Badge>}
+                <Badge tone={u.role === "child" ? "info" : "neutral"}>{ROLE[u.role] ? t(ROLE[u.role]) : u.role}</Badge>
+                {u.disabled && <Badge tone="neg">{t("household.logins.disabled")}</Badge>}
               </span>
             </li>
           ))}
@@ -287,81 +321,88 @@ function Logins({ d }: { d: HouseholdOverview }) {
 }
 
 function Preferences() {
+  const { t } = useTranslation("household");
+  const { t: tc } = useTranslation();
   const user = useUser();
   const [theme, setTheme] = useState(user?.prefs.theme ?? "");
   const [locale, setLocale] = useState(user?.prefs.locale ?? "");
   const [landing, setLanding] = useState(user?.prefs.landing ?? "");
   const save = useWrite(() => api.put("/me/preferences", { prefs: Object.fromEntries(Object.entries({ theme, locale, landing }).filter(([, v]) => v)) }), {
-    success: "Preferences saved for this login",
+    success: t("household.prefs.saved"),
   });
   if (!user || user.id === "owner") return null;
   return (
-    <Card title="My preferences" subtitle={`Stored for the login ${user.id}.`}>
+    <Card title={t("household.prefs.title")} subtitle={t("household.prefs.subtitle", { user: user.id })}>
       <div className="grid gap-3 sm:grid-cols-3">
-        <Field label="Theme">
+        <Field label={t("household.prefs.theme")}>
           {(id) => (
             <Select id={id} value={theme} onChange={(e) => setTheme(e.target.value)}>
-              <option value="">Unchanged</option>
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+              <option value="">{t("household.prefs.unchanged")}</option>
+              <option value="system">{t("household.prefs.system")}</option>
+              <option value="light">{t("household.prefs.light")}</option>
+              <option value="dark">{t("household.prefs.dark")}</option>
             </Select>
           )}
         </Field>
-        <Field label="Dates and numbers">
+        <Field label={t("household.prefs.locale")}>
           {(id) => (
             <Select id={id} value={locale} onChange={(e) => setLocale(e.target.value)}>
-              <option value="">Unchanged</option>
+              <option value="">{t("household.prefs.unchanged")}</option>
               <option value="fr-FR">Français</option>
               <option value="en-GB">English</option>
               <option value="it-IT">Italiano</option>
             </Select>
           )}
         </Field>
-        <Field label="Opens on">
+        <Field label={t("household.prefs.landing")}>
           {(id) => (
             <Select id={id} value={landing} onChange={(e) => setLanding(e.target.value)}>
-              <option value="">Dashboard</option>
-              <option value="transactions">Transactions</option>
-              <option value="kids">Kids' money</option>
+              <option value="">{tc("nav.dashboard")}</option>
+              <option value="transactions">{tc("nav.transactions")}</option>
+              <option value="kids">{tc("nav.kids")}</option>
             </Select>
           )}
         </Field>
       </div>
       <div className="mt-3 flex justify-end">
-        <Button variant="primary" onClick={() => save.mutate(undefined as never)} busy={save.isPending}>Save</Button>
+        <Button variant="primary" onClick={() => save.mutate(undefined as never)} busy={save.isPending}>
+          {t("household.prefs.save")}
+        </Button>
       </div>
     </Card>
   );
 }
 
 function Audit() {
+  const { t } = useTranslation("household");
   const [open, setOpen] = useState(false);
   const q = useGet<AuditRows>("/household/audit", { limit: 30 }, { enabled: open });
   return (
-    <Card title="Who changed what" subtitle="The changes made in the web app (method, endpoint, who: never a payload) and the memory history with the source of each change.">
+    <Card title={t("household.audit.title")} subtitle={t("household.audit.subtitle")}>
       {!open ? (
-        <Button size="sm" onClick={() => setOpen(true)}>Show the audit</Button>
+        <Button size="sm" onClick={() => setOpen(true)}>
+          {t("household.audit.show")}
+        </Button>
       ) : q.data ? (
         <div className="grid gap-4 text-[13px]">
-          <Disclosure summary="Changes made in the web app" defaultOpen>
+          <Disclosure summary={t("household.audit.requests")} defaultOpen>
             <ul className="grid gap-0.5 text-muted">
               {q.data.requests.map((r, i) => (
                 <li key={i}>
                   {fmtDateTime(r.at)} · {r.actor} · {r.method} {r.path.replace("/api/v1", "")} · {r.status}
                 </li>
               ))}
-              {q.data.requests.length === 0 && <li>Nothing yet.</li>}
+              {q.data.requests.length === 0 && <li>{t("household.audit.requestsEmpty")}</li>}
             </ul>
           </Disclosure>
-          <Disclosure summary="Memory changes and their source" defaultOpen>
+          <Disclosure summary={t("household.audit.memory")} defaultOpen>
             <ul className="grid gap-0.5 text-muted">
               {q.data.memory.map((m) => (
                 <li key={m.id}>
                   {fmtDateTime(m.date)} · {m.source} · {m.subject}
                 </li>
               ))}
-              {q.data.memory.length === 0 && <li>No history.</li>}
+              {q.data.memory.length === 0 && <li>{t("household.audit.memoryEmpty")}</li>}
             </ul>
           </Disclosure>
         </div>

@@ -1,0 +1,124 @@
+{
+  "header": {
+    "title": "Prêts et patrimoine",
+    "subtitle": "Ce que vous possédez, ce que vous devez et ce qui reste inconnu. Rien n'est estimé : un chiffre manquant reste manquant.",
+    "addLoan": "Ajouter un prêt"
+  },
+  "summary": {
+    "netWorth": "Patrimoine net",
+    "netWorthKnownPart": "Patrimoine net, partie connue seulement",
+    "itemsNotCounted_one": "{{count}} élément non compté",
+    "itemsNotCounted_many": "{{count}} éléments non comptés",
+    "itemsNotCounted_other": "{{count}} éléments non comptés",
+    "notFullPicture": "Ce n'est pas la situation complète",
+    "bankBalances": "Soldes bancaires",
+    "accounts_one": "{{count}} compte",
+    "accounts_many": "{{count}} comptes",
+    "accounts_other": "{{count}} comptes",
+    "manualAssets": "Actifs manuels (comptés)",
+    "withValue": "{{n}} avec une valeur",
+    "owedKnown": "Dettes (connues)",
+    "loansCounted_one": "{{counted}} prêt sur {{count}}",
+    "loansCounted_many": "{{counted}} prêts sur {{count}}",
+    "loansCounted_other": "{{counted}} prêts sur {{count}}",
+    "notCountedUnknown": "Non comptés car inconnus",
+    "unknownItem": "{{kind}} : {{label}}",
+    "toRefresh": "Valeurs à mettre à jour : {{ids}}."
+  },
+  "history": {
+    "title": "Patrimoine net dans le temps",
+    "subtitle": "Enregistré après chaque synchronisation, et reconstitué pour les mois passés à partir des soldes bancaires (comptes bancaires seulement), des échéanciers des prêts et de chaque actif manuel à partir de sa propre date.",
+    "recordToday": "Enregistrer aujourd'hui",
+    "snapshotRecorded": "Relevé enregistré",
+    "emptyTitle": "Pas encore d'historique",
+    "empty": "Appuyez sur « Enregistrer aujourd'hui » pour garder un relevé ; les mois passés sont reconstitués quand les données le permettent.",
+    "partial": "{{partial}} mois sur {{total}} ne montrent que la partie connue : les barres plus claires et les points creux marquent les mois où un élément n'avait pas de valeur ce mois-là (survolez pour savoir lequel). Un actif manuel ne compte qu'à partir de la date de sa valeur enregistrée : une ligne pointillée marque le mois où une valeur est comptée pour la première fois, là où le total saute sans aucun changement de patrimoine.",
+    "caveat": "Les mois reconstitués utilisent les opérations comptabilisées alors que certains soldes sont des soldes disponibles / prévisionnels : ils peuvent donc différer légèrement du chiffre de la banque."
+  },
+  "breakdown": {
+    "byCategory": "Par catégorie",
+    "byPerson": "Par personne",
+    "unassigned": "Attribué à personne",
+    "nUnknown_one": "({{count}} inconnu)",
+    "nUnknown_many": "({{count}} inconnus)",
+    "nUnknown_other": "({{count}} inconnus)",
+    "category": {
+      "cash": "Liquidités",
+      "savings": "Épargne",
+      "investments": "Placements",
+      "realEstate": "Immobilier",
+      "vehicles": "Véhicules",
+      "other": "Autres",
+      "liabilities": "Dettes"
+    }
+  },
+  "loans": {
+    "emptyTitle": "Aucun prêt enregistré",
+    "empty": "Prêt immobilier, prêt auto ou location : la prévision et le taux d'épargne sont plus justes avec eux.",
+    "addFirst": "Ajouter votre premier prêt",
+    "kind": {
+      "mortgage": "Prêt immobilier",
+      "carLoan": "Prêt auto",
+      "loa": "Location avec option d'achat (LOA)",
+      "lld": "Location longue durée",
+      "consumerLoan": "Crédit à la consommation",
+      "bnpl": "Paiement différé ou fractionné"
+    },
+    "rateType": {
+      "fixed": "fixe",
+      "variable": "variable",
+      "mixed": "mixte"
+    },
+    "details": "Détails",
+    "detailsAria": "Détails du prêt {{id}}",
+    "editAria": "Modifier le prêt {{id}}",
+    "monthlyRent": "Loyer mensuel",
+    "monthlyPayment": "Mensualité",
+    "capitalOwed": "Capital dû",
+    "noneLease": "aucun (une location)",
+    "capitalDue": "Capital restant dû",
+    "source": {
+      "schedule": "échéancier",
+      "declared": "déclaré"
+    },
+    "old": "ancien",
+    "asOf": "au {{date}}",
+    "nextInstalment": "prochaine échéance le {{date}}",
+    "ends": "Fin",
+    "optionPrice": "Prix de l'option",
+    "rate": "Taux",
+    "rateValue": "{{rate}} %",
+    "rateWithType": "{{rate}} % {{type}}",
+    "debitedFrom": "Prélevé sur",
+    "lastPayment": "Dernier paiement bancaire",
+    "paymentNext": "{{date}}, prochain le {{next}}",
+    "paymentsMatched_one": "{{count}} paiement rapproché",
+    "paymentsMatched_many": "{{count}} paiements rapprochés",
+    "paymentsMatched_other": "{{count}} paiements rapprochés",
+    "noMatchingPayment": "aucun paiement correspondant trouvé",
+    "lease": {
+      "endsIn_one": "Se termine dans {{count}} jour",
+      "endsIn_many": "Se termine dans {{count}} jours",
+      "endsIn_other": "Se termine dans {{count}} jours",
+      "decide": "Choisissez entre acheter la voiture et la rendre.",
+      "overLimit": "Environ {{km}} km au-delà de la limite au rythme actuel."
+    },
+    "missing": "Manquant : {{fields}}.",
+    "canSuggest": "Le coach peut suggérer {{fields}} à partir des paiements (Détails > Suggestions).",
+    "openQuestions_one": "{{count}} question ouverte",
+    "openQuestions_many": "{{count}} questions ouvertes",
+    "openQuestions_other": "{{count}} questions ouvertes",
+    "unknown": "inconnu"
+  },
+  "assets": {
+    "title": "Actifs non synchronisés depuis une banque",
+    "add": "Actif",
+    "emptyTitle": "Aucun actif manuel",
+    "empty": "Livrets d'épargne, épargne salariale, biens immobiliers ou véhicules.",
+    "syncedFromBank": "synchronisé depuis une banque",
+    "valueUnknown": "valeur inconnue",
+    "asOf": "au {{date}}",
+    "refresh": "à mettre à jour",
+    "editAria": "Modifier {{id}}"
+  }
+}

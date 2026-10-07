@@ -1,0 +1,345 @@
+{
+  "common": {
+    "editFacts": "Modifica i dati",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "note": "Nota (facoltativa)",
+    "dateHint": "AAAA-MM-GG",
+    "unknown": "sconosciuto",
+    "missing": "Mancano: {{fields}}.",
+    "pct": "{{pct}} %",
+    "months_one": "{{count}} mese",
+    "months_many": "{{count}} mesi",
+    "months_other": "{{count}} mesi",
+    "days_one": "{{count}} giorno",
+    "days_many": "{{count}} giorni",
+    "days_other": "{{count}} giorni"
+  },
+  "header": {
+    "title": "Immobile in affitto",
+    "subtitle": "Il flusso di cassa e il conto economico di un appartamento in affitto, il vincolo della sua agevolazione fiscale, le cifre della dichiarazione dei redditi da locazione e gli indicatori per rinegoziare o vendere. Tutto è calcolato dal suo conto bancario, dal piano del suo prestito e dai dati che hai registrato: un dato mancante viene elencato, mai indovinato.",
+    "declare": "Dichiara un immobile",
+    "property": "Immobile",
+    "unlinked": "{{n}} conto/i segnati come \"rental\" non appartengono a nessun immobile: imposta <code>account</code> su un immobile (Modifica i dati)."
+  },
+  "empty": {
+    "title": "Ancora nessun immobile in affitto",
+    "body": "Un immobile in affitto è un attivo di tipo real_estate_rental. Indica il suo conto bancario (scopo \"rental\"), il suo prestito e, per un'agevolazione fiscale, il vincolo che hai firmato.",
+    "flagged": "{{n}} conto/i sono già segnati come \"rental\"."
+  },
+  "tabs": {
+    "label": "Sezioni dell'immobile in affitto",
+    "cashflow": "Flusso di cassa e risultato",
+    "scheme": "Vincolo dell'agevolazione",
+    "tax": "Anno fiscale",
+    "sell": "Rinegoziare o vendere",
+    "decide": "da decidere"
+  },
+  "status": {
+    "received": "affitto ricevuto",
+    "missing": "nessun affitto",
+    "partial": "affitto parziale",
+    "latePaid": "pagato in ritardo",
+    "declaredVacancy": "sfitto dichiarato",
+    "unknown": "dati incompleti",
+    "notLetYet": "non ancora affittato"
+  },
+  "link": {
+    "declared": "impostato sull'immobile",
+    "onlyOne": "l'unico conto per l'affitto (confermalo)",
+    "none": "non collegato",
+    "unknown": "non trovato nei dati",
+    "asset": "indicato dal prestito",
+    "account": "addebitato sul conto dell'immobile"
+  },
+  "state": {
+    "unknown": "sconosciuto",
+    "notStarted": "non iniziato",
+    "active": "in corso",
+    "ended": "terminato"
+  },
+  "decision": {
+    "extend": "prorogare",
+    "notExtend": "non prorogare",
+    "undecided": "non deciso"
+  },
+  "cashflow": {
+    "emptyTitle": "Ancora nessun mese chiuso con dati per questo immobile",
+    "empty": "Collega il suo conto bancario (Modifica i dati, campo \"account\"), oppure etichetta i pagamenti fatti da un altro conto con <code>{{tag}}</code>.",
+    "title": "Ultimi dodici mesi chiusi",
+    "subtitle": "Un flusso di cassa: il capitale rimborsato del prestito conta come uscita. Lo sforzo di risparmio è quanto hai dovuto aggiungere ogni mese quando l'affitto non copriva i costi.",
+    "rentExpected": "Affitto atteso",
+    "rentDeclared": "l'affitto che hai dichiarato",
+    "rentMedian": "mediana degli affitti visti",
+    "averageNet": "Netto mensile medio",
+    "overMonths": "su {{n}} mese/i completo/i",
+    "noCompleteMonth": "ancora nessun mese completo",
+    "averageEffort": "Sforzo di risparmio mensile medio",
+    "outOfPocket": "di tasca tua",
+    "occupancy": "Occupazione",
+    "occupancyHint": "{{missing}} mese/i senza affitto, {{declared}} dichiarato/i",
+    "flowsToLabel": "{{n}} movimento/i del conto dell'immobile non sono in nessuna categoria dell'immobile e restano in \"altri movimenti\". Etichettali con un'annotazione della memoria (affitto, prestito, spese, imposte, commissioni, assicurazione, lavori), oppure etichetta un costo pagato da un altro conto con <code>{{tag}}</code>."
+  },
+  "links": {
+    "title": "Immobile {{id}}",
+    "account": "conto: {{value}}",
+    "loan": "prestito: {{value}}",
+    "scheme": "agevolazione: {{value}}",
+    "recorded": "registrata",
+    "missing": "{{n}} dato/i mancante/i",
+    "hint": "Collega il conto e il prestito per avere il flusso di cassa completo, gli interessi per la dichiarazione e il valore netto."
+  },
+  "table": {
+    "month": "Mese",
+    "rent": "Affitto",
+    "loan": "Prestito",
+    "otherCosts": "Altri costi",
+    "net": "Netto",
+    "effort": "Sforzo",
+    "rentStatus": "Stato dell'affitto",
+    "partialTitle": "i dati del conto non coprono tutto il mese",
+    "partialNote": "* i dati bancari non coprono tutto il mese: le sue cifre sono più chiare nel grafico e non entrano nelle medie."
+  },
+  "vacancy": {
+    "title": "Sfitto",
+    "subtitle": "Un mese senza l'affitto atteso, una volta che l'immobile è affittato. I mesi non coperti dai dati non vengono mai contati.",
+    "declare": "Dichiara uno sfitto",
+    "none": "Nessun mese senza affitto da quando l'immobile è affittato ({{n}} mese/i seguiti).",
+    "declared": "dichiarato",
+    "thisMonth": "questo mese",
+    "late": "l'affitto di {{month}} non è ancora arrivato"
+  },
+  "pnl": {
+    "title": "Risultato {{year}}",
+    "months": "{{n}} mese/i chiuso/i",
+    "monthsIncomplete": "{{n}} mese/i chiuso/i: non è un anno completo",
+    "year": "Anno",
+    "row": {
+      "rent": "Affitti incassati",
+      "loan": "Rate del prestito",
+      "charges": "Spese condominiali",
+      "fees": "Spese di gestione",
+      "taxes": "Imposta sull'immobile",
+      "insurance": "Assicurazioni (PNO, GLI)",
+      "works": "Lavori e riparazioni",
+      "other": "Altri movimenti"
+    },
+    "net": "Risultato netto di cassa",
+    "effortWithAverage": "Sforzo di risparmio: <total/> (circa <average/> al mese). I tuoi bonifici verso il conto (<owner/>) non sono affitti.",
+    "effort": "Sforzo di risparmio: <total/>. I tuoi bonifici verso il conto (<owner/>) non sono affitti.",
+    "loanSplit": "Prestito dell'anno secondo il suo piano: interessi <interest/>, assicurazione del mutuatario <insurance/>, capitale <principal/>.",
+    "economic": "Risultato se il capitale rimborsato non è un costo: <result/>.",
+    "grossYield": "Rendimento lordo sul valore che hai dichiarato: {{pct}} %.",
+    "notCovered": "Non coperti del tutto dai dati del conto: {{months}}.",
+    "noData": "Mesi chiusi senza alcun dato: {{months}}."
+  },
+  "scheme": {
+    "emptyTitle": "Nessuna agevolazione registrata per questo immobile",
+    "record": "Registra l'agevolazione",
+    "empty": "Indica il nome dell'agevolazione, l'inizio del vincolo e la sua durata in anni (6, 9 o 12 per un'agevolazione di tipo Pinel); la data di fine e i suoi promemoria seguono. Il tetto dell'affitto e il limite di reddito dell'inquilino sono le cifre che leggi nel tuo atto: niente viene cercato.",
+    "title": "{{scheme}}: vincolo",
+    "fallbackName": "Agevolazione",
+    "subtitle": "La data di fine conta il vincolo dalla sua data di inizio; verificala con il tuo atto."
+  },
+  "rentCap": {
+    "title": "Tetto dell'affitto",
+    "subtitle": "Le tue cifre: il tetto dichiarato rispetto all'affitto",
+    "notChecked": "Non verificato: registra un tetto dell'affitto e l'affitto del contratto.",
+    "above": "sopra il tetto",
+    "within": "entro il tetto",
+    "compare": "affitto <rent/> rispetto a un tetto di <cap/>",
+    "basis": "Affitto: {{rent}}. Tetto: {{cap}}."
+  },
+  "tenantIncome": {
+    "title": "Reddito dell'inquilino",
+    "subtitle": "Il limite e il reddito che hai dichiarato",
+    "notChecked": "Non verificato: registra il limite di reddito e il reddito di riferimento dell'inquilino.",
+    "above": "sopra il limite",
+    "within": "entro il limite",
+    "compare": "<income/> rispetto a un limite di <limit/>"
+  },
+  "missingFacts": {
+    "title": "Dati che il coach non conosce",
+    "subtitle": "Mai indovinati: registrali, o lascia che il coach te li chieda (Memoria > Domande).",
+    "neededFor": "per {{what}}"
+  },
+  "schemeBody": {
+    "start": "Inizio",
+    "length": "Durata",
+    "years_one": "{{count}} anno",
+    "years_many": "{{count}} anni",
+    "years_other": "{{count}} anni",
+    "end": "Fine",
+    "left": "Rimanente",
+    "progress": "Parte del vincolo trascorsa",
+    "extension": "proroga: {{decision}}",
+    "extensionYears": "{{n}} anno/i",
+    "extensionYearsDecided": "{{n}} anno/i, deciso il {{date}}",
+    "recordDecision": "Registra la decisione",
+    "reminders": "Promemoria finché non è registrata una decisione: {{list}}. Passano dagli avvisi (tipo \"Fine del vincolo dell'agevolazione sull'affitto\"); un messaggio esterno dice solo che esiste un avviso.",
+    "reminder": "{{n}} mesi prima ({{date}})"
+  },
+  "extension": {
+    "saved": "Decisione registrata",
+    "title": "Decisione alla fine del vincolo",
+    "description": "Registrata nella memoria (con il suo storico); i promemoria si fermano quando una decisione è registrata.",
+    "decision": "Decisione",
+    "option": {
+      "extend": "Proroga il vincolo",
+      "notExtend": "Non prorogare",
+      "undecided": "Non ancora deciso"
+    },
+    "years": "Proroga (anni)",
+    "rate": "Aliquota di riduzione aggiuntiva della proroga (%)",
+    "rateHint": "come la indica l'agevolazione, facoltativa"
+  },
+  "vacancyDialog": {
+    "saved": "Sfitto registrato",
+    "title": "Dichiara uno sfitto",
+    "description": "Un periodo in cui sai che l'immobile non era affittato (lavori, tra due inquilini). I mesi che copre non vengono segnalati come affitto mancante.",
+    "from": "Dal",
+    "to": "Al (vuoto: ancora sfitto)"
+  },
+  "tax": {
+    "incomeYear": "Anno dei redditi",
+    "declaredNextSpring": "I redditi di un anno si dichiarano nella primavera successiva.",
+    "notModelled": "Non modellato",
+    "candidates": "Importi candidati per la dichiarazione dei redditi da locazione, calcolati dai movimenti bancari: non è una dichiarazione, non viene inviato nulla, non è una consulenza fiscale.",
+    "notCovered": "L'anno non è coperto del tutto dal conto dell'immobile{{details}}: le cifre sono un minimo per gli affitti e per i costi.",
+    "partialMonths": " (parziali: {{months}})",
+    "noDataMonths": " (senza dati: {{months}})",
+    "grossRents": "Affitti lordi",
+    "micro": {
+      "title": "Micro-foncier",
+      "subtitle": "Abbattimento forfettario del {{pct}} % sugli affitti lordi",
+      "abatement": "Abbattimento",
+      "taxable": "Imponibile (candidato)",
+      "overCeiling": "Gli affitti lordi della famiglia (<rents/>) superano il tetto (<ceiling/>): questo regime non si applicherebbe."
+    },
+    "reel": {
+      "title": "Regime réel",
+      "subtitle": "Affitti lordi meno i costi che la dichiarazione permette di dedurre",
+      "net": "Netto (candidato)",
+      "unknown": "Sconosciuto: {{what}}"
+    },
+    "lower": {
+      "title": "Quale è più basso?",
+      "subtitle": "L'imponibile più basso tra i due candidati; la scelta di un regime ha conseguenze su più anni: verifica con l'ufficio delle imposte o un consulente.",
+      "text": "Il <b>{{regime}}</b> dà l'imponibile più basso ({{reel}} contro {{micro}}; differenza <difference/>).",
+      "reel": "regime réel",
+      "micro": "micro-foncier"
+    },
+    "documents": {
+      "title": "Documenti da raccogliere",
+      "subtitle": "Una lista di controllo per te (non salvata)"
+    }
+  },
+  "reduction": {
+    "title": "Riduzione dell'agevolazione (candidata)",
+    "subtitle": "Calcolata dal prezzo e dall'aliquota totale che hai dichiarato; una riduzione d'imposta, non una deduzione dal reddito da locazione",
+    "forYear": "Per il {{year}}: <b><amount/></b>.",
+    "forYearOutside": "Per il {{year}}: <b><amount/></b> (l'anno è fuori dal vincolo).",
+    "calc": "{{rate}} % di <base/> = <total/> ripartiti su {{n}} anno/i, dal {{first}} al {{last}}."
+  },
+  "market": {
+    "title": "Tasso di mercato",
+    "subtitle": "Un tasso che hai trovato per un prestito di durata simile (un tuo preventivo, un comparatore). Il coach non lo cerca mai.",
+    "rate": "Tasso di mercato (%)",
+    "asOf": "Alla data del",
+    "fees": "Spese di un nuovo prestito (EUR)",
+    "feesHint": "banca + garanzia, facoltative",
+    "remember": "Ricorda questo tasso"
+  },
+  "vsMarket": {
+    "title": "Tasso del prestito rispetto al mercato",
+    "yourLoan": "Il tuo prestito",
+    "gap": "mercato {{market}} %, scarto {{gap}} punto/i",
+    "enterRate": "inserisci un tasso di mercato"
+  },
+  "commitmentEnd": {
+    "title": "Fine del vincolo",
+    "state": "Stato",
+    "ends": "termina il {{date}}",
+    "endsAbout_one": "termina il {{date}}, tra circa {{count}} mese",
+    "endsAbout_many": "termina il {{date}}, tra circa {{count}} mesi",
+    "endsAbout_other": "termina il {{date}}, tra circa {{count}} mesi",
+    "recordStart": "registra l'inizio e la durata"
+  },
+  "equity": {
+    "title": "Valore netto",
+    "subtitle": "Valore dichiarato − capitale ancora dovuto, prima di costi di vendita, penali e imposte",
+    "hint": "valore {{value}} − capitale dovuto {{due}} ({{pct}} % del valore)",
+    "unknown": "Sconosciuto: mancano {{fields}}."
+  },
+  "renegotiation": {
+    "title": "Rinegoziazione sul piano reale",
+    "subtitle": "Una stima con le spese che hai indicato (nessuna di default): la tua banca o un mediatore ti danno le cifre vincolanti",
+    "instalment": "Rata",
+    "perMonth": "EUR al mese",
+    "costs": "Costi",
+    "penalty": "penale {{amount}}",
+    "netSaving": "Risparmio netto",
+    "breakEven": "Pareggio",
+    "never": "mai"
+  },
+  "indicators": {
+    "title": "Indicatori",
+    "subtitle": "Sforzo di risparmio recente: {{amount}} al mese",
+    "none": "Ancora nessun indicatore: registra il prestito, la valutazione, il vincolo e un tasso di mercato."
+  },
+  "marketDialog": {
+    "saved": "Tasso di mercato registrato",
+    "title": "Ricorda questo tasso di mercato",
+    "description": "Scritto sull'immobile nella memoria con la sua data; dopo 30 giorni viene segnalato come forse non aggiornato.",
+    "source": "Da dove viene? (facoltativo)",
+    "sourcePlaceholder": "un preventivo, un comparatore, una data"
+  },
+  "facts": {
+    "saved": "Dati salvati",
+    "title": "Dati dell'immobile",
+    "description": "Viene scritto solo quello che cambi (i campi vuoti restano come sono). Sono le TUE cifre, dall'atto e dalla tabella dell'agevolazione: il coach non le cerca mai.",
+    "invalid": "Valore non valido: {{fields}}.",
+    "field": {
+      "account": "Conto bancario (uid o etichetta)",
+      "loan": "Id del prestito",
+      "value": "Valore oggi (EUR)",
+      "asOf": "Valore al",
+      "rentMonthly": "Affitto mensile del contratto (EUR)",
+      "purchasePrice": "Prezzo di acquisto (EUR)",
+      "purchaseDate": "Data di acquisto",
+      "scheme": "Nome dell'agevolazione",
+      "commitmentStart": "Inizio del vincolo",
+      "commitmentYears": "Durata del vincolo (anni)",
+      "surface": "Superficie (m²)",
+      "rentCapM2": "Tetto dell'affitto al m² (EUR al mese)",
+      "rentCapMonthly": "Tetto dell'affitto mensile (EUR)",
+      "tenantIncomeLimit": "Limite di reddito dell'inquilino (EUR all'anno)",
+      "tenantIncome": "Reddito di riferimento dell'inquilino (EUR all'anno)",
+      "reductionRate": "Aliquota totale di riduzione sul vincolo (%)",
+      "reductionBaseCap": "Tetto del prezzo ammesso (EUR)",
+      "reductionFirstYear": "Primo anno fiscale della riduzione"
+    },
+    "hint": {
+      "account": "il suo scopo dovrebbe essere rental (pagina Famiglia)",
+      "loan": "il file del prestito che l'ha finanziato",
+      "scheme": "per es. il nome sul tuo atto: testo libero",
+      "commitmentStart": "AAAA-MM-GG, il primo contratto",
+      "commitmentYears": "6, 9 o 12 per un'agevolazione di tipo Pinel",
+      "rentCapM2": "come l'hai calcolato dalla tabella dell'agevolazione",
+      "rentCapMonthly": "prevale sul tetto al m²",
+      "reductionRate": "dalla tabella dell'agevolazione",
+      "reductionBaseCap": "facoltativo, come lo indica l'agevolazione"
+    }
+  },
+  "declare": {
+    "saved": "Immobile dichiarato",
+    "title": "Dichiara un immobile in affitto",
+    "description": "Un attivo di tipo real_estate_rental nella tua memoria. Aggiungi poi l'agevolazione e gli altri dati (Modifica i dati).",
+    "submit": "Dichiara",
+    "id": "Id",
+    "idHint": "lettere minuscole, cifre, - o _ (nessun indirizzo)",
+    "account": "Conto bancario (facoltativo)",
+    "accountHint": "uid o etichetta",
+    "loan": "Id del prestito (facoltativo)"
+  }
+}

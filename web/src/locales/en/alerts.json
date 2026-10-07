@@ -1,0 +1,113 @@
+{
+  "title": "Alerts",
+  "subtitle": "Important events: a bank consent about to expire, a sync that keeps failing, an unusual charge, a price rise, a balance that may run short. Acknowledging, snoozing and muting only change what you see here and what gets sent.",
+  "checkNow": "Check now",
+  "notReady": "Alerts are not set up yet",
+  "checked": "Checked",
+  "checkedBody": "{{new}} new, {{escalated}} escalated, {{resolved}} resolved. Nothing was sent outside the app.",
+  "disabled": "Alerts are switched off in config.toml ([alerts] enabled = false): nothing is evaluated.",
+  "toast": {
+    "acknowledged": "Acknowledged",
+    "snoozed": "Snoozed for 7 days",
+    "restored": "Restored",
+    "kindMuted": "Kind muted",
+    "updated": "Updated"
+  },
+  "filter": {
+    "status": "Status",
+    "openCount": "Open {{count}}",
+    "severity": "Severity",
+    "kind": "Kind",
+    "all": "All"
+  },
+  "status": {
+    "open": "Open",
+    "snoozed": "Snoozed",
+    "acked": "Acknowledged",
+    "suppressed": "Suppressed"
+  },
+  "severity": {
+    "high": "high",
+    "medium": "medium",
+    "low": "low"
+  },
+  "severityOption": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "empty": {
+    "openTitle": "No open alert",
+    "openBody": "New alerts appear after each daily run, or press Check now.",
+    "snoozed": "Nothing snoozed",
+    "acked": "Nothing acknowledged",
+    "suppressed": "Nothing suppressed",
+    "body": "Nothing in this list."
+  },
+  "list": "Alerts",
+  "event": {
+    "new": "new",
+    "snoozedUntil": "snoozed until {{date}}",
+    "acknowledged": "acknowledged",
+    "suppressed": "suppressed",
+    "suppressedTitle": "Below your minimum severity, or its kind is muted: kept here, never sent.",
+    "escalated": "escalated",
+    "escalatedTitle": "Its severity went up since it was first seen",
+    "resolved": "resolved",
+    "resolvedTitle": "The situation no longer exists",
+    "firstSeen": "First seen {{date}}",
+    "firstSeenSent": "First seen {{date}} · sent to {{channels}}",
+    "acknowledge": "Acknowledge",
+    "snooze": "Snooze 7 days",
+    "restore": "Restore",
+    "muteKind": "Mute this kind",
+    "muteKindTitle": "Stop alerts of this kind ({{kind}}) until you unmute it"
+  },
+  "kinds": {
+    "title": "Kinds of alert",
+    "subtitle": "Mute one you do not want, or hold it for a week. Thresholds and per-kind switches live in config.toml ([alerts]).",
+    "offInConfig": "off in config",
+    "offInConfigTitle": "[alerts] disabled_kinds in config.toml",
+    "digestOnly": "digest only",
+    "digestOnlyTitle": "[alerts] digest_only_kinds: shown here and in the weekly summary, never sent one by one",
+    "muted": "muted",
+    "heldUntil": "held until {{date}}",
+    "unmute": "Unmute",
+    "unmuteAria": "Unmute {{kind}}",
+    "mute": "Mute",
+    "muteAria": "Mute {{kind}}",
+    "wake": "Wake",
+    "wakeAria": "Wake {{kind}}",
+    "hold": "Hold 7 days",
+    "holdAria": "Hold {{kind}} for 7 days"
+  },
+  "channels": {
+    "title": "Channels",
+    "subtitle": "Read-only. The in-app feed is always on; every other channel is off until you enable it in config.toml.",
+    "list": "Channels",
+    "macos": "macOS notification",
+    "email": "E-mail (SMTP)",
+    "sentLastWeek_one": "{{count}} message in the last 7 days",
+    "sentLastWeek_other": "{{count}} messages in the last 7 days",
+    "ready": "ready",
+    "notReady": "not ready",
+    "off": "off",
+    "test": "Test (dry run)",
+    "testAria": "Preview a test message for {{channel}} (dry run)",
+    "privacyMinimal": "Messages to ntfy, e-mail and Telegram are <strong>{{detail}}</strong>: only a count (\"2 new alerts, 1 high. Open the app.\"), no amount, name or merchant.",
+    "privacyOther": "Messages to ntfy, e-mail and Telegram are <strong>{{detail}}</strong>: the kind of alert and an amount rounded to 10 EUR, never a name, merchant, bank or IBAN.",
+    "limits": "Minimum severity {{severity}}, at most {{max}} messages a week per channel.",
+    "limitsQuiet": "Minimum severity {{severity}}, at most {{max}} messages a week per channel, quiet hours {{quiet}}.",
+    "testTitle": "Test message: {{channel}}",
+    "close": "Close",
+    "dryRun": "Dry run: nothing was sent",
+    "dryRunBody": "{{sample}}. This is exactly what a send would contain; secrets are masked.",
+    "disabledInConfig": "This channel is disabled in config.toml, so a real test would not send either."
+  },
+  "digest": {
+    "title": "Weekly summary",
+    "subtitle": "Built by the app from your data every week (nothing is written by a model) and put in Insights.",
+    "hide": "Hide the preview",
+    "show": "Preview this week's summary"
+  }
+}

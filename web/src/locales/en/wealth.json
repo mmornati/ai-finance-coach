@@ -1,0 +1,117 @@
+{
+  "header": {
+    "title": "Loans & net worth",
+    "subtitle": "What you own, what you owe, and what is still unknown. Nothing is estimated: a missing figure stays missing.",
+    "addLoan": "Add a loan"
+  },
+  "summary": {
+    "netWorth": "Net worth",
+    "netWorthKnownPart": "Net worth, known part only",
+    "itemsNotCounted_one": "{{count}} item not counted",
+    "itemsNotCounted_other": "{{count}} items not counted",
+    "notFullPicture": "This is not the full picture",
+    "bankBalances": "Bank balances",
+    "accounts_one": "{{count}} account",
+    "accounts_other": "{{count}} accounts",
+    "manualAssets": "Manual assets (counted)",
+    "withValue": "{{n}} with a value",
+    "owedKnown": "Owed (known)",
+    "loansCounted_one": "{{counted}} of {{count}} loan",
+    "loansCounted_other": "{{counted}} of {{count}} loans",
+    "notCountedUnknown": "Not counted because unknown",
+    "unknownItem": "{{kind}}: {{label}}",
+    "toRefresh": "Values to refresh: {{ids}}."
+  },
+  "history": {
+    "title": "Net worth over time",
+    "subtitle": "Recorded after each sync, and rebuilt for past months from the bank balances (bank accounts only), the loan schedules and each manual asset from its own date.",
+    "recordToday": "Record today",
+    "snapshotRecorded": "Snapshot recorded",
+    "emptyTitle": "No history yet",
+    "empty": "Press \"Record today\" to store a snapshot; the past months are rebuilt where the data allow it.",
+    "partial": "{{partial}} of {{total}} months are the known part only: lighter bars and hollow dots mark the months where some item had no value that month (hover for which). A manual asset counts only from the date of its recorded value: a dashed line marks the month a value is first counted, where the total jumps without any change in wealth.",
+    "caveat": "Rebuilt months use booked transactions while some balances are available / expected ones, so they can differ slightly from the bank's figure."
+  },
+  "breakdown": {
+    "byCategory": "By category",
+    "byPerson": "By person",
+    "unassigned": "Not assigned to a person",
+    "nUnknown_one": "({{count}} unknown)",
+    "nUnknown_other": "({{count}} unknown)",
+    "category": {
+      "cash": "Cash",
+      "savings": "Savings",
+      "investments": "Investments",
+      "realEstate": "Real estate",
+      "vehicles": "Vehicles",
+      "other": "Other",
+      "liabilities": "Owed"
+    }
+  },
+  "loans": {
+    "emptyTitle": "No loan on file",
+    "empty": "Mortgage, car loan or lease: the forecast and the savings rate get more accurate with them.",
+    "addFirst": "Add your first loan",
+    "kind": {
+      "mortgage": "Mortgage",
+      "carLoan": "Car loan",
+      "loa": "Lease with option (LOA)",
+      "lld": "Long-term lease",
+      "consumerLoan": "Consumer loan",
+      "bnpl": "Buy now, pay later"
+    },
+    "rateType": {
+      "fixed": "fixed",
+      "variable": "variable",
+      "mixed": "mixed"
+    },
+    "details": "Details",
+    "detailsAria": "Details of loan {{id}}",
+    "editAria": "Edit loan {{id}}",
+    "monthlyRent": "Monthly rent",
+    "monthlyPayment": "Monthly payment",
+    "capitalOwed": "Capital owed",
+    "noneLease": "none (a lease)",
+    "capitalDue": "Capital still due",
+    "source": {
+      "schedule": "schedule",
+      "declared": "declared"
+    },
+    "old": "old",
+    "asOf": "as of {{date}}",
+    "nextInstalment": "next instalment {{date}}",
+    "ends": "Ends",
+    "optionPrice": "Option price",
+    "rate": "Rate",
+    "rateValue": "{{rate}} %",
+    "rateWithType": "{{rate}} % {{type}}",
+    "debitedFrom": "Debited from",
+    "lastPayment": "Last bank payment",
+    "paymentNext": "{{date}}, next {{next}}",
+    "paymentsMatched_one": "{{count}} payment matched",
+    "paymentsMatched_other": "{{count}} payments matched",
+    "noMatchingPayment": "no matching payment found",
+    "lease": {
+      "endsIn_one": "Ends in {{count}} day",
+      "endsIn_other": "Ends in {{count}} days",
+      "decide": "Decide between buying the car and returning it.",
+      "overLimit": "About {{km}} km over the limit at the current pace."
+    },
+    "missing": "Missing: {{fields}}.",
+    "canSuggest": "The coach can suggest {{fields}} from the payments (Details > Suggestions).",
+    "openQuestions_one": "{{count}} open question",
+    "openQuestions_other": "{{count}} open questions",
+    "unknown": "unknown"
+  },
+  "assets": {
+    "title": "Assets not synced from a bank",
+    "add": "Asset",
+    "emptyTitle": "No manual asset",
+    "empty": "Savings books, employee savings, property or vehicles.",
+    "syncedFromBank": "synced from a bank",
+    "valueUnknown": "value unknown",
+    "asOf": "as of {{date}}",
+    "refresh": "refresh",
+    "editAria": "Edit {{id}}"
+  }
+}

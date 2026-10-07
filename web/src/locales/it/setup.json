@@ -1,0 +1,90 @@
+{
+  "title": "Configura il coach",
+  "subtitle": "Ciò che il coach non sa ancora della tua famiglia. Ogni modifica è mostrata in anteprima, validata e registrata nella cronologia della memoria.",
+  "progress": "Avanzamento della configurazione",
+  "stepsDone": "{{done}} passaggi completati su {{total}}",
+  "askCoach": "Chiedi al coach di guidarmi",
+  "proposalsHint": "Il coach può solo proporre modifiche: compaiono in Memoria > Proposte e le accetti tu stesso in un terminale. Concludi con <code>uv run coach memory check</code>.",
+  "links": {
+    "household": "Membri",
+    "accounts": "Conti",
+    "loans": "Prestiti",
+    "contracts": "Contratti",
+    "preferences": "Memoria",
+    "budgets": "Budget",
+    "questions": "Domande"
+  },
+  "status": {
+    "done": "fatto",
+    "partial": "in corso",
+    "todo": "da fare",
+    "skipped": "saltato",
+    "blocked": "in attesa"
+  },
+  "missing": {
+    "account": "conto {{account}}: {{fields}} non impostato",
+    "liability": "{{id}} ({{kind}}): {{fields}}",
+    "loanPayments_one": "{{count}} pagamento simile a un prestito senza file del prestito",
+    "loanPayments_many": "{{count}} pagamenti simili a un prestito senza file del prestito",
+    "loanPayments_other": "{{count}} pagamenti simili a un prestito senza file del prestito",
+    "recurring_one": "{{count}} pagamento ricorrente senza file del contratto",
+    "recurring_many": "{{count}} pagamenti ricorrenti senza file del contratto",
+    "recurring_other": "{{count}} pagamenti ricorrenti senza file del contratto",
+    "contract": "contratto {{id}}: {{fields}}",
+    "more": "e altri {{count}}"
+  },
+  "firstRun": {
+    "title": "Primo avvio",
+    "progress": "Avanzamento del primo avvio",
+    "stepsDone": "{{done}} passaggi del primo avvio completati su {{total}}",
+    "steps": "Passaggi del primo avvio",
+    "optional": " (facoltativo)",
+    "next": "Poi, in un terminale (questi passaggi chiedono la tua conferma prima che qualcosa lasci questo computer, quindi la pagina non può eseguirli):",
+    "docker": "In esecuzione in Docker: i comandi girano nel container, non sul tuo computer.",
+    "enableBanking": "Enable Banking: la chiave scaricata è sul tuo computer, quindi montala per questo solo comando:",
+    "enableBankingDocker": "Enable Banking: la chiave scaricata è sul tuo computer, quindi montala per questo solo comando (la procedura ne tiene una copia privata in /config; passale /tmp/eb.pem):"
+  },
+  "preview": {
+    "nothing": "Niente da cambiare.",
+    "write": "Scrivi questa modifica"
+  },
+  "household": {
+    "updated": "Famiglia aggiornata",
+    "intro": "Il paese determina le regole fiscali e di disdetta. I datori di lavoro, le città e le scuole dichiarati sono mascherati in tutto ciò che vede un modello. Scriverne di nuovi li <b>aggiunge</b>; non viene rimosso nulla se non lo segni (dichiarati: {{employers}} datore/i di lavoro, {{places}} luogo/hi, {{schools}} scuola/e).",
+    "country": "Paese",
+    "notChanged": "Non modificato",
+    "france": "Francia",
+    "italy": "Italia",
+    "list": {
+      "employers": "Datore/i di lavoro",
+      "places": "Città dove vivi o lavori",
+      "schools": "Scuola/e o asilo/i"
+    },
+    "add": {
+      "employers": "Aggiungi datori di lavoro",
+      "places": "Aggiungi città dove vivi o lavori",
+      "schools": "Aggiungi scuole o asili"
+    },
+    "declared": {
+      "employers": "Datori di lavoro dichiarati",
+      "places": "Città dichiarate dove vivi o lavori",
+      "schools": "Scuole o asili dichiarati"
+    },
+    "commaSeparated": "separati da virgole",
+    "keep": "Mantieni {{value}}",
+    "remove": "Rimuovi {{value}}",
+    "removingTitle": "Rimozione di termini dichiarati",
+    "removingBody": "Non saranno più mascherati per il modello.",
+    "understand": "Ho capito, rimuovili"
+  },
+  "preferences": {
+    "saved": "Preferenze salvate",
+    "intro": "Queste righe vengono aggiunte a preferences.md, che dice al coach come parlarti (il coach le legge solo se consenti il testo libero in <code>[privacy] model_detail</code>).",
+    "language": "Lingua",
+    "languagePlaceholder": "fr, en o it",
+    "tone": "Tono",
+    "tonePlaceholder": "breve, diretto, prima i numeri",
+    "goals": "Obiettivi",
+    "avoid": "Argomenti da evitare"
+  }
+}

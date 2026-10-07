@@ -1,0 +1,158 @@
+{
+  "kids": {
+    "header": {
+      "title": "Argent des enfants",
+      "subtitle": "Argent de poche, versements supplémentaires et dépenses de chaque enfant. Le versement d'un parent est un virement interne pour le foyer (ni une dépense, ni un revenu), mais c'est un revenu de l'enfant ici."
+    },
+    "period": "Période",
+    "months_one": "{{count}} mois",
+    "months_many": "{{count}} mois",
+    "months_other": "{{count}} mois",
+    "child": "Enfant",
+    "empty": {
+      "title": "Aucun enfant déclaré",
+      "body": "Déclarez un membre avec le rôle enfant (<code>coach memory member add --role child</code>), puis donnez un titulaire à son compte sur la page Foyer."
+    },
+    "cadence": {
+      "weekly": "par semaine",
+      "fortnightly": "toutes les deux semaines",
+      "monthly": "par mois"
+    },
+    "stat": {
+      "balance": "Solde",
+      "unknown": "inconnu",
+      "asOf": "au {{date}}",
+      "noBalance": "aucun solde synchronisé",
+      "noAccount": "l'enfant n'a aucun compte",
+      "pocket": "Argent de poche",
+      "pocketHint": "par mois, sur la période",
+      "extra": "Versements supplémentaires",
+      "credits_one": "{{count}} crédit",
+      "credits_many": "{{count}} crédits",
+      "credits_other": "{{count}} crédits",
+      "ratio": "Argent de poche / supplémentaire",
+      "ratioHint": "argent de poche / supplémentaire",
+      "noCredit": "aucun crédit sur la période",
+      "ratioBar": "Part des crédits qui est de l'argent de poche régulier"
+    },
+    "pocket": {
+      "title": "Argent de poche",
+      "subtitle": "Un crédit régulier : au moins trois versements d'un montant proche, de la même source, au rythme hebdomadaire, bimensuel ou mensuel.",
+      "declare": "Déclarer",
+      "empty": "Aucun versement régulier détecté pour l'instant.",
+      "series_one": "<b><amount/></b> {{cadence}} (source : {{source}}) <muted>· {{count}} versement, dernier le {{last}}</muted>",
+      "series_many": "<b><amount/></b> {{cadence}} (source : {{source}}) <muted>· {{count}} versements, dernier le {{last}}</muted>",
+      "series_other": "<b><amount/></b> {{cadence}} (source : {{source}}) <muted>· {{count}} versements, dernier le {{last}}</muted>",
+      "next": "prochain vers le {{date}}",
+      "declared_one": "Déclaré : {{amount}} {{period}} ; {{count}} crédit correspond.",
+      "declared_many": "Déclaré : {{amount}} {{period}} ; {{count}} crédits correspondent.",
+      "declared_other": "Déclaré : {{amount}} {{period}} ; {{count}} crédits correspondent."
+    },
+    "extra": {
+      "title": "Versements supplémentaires",
+      "subtitle": "Tous les autres crédits, avec leur provenance.",
+      "empty": "Aucun sur la période.",
+      "internal": "virement interne"
+    },
+    "spending": {
+      "title": "Dépenses par catégorie",
+      "subtitle": "{{total}} sur la période · {{avg}} par mois",
+      "empty": "Aucune dépense attribuée à cet enfant sur la période."
+    },
+    "trend": {
+      "title": "Évolution du solde",
+      "subtitle": "Fins de mois, reconstituées à rebours depuis le solde le plus récent (une estimation).",
+      "short": "Pas assez d'historique pour tracer une tendance.",
+      "label": "Solde à chaque fin de mois"
+    },
+    "budgets": {
+      "title": "Budgets",
+      "subtitle": "Limites hebdomadaires ou mensuelles. Des alertes bienveillantes apparaissent uniquement dans le fil d'alertes local : rien sur un enfant n'est jamais envoyé hors de cet ordinateur.",
+      "add": "Budget",
+      "empty": "Aucun budget pour cet enfant.",
+      "thisWeek": "Cette semaine",
+      "thisMonth": "Ce mois-ci",
+      "remove": "Supprimer le budget {{id}}",
+      "confirmRemove": "Supprimer le budget enfant « {{id}} » ?",
+      "removed": "Budget enfant supprimé",
+      "used": "{{id}} utilisé"
+    },
+    "status": {
+      "over": "dépassé",
+      "close": "presque",
+      "ok": "ok"
+    },
+    "pocketDialog": {
+      "title": "Déclarer l'argent de poche",
+      "description": "Le montant qu'un enfant est censé recevoir. Un crédit d'environ ce montant compte comme argent de poche, même avant qu'un rythme soit détecté.",
+      "remove": "Supprimer la déclaration",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saved": "Argent de poche déclaré",
+      "removed": "Déclaration supprimée",
+      "amount": "Montant (EUR)",
+      "every": "Chaque",
+      "week": "semaine",
+      "month": "mois"
+    },
+    "budgetDialog": {
+      "title": "Nouveau budget enfant",
+      "description": "Une limite sur ce que cet enfant dépense ; laissez la catégorie vide pour toutes ses dépenses.",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saved": "Budget enfant enregistré",
+      "id": "Identifiant",
+      "idHint": "lettres minuscules, chiffres, - ou _",
+      "limit": "Limite (EUR)",
+      "period": "Période",
+      "weekly": "Hebdomadaire (du lundi au dimanche)",
+      "monthly": "Mensuelle",
+      "onlyFor": "Uniquement pour",
+      "all": "Toutes les dépenses"
+    }
+  },
+  "kidHome": {
+    "title": "Mon argent",
+    "signOut": "Se déconnecter de ce navigateur",
+    "greeting": "Bonjour {{name}}. Ici, c'est seulement ton argent à toi : tu peux regarder, mais rien ne peut être modifié.",
+    "balance": "Mon solde",
+    "unknown": "inconnu",
+    "asOf": "au {{date}}",
+    "spent": "Dépensé ce mois-ci",
+    "spentHint": "{{amount}} par mois en moyenne",
+    "pocket": {
+      "title": "Argent de poche",
+      "empty": "Pas encore d'argent de poche régulier.",
+      "series": "<b><amount/></b> {{cadence}} (source : {{source}}). Le prochain vers le {{date}}.",
+      "extra": "Argent en plus que tu as reçu : {{total}} ({{sources}}).",
+      "fromSource": "{{source}} : {{amount}}"
+    },
+    "spending": {
+      "title": "Où va mon argent",
+      "empty": "Rien dépensé ces derniers mois."
+    },
+    "trend": {
+      "title": "Mon solde au fil du temps",
+      "subtitle": "Une estimation à la fin de chaque mois.",
+      "label": "Mon solde à chaque fin de mois"
+    },
+    "payments": {
+      "title": "Mes derniers paiements",
+      "empty": "Pas encore de paiement",
+      "emptyBody": "Tes paiements apparaîtront ici."
+    },
+    "budget": {
+      "weekly": "Ma limite de la semaine",
+      "monthly": "Ma limite du mois",
+      "over": "Tu as dépassé cette limite. Pas de souci : regarde-la avec un parent.",
+      "close_one": "Presque au bout : il reste {{left}}, encore {{count}} jour.",
+      "close_many": "Presque au bout : il reste {{left}}, encore {{count}} jours.",
+      "close_other": "Presque au bout : il reste {{left}}, encore {{count}} jours.",
+      "ok_one": "Il reste {{left}}, encore {{count}} jour.",
+      "ok_many": "Il reste {{left}}, encore {{count}} jours.",
+      "ok_other": "Il reste {{left}}, encore {{count}} jours.",
+      "spentOf": "<spent/> sur <limit/>",
+      "used": "Limite utilisée"
+    }
+  }
+}

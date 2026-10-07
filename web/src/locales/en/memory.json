@@ -1,0 +1,161 @@
+{
+  "title": "Memory",
+  "subtitle": "What the coach knows about your household, in plain files you own. Every change is validated, previewed and recorded in a history you can revert.",
+  "tabs": {
+    "label": "Memory sections",
+    "questions": "Questions",
+    "proposals": "Proposals",
+    "household": "Household",
+    "events": "Events",
+    "items": "Loans, contracts, assets",
+    "annotations": "Annotations",
+    "check": "Check",
+    "history": "History"
+  },
+  "questions": {
+    "show": "Show",
+    "filter": {
+      "open": "Open",
+      "answered": "Answered",
+      "dismissed": "Dismissed",
+      "all": "All"
+    },
+    "hint": "An answer is only recorded. Turning it into a memory change is a separate, previewed step.",
+    "emptyTitle": "No question here",
+    "emptyBody": "New questions appear after a sync when the coach finds something it cannot infer.",
+    "answerRecorded": "Answer recorded",
+    "dismissedToast": "Dismissed",
+    "reopened": "Reopened",
+    "atStake": "{{amount}} at stake",
+    "status": {
+      "open": "open",
+      "answered": "answered",
+      "dismissed": "dismissed"
+    },
+    "dismissedNote": "Dismissed: {{note}}",
+    "answer": "Answer",
+    "fillLoan": "Fill in the loan",
+    "openTransactions": "Open transactions",
+    "reason": "Reason (optional)",
+    "dismiss": "Dismiss",
+    "yourAnswer": "Your answer",
+    "answerPlaceholder": "Your answer, in your own words",
+    "cancel": "Cancel",
+    "record": "Record answer",
+    "reopen": "Reopen"
+  },
+  "proposals": {
+    "terminalTitle": "Accepting is done in your terminal, on purpose",
+    "terminalBody": "The coach and document extraction can only propose changes. Nothing is written until <b>you</b> run the accept command shown on each proposal in your own terminal (it shows the same diff and asks for a typed confirmation). This page cannot accept for you, so nothing that reaches this page can write to your memory.",
+    "empty": "No pending proposal",
+    "modified": "modified after creation: it cannot be accepted",
+    "source": "source: “{{snippet}}”",
+    "instructionLike": "instruction-like text",
+    "noChange": "No change.",
+    "suspiciousTitle": "The source contains instruction-like text",
+    "suspiciousBody": "The source (a document, or data the coach read while proposing this) contains text that looks like an instruction. Check these fields yourself before accepting; each needs its own --confirm-field: {{paths}}.",
+    "notApplicable": "Cannot be applied to the file as it is now: {{error}}",
+    "toAccept": "To accept, run this in your own terminal:",
+    "reject": "Reject…"
+  },
+  "reject": {
+    "done": "Proposal rejected",
+    "title": "Reject this proposal?",
+    "keep": "Keep it",
+    "confirm": "Reject",
+    "body": "Nothing is written to your memory. The proposal is closed and cannot be accepted afterwards.",
+    "why": "Why? (optional)"
+  },
+  "household": {
+    "title": "Household members",
+    "subtitle": "Names stay on this machine; the coach sees aliases only.",
+    "add": "Member",
+    "empty": "No member yet",
+    "role": {
+      "adult": "adult",
+      "child": "child"
+    },
+    "born": "born {{year}}",
+    "birthUnknown": "birth year unknown",
+    "seenAs": " · seen as {{aliases}}",
+    "edit": "Edit {{name}}"
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Trips, works and projects. Tag transactions with them to keep their cost out of the usual month.",
+    "add": "Event",
+    "empty": "No event yet",
+    "status": {
+      "planned": "planned",
+      "ongoing": "ongoing",
+      "done": "done"
+    },
+    "noStatus": "no status",
+    "noDates": "no dates",
+    "budget": " · budget {{amount}}",
+    "transactions": "Transactions",
+    "edit": "Edit {{name}}"
+  },
+  "items": {
+    "edit": "Edit {{name}}",
+    "loans": "Loans",
+    "addLoan": "Loan",
+    "perMonth": " · {{amount}}/month",
+    "missing": "missing: {{fields}}",
+    "noLoan": "No loan",
+    "contracts": "Contracts",
+    "addContract": "Contract",
+    "renews": " · renews {{date}}",
+    "noContract": "No contract on file",
+    "noContractBody": "Add the ones behind your subscriptions to see their renewal dates.",
+    "assets": "Assets",
+    "addAsset": "Asset",
+    "asOf": " as of {{date}}",
+    "valueUnknown": "value unknown",
+    "valueOld": "value is old: refresh it",
+    "noAsset": "No asset"
+  },
+  "annotations": {
+    "title": "Annotations",
+    "subtitle": "Rules you taught: which transactions get which category, tags or event. The first match wins.",
+    "emptyTitle": "No annotation",
+    "emptyBody": "Fix a category in Transactions and choose “Remember with a memory annotation”.",
+    "transactions_one": "{{count}} transaction",
+    "transactions_other": "{{count}} transactions",
+    "decided_one": "{{count}} decided",
+    "decided_other": "{{count}} decided",
+    "matched_one": "{{count}} matched",
+    "matched_other": "{{count}} matched",
+    "remove": "Remove {{id}}",
+    "removed": "Annotation removed",
+    "removeTitle": "Remove “{{id}}”?",
+    "follow_one": "{{count}} transaction currently follows it.",
+    "follow_other": "{{count}} transactions currently follow it.",
+    "keep": "Keep",
+    "confirm": "Remove"
+  },
+  "check": {
+    "errors_one": "{{count}} error",
+    "errors_other": "{{count}} errors",
+    "warnings_one": "{{count}} warning",
+    "warnings_other": "{{count}} warnings",
+    "notes_one": "{{count}} note",
+    "notes_other": "{{count}} notes",
+    "consistent": "Memory is consistent",
+    "level": {
+      "error": "error",
+      "warning": "warning",
+      "info": "info"
+    },
+    "line": " · line {{line}}"
+  },
+  "history": {
+    "title": "Change history",
+    "subtitle": "Every write to the memory, whoever made it (you in the app, the CLI, the coach). Reverting is done in a terminal.",
+    "offTitle": "History is off",
+    "offBody": "Set [memory] history = true in config.toml to record changes.",
+    "empty": "No recorded change yet",
+    "view": "View",
+    "toUndo": "To undo this change, run this in your own terminal (reverting is a deliberate, terminal-only action):"
+  }
+}
