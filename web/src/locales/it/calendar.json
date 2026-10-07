@@ -1,0 +1,27 @@
+{
+  "title": "Calendario",
+  "subtitle": "Pagamenti in arrivo, rinnovi, consensi bancari e promemoria. Aggiungilo al calendario del telefono con il download.",
+  "download": "Scarica il file .ics",
+  "previous": "Mese precedente",
+  "next": "Mese successivo",
+  "today": "Oggi",
+  "source": {
+    "recurring": "Pagamento ricorrente",
+    "liability": "Rata del prestito",
+    "contract": "Rinnovo del contratto",
+    "consent": "Consenso bancario",
+    "asset": "Bene da aggiornare"
+  },
+  "pastMonths": "I mesi passati non sono elencati: il calendario guarda avanti da oggi.",
+  "grid": "Calendario {{month}}",
+  "amountTitle": "{{title}} {{amount}} EUR",
+  "more": "+{{n}} altri",
+  "empty": "Niente questo mese",
+  "agenda": "Agenda",
+  "certainty": {
+    "observed": "osservato",
+    "scheduled": "pianificato",
+    "deadline": "scadenza",
+    "assumed": "presunto"
+  }
+}

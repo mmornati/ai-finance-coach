@@ -9,6 +9,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 - Translated into French and Italian: the pages Alerts, Loans & net worth, Rental property, Memory, Set up, Connections, Household, Who pays what, Kids' money, the child's home page, Gold set and AI usage
   (namespaces `alerts`, `wealth`, `rental`, `memory`, `setup`, `connections`, `household`, `kids`, `quality`). Text sent by the server, the `coach ...` commands and the legal terms of a rental scheme stay as they are.
 
+### Added: multi-language web app, part 2 of 5 (see `docs/i18n.md`)
+- The pages Dashboard, Transactions, Categories (with a category's page and Merchants to review), Budgets, Subscriptions & contracts (with the inventory), Calendar, Insights, Ask the coach and "page not found"
+  are translated into French and Italian: one namespace per page area (`dashboard`, `transactions`, `categories`, `budgets`, `subscriptions`, `calendar`, `insights`, `coach`). Text sent by the server is still in English (step 4).
+
 ### Added: multi-language web app, part 1 of 5 (see `docs/i18n.md`)
 - The web app has one **language** setting (English, French, Italian) in the header and the "More" sheet; it replaces the "dates and numbers" selector and sets the interface text, the date / number / money format (`en-GB`, `fr-FR`, `it-IT`) and `<html lang>`.
   The choice is saved in the browser (the former `coach.locale` value is migrated); by default the first supported language of the browser is used, else English.

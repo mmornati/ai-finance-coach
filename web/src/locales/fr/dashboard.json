@@ -1,0 +1,131 @@
+{
+  "title": "Tableau de bord",
+  "subtitle": "Où est l'argent, où il va, et ce qui arrive.",
+  "balances": {
+    "title": "Soldes",
+    "netWorth": "Patrimoine net",
+    "total": "Sur tous les comptes",
+    "withoutBalance_one": "{{count}} compte encore sans solde",
+    "withoutBalance_many": "{{count}} comptes encore sans solde",
+    "withoutBalance_other": "{{count}} comptes encore sans solde",
+    "old": "ancien",
+    "oldTitle_one": "Dernier solde il y a {{count}} jour",
+    "oldTitle_many": "Dernier solde il y a {{count}} jours",
+    "oldTitle_other": "Dernier solde il y a {{count}} jours",
+    "typeTitle": "La banque ne fournit que ce type de solde pour ce compte",
+    "more_one": "+ {{count}} compte plus petit ou plus ancien",
+    "more_many": "+ {{count}} comptes plus petits ou plus anciens",
+    "more_other": "+ {{count}} comptes plus petits ou plus anciens"
+  },
+  "month": {
+    "title": "Ce mois-ci, jusqu'à présent",
+    "progress": "Dépensé par rapport à un mois habituel",
+    "usual_one": "Un mois habituel représente <amount/> (moyenne de {{count}} mois entièrement couvert, dépenses ponctuelles exclues). Le repère indique où nous en sommes dans le mois.",
+    "usual_many": "Un mois habituel représente <amount/> (moyenne de {{count}} mois entièrement couverts, dépenses ponctuelles exclues). Le repère indique où nous en sommes dans le mois.",
+    "usual_other": "Un mois habituel représente <amount/> (moyenne de {{count}} mois entièrement couverts, dépenses ponctuelles exclues). Le repère indique où nous en sommes dans le mois.",
+    "noAverage": "Aucun mois n'est encore entièrement couvert par tous les comptes : il n'y a donc pas de moyenne fiable pour comparer."
+  },
+  "savings": {
+    "title": "Taux d'épargne",
+    "subtitle": "Mois complets uniquement",
+    "emptyTitle": "Pas assez de mois complets",
+    "emptyBody": "Un mois compte dès que chaque compte qui porte des revenus ou des dépenses a tous ses jours.",
+    "over_one": "Sur {{count}} mois",
+    "over_many": "Sur {{count}} mois",
+    "over_other": "Sur {{count}} mois",
+    "netOfIncome": "Solde <net/> pour <income/> de revenus",
+    "saved": "Épargné, au total",
+    "debtService": "Remboursements de prêts, au total",
+    "principal": "Rembourser le capital des prêts (environ <amount/>) constitue aussi du patrimoine : en l'incluant, le taux est de {{rate}}.",
+    "principalUnknown": "Une partie des remboursements est du capital, qui constitue du patrimoine, mais elle ne peut pas être estimée tant que le taux et le capital restant dû des prêts sont inconnus."
+  },
+  "cashflow": {
+    "title": "Flux de trésorerie",
+    "subtitle": "Revenus et dépenses par mois ; les barres plus claires sont les mois que tous les comptes ne couvrent pas entièrement"
+  },
+  "forecast": {
+    "title": "90 prochains jours",
+    "calendar": "Calendrier",
+    "emptyTitle": "Pas encore de prévision",
+    "emptyBody": "Il faut un relevé de solde.",
+    "lowest": "Solde le plus bas attendu <amount/>, vers le {{date}}",
+    "belowZero": "passage sous zéro prévu à partir du {{date}}",
+    "short": "risque de manquer d'argent vers le {{date}}",
+    "allGood": "Aucun compte ne devrait manquer d'argent."
+  },
+  "top": {
+    "title": "Principales catégories ce mois-ci",
+    "subtitle": "Le repère indique un mois habituel pour cette catégorie",
+    "all": "Toutes les catégories",
+    "empty": "Aucune dépense ce mois-ci pour l'instant",
+    "avg": "moy. {{amount}}"
+  },
+  "budgets": {
+    "title": "Budgets",
+    "manage": "Gérer",
+    "emptyTitle": "Pas encore de budget",
+    "emptyBody": "Les suggestions s'appuient sur vos dépenses des derniers mois.",
+    "allOf": "Tout : {{group}}",
+    "used": "Budget {{target}} utilisé"
+  },
+  "upcoming": {
+    "title": "À venir, 14 prochains jours",
+    "calendar": "Calendrier",
+    "empty": "Rien de prévu"
+  },
+  "subsSavings": {
+    "title": "Économies sur les abonnements",
+    "link": "Abonnements",
+    "emptyTitle": "Aucune décision enregistrée",
+    "emptyBody": "Quand vous résiliez ou renégociez un abonnement, enregistrez-le sur la page Abonnements : les données bancaires confirment ensuite l'économie.",
+    "confirmedMonthly": "Économisé par mois, confirmé",
+    "hint": "<since/> depuis les décisions · <yearly/> par an à ce rythme",
+    "claimed": " Annoncé mais non confirmé : <amount/> par mois.",
+    "confirmed_one": "{{count}} confirmée",
+    "confirmed_many": "{{count}} confirmées",
+    "confirmed_other": "{{count}} confirmées",
+    "pending_one": ", {{count}} en attente des données bancaires",
+    "pending_many": ", {{count}} en attente des données bancaires",
+    "pending_other": ", {{count}} en attente des données bancaires",
+    "contradicted_one": ", {{count}} encore prélevée",
+    "contradicted_many": ", {{count}} encore prélevées",
+    "contradicted_other": ", {{count}} encore prélevées"
+  },
+  "alerts": {
+    "title": "Alertes",
+    "open": "Ouvrir",
+    "emptyTitle": "Aucune alerte ouverte",
+    "emptyBody": "Rien ne demande votre attention.",
+    "openCount_one": "{{count}} ouverte",
+    "openCount_many": "{{count}} ouvertes",
+    "openCount_other": "{{count}} ouvertes",
+    "highCount_one": "{{count}} élevée",
+    "highCount_many": "{{count}} élevées",
+    "highCount_other": "{{count}} élevées"
+  },
+  "insights": {
+    "title": "Dernières analyses",
+    "all": "Tout",
+    "emptyTitle": "Tout est calme",
+    "emptyBody": "Rien d'inhabituel à signaler.",
+    "severity": {
+      "high": "gravité élevée",
+      "medium": "gravité moyenne",
+      "low": "gravité faible"
+    }
+  },
+  "questions": {
+    "title": "Questions pour vous",
+    "open_one": "question ouverte : vos réponses rendent les chiffres plus précis",
+    "open_many": "questions ouvertes : vos réponses rendent les chiffres plus précis",
+    "open_other": "questions ouvertes : vos réponses rendent les chiffres plus précis",
+    "none": "Rien à répondre pour l'instant."
+  },
+  "health": {
+    "title": "Connexions",
+    "details": "Détails",
+    "daysLeft": "{{days}} j restants",
+    "manual": "manuel",
+    "memory": "Mémoire : {{errors}} erreur(s), {{warnings}} avertissement(s)"
+  }
+}

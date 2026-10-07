@@ -1,0 +1,27 @@
+{
+  "title": "Calendrier",
+  "subtitle": "Paiements à venir, renouvellements, consentements bancaires et rappels. Ajoutez-le au calendrier de votre téléphone grâce au téléchargement.",
+  "download": "Télécharger le .ics",
+  "previous": "Mois précédent",
+  "next": "Mois suivant",
+  "today": "Aujourd'hui",
+  "source": {
+    "recurring": "Paiement récurrent",
+    "liability": "Échéance de prêt",
+    "contract": "Renouvellement de contrat",
+    "consent": "Consentement bancaire",
+    "asset": "Actif à mettre à jour"
+  },
+  "pastMonths": "Les mois passés ne sont pas affichés : le calendrier regarde vers l'avant à partir d'aujourd'hui.",
+  "grid": "Calendrier {{month}}",
+  "amountTitle": "{{title}} {{amount}} EUR",
+  "more": "+{{n}} de plus",
+  "empty": "Rien ce mois-ci",
+  "agenda": "Agenda",
+  "certainty": {
+    "observed": "observé",
+    "scheduled": "planifié",
+    "deadline": "échéance",
+    "assumed": "supposé"
+  }
+}

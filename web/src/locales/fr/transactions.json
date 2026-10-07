@@ -1,0 +1,59 @@
+{
+  "title": "Transactions",
+  "subtitle": "Toutes les opérations de vos comptes. Cliquez sur l'une d'elles pour voir pourquoi elle a sa catégorie et la changer.",
+  "exportCsv": "Exporter en CSV",
+  "search": "Rechercher des transactions",
+  "searchPlaceholder": "Rechercher un commerçant, une description, une étiquette…",
+  "filters": "Filtres",
+  "preset": {
+    "month": "Ce mois-ci",
+    "prev": "Le mois dernier",
+    "days90": "90 jours",
+    "year": "Cette année"
+  },
+  "filter": {
+    "from": "Du",
+    "to": "Au",
+    "account": "Compte",
+    "allAccounts": "Tous les comptes",
+    "person": "Personne",
+    "anyone": "Tout le monde",
+    "purpose": "Usage du compte",
+    "any": "Tous",
+    "category": "Catégorie",
+    "merchant": "Le commerçant contient",
+    "direction": "Sens",
+    "inAndOut": "Entrées et sorties",
+    "out": "Sorties d'argent",
+    "in": "Entrées d'argent",
+    "amountMin": "Montant à partir de (EUR)",
+    "amountMax": "Montant jusqu'à (EUR)",
+    "tag": "Étiquette",
+    "source": "Décidé par",
+    "anySource": "Toutes les sources",
+    "event": "Événement",
+    "hideTransfers": "Masquer les virements internes",
+    "sort": "Tri",
+    "newest": "Plus récentes d'abord",
+    "oldest": "Plus anciennes d'abord",
+    "largest": "Plus gros montants d'abord",
+    "smallest": "Plus petits montants d'abord",
+    "clear": "Effacer les filtres"
+  },
+  "totals": {
+    "matching": "Correspondantes",
+    "net": "Solde",
+    "in": "Entrées",
+    "out": "Sorties"
+  },
+  "emptyTitle": "Aucune transaction ne correspond",
+  "emptyBody": "Essayez de retirer un filtre.",
+  "loadingMore": "Chargement de la suite",
+  "loadMore": "Charger la suite",
+  "shown": "{{n}} affichées",
+  "row": {
+    "transfer": "virement",
+    "attributedTo": "Attribuée à",
+    "split": "ventilée"
+  }
+}

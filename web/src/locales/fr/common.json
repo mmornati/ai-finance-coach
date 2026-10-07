@@ -672,5 +672,10 @@
       "checklist": "Liste de contrôle pour la restitution",
       "checklistNote": "Liste générale : vérifiez le préavis et les conditions de restitution dans votre propre contrat."
     }
+  },
+  "notFound": {
+    "title": "Cette page n'existe pas",
+    "back": "Retour au tableau de bord",
+    "body": "Vérifiez l'adresse, ou utilisez le menu."
   }
 }

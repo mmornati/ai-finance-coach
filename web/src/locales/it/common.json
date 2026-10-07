@@ -672,5 +672,10 @@
       "checklist": "Lista di controllo per la restituzione",
       "checklistNote": "Lista generale: verifica il preavviso e le condizioni di restituzione nel tuo contratto."
     }
+  },
+  "notFound": {
+    "title": "Questa pagina non esiste",
+    "back": "Torna alla panoramica",
+    "body": "Controlla l'indirizzo, oppure usa il menu."
   }
 }
