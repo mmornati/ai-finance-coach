@@ -13,6 +13,7 @@ import datetime as dt
 import hashlib
 
 from coach.analytics.common import money_str
+from coach.i18n_msg import server_msg, server_msg_or_none
 from coach.skills import cancel as C
 from coach.subs import decisions as DEC, usage as U
 
@@ -38,16 +39,23 @@ def subscription_cards(ds, rec) -> list[dict]:
         paying = None if series is None else series.status == "active"
         for sg in U.signals(u, paying=paying, today=today, last_payment=series.last_date if series else None):
             if sg["kind"] == "unused_60_days":
+                title = f"{label}: unused for {sg['days']} days"
+                body = (f"You recorded {sg['last_used']} as the last time you used it ({sg['days']} days ago). This comes from "
+                        "your own record, not from the bank data. Worth reviewing whether to keep it.")
                 cards.append({"id": _iid("sub-unused", c.id, sg["last_used"]), "kind": "subscription", "subtype": "unused", "severity": "medium",
-                              "title": f"{label}: unused for {sg['days']} days",
-                              "body": f"You recorded {sg['last_used']} as the last time you used it ({sg['days']} days ago). This comes from "
-                                      "your own record, not from the bank data. Worth reviewing whether to keep it.",
+                              "title": title, "title_msg": server_msg("reminder.unused.title", title, service=label, count=sg["days"]),
+                              "body": body,
+                              "body_msg": server_msg_or_none("reminder.unused.body", body, last_used_date=sg["last_used"], count=sg["days"]),
                               "amount": yearly, "date": today.isoformat(), "subject": label, "evidence": ev, "persist": "ui"})
             else:
-                cards.append({"id": _iid("sub-never", c.id, series.last_date if series else ""), "kind": "subscription", "subtype": "unused",
-                              "severity": "medium", "title": f"{label}: marked 'never used' but still paid",
-                              "body": f"You recorded that you never use it, and the last payment was {series.last_date if series else '?'}. "
-                                      "Worth reviewing whether to keep it.", "amount": yearly, "date": today.isoformat(), "subject": label,
+                last = series.last_date if series else None
+                title = f"{label}: marked 'never used' but still paid"
+                body = (f"You recorded that you never use it, and the last payment was {last if last else '?'}. "
+                        "Worth reviewing whether to keep it.")
+                cards.append({"id": _iid("sub-never", c.id, last or ""), "kind": "subscription", "subtype": "unused",
+                              "severity": "medium", "title": title, "title_msg": server_msg("reminder.neverUsed.title", title, service=label),
+                              "body": body, "body_msg": server_msg("reminder.neverUsed.body", body, last_date=last),
+                              "amount": yearly, "date": today.isoformat(), "subject": label,
                               "evidence": ev, "persist": "ui"})
         try:
             res = C.cancellability_of(c, today, country)
@@ -57,18 +65,36 @@ def subscription_cards(ds, rec) -> list[dict]:
             if dl["kind"] == "window_opens":
                 continue
             left = (dl["date"] - today).days
+            title = f"{label}: last day to give notice in {left} days"
+            body = (f"{dl['date']} is the last day to give notice before it {dl['reference'] if dl['kind'] == 'contract_notice' else 'renews on ' + str(dl['reference_date'])}"
+                    f" ({dl['reference_date']}). Verify with your contract; nothing is cancelled by the coach.")
+            bp = {"notice_date": dl["date"], "reference_date": dl["reference_date"]}
+            if dl["kind"] != "contract_notice":
+                body_msg = server_msg("reminder.notice.bodyAnniversary", body, **bp)
+            elif dl["reference"] == "renews":
+                body_msg = server_msg("reminder.notice.bodyRenews", body, **bp)
+            elif dl["reference"] == "commitment ends":
+                body_msg = server_msg("reminder.notice.bodyCommitmentEnds", body, **bp)
+            else:
+                body_msg = None
             cards.append({"id": _iid("sub-notice", c.id, dl["date"]), "kind": "subscription", "subtype": "notice",
-                          "severity": "high" if left <= 14 else "medium", "title": f"{label}: last day to give notice in {left} days",
-                          "body": f"{dl['date']} is the last day to give notice before it {dl['reference'] if dl['kind'] == 'contract_notice' else 'renews on ' + str(dl['reference_date'])}"
-                                  f" ({dl['reference_date']}). Verify with your contract; nothing is cancelled by the coach.",
+                          "severity": "high" if left <= 14 else "medium", "title": title,
+                          "title_msg": server_msg("reminder.notice.title", title, service=label, count=left),
+                          "body": body, "body_msg": body_msg,
                           "amount": yearly, "date": dl["date"].isoformat(), "subject": label, "evidence": ev, "persist": "ui"})
     for d in ds.decisions:
         v = DEC.verify(d, rec, today)
         who = d.name or d.contract_id or d.series_id
         if v["status"] == "contradicted" or (v["status"] == "pending" and v["check_on"] and v["check_on"] <= today):
+            contradicted = v["status"] == "contradicted"
+            title = f"{who}: " + ("still charged after you " + d.decision if contradicted else "check that it really changed")
+            # the body is the decision's own reason (subs/decisions.py): English only here, the web shows it as it is
             cards.append({"id": _iid("sub-decision", d.id, v["status"]), "kind": "subscription", "subtype": "decision_check",
-                          "severity": "high" if v["status"] == "contradicted" else "medium",
-                          "title": f"{who}: " + ("still charged after you " + d.decision if v["status"] == "contradicted" else "check that it really changed"),
-                          "body": v["reason"], "amount": money_str(d.monthly_saving_c * 12), "date": today.isoformat(), "subject": who,
+                          "severity": "high" if contradicted else "medium",
+                          "title": title,
+                          "title_msg": (server_msg_or_none(f"reminder.decision.stillCharged.{d.decision}", title, service=who) if contradicted
+                                        else server_msg("reminder.decision.check", title, service=who)),
+                          "body": v["reason"], "body_msg": None,
+                          "amount": money_str(d.monthly_saving_c * 12), "date": today.isoformat(), "subject": who,
                           "evidence": [d.series_id] if d.series_id else [], "persist": "ui"})
     return cards

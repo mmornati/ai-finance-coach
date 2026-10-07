@@ -26,6 +26,7 @@ from typing import Optional
 from coach import db as db_mod
 from coach.analytics import api as analytics_api
 from coach.analytics.common import _plain, money_str
+from coach.i18n_msg import strip_msgs
 from coach.loans import history as H, infer as I, loa as LOA, networth as NW, scenario as SC, schedule as S, service as LS
 from coach.memory import proposals as prop_mod, yamlio
 from coach.memory.store import MemoryStore, MemoryStoreError
@@ -80,7 +81,7 @@ def _find(ds, ident: str):
 
 
 def _j(obj) -> str:
-    return json.dumps(_plain(obj), ensure_ascii=False, indent=2)
+    return json.dumps(strip_msgs(_plain(obj)), ensure_ascii=False, indent=2)          # *_msg: the web's only
 
 
 def _m(x) -> str:

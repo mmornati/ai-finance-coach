@@ -114,13 +114,18 @@ def candidate(con, cfg, now: Optional[dt.datetime] = None):
     if not ms["level"]:
         return None
     from coach.alerts.signals import Candidate
+    from coach.i18n_msg import server_msg
     thr = ms["threshold_usd"]
-    return Candidate("llm_usage_high", f"llm-usage:{ms['month']}", ms["level"],
-                     f"LLM usage this month: {ms['cost_usd']:.2f} USD, over the {thr:.2f} USD threshold",
-                     "Open the Usage page or run `coach usage` to see which job costs the most. Subscription calls count at their notional "
-                     "API price" + ("" if ms["include_notional"] else " (not counted: [usage] include_notional = false)")
-                     + ". This alert is shown here only; it is never sent to a channel.",
-                     {"month": ms["month"], "cost_usd": ms["cost_usd"], "threshold_usd": thr, "ratio": ms["ratio"]})
+    title = f"LLM usage this month: {ms['cost_usd']:.2f} USD, over the {thr:.2f} USD threshold"
+    body = ("Open the Usage page or run `coach usage` to see which job costs the most. Subscription calls count at their notional "
+            "API price" + ("" if ms["include_notional"] else " (not counted: [usage] include_notional = false)")
+            + ". This alert is shown here only; it is never sent to a channel.")
+    # USD, not EUR: the costs are params as they are (two decimals), not *_amount
+    return Candidate("llm_usage_high", f"llm-usage:{ms['month']}", ms["level"], title, body,
+                     {"month": ms["month"], "cost_usd": ms["cost_usd"], "threshold_usd": thr, "ratio": ms["ratio"]},
+                     title_msg=server_msg("alert.llmUsage.title", title, cost_usd=f"{ms['cost_usd']:.2f}", threshold_usd=f"{thr:.2f}"),
+                     body_msg=(server_msg("alert.llmUsage.body", body) if ms["include_notional"]
+                               else server_msg("alert.llmUsage.bodyNotionalOff", body)))
 
 
 def format_report(d: dict) -> str:

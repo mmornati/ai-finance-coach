@@ -146,6 +146,25 @@ def describe(c: Consent) -> str:
     return f"{c.bank} ({c.country}): consent {c.status.upper()}, {left} (until {c.valid_until})"
 
 
+def describe_msg(c: Consent, text: str) -> dict | None:
+    """The message of :func:`describe` without its command hint (the alert title, ``text``) for the web: the bank and its country are
+    params, never translated. None for a status the alerts do not show."""
+    from coach.i18n_msg import server_msg, server_msg_or_none
+    p = {"bank": c.bank, "country": c.country}
+    if c.status == "revoked":
+        return server_msg("alert.consent.revoked", text, **p)
+    if c.status == "expired":
+        return server_msg("alert.consent.expired", text, **p)
+    if c.days_left is None:
+        return None
+    if c.status == "unknown":
+        return server_msg("alert.consent.unknown", text, live_status=c.live_status or "", count=int(c.days_left), **p)
+    if c.status in ("expiring", "urgent"):
+        until = (c.valid_until or "")[:10]
+        return server_msg_or_none(f"alert.consent.{c.status}", text, count=int(c.days_left), until_date=until or None, **p)
+    return None
+
+
 def alert_thresholds(c: Consent) -> list[str]:
     """Thresholds a notification should have been sent for ('d14', 'd3', 'expired')."""
     if c.status in DEAD:

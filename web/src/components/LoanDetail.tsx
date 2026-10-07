@@ -6,6 +6,7 @@ import { CopyCommand } from "./CopyCommand";
 import { useDryRun, useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate, fmtNumber, parseMoney } from "@/lib/format";
+import { tServerOr } from "@/i18n/server";
 import type { EditResult, InferredField, LeaseStatus, Liability, LoanAlert, LoanDetail, ScenarioResult, ScheduleRow } from "@/api/types";
 
 type Tab = "schedule" | "payments" | "scenario" | "suggestions" | "lease";
@@ -24,8 +25,8 @@ export function AlertList({ alerts }: { alerts: LoanAlert[] }) {
         <li key={a.id} className="flex gap-2 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <div>
-            <div className="font-medium">{a.title}</div>
-            <div>{a.body}</div>
+            <div className="font-medium">{tServerOr(a.title_msg, a.title)}</div>
+            <div>{tServerOr(a.body_msg, a.body)}</div>
           </div>
         </li>
       ))}

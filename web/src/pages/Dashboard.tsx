@@ -3,9 +3,9 @@ import { Trans, useTranslation } from "react-i18next";
 import { AlertTriangle, ArrowRight, Bell, CalendarClock, CircleHelp, Lightbulb } from "lucide-react";
 import { Async, Badge, Card, Dot, EmptyState, Money, Notice, PageHeader, ProgressBar, Skeleton, Stat } from "@/components/ui";
 import { CashflowChart, ForecastChart, ShareBar } from "@/components/charts";
-import { useAlerts, useBalances, useBudgets, useCashflow, useForecast, useGet, useHealth, useHumanize, useInsights, useMonthCategories, useQuestions, useScoped } from "@/api/hooks";
+import { useAlerts, useBalances, useBudgets, useCashflow, useDisclaimers, useForecast, useGet, useHealth, useHumanize, useInsights, useMonthCategories, useQuestions, useScoped } from "@/api/hooks";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, fmtRelativeDays, parseMoney } from "@/lib/format";
-import { forecastLabel, serverLabel, tServer, tServerList } from "@/i18n/server";
+import { cardText, forecastLabel, serverLabel, tServer, tServerList, tServerOr } from "@/i18n/server";
 import type { CalendarResult, SavingsView } from "@/api/types";
 import { cn } from "@/lib/utils";
 
@@ -322,7 +322,7 @@ export function AlertsCard() {
                 {high > 0 && <Badge tone="neg">{t("alerts.highCount", { count: high })}</Badge>}
               </div>
               <ul className="mt-2 grid gap-1 text-sm">
-                {open.slice(0, 3).map((e) => <li key={e.id} className="truncate">{e.title}</li>)}
+                {open.slice(0, 3).map((e) => <li key={e.id} className="truncate">{tServerOr(e.title_msg, e.title)}</li>)}
               </ul>
             </Link>
           );
@@ -335,6 +335,7 @@ export function AlertsCard() {
 function InsightsCard() {
   const q = useInsights();
   const h = useHumanize();
+  const disclaimers = useDisclaimers();
   const { t } = useTranslation("dashboard");
   return (
     <Card title={t("insights.title")} action={<Link to="/insights" className="text-xs text-accent hover:underline">{t("insights.all")}</Link>}>
@@ -343,12 +344,12 @@ function InsightsCard() {
           if (!d.cards.length) return <EmptyState icon={<Lightbulb className="size-6" />} title={t("insights.emptyTitle")}>{t("insights.emptyBody")}</EmptyState>;
           return (
             <ul className="grid gap-2.5">
-              {d.cards.slice(0, 4).map((c) => (
+              {d.cards.slice(0, 4).map((c) => ({ c, txt: cardText(c, { legacy: h, disclaimer: c.disclaimer, disclaimers }) })).map(({ c, txt }) => (
                 <li key={c.id} className="flex gap-2.5 text-sm">
                   <AlertTriangle className={cn("mt-0.5 size-4 shrink-0", c.severity === "high" ? "text-neg" : c.severity === "medium" ? "text-warn" : "text-faint")} aria-label={t(`insights.severity.${c.severity}`)} />
                   <div className="min-w-0">
-                    <div className="truncate font-medium">{h(c.title)}</div>
-                    <div className="line-clamp-2 text-[13px] text-muted">{h(c.body)}</div>
+                    <div className="truncate font-medium">{txt.title}</div>
+                    <div className="line-clamp-2 text-[13px] text-muted">{txt.body}</div>
                   </div>
                 </li>
               ))}

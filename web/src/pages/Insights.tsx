@@ -7,6 +7,7 @@ import { useDisclaimers, useHumanize, useInsights, useWrite } from "@/api/hooks"
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { cardText } from "@/i18n/server";
 import { CoachText, RefChip, useResolved } from "@/components/CoachText";
 import type { CoachInsight, InsightCard } from "@/api/types";
 
@@ -52,6 +53,7 @@ function CoachCard({ i, act }: { i: CoachInsight; act: (kind: "read" | "done" | 
 export default function Insights() {
   const q = useInsights();
   const h = useHumanize();
+  const disclaimers = useDisclaimers();
   const [filter, setFilter] = useState<"all" | InsightCard["kind"]>("all");
   const { t } = useTranslation("insights");
   const dismiss = useWrite((id: string) => api.post(`/insights/${id}/dismiss`, {}), { success: t("dismissed") });
@@ -80,6 +82,8 @@ export default function Insights() {
                 <ul className="grid gap-3">
                   {cards.map((c) => {
                     const Icon = ICON[c.kind];
+                    // the card's messages in the interface language; humanize() only for an older, English-only text
+                    const txt = cardText(c, { legacy: h, disclaimer: c.disclaimer, disclaimers });
                     return (
                       <li key={c.id}>
                         <Card>
@@ -87,12 +91,12 @@ export default function Insights() {
                             <div className={cn("mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full", c.severity === "high" ? "bg-neg-soft text-neg" : c.severity === "medium" ? "bg-warn-soft text-warn" : "bg-surface-2 text-muted")}><Icon className="size-4" aria-hidden /></div>
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-2">
-                                <h3 className="text-[15px] font-semibold">{h(c.title)}</h3>
+                                <h3 className="text-[15px] font-semibold">{txt.title}</h3>
                                 <Badge tone={c.severity === "high" ? "neg" : c.severity === "medium" ? "warn" : "neutral"}>{t(`severity.${c.severity}`)}</Badge>
                                 <Badge>{t(`kind.${c.kind}`)}</Badge>
                                 {c.snoozed_until && <Badge>{t("coach.snoozedUntil", { date: fmtDate(c.snoozed_until, "dayMonth") })}</Badge>}
                               </div>
-                              <p className="mt-1 text-sm text-muted">{h(c.body)}</p>
+                              <p className="mt-1 text-sm text-muted">{txt.body}</p>
                               <div className="mt-3 flex flex-wrap items-center gap-2">
                                 {c.evidence.length > 0 && !(c.kind === "loan" && c.subtype.startsWith("loa")) && c.kind !== "rental" && <Link className="text-sm text-accent hover:underline" to={`/transactions?tx=${encodeURIComponent(c.evidence[0])}`}>{t("seeTransactions", { count: c.evidence.length })}</Link>}
                                 {c.kind === "budget" && <Link className="text-sm text-accent hover:underline" to="/budgets">{t("openBudgets")}</Link>}

@@ -1,4 +1,68 @@
 {
+  "alert": {
+    "consent": {
+      "revoked": "{{bank}} ({{country}}): consenso REVOCATO",
+      "expired": "{{bank}} ({{country}}): consenso SCADUTO",
+      "unknown_one": "{{bank}} ({{country}}): stato del consenso SCONOSCIUTO (la banca indica {{live_status}}), {{count}} giorno rimasto secondo la data: esegui `coach consents --refresh`",
+      "unknown_many": "{{bank}} ({{country}}): stato del consenso SCONOSCIUTO (la banca indica {{live_status}}), {{count}} giorni rimasti secondo la data: esegui `coach consents --refresh`",
+      "unknown_other": "{{bank}} ({{country}}): stato del consenso SCONOSCIUTO (la banca indica {{live_status}}), {{count}} giorni rimasti secondo la data: esegui `coach consents --refresh`",
+      "expiring_one": "{{bank}} ({{country}}): consenso IN SCADENZA, {{count}} giorno rimasto (fino al {{until_date}})",
+      "expiring_many": "{{bank}} ({{country}}): consenso IN SCADENZA, {{count}} giorni rimasti (fino al {{until_date}})",
+      "expiring_other": "{{bank}} ({{country}}): consenso IN SCADENZA, {{count}} giorni rimasti (fino al {{until_date}})",
+      "urgent_one": "{{bank}} ({{country}}): consenso URGENTE, {{count}} giorno rimasto (fino al {{until_date}})",
+      "urgent_many": "{{bank}} ({{country}}): consenso URGENTE, {{count}} giorni rimasti (fino al {{until_date}})",
+      "urgent_other": "{{bank}} ({{country}}): consenso URGENTE, {{count}} giorni rimasti (fino al {{until_date}})",
+      "reconnect": "Ricollega la banca dall'app (Connessioni) o con `coach reconnect`. Fino ad allora i dati non sono aggiornati."
+    },
+    "kidBudget": {
+      "overWeeklyCategory": "{{name}} ha superato il limite settimanale ({{limit_category}})",
+      "overWeeklyGroup": "{{name}} ha superato il limite settimanale ({{limit_group}})",
+      "overWeeklyAll": "{{name}} ha superato il limite settimanale (tutte le spese)",
+      "overMonthlyCategory": "{{name}} ha superato il limite mensile ({{limit_category}})",
+      "overMonthlyGroup": "{{name}} ha superato il limite mensile ({{limit_group}})",
+      "overMonthlyAll": "{{name}} ha superato il limite mensile (tutte le spese)",
+      "closeWeeklyCategory": "{{name}} è vicino al limite settimanale ({{limit_category}})",
+      "closeWeeklyGroup": "{{name}} è vicino al limite settimanale ({{limit_group}})",
+      "closeWeeklyAll": "{{name}} è vicino al limite settimanale (tutte le spese)",
+      "closeMonthlyCategory": "{{name}} è vicino al limite mensile ({{limit_category}})",
+      "closeMonthlyGroup": "{{name}} è vicino al limite mensile ({{limit_group}})",
+      "closeMonthlyAll": "{{name}} è vicino al limite mensile (tutte le spese)",
+      "overBodyWeekly": "{{spent_amount}} spesi questa settimana su un limite di {{limit_amount}}. Una chiacchierata amichevole, non una ramanzina: guardatelo insieme.",
+      "overBodyMonthly": "{{spent_amount}} spesi questo mese su un limite di {{limit_amount}}. Una chiacchierata amichevole, non una ramanzina: guardatelo insieme.",
+      "closeBodyWeekly_one": "{{spent_amount}} di {{limit_amount}} usati questa settimana, {{count}} giorno rimasto.",
+      "closeBodyWeekly_many": "{{spent_amount}} di {{limit_amount}} usati questa settimana, {{count}} giorni rimasti.",
+      "closeBodyWeekly_other": "{{spent_amount}} di {{limit_amount}} usati questa settimana, {{count}} giorni rimasti.",
+      "closeBodyMonthly_one": "{{spent_amount}} di {{limit_amount}} usati questo mese, {{count}} giorno rimasto.",
+      "closeBodyMonthly_many": "{{spent_amount}} di {{limit_amount}} usati questo mese, {{count}} giorni rimasti.",
+      "closeBodyMonthly_other": "{{spent_amount}} di {{limit_amount}} usati questo mese, {{count}} giorni rimasti.",
+      "unusualTitle": "{{name}}: un pagamento insolitamente alto",
+      "unusualBody": "{{payment_amount}} il {{payment_date}}, molto sopra i pagamenti abituali di {{name}}. Forse vale una parola tranquilla."
+    },
+    "llmUsage": {
+      "title": "Uso dell'IA questo mese: {{cost_usd}} USD, oltre la soglia di {{threshold_usd}} USD",
+      "body": "Apri la pagina Utilizzo o esegui `coach usage` per vedere quale attività costa di più. Le chiamate in abbonamento contano al loro prezzo API teorico. Questo avviso è mostrato solo qui; non viene mai inviato a un canale.",
+      "bodyNotionalOff": "Apri la pagina Utilizzo o esegui `coach usage` per vedere quale attività costa di più. Le chiamate in abbonamento contano al loro prezzo API teorico (non conteggiate: [usage] include_notional = false). Questo avviso è mostrato solo qui; non viene mai inviato a un canale."
+    },
+    "syncFailing": {
+      "title_one": "{{account}}: l'ultima sincronizzazione è fallita",
+      "title_many": "{{account}}: le ultime {{count}} sincronizzazioni sono fallite",
+      "title_other": "{{account}}: le ultime {{count}} sincronizzazioni sono fallite",
+      "body": "Le transazioni di questo conto non sono aggiornate. Esegui `coach health` per vedere l'errore; un consenso scaduto richiede `coach reconnect`."
+    }
+  },
+  "anomaly": {
+    "categorySpike_one": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (z-score robusto {{z}}, {{count}} mese precedente).",
+    "categorySpike_many": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (z-score robusto {{z}}, {{count}} mesi precedenti).",
+    "categorySpike_other": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (z-score robusto {{z}}, {{count}} mesi precedenti).",
+    "categorySpikeUsuallyNothing_one": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (di solito nulla in questa categoria; {{count}} mese precedente).",
+    "categorySpikeUsuallyNothing_many": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (di solito nulla in questa categoria; {{count}} mesi precedenti).",
+    "categorySpikeUsuallyNothing_other": "La spesa in {{spike_category}} a {{spike_month}} è di {{spent_amount}}, contro i {{typical_amount}} abituali al mese (di solito nulla in questa categoria; {{count}} mesi precedenti).",
+    "duplicateCharge_one": "{{payments}} pagamenti di {{payment_amount}} a {{merchant}} in {{count}} giorno (dal {{first_date}} al {{last_date}}).",
+    "duplicateCharge_many": "{{payments}} pagamenti di {{payment_amount}} a {{merchant}} in {{count}} giorni (dal {{first_date}} al {{last_date}}).",
+    "duplicateCharge_other": "{{payments}} pagamenti di {{payment_amount}} a {{merchant}} in {{count}} giorni (dal {{first_date}} al {{last_date}}).",
+    "newMerchant": "Nuovo esercente {{merchant}} (visto per la prima volta il {{first_date}}) con un pagamento di {{payment_amount}}.",
+    "largeTransaction": "Un pagamento di {{payment_amount}} a {{merchant}} il {{payment_date}} è molto sopra i pagamenti abituali in {{usual_category}} (mediana {{median_amount}}, soglia {{threshold_amount}})."
+  },
   "balances": {
     "oneBalance": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca.",
     "mixedTypes_one": "Un saldo per conto, il tipo più contabilizzato fornito dalla banca. {{count}} conto fornisce solo un saldo non contabilizzato ({{accounts}}): il totale mescola tipi diversi.",
@@ -153,6 +217,38 @@
     "yearPartialOngoing_many": "Il {{year}} è parziale: {{count}} mesi completi su {{listed}} elencati, l'anno non è finito (dati fino a {{end_month}}).",
     "yearPartialOngoing_other": "Il {{year}} è parziale: {{count}} mesi completi su {{listed}} elencati, l'anno non è finito (dati fino a {{end_month}})."
   },
+  "insight": {
+    "anomaly": {
+      "categorySpike": "Picco di spesa",
+      "duplicateCharge": "Possibile addebito doppio",
+      "newMerchant": "Nuovo esercente",
+      "largeTransaction": "Pagamento importante"
+    },
+    "budget": {
+      "overCategory": "Budget {{budget_category}}: superato",
+      "overGroup": "Budget {{budget_group}} (tutto il gruppo): superato",
+      "atRiskCategory": "Budget {{budget_category}}: verso il superamento",
+      "atRiskGroup": "Budget {{budget_group}} (tutto il gruppo): verso il superamento",
+      "body": "{{spent_amount}} spesi su {{available_amount}} a {{budget_month}}; previsti {{projected_amount}} a fine mese."
+    },
+    "forecast": {
+      "negative": "{{account}}: saldo previsto negativo",
+      "negativeHousehold": "Famiglia: saldo previsto negativo",
+      "atRisk": "{{account}}: saldo a rischio",
+      "atRiskHousehold": "Famiglia: saldo a rischio",
+      "bodyNegative": "Saldo previsto sotto zero dal {{negative_date}}.",
+      "bodyNegativeLowest": "Saldo previsto sotto zero dal {{negative_date}}. Punto più basso atteso: {{low_amount}} il {{low_date}}.",
+      "bodyAtRisk": "Potresti restare a corto verso il {{risk_date}} (parte bassa della forbice).",
+      "bodyAtRiskLowest": "Potresti restare a corto verso il {{risk_date}} (parte bassa della forbice). Punto più basso atteso: {{low_amount}} il {{low_date}}.",
+      "bodyLowest": "Punto più basso atteso: {{low_amount}} il {{low_date}}."
+    },
+    "priceChange": {
+      "up": "{{service}}: prezzo in aumento del {{change_pct}}",
+      "down": "{{service}}: prezzo in calo del {{change_pct}}",
+      "body": "{{old_amount}} → {{new_amount}} per pagamento ({{cadence}}), circa {{yearly_amount}} all'anno.",
+      "bodyUnconfirmed": "{{old_amount}} → {{new_amount}} per pagamento ({{cadence}}), circa {{yearly_amount}} all'anno (non ancora confermato da un secondo pagamento)."
+    }
+  },
   "labels": {
     "alertKind": {
       "consent": "Consenso bancario in scadenza o scaduto",
@@ -229,6 +325,15 @@
       "rental": "Affitto",
       "kids": "Figli",
       "savings": "Risparmio"
+    },
+    "cadence": {
+      "weekly": "settimanale",
+      "biweekly": "ogni 2 settimane",
+      "monthly": "mensile",
+      "bimonthly": "ogni 2 mesi",
+      "quarterly": "trimestrale",
+      "semiannual": "semestrale",
+      "yearly": "annuale"
     }
   },
   "subs": {
@@ -294,5 +399,127 @@
     "alerts_disabled": "Gli avvisi sono disattivati ([alerts] enabled = false in config.toml).",
     "coach_busy": "Il coach sta già rispondendo a una domanda: aspetta che finisca.",
     "internal_error": "Errore imprevisto: guarda il terminale in cui gira `coach ui`."
+  },
+  "loanAlert": {
+    "missed": {
+      "title": "{{lender}}: rata del {{due_date}} non trovata",
+      "bodySchedule_one": "La rata del {{due_date}} (piano di ammortamento) non è stata trovata entro {{count}} giorno nei dati del conto di addebito. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodySchedule_many": "La rata del {{due_date}} (piano di ammortamento) non è stata trovata entro {{count}} giorni nei dati del conto di addebito. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodySchedule_other": "La rata del {{due_date}} (piano di ammortamento) non è stata trovata entro {{count}} giorni nei dati del conto di addebito. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyScheduleLater_one": "La rata del {{due_date}} (piano di ammortamento) non è stata trovata entro {{count}} giorno nei dati del conto di addebito; un addebito corrispondente successivo è stato visto il {{later_date}}. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyScheduleLater_many": "La rata del {{due_date}} (piano di ammortamento) non è stata trovata entro {{count}} giorni nei dati del conto di addebito; un addebito corrispondente successivo è stato visto il {{later_date}}. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyScheduleLater_other": "La rata del {{due_date}} (piano di ammortamento) non è stata trovata entro {{count}} giorni nei dati del conto di addebito; un addebito corrispondente successivo è stato visto il {{later_date}}. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyUsualDay_one": "La rata del {{due_date}} (giorno abituale del mese) non è stata trovata entro {{count}} giorno nei dati del conto di addebito. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyUsualDay_many": "La rata del {{due_date}} (giorno abituale del mese) non è stata trovata entro {{count}} giorni nei dati del conto di addebito. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyUsualDay_other": "La rata del {{due_date}} (giorno abituale del mese) non è stata trovata entro {{count}} giorni nei dati del conto di addebito. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyUsualDayLater_one": "La rata del {{due_date}} (giorno abituale del mese) non è stata trovata entro {{count}} giorno nei dati del conto di addebito; un addebito corrispondente successivo è stato visto il {{later_date}}. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyUsualDayLater_many": "La rata del {{due_date}} (giorno abituale del mese) non è stata trovata entro {{count}} giorni nei dati del conto di addebito; un addebito corrispondente successivo è stato visto il {{later_date}}. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo.",
+      "bodyUsualDayLater_other": "La rata del {{due_date}} (giorno abituale del mese) non è stata trovata entro {{count}} giorni nei dati del conto di addebito; un addebito corrispondente successivo è stato visto il {{later_date}}. Controlla il conto o chiedi al finanziatore: non si presume nulla sul motivo."
+    },
+    "amountChanged": {
+      "title": "{{lender}}: rata cambiata a {{payment_amount}}",
+      "body": "Il pagamento del {{payment_date}} è di {{payment_amount}}, il precedente ({{previous_date}}) era di {{previous_amount}}. Un tasso variabile, una nuova assicurazione o una modulazione possono spiegarlo; non si presume nulla."
+    },
+    "amountExpected": {
+      "title": "{{lender}}: pagamento diverso dall'importo atteso",
+      "body": "Il pagamento del {{payment_date}} è di {{payment_amount}}; la scheda del prestito / il piano si aspetta {{expected_amount}}.",
+      "bodyTwo": "Il pagamento del {{payment_date}} è di {{payment_amount}}; la scheda del prestito / il piano si aspetta {{expected_amount}} o {{other_amount}}."
+    },
+    "amountSchedule": {
+      "title": "{{lender}}: pagamenti diversi dal piano",
+      "body": "Gli ultimi pagamenti sono di {{payment_amount}}; il piano calcolato si aspetta {{expected_amount}} (tasso, assicurazione o durata nella scheda possono differire dal contratto).",
+      "bodyTwo": "Gli ultimi pagamenti sono di {{payment_amount}}; il piano calcolato si aspetta {{expected_amount}} o {{other_amount}} (tasso, assicurazione o durata nella scheda possono differire dal contratto)."
+    },
+    "extra": {
+      "title": "{{lender}}: pagamento inatteso di {{payment_amount}}",
+      "bodyLarger": "Un addebito di {{payment_amount}} il {{payment_date}} corrisponde a questo prestito ma è molto più alto della rata abituale. Potrebbe essere un rimborso anticipato parziale: in tal caso chiedi al finanziatore il nuovo piano e aggiorna il capitale residuo.",
+      "bodyOffDayPaidMonth": "Un addebito di {{payment_amount}} il {{payment_date}} corrisponde a questo prestito ma cade lontano dal giorno abituale, in un mese che ha già la sua rata. Potrebbe essere un rimborso anticipato parziale: in tal caso chiedi al finanziatore il nuovo piano e aggiorna il capitale residuo.",
+      "bodyOffDayOtherSize": "Un addebito di {{payment_amount}} il {{payment_date}} corrisponde a questo prestito ma cade lontano dal giorno abituale e ha un altro importo. Potrebbe essere un rimborso anticipato parziale: in tal caso chiedi al finanziatore il nuovo piano e aggiorna il capitale residuo."
+    },
+    "wrongAccount": {
+      "title": "{{lender}}: pagato da un altro conto",
+      "body": "Il pagamento del {{payment_date}} ({{payment_amount}}) è uscito da {{account}}, non da {{expected_account}}, il conto registrato per l'addebito del prestito."
+    },
+    "capital": {
+      "title": "{{lender}}: il piano differisce dal capitale dichiarato",
+      "body": "Il tuo estratto del {{statement_date}} indica {{declared_amount}} di capitale residuo; il piano teorico indica {{computed_amount}} a quella data. Si usa la cifra dichiarata (portata avanti fino a oggi). C'è stato un rimborso anticipato o una rinegoziazione? Aggiorna il prestito (tasso, durata, capitale)."
+    },
+    "loaEnd": {
+      "title_one": "{{lender}} termina tra {{count}} giorno: riscattare o restituire?",
+      "title_many": "{{lender}} termina tra {{count}} giorni: riscattare o restituire?",
+      "title_other": "{{lender}} termina tra {{count}} giorni: riscattare o restituire?",
+      "body": "Il contratto termina il {{end_date}}. Scegli tra riscattare l'auto (prezzo di riscatto {{option_amount}}) e restituirla; la lista per la restituzione e la proiezione dei chilometri sono nella pagina del prestito. Verifica il preavviso nel tuo contratto.",
+      "bodyNoOptionPrice": "Il contratto termina il {{end_date}}. Scegli tra riscattare l'auto (prezzo di riscatto sconosciuto: registra residual_value) e restituirla; la lista per la restituzione e la proiezione dei chilometri sono nella pagina del prestito. Verifica il preavviso nel tuo contratto."
+    },
+    "loaMileage": {
+      "title": "{{lender}}: circa {{excess_km, number}} km oltre il limite alla fine",
+      "body": "Al ritmo attuale i chilometri previsti sono {{projected_km, number}} contro un limite di {{limit_km, number}} km, circa {{fee_amount}} di costi per chilometri in eccesso.",
+      "bodyNoFee": "Al ritmo attuale i chilometri previsti sono {{projected_km, number}} contro un limite di {{limit_km, number}} km. Registra il costo per chilometro in eccesso per stimarlo."
+    },
+    "loaMileageMissing": {
+      "title": "{{lender}}: registra i chilometri attuali",
+      "body": "Nei 6 mesi prima della fine del contratto i chilometri contano: registra il contachilometri (data e km) così il coach può stimare il costo dei chilometri in eccesso."
+    }
+  },
+  "reminder": {
+    "unused": {
+      "title_one": "{{service}}: non usato da {{count}} giorno",
+      "title_many": "{{service}}: non usato da {{count}} giorni",
+      "title_other": "{{service}}: non usato da {{count}} giorni",
+      "body_one": "Hai indicato il {{last_used_date}} come ultimo utilizzo ({{count}} giorno fa). Viene dalla tua registrazione, non dai dati bancari. Vale la pena valutare se tenerlo.",
+      "body_many": "Hai indicato il {{last_used_date}} come ultimo utilizzo ({{count}} giorni fa). Viene dalla tua registrazione, non dai dati bancari. Vale la pena valutare se tenerlo.",
+      "body_other": "Hai indicato il {{last_used_date}} come ultimo utilizzo ({{count}} giorni fa). Viene dalla tua registrazione, non dai dati bancari. Vale la pena valutare se tenerlo."
+    },
+    "neverUsed": {
+      "title": "{{service}}: segnato «mai usato» ma ancora pagato",
+      "body": "Hai indicato di non usarlo mai, e l'ultimo pagamento è del {{last_date}}. Vale la pena valutare se tenerlo."
+    },
+    "notice": {
+      "title_one": "{{service}}: ultimo giorno per la disdetta tra {{count}} giorno",
+      "title_many": "{{service}}: ultimo giorno per la disdetta tra {{count}} giorni",
+      "title_other": "{{service}}: ultimo giorno per la disdetta tra {{count}} giorni",
+      "bodyRenews": "Il {{notice_date}} è l'ultimo giorno per dare disdetta prima del rinnovo ({{reference_date}}). Verifica con il tuo contratto; il coach non disdice nulla.",
+      "bodyCommitmentEnds": "Il {{notice_date}} è l'ultimo giorno per dare disdetta prima della fine del vincolo ({{reference_date}}). Verifica con il tuo contratto; il coach non disdice nulla.",
+      "bodyAnniversary": "Il {{notice_date}} è l'ultimo giorno per dare disdetta prima del rinnovo del {{reference_date}}. Verifica con il tuo contratto; il coach non disdice nulla."
+    },
+    "decision": {
+      "check": "{{service}}: verifica che il cambiamento sia davvero avvenuto",
+      "stillCharged": {
+        "cancelled": "{{service}}: ancora addebitato dopo la disdetta",
+        "renegotiated": "{{service}}: ancora addebitato al vecchio prezzo dopo la rinegoziazione",
+        "switched": "{{service}}: ancora addebitato dopo il cambio di offerta",
+        "downgraded": "{{service}}: ancora addebitato al vecchio prezzo dopo il passaggio a un'offerta inferiore",
+        "kept": "{{service}}: l'addebito è diverso da quanto hai deciso di tenere"
+      }
+    }
+  },
+  "rentalAlert": {
+    "schemeEnd": {
+      "title_one": "{{property}}: il vincolo dell'agevolazione termina il {{end_date}} (circa {{count}} mese rimasto)",
+      "title_many": "{{property}}: il vincolo dell'agevolazione termina il {{end_date}} (circa {{count}} mesi rimasti)",
+      "title_other": "{{property}}: il vincolo dell'agevolazione termina il {{end_date}} (circa {{count}} mesi rimasti)",
+      "titleEnded": "{{property}}: il vincolo dell'agevolazione è terminato il {{end_date}}",
+      "body": "Nessuna decisione sulla proroga è registrata. Decidi se prorogare (se l'agevolazione lo consente), continuare ad affittare con le regole ordinarie o vendere, verifica le conseguenze nelle regole dell'agevolazione o con un consulente, poi registra la decisione (`coach rental extension`)."
+    },
+    "rentMissing": {
+      "title": "{{property}}: nessun affitto visto per {{rent_month}}",
+      "body": "I dati del conto coprono {{rent_month}} e non contengono alcun affitto. Se l'immobile era vuoto, registra il periodo in `vacancies` (non verrà più segnalato); altrimenti verifica con l'inquilino o con l'amministratore.",
+      "bodyExpected": "I dati del conto coprono {{rent_month}} e non contengono alcun affitto (circa {{expected_amount}} attesi). Se l'immobile era vuoto, registra il periodo in `vacancies` (non verrà più segnalato); altrimenti verifica con l'inquilino o con l'amministratore."
+    },
+    "rentLate": {
+      "title": "{{property}}: l'affitto di questo mese non è arrivato",
+      "body_one": "Nessun affitto è stato visto a {{rent_month}} e il giorno abituale (più {{count}} giorno) è passato.",
+      "body_many": "Nessun affitto è stato visto a {{rent_month}} e il giorno abituale (più {{count}} giorni) è passato.",
+      "body_other": "Nessun affitto è stato visto a {{rent_month}} e il giorno abituale (più {{count}} giorni) è passato."
+    },
+    "rentCap": {
+      "title": "{{property}}: l'affitto supera il tetto che hai dichiarato",
+      "bodyDeclared": "Affitto di {{rent_amount}} contro un tetto di {{cap_amount}} (l'affitto del contratto che hai dichiarato). Verifica le regole dell'agevolazione e il contratto: un affitto sopra il tetto può far perdere il vantaggio.",
+      "bodyObserved": "Affitto di {{rent_amount}} contro un tetto di {{cap_amount}} (l'ultimo affitto ricevuto: può essere al netto delle spese di gestione, il tetto si applica all'affitto del contratto). Verifica le regole dell'agevolazione e il contratto: un affitto sopra il tetto può far perdere il vantaggio."
+    },
+    "tenantIncome": {
+      "title": "{{property}}: il reddito dell'inquilino supera il limite che hai dichiarato",
+      "body": "Reddito dell'inquilino di {{income_amount}} contro un limite di {{limit_amount}}. Verifica le regole dell'agevolazione in base alla composizione del nucleo dell'inquilino."
+    }
   }
 }

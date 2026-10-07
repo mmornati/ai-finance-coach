@@ -50,6 +50,12 @@ TAX = {
     "it": "Informazione generale, non consulenza fiscale: regole, aliquote e massimali cambiano ogni anno e dipendono dalla tua "
           "situazione. Verifica sul sito dell'Agenzia delle Entrate (o con un CAF / commercialista) prima del 730. Il coach non presenta nulla.",
 }
+# the short form, after a reminder that names a tax consequence (the rental scheme cards: rental/service.py)
+TAX_SHORT = {
+    "en": "General information, not tax advice.",
+    "fr": "Information générale, pas un conseil fiscal.",
+    "it": "Informazione generale, non consulenza fiscale.",
+}
 # the per-country texts the tax helper has always printed (FR / IT bilingual): kept word for word
 TAX_BY_COUNTRY = {
     "FR": ("Information generale, pas un conseil fiscal. Not tax advice: the rules, rates and ceilings change every year and "
@@ -109,7 +115,7 @@ LETTER_VERIFY = {
 }
 
 TEXTS = {"ai_label": AI_LABEL, "ai_label_short": AI_LABEL_SHORT, "investment_banner": INVESTMENT_BANNER,
-         "general_advice": GENERAL_ADVICE, "tax": TAX, "contract": CONTRACT, "contract_verify": CONTRACT_VERIFY, "loan": LOAN,
+         "general_advice": GENERAL_ADVICE, "tax": TAX, "tax_short": TAX_SHORT, "contract": CONTRACT, "contract_verify": CONTRACT_VERIFY, "loan": LOAN,
          "savings": SAVINGS, "letters": LETTERS, "letter_verify": LETTER_VERIFY}
 
 

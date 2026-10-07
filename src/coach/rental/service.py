@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 
+from coach import disclaimers
 from coach.analytics.common import last_closed_month, money_str
+from coach.i18n_msg import server_msg
 from coach.rental import cashflow as CF, indicators as IND, model as M, scheme as SC
 
 
@@ -61,40 +63,66 @@ def cards(ds) -> list[dict]:
             ended = sch["days_left"] < 0
             sev = "high" if ended or ml <= 3 else "medium" if ml <= 6 else "low"
             when = (f"ended on {end_iso}" if ended else f"ends on {end_iso} (about {ml} month(s) left)")
+            title = f"{who}: the scheme commitment {when}"
+            core = ("No decision about the extension is recorded. Decide whether to extend (if the scheme allows it), keep renting "
+                    "under the ordinary rules or sell, check the consequences in the scheme's rules or with an adviser, then record "
+                    "the decision (`coach rental extension`).")
             out.append({"id": _iid("rental-end", prop.id, end_iso, "ended" if ended else thr), "kind": "rental", "subtype": "scheme_end",
-                        "severity": sev, "title": f"{who}: the scheme commitment {when}",
-                        "body": "No decision about the extension is recorded. Decide whether to extend (if the scheme allows it), keep renting "
-                                "under the ordinary rules or sell, check the consequences in the scheme's rules or with an adviser, then record "
-                                "the decision (`coach rental extension`). General information, not tax advice.",
+                        "severity": sev, "title": title,
+                        "title_msg": (server_msg("rentalAlert.schemeEnd.titleEnded", title, property=who, end_date=end_iso) if ended
+                                      else server_msg("rentalAlert.schemeEnd.title", title, property=who, end_date=end_iso, count=int(ml))),
+                        # the English body ends with the disclaimer (CLI, alerts); the message does not: the web adds the text of
+                        # `disclaimer` in its language (GET /meta/disclaimers), the wording living only in coach/disclaimers.py
+                        "body": core + " " + disclaimers.get("tax_short"), "body_msg": server_msg("rentalAlert.schemeEnd.body", core),
+                        "disclaimer": "tax_short",
                         "amount": None, "date": end_iso, "subject": who, "evidence": [prop.id], "persist": "ui"})
         for r in [x for x in rows[-3:] if x.rent_status == "missing"]:
             exp = f" (about {money_str(r.expected_rent_c)} EUR expected)" if r.expected_rent_c else ""
+            title = f"{who}: no rent seen for {r.month}"
+            body = (f"The account data cover {r.month} and hold no rent{exp}. If the property was empty, record the period in "
+                    "`vacancies` (it is then not reported again); otherwise check with the tenant or the property manager.")
             out.append({"id": _iid("rental-rent", prop.id, r.month), "kind": "rental", "subtype": "rent_missing", "severity": "medium",
-                        "title": f"{who}: no rent seen for {r.month}",
-                        "body": f"The account data cover {r.month} and hold no rent{exp}. If the property was empty, record the period in "
-                                "`vacancies` (it is then not reported again); otherwise check with the tenant or the property manager.",
+                        "title": title, "title_msg": server_msg("rentalAlert.rentMissing.title", title, property=who, rent_month=r.month),
+                        "body": body,
+                        "body_msg": (server_msg("rentalAlert.rentMissing.bodyExpected", body, rent_month=r.month,
+                                                expected_amount=money_str(r.expected_rent_c)) if r.expected_rent_c
+                                     else server_msg("rentalAlert.rentMissing.body", body, rent_month=r.month)),
                         "amount": money_str(r.expected_rent_c) if r.expected_rent_c else None, "date": f"{r.month}-28", "subject": who,
                         "evidence": [prop.id], "persist": "ui"})
         cur = CF.current_month(ds, prop, ds.settings.rental_rent_grace_days)
         if cur["status"] == "late":
+            title = f"{who}: this month's rent has not arrived"
+            grace = ds.settings.rental_rent_grace_days
+            body = f"No rent has been seen in {cur['month']} and the usual day (plus {grace} days) has passed."
             out.append({"id": _iid("rental-rent", prop.id, cur["month"]), "kind": "rental", "subtype": "rent_missing", "severity": "low",
-                        "title": f"{who}: this month's rent has not arrived",
-                        "body": f"No rent has been seen in {cur['month']} and the usual day (plus {ds.settings.rental_rent_grace_days} days) has passed.",
+                        "title": title, "title_msg": server_msg("rentalAlert.rentLate.title", title, property=who),
+                        "body": body, "body_msg": server_msg("rentalAlert.rentLate.body", body, rent_month=cur["month"], count=int(grace)),
                         "amount": money_str(cur["expected_c"]) if cur["expected_c"] else None, "date": today.isoformat(), "subject": who,
                         "evidence": [prop.id], "persist": "ui"})
         rc = sch["rent_cap"]
         if rc["status"] == "above_cap":
+            title = f"{who}: the rent is above the cap you declared"
+            body = (f"Rent {money_str(rc['rent_c'])} EUR against a cap of {money_str(rc['cap_c'])} EUR ({rc['rent_basis']}). Check the "
+                    "scheme's rules and the lease: a rent above the cap can put the advantage at risk.")
+            rp = {"rent_amount": money_str(rc["rent_c"]), "cap_amount": money_str(rc["cap_c"])}
+            observed = (rc.get("rent_basis") or "").startswith("the last rent received")
             out.append({"id": _iid("rental-cap", prop.id, rc["rent_c"], rc["cap_c"]), "kind": "rental", "subtype": "rent_cap", "severity": "medium",
-                        "title": f"{who}: the rent is above the cap you declared",
-                        "body": f"Rent {money_str(rc['rent_c'])} EUR against a cap of {money_str(rc['cap_c'])} EUR ({rc['rent_basis']}). Check the "
-                                "scheme's rules and the lease: a rent above the cap can put the advantage at risk.",
+                        "title": title, "title_msg": server_msg("rentalAlert.rentCap.title", title, property=who),
+                        "body": body,
+                        "body_msg": (server_msg("rentalAlert.rentCap.bodyObserved", body, **rp) if observed
+                                     else server_msg("rentalAlert.rentCap.bodyDeclared", body, **rp)),
                         "amount": money_str(rc["gap_c"]), "date": today.isoformat(), "subject": who, "evidence": [prop.id], "persist": "ui"})
         ti = sch["tenant_income"]
         if ti["status"] == "above_limit":
+            title = f"{who}: the tenant income is above the limit you declared"
+            body = (f"Tenant income {money_str(ti['tenant_income_c'])} EUR against a limit of {money_str(ti['limit_c'])} EUR. Check the "
+                    "scheme's rules for the tenant household's size.")
             out.append({"id": _iid("rental-income", prop.id, ti["tenant_income_c"], ti["limit_c"]), "kind": "rental", "subtype": "tenant_income",
-                        "severity": "medium", "title": f"{who}: the tenant income is above the limit you declared",
-                        "body": f"Tenant income {money_str(ti['tenant_income_c'])} EUR against a limit of {money_str(ti['limit_c'])} EUR. Check the "
-                                "scheme's rules for the tenant household's size.", "amount": money_str(-ti["headroom_c"]),
+                        "severity": "medium", "title": title, "title_msg": server_msg("rentalAlert.tenantIncome.title", title, property=who),
+                        "body": body,
+                        "body_msg": server_msg("rentalAlert.tenantIncome.body", body, income_amount=money_str(ti["tenant_income_c"]),
+                                               limit_amount=money_str(ti["limit_c"])),
+                        "amount": money_str(-ti["headroom_c"]),
                         "date": today.isoformat(), "subject": who, "evidence": [prop.id], "persist": "ui"})
     return out
 
