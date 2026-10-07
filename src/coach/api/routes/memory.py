@@ -43,7 +43,7 @@ def overview(state: AppState = Depends(get_state)):
 @router.get("/memory/check", summary="`coach memory check`: schema, semantic and database consistency issues")
 def check(state: AppState = Depends(get_state)):
     issues, summary = state.memory_check()
-    return {"summary": summary, "issues": [i.to_dict() for i in issues]}
+    return {"summary": summary, "issues": [i.to_dict(messages=True) for i in issues]}
 
 
 # ---------------------------------------------------------------- questions

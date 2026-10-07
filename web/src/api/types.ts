@@ -66,7 +66,7 @@ export interface BudgetProgress {
 }
 export interface BudgetStatus {
   as_of: string; month: string; budgets: BudgetProgress[]; counts: Record<string, number>; unbudgeted: { category: string; spent: Money }[];
-  coverage: Coverage; unallocated_refunds: Money; warnings: string[]; problems: string[];
+  coverage: Coverage; unallocated_refunds: Money; warnings: string[]; problems: string[]; problems_msg?: (ServerMsg | null)[];
 }
 export interface BudgetSuggestion { category: string; suggested: Money; median: Money; mean: Money; n_months: number; months: string[]; accounts: string[]; existing: Money | null; low_confidence: boolean }
 export interface GoalProgress { id: string; title: string | null; source: string; source_ref: string; target: Money; target_date: string | null; current: Money | null; percent: number | null; remaining: Money | null; pace: Money | null; pace_basis: string; required_monthly: Money | null; projected_date: string | null; status: string; flags: string[] }
@@ -208,7 +208,7 @@ export interface Proposal {
   diff: string; changes: { op: string; path: string | null; old: unknown; new: unknown; snippet?: string | null; suspicious?: boolean; conflicts_with?: unknown }[]; suspicious_paths: string[];
 }
 export interface MemoryOverview { files: string[]; history_enabled: boolean; counts: Record<string, number>; check: { errors: number; warnings: number; info: number; by_code: Record<string, number> } }
-export interface CheckIssue { level: "error" | "warning" | "info"; code: string; file: string; path: string; message: string; line?: number }
+export interface CheckIssue { level: "error" | "warning" | "info"; code: string; file: string; path: string; message: string; message_msg?: ServerMsg | null; line?: number }
 export interface Change { id: string; date: string; subject: string; files: string[]; reason: string | null; source: string | null }
 export interface Annotation { id: string; category?: string; tags?: string[]; event?: string; note?: string; match: Record<string, unknown>; matched: number; applies_to: number; total: Money }
 

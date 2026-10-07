@@ -106,6 +106,8 @@ class MemorySnapshot:
     warnings: list = field(default_factory=list)
     budget_problems: list = field(default_factory=list)   # invalid entries of budgets.yaml ('id: why'), valid ones still used
     goal_problems: list = field(default_factory=list)
+    budget_problems_msg: list = field(default_factory=list)  # the same problems as messages the web translates (memoryLoad.*), same order
+    goal_problems_msg: list = field(default_factory=list)
     country: Optional[str] = None                         # household.yaml country (FR / IT): the cancellation rules to apply
     people: Any = None                                    # E14: coach.household.people.People (members, attribution rules, kid budgets, allocations)
 
@@ -124,8 +126,8 @@ def load_memory(memory_dir) -> MemorySnapshot:
         snap.liabilities = store.liabilities()
         snap.contracts = store.contracts()
         snap.assets = store.assets()
-        snap.budgets, snap.budget_problems = store.budgets_checked()
-        snap.goals, snap.goal_problems = store.goals_checked()
+        snap.budgets, snap.budget_problems, snap.budget_problems_msg = store.budgets_checked(messages=True)
+        snap.goals, snap.goal_problems, snap.goal_problems_msg = store.goals_checked(messages=True)
         snap.members = store.members()
         from coach.household import people as people_mod
         snap.people = people_mod.load(store)

@@ -13,7 +13,8 @@ def edit_out(state: AppState, res, dry_run: bool, extra: Optional[dict] = None) 
         state.touch()
     out = {"dry_run": dry_run, "changed": res.changed, "diff": res.diff,
            "change_id": getattr(res, "change_id", None),
-           "warnings": [i.message for i in res.issues if i.level != "error"]}
+           "warnings": [i.message for i in res.issues if i.level != "error"],
+           "warnings_msg": [i.msg for i in res.issues if i.level != "error"]}      # same order; the web translates them
     if extra:
         out.update(extra)
     return out

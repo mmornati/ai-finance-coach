@@ -31,6 +31,7 @@ def budgets_(snap: Snapshot = Depends(get_member_snapshot), state: AppState = De
             row["category"], row["group"] = b.category, b.group
             row["note"], row["start"] = b.note, b.start.isoformat() if b.start else None
     d["problems"] = ds.memory.budget_problems
+    d["problems_msg"] = ds.memory.budget_problems_msg
     return d
 
 
