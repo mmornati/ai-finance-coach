@@ -36,7 +36,7 @@
   "firstRun": {
     "title": "Premier lancement",
     "progress": "Avancement du premier lancement",
-    "stepsDone": "{{done}} étapes du premier lancement faites sur {{total}}",
+    "stepsDone": "{{done}} étapes du premier lancement terminées sur {{total}}",
     "steps": "Étapes du premier lancement",
     "optional": " (facultatif)",
     "next": "Ensuite, dans un terminal (ces étapes demandent votre confirmation avant que quoi que ce soit ne quitte cet ordinateur ; la page ne peut donc pas les lancer) :",
