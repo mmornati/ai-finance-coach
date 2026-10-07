@@ -88,13 +88,13 @@ def subscription_cards(ds, rec) -> list[dict]:
         if v["status"] == "contradicted" or (v["status"] == "pending" and v["check_on"] and v["check_on"] <= today):
             contradicted = v["status"] == "contradicted"
             title = f"{who}: " + ("still charged after you " + d.decision if contradicted else "check that it really changed")
-            # the body is the decision's own reason (subs/decisions.py): English only here, the web shows it as it is
+            # the body is the decision's own reason and its message (subs/decisions.py, codes subs.decision.*)
             cards.append({"id": _iid("sub-decision", d.id, v["status"]), "kind": "subscription", "subtype": "decision_check",
                           "severity": "high" if contradicted else "medium",
                           "title": title,
                           "title_msg": (server_msg_or_none(f"reminder.decision.stillCharged.{d.decision}", title, service=who) if contradicted
                                         else server_msg("reminder.decision.check", title, service=who)),
-                          "body": v["reason"], "body_msg": None,
+                          "body": v["reason"], "body_msg": v.get("reason_msg"),
                           "amount": money_str(d.monthly_saving_c * 12), "date": today.isoformat(), "subject": who,
                           "evidence": [d.series_id] if d.series_id else [], "persist": "ui"})
     return cards

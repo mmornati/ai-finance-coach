@@ -294,6 +294,9 @@ def test_decisions_feed_the_calendar_and_the_insights(world, cfg):
     assert any("Fitclub" in i.title and "still being charged" in i.title and i.date == TODAY for i in items)
     cards = [c for c in reminders.subscription_cards(b.ds, b.rec) if c["subtype"] == "decision_check"]
     assert any("still charged after you cancelled" in c["title"] and c["severity"] == "high" for c in cards)
+    for c in cards:                                   # i18n 4c: the body's message is the verification's reason_msg
+        assert c["body_msg"]["code"].startswith("subs.decision.") and c["body_msg"]["text"] == c["body"]
+        assert c["title_msg"]["code"].startswith("reminder.decision.")
 
 
 # ---------------------------------------------------------------- review round: ambiguity, refunds, the first counted month
