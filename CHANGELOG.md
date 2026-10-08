@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed: a bank entry that is not booked no longer breaks the app
+- The sync stores only `BOOK` entries (or entries without a status) as transactions; any other status (`PDNG`, `OTHR`, `HOLD`...) goes to the pending list.
+  A booked entry without a booking date takes its value or transaction date; one with no date at all is pending. Before, an `OTHR` entry without a date
+  was stored with an empty date and every page failed to load.
+- Migration 0023 repairs a database that already holds such rows (moved to the pending list; a pre-migrate safety copy is taken first).
+
 ### Added: the `claude-code` backend in Docker
 - Opt-in: `--build-arg WITH_CLAUDE_CODE=1` adds the self-contained Claude Code CLI at a pinned version, checked against a pinned integrity hash (no Node at runtime);
   on a Linux host the host's own native `claude` binary can be bind-mounted on `/opt/claude/bin/claude` instead. The default image is unchanged.
