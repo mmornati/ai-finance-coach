@@ -38,6 +38,8 @@ BINARY_SUFFIXES = frozenset({".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", "
 # never part of a published tree, whatever .gitignore says (tool caches and dependency folders)
 ALWAYS_SKIP_DIRS = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__", ".ruff_cache", ".pytest_cache", ".mypy_cache",
                               "graphify-out", ".idea", ".vscode"})
+# Git never publishes a path named ".git", at any depth, folder or file: in a worktree or a submodule ".git" is a FILE ("gitdir: <absolute path>").
+GIT_NEVER_PUBLISHES = frozenset({".git"})
 
 PLACEHOLDER_USERS = frozenset({"you", "user", "username", "name", "me", "example", "runner", "yourname", "your-name", "someone", "alice", "bob",
                                "coach", "app", "shared", "home", "x", "<you>", "<user>", "appuser", "jdoe", "maria"})
@@ -146,7 +148,7 @@ def publishable_files(root: Path) -> list[Path]:
         for p in entries:
             name = p.name
             r = f"{rel}/{name}" if rel else name
-            if p.is_symlink():
+            if p.is_symlink() or name in GIT_NEVER_PUBLISHES:
                 continue
             if p.is_dir():
                 if name in ALWAYS_SKIP_DIRS or gi.ignored(r, True):
