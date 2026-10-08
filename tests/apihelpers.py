@@ -19,6 +19,19 @@ HOST = f"http://127.0.0.1:{PORT}"
 CALLS: set = set()               # (method, path, status) of every request the tests made: the coverage guard reads it
 
 
+def missing_endpoints(paths: dict, calls) -> list[str]:
+    """The operations of the OpenAPI `paths` that no call of `calls` answered successfully (status < 400)."""
+    import re
+    ok = [(m, p) for m, p, status in calls if status < 400]
+    missing = []
+    for path, ops in paths.items():
+        rx = re.compile("^" + re.sub(r"\{[^}]+\}", "[^/]+", path) + "$")
+        for method in ops:
+            if not any(m == method.upper() and rx.match(p) for m, p in ok):
+                missing.append(f"{method.upper()} {path}")
+    return missing
+
+
 def api(path: str) -> str:
     return "/api/v1" + path
 
