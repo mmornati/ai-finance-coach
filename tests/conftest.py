@@ -132,3 +132,30 @@ def egress_policy_reset():
     yield
     egress.deactivate()
     egress._pending.clear()
+
+
+# pytest-xdist (`-n auto`, as CI runs the suite): the endpoint-coverage guard of test_api_zz_coverage.py needs the API calls
+# of EVERY test, but each worker only sees its own. Each worker hands its calls to the controller, which checks their union.
+_XDIST_API_CALLS: set = set()
+_XDIST_API_SPEC: dict = {}
+
+
+def pytest_sessionfinish(session):
+    workeroutput = getattr(session.config, "workeroutput", None)
+    if workeroutput is not None:                                   # an xdist worker
+        from apihelpers import CALLS
+        workeroutput["api_calls"] = sorted(CALLS)
+    elif _XDIST_API_SPEC:                                          # the controller, and a worker ran the guard
+        from apihelpers import missing_endpoints
+        missing = missing_endpoints(_XDIST_API_SPEC, _XDIST_API_CALLS)
+        if missing:
+            session.config.get_terminal_writer().line(
+                f"FAILED test_api_zz_coverage (union of the xdist workers): no successful call to {missing}", red=True)
+            session.exitstatus = pytest.ExitCode.TESTS_FAILED
+
+
+@pytest.hookimpl(optionalhook=True)
+def pytest_testnodedown(node, error):
+    output = getattr(node, "workeroutput", {})
+    _XDIST_API_CALLS.update(tuple(c) for c in output.get("api_calls", ()))
+    _XDIST_API_SPEC.update(output.get("api_spec", {}))

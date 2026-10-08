@@ -1,6 +1,6 @@
 # Release checklist
 
-`uv run coach dev release-check` runs the automatable part of this list and exits 1 until everything holds. The same command runs in CI (`.github/workflows/ci.yml`).
+`uv run coach dev release-check` runs the automatable part of this list and exits 1 until everything holds. The same command runs in CI (`.github/workflows/ci.yml`) with `--skip-tests --skip-web`: the suites run in the CI jobs it depends on, not a second time.
 
 ## Owner decisions (taken on 2026-10-06)
 
