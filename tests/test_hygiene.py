@@ -108,6 +108,13 @@ def test_tool_folders_and_symlinks_are_never_scanned(tmp_path):
     assert rels(root) == [".gitignore", "ok.py"]
 
 
+def test_the_git_file_of_a_worktree_or_submodule_is_never_scanned(tmp_path):
+    # In a git worktree (and in a submodule) ".git" is a file pointing at the main repository, by absolute path: git never publishes it.
+    root = tree(tmp_path, {".git": "gitdir: " + HOME_DIR + "/.git/worktrees/w1\n", "sub/.git": "gitdir: ../.git/modules/sub\n", "ok.py": "x"})
+    assert rels(root) == [".gitignore", "ok.py"]
+    assert H.scan(root, H.publishable_files(root), None) == []
+
+
 # ---------------------------------------------------------------- the structural rules
 
 # The trigger strings are assembled at run time: this file is itself scanned, and must not contain a real-looking secret.

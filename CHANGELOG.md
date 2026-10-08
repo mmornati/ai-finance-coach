@@ -24,6 +24,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
   same minimal environment as the coach runtime (`PATH`, `HOME`, `USER`, `LANG`, `LC_*` ... plus the names listed in `[coach] claude_env`), so `COACH_DB_KEY`, `COACH_BACKUP_KEY`,
   `COACH_PROPOSAL_KEY`, `ANTHROPIC_API_KEY` and `ANTHROPIC_AUTH_TOKEN` are never passed to it. The allowlist moved to `coach.claude_cli`, shared by both.
 
+### Fixed: hygiene scan inside a git worktree
+- `publishable_files` never lists a path named `.git` (file or folder, any depth): in a worktree or a submodule `.git` is a file holding an absolute
+  `gitdir:` path, which made `tests/test_hygiene.py` and the release check's personal data scan fail there.
+
 ### Added: multi-language web app, part 4h (see `docs/i18n.md`, "Server text")
 - Household, Kids' money and Who pays notes, the Set up checklist and first-run wizard, the Connections health problems and sync results, the calendar titles and the
   generated memory questions are shown in the interface language. Generated questions store optional `topic_code` / `question_msg` / `context_msg` in
