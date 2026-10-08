@@ -17,6 +17,7 @@ TODAY = dt.date(2026, 10, 4)
 PORT = 8123
 HOST = f"http://127.0.0.1:{PORT}"
 CALLS: set = set()               # (method, path, status) of every request the tests made: the coverage guard reads it
+SPEC: dict = {}                  # the OpenAPI paths, when the coverage guard leaves the check to the end of the session (xdist, CI shards)
 
 
 def missing_endpoints(paths: dict, calls) -> list[str]:
