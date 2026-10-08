@@ -54,29 +54,51 @@ def _rx(p: Optional[str]):
         return None
 
 
-def rule_matches(rule, *, account_uid: str, account_names: set, desc: str, mkey: str, amount: float) -> tuple[bool, str]:
-    """(matched, why not). `account_names`: the folded uid / label / name of the transaction's account."""
+def _rule_check(rule, *, account_names: set, desc: str, mkey: str, amount: float) -> tuple[str, str]:
+    """The first key of the rule that fails, as (code of the web's message, English sentence); ("", "") when every key matches."""
     m = rule.match
     if m.account is not None and fold(m.account) not in account_names:
-        return False, f"the account is not {m.account!r}"
+        return "attribution.account", f"the account is not {m.account!r}"
     if m.card_last4 is not None and card_last4(desc) != m.card_last4:
-        return False, f"the card ending {m.card_last4} is not printed on it"
+        return "attribution.card", f"the card ending {m.card_last4} is not printed on it"
     if m.merchant_key is not None:
         rx = _rx(m.merchant_key)
         if rx is None or not rx.search(mkey or ""):
-            return False, "the merchant key does not match"
+            return "attribution.merchantKey", "the merchant key does not match"
     if m.description is not None:
         rx = _rx(m.description)
         if rx is None or not rx.search(desc or ""):
-            return False, "the description does not match"
+            return "attribution.description", "the description does not match"
     if m.direction == "in" and amount <= 0 or m.direction == "out" and amount >= 0:
-        return False, f"the direction is not {m.direction!r}"
+        return ("attribution.directionIn" if m.direction == "in" else "attribution.directionOut"), f"the direction is not {m.direction!r}"
     mag = abs(amount)
     if m.amount_min is not None and mag < m.amount_min:
-        return False, f"the amount is below {m.amount_min:g}"
+        return "attribution.amountBelow", f"the amount is below {m.amount_min:g}"
     if m.amount_max is not None and mag > m.amount_max:
-        return False, f"the amount is above {m.amount_max:g}"
-    return True, ""
+        return "attribution.amountAbove", f"the amount is above {m.amount_max:g}"
+    return "", ""
+
+
+def rule_matches(rule, *, account_uid: str, account_names: set, desc: str, mkey: str, amount: float) -> tuple[bool, str]:
+    """(matched, why not). `account_names`: the folded uid / label / name of the transaction's account."""
+    code, why = _rule_check(rule, account_names=account_names, desc=desc, mkey=mkey, amount=amount)
+    return not code, why
+
+
+def why_not_msg(rule, code: str, why: str) -> Optional[dict]:
+    """The web's message for a rule's "why not" (``{code, params, text}``, :mod:`coach.i18n_msg`), None when it matched. The account
+    and the card digits are the user's own words, passed as they are."""
+    if not code:
+        return None
+    from coach.i18n_msg import MessageError, server_msg
+    m = rule.match
+    params = {"attribution.account": {"account": m.account}, "attribution.card": {"last4": m.card_last4},
+              "attribution.amountBelow": {"min_amount": f"{float(m.amount_min or 0):.2f}"},
+              "attribution.amountAbove": {"max_amount": f"{float(m.amount_max or 0):.2f}"}}.get(code, {})
+    try:
+        return server_msg(code, why, **params)
+    except MessageError:                                               # never blocks the explanation: the web shows the English
+        return None
 
 
 class Attributor:
@@ -224,8 +246,8 @@ def explain(con, people: People, tx_key: str) -> dict:
     man = con.execute("SELECT member, set_at, set_by, note FROM tx_person WHERE tx_key=?", (tx_key,)).fetchone()
     rules = []
     for r in people.attribution:
-        ok, why = rule_matches(r, account_uid=uid, account_names=names, desc=desc or "", mkey=mkey or "", amount=amount or 0.0)
-        rules.append({"id": r.id, "member": r.member, "matched": ok, "why_not": why or None})
+        code, why = _rule_check(r, account_names=names, desc=desc or "", mkey=mkey or "", amount=amount or 0.0)
+        rules.append({"id": r.id, "member": r.member, "matched": not code, "why_not": why or None, "why_not_msg": why_not_msg(r, code, why)})
     return {"tx_key": tx_key, "person": result.person, "source": result.source, "rule": result.rule, "reason": result.reason,
             "manual": {"member": man[0], "set_at": man[1], "set_by": man[2], "note": man[3]} if man else None,
             "rules": rules, "account": label, "account_owner": owner, "account_owner_member": account_owner_member(people, owner),

@@ -15,7 +15,7 @@ from coach.analytics.common import (Scope, add_months_key, div_cents, last_close
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset, is_income, is_spending, is_transfer
 from coach.classify import rules as R
-from coach.i18n_msg import server_msg
+from coach.i18n_msg import server_msg, server_msg_or_none
 
 
 # ---------------------------------------------------------------- scope / meta
@@ -410,20 +410,73 @@ def _iid(*parts) -> str:
     return "ins_" + hashlib.sha1("|".join(str(p) for p in parts).encode()).hexdigest()[:10]
 
 
+ANOMALY_TITLE = {"category_spike": "Spending spike", "duplicate_charge": "Possible duplicate charge", "new_merchant": "New merchant",
+                 "large_transaction": "Large payment"}
+ANOMALY_TITLE_CODE = {"category_spike": "categorySpike", "duplicate_charge": "duplicateCharge", "new_merchant": "newMerchant",
+                      "large_transaction": "largeTransaction"}
+
+
+def _budget_target(target: str) -> tuple[str, dict]:
+    """('Category' | 'Group', params) of a budget target (a category id, ``group:<g>`` or a bare group id) for the card's message."""
+    if target.startswith("group:") or "." not in target:
+        return "Group", {"budget_group": target.removeprefix("group:")}
+    return "Category", {"budget_category": target}
+
+
+def _forecast_texts(acc) -> dict:
+    """title / body of a forecast card, with their messages. The household line (``account`` None) has its own codes (its label is a word
+    the web translates)."""
+    hh = acc.account is None
+    title = f"{acc.label}: balance " + ("projected negative" if acc.first_negative else "at risk")
+    if acc.first_negative:
+        title_msg = server_msg("insight.forecast.negativeHousehold", title) if hh else \
+            server_msg("insight.forecast.negative", title, account=acc.label)
+    else:
+        title_msg = server_msg("insight.forecast.atRiskHousehold", title) if hh else \
+            server_msg("insight.forecast.atRisk", title, account=acc.label)
+    lowest = (f"Lowest expected {money_str(acc.min_balance_c)} EUR on {acc.min_date}." if acc.min_balance_c is not None else "")
+    first = (f"Projected below zero from {acc.first_negative}. " if acc.first_negative else
+             f"Could run short around {acc.first_at_risk} (low end of the band). ")
+    body = first + lowest
+    low = {"low_amount": money_str(acc.min_balance_c), "low_date": acc.min_date} if lowest else {}
+    if acc.first_negative:
+        body_msg = (server_msg("insight.forecast.bodyNegativeLowest", body, negative_date=acc.first_negative, **low) if lowest
+                    else server_msg("insight.forecast.bodyNegative", body, negative_date=acc.first_negative))
+    elif acc.first_at_risk:
+        body_msg = (server_msg("insight.forecast.bodyAtRiskLowest", body, risk_date=acc.first_at_risk, **low) if lowest
+                    else server_msg("insight.forecast.bodyAtRisk", body, risk_date=acc.first_at_risk))
+    else:                                                           # flags only: the lowest point, when there is one
+        body_msg = server_msg("insight.forecast.bodyLowest", lowest, **low) if lowest else None
+    return {"title": title, "title_msg": title_msg, "body": body, "body_msg": body_msg}
+
+
 def build_insights(ds: Dataset, anomalies, pcs, forecast, budget_status, recurring=None) -> list[dict]:
+    """The cards of the insights feed. Each card keeps its English ``title`` / ``body`` (the CLI, the alert events, the coach) and, for the
+    web, ``title_msg`` / ``body_msg`` ({code, params, text}; None when there is no code: the web shows the English). A card may also carry
+    ``disclaimer``: the key of a text of ``coach.disclaimers`` its English body already ends with (the web shows it in its language)."""
     cards: list[dict] = []
     for a in anomalies.anomalies:
-        cards.append({"id": a.id, "kind": "anomaly", "subtype": a.type, "severity": a.severity,
-                      "title": {"category_spike": "Spending spike", "duplicate_charge": "Possible duplicate charge",
-                                "new_merchant": "New merchant", "large_transaction": "Large payment"}.get(a.type, a.type),
-                      "body": a.message, "amount": money_str(a.amount_c), "date": a.period, "subject": a.subject,
+        title = ANOMALY_TITLE.get(a.type, a.type)
+        code = ANOMALY_TITLE_CODE.get(a.type)
+        cards.append({"id": a.id, "kind": "anomaly", "subtype": a.type, "severity": a.severity, "title": title,
+                      "title_msg": server_msg(f"insight.anomaly.{code}", title) if code else None,
+                      "body": a.message, "body_msg": getattr(a, "message_msg", None),
+                      "amount": money_str(a.amount_c), "date": a.period, "subject": a.subject,
                       "evidence": a.evidence[:20], "persist": "anomaly"})
     for c in pcs.changes:
         up = c.direction == "increase"
+        title = f"{c.entity}: {'price up' if up else 'price down'} {abs(c.pct) * 100:.0f}%"
+        body = (f"{money_str(c.old_c)} -> {money_str(c.new_c)} EUR per {c.cadence} payment, about "
+                f"{money_str(abs(c.yearly_impact_c))} EUR a year{'' if c.confirmed else ' (not yet confirmed by a second payment)'}.")
+        bp = {"old_amount": money_str(c.old_c), "new_amount": money_str(c.new_c), "cadence": c.cadence,
+              "yearly_amount": money_str(abs(c.yearly_impact_c))}
         cards.append({"id": c.id, "kind": "price_change", "subtype": c.direction, "severity": "medium" if up else "low",
-                      "title": f"{c.entity}: {'price up' if up else 'price down'} {abs(c.pct) * 100:.0f}%",
-                      "body": f"{money_str(c.old_c)} -> {money_str(c.new_c)} EUR per {c.cadence} payment, about "
-                              f"{money_str(abs(c.yearly_impact_c))} EUR a year{'' if c.confirmed else ' (not yet confirmed by a second payment)'}.",
+                      "title": title,
+                      "title_msg": (server_msg("insight.priceChange.up", title, service=c.entity, change_pct=round(abs(c.pct), 2)) if up
+                                    else server_msg("insight.priceChange.down", title, service=c.entity, change_pct=round(abs(c.pct), 2))),
+                      "body": body,
+                      "body_msg": (server_msg("insight.priceChange.body", body, **bp) if c.confirmed
+                                   else server_msg("insight.priceChange.bodyUnconfirmed", body, **bp)),
                       "amount": money_str(c.yearly_impact_c), "date": c.date.isoformat(), "subject": c.entity,
                       "evidence": [c.tx_key], "persist": "price_change"})
     for acc in [forecast.household, *forecast.accounts]:
@@ -432,20 +485,28 @@ def build_insights(ds: Dataset, anomalies, pcs, forecast, budget_status, recurri
             sev = "high" if acc.first_negative else "medium"
             cards.append({"id": _iid("forecast", acc.account or "household", when, ",".join(acc.flags)), "kind": "forecast",
                           "subtype": "negative" if acc.first_negative else "at_risk", "severity": sev,
-                          "title": f"{acc.label}: balance " + ("projected negative" if acc.first_negative else "at risk"),
-                          "body": (f"Projected below zero from {acc.first_negative}. " if acc.first_negative else
-                                   f"Could run short around {acc.first_at_risk} (low end of the band). ")
-                                  + (f"Lowest expected {money_str(acc.min_balance_c)} EUR on {acc.min_date}." if acc.min_balance_c is not None else ""),
+                          **_forecast_texts(acc),
                           "amount": money_str(acc.min_balance_c) if acc.min_balance_c is not None else None,
                           "date": when.isoformat() if when else None, "subject": acc.label, "evidence": [], "persist": "ui",
                           "flags": acc.flags})
     for p in budget_status.budgets:
         if p.status in ("over", "at_risk"):
+            title = f"Budget {p.target}: " + ("over" if p.status == "over" else "on track to overrun")
+            body = (f"{money_str(p.spent_c)} EUR spent of {money_str(p.available_c)} EUR in {p.month}; projected "
+                    f"{money_str(p.projected_c)} EUR by month end.")
+            what, tparams = _budget_target(p.target)
+            over = p.status == "over"
+            if what == "Group":
+                title_msg = server_msg_or_none("insight.budget.overGroup" if over else "insight.budget.atRiskGroup", title, **tparams)
+            else:
+                title_msg = server_msg_or_none("insight.budget.overCategory" if over else "insight.budget.atRiskCategory", title, **tparams)
             cards.append({"id": _iid("budget", p.id, p.month, p.status), "kind": "budget", "subtype": p.status,
-                          "severity": "high" if p.status == "over" else "medium",
-                          "title": f"Budget {p.target}: " + ("over" if p.status == "over" else "on track to overrun"),
-                          "body": f"{money_str(p.spent_c)} EUR spent of {money_str(p.available_c)} EUR in {p.month}; projected "
-                                  f"{money_str(p.projected_c)} EUR by month end.",
+                          "severity": "high" if over else "medium",
+                          "title": title, "title_msg": title_msg,
+                          "body": body,
+                          "body_msg": server_msg_or_none("insight.budget.body", body, spent_amount=money_str(p.spent_c),
+                                                available_amount=money_str(p.available_c), budget_month=p.month,
+                                                projected_amount=money_str(p.projected_c)),
                           "amount": money_str(p.remaining_c), "date": p.month, "subject": p.target,
                           "evidence": p.evidence[:20], "persist": "ui"})
     if recurring is not None:

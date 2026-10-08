@@ -45,10 +45,19 @@ def test_health_coverage_balances(ctx):
 
 
 def test_meta_disclaimers_in_the_asked_language(ctx):
+    from coach.api.routes.core import WEB_DISCLAIMERS
+    assert {"ai_label", "ai_label_short", "general_advice", "loan", "tax"} <= set(WEB_DISCLAIMERS)
     fr = ctx.get("/meta/disclaimers", lang="fr").json()
     assert fr["lang"] == "fr" and fr["texts"]["ai_label_short"] == "Généré par IA" and "IA" in fr["texts"]["ai_label"]
     en = ctx.get("/meta/disclaimers", lang="xx").json()                     # an unknown language: English
-    assert en["lang"] == "en" and en["texts"]["ai_label_short"] == "AI-generated" and set(en["texts"]) == {"ai_label", "ai_label_short"}
+    assert en["lang"] == "en" and en["texts"]["ai_label_short"] == "AI-generated" and set(en["texts"]) == set(WEB_DISCLAIMERS)
+    assert {"contract", "contract_verify", "tax_short"} <= set(en["texts"])
+    from coach import disclaimers
+    it = ctx.get("/meta/disclaimers", lang="it").json()                     # E8: the cancellation panel's two disclaimers, from disclaimers.py
+    assert it["texts"]["contract"] == disclaimers.get("contract", "it") and it["texts"]["contract_verify"] == disclaimers.get("contract_verify", "it")
+    assert it["texts"]["tax_short"] == disclaimers.get("tax_short", "it")    # 4c: the rental scheme card's disclaimer
+    assert it["texts"]["loan"] == disclaimers.get("loan", "it")              # 4f: the prepayment scenario's disclaimer
+    assert it["texts"]["general_advice"] == disclaimers.get("general_advice", "it") and it["texts"]["tax"] == disclaimers.get("tax", "it")   # 4g: rental
 
 
 # ====================================================================== analytics
@@ -351,8 +360,10 @@ def test_merchant_fix_reports_what_it_cannot_change(ctx):
     ctx.post("/transactions/category", {"tx_key": "fm0", "category": "food.fast_food", "scope": "transaction"})
     pv = ctx.post("/transactions/category", {"tx_key": "fm1", "category": "food.restaurants", "scope": "merchant"}, dry_run=True).json()
     assert pv["affected"]["count"] == 4
-    assert pv["affected"]["blocked"] == [{"reason": "a per-transaction override", "n": 1}]
+    assert pv["affected"]["blocked"] == [{"reason": "a per-transaction override", "n": 1, "kind": "override", "value": ""}]
     assert any("per-transaction override" in w for w in pv["warnings"])
+    # i18n 4d: the web translates the warning by its code (English kept for the CLI)
+    assert pv["warnings_msg"] == [{"code": "categoryEdit.keptByOverride", "params": {"count": 1}, "text": pv["warnings"][0]}]
 
 
 def test_category_fix_memory_annotation_preview_and_write(ctx):
@@ -372,6 +383,7 @@ def test_category_fix_memory_annotation_preview_and_write(ctx):
     # the merchant annotation (written above) comes first in the file and wins: the preview says the new one would never apply
     assert only["affected"]["matched"] == 1 and only["affected"]["count"] == 0 and only["affected"]["applies_to"] == 0
     assert any("would never apply" in w for w in only["warnings"])
+    assert len(only["warnings_msg"]) == len(only["warnings"]) and "annotation.neverApplies" in [m and m["code"] for m in only["warnings_msg"]]
 
 
 def test_category_fix_validation(ctx):
@@ -788,7 +800,7 @@ def test_merchant_preview_names_what_still_wins(ctx):
         "id": "pin-it", "match": {"tx_keys": ["pin1"]}, "category": "food.fast_food"}}], action="t")
     ctx.state.touch()
     pv = ctx.post("/transactions/category", {"tx_key": "pin2", "category": "pets.pets", "scope": "merchant"}, dry_run=True).json()["affected"]
-    assert pv["count"] == 1 and pv["blocked"] == [{"reason": "the memory annotation 'pin-it'", "n": 1}]
+    assert pv["count"] == 1 and pv["blocked"] == [{"reason": "the memory annotation 'pin-it'", "n": 1, "kind": "memory", "value": "pin-it"}]
     ov = ctx.post("/transactions/category", {"tx_key": "pin1", "category": "pets.pets", "scope": "transaction"}, dry_run=True).json()
     assert ov["affected"]["count"] == 0 and ov["changed"] is False and ov["affected"]["blocked"][0]["reason"] == "the memory annotation 'pin-it'"
 

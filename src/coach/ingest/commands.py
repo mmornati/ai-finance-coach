@@ -212,7 +212,8 @@ def cmd_health(a, cfg):
     mem = memory_summary_line(cfg, con)           # counts only; never changes the exit code
     if a.json:
         import json as _json
-        d = rep.to_dict()
+        from coach.i18n_msg import strip_msgs
+        d = strip_msgs(rep.to_dict())     # the *_msg siblings are the web's only
         d["memory"] = mem
         print(_json.dumps(d, indent=2))
     else:

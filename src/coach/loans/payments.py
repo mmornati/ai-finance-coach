@@ -24,6 +24,7 @@ from typing import Optional
 
 from coach.analytics.common import Result, add_months, money_str
 from coach.analytics.recurring import tx_matches
+from coach.i18n_msg import server_msg
 from coach.loans import schedule as S
 
 GRACE_DAYS = 5                 # days after the due date before a missing payment is reported
@@ -57,6 +58,8 @@ class Alert(Result):
     expected_date: Optional[dt.date] = None
     expected_amount_c: Optional[int] = None
     evidence: list = field(default_factory=list)       # transaction keys
+    title_msg: Optional[dict] = None                   # the title / body for the web ({code, params, text}, coach.i18n_msg)
+    body_msg: Optional[dict] = None
 
 
 def tx_matcher(lb):
@@ -170,36 +173,58 @@ def alerts(ds, lb, sch: S.LoanSchedule, obs: Optional[list[Payment]] = None, tod
             if any(lo <= p.date <= hi for p in obs):
                 continue
             late = [p for p in obs if p.date > hi and p.date <= today and (p.date - due).days <= 31]
-            out.append(Alert(_aid("loan-missed", lb.id, due), "missed_payment", "high", lb.id,
-                             f"{who}: expected payment of {due} not seen",
-                             f"The instalment due on {due} ({'schedule' if sch.status == 'computed' else 'usual day of the month'}) was "
-                             f"not found within {grace} days in the data of the account it leaves"
-                             + (f"; a later matching debit was seen on {late[0].date}" if late else "")
-                             + ". Check the account or ask the lender: nothing is assumed about why.",
-                             due, total, due, total, [p.tx_key for p in late[:1]]))
+            title = f"{who}: expected payment of {due} not seen"
+            body = (f"The instalment due on {due} ({'schedule' if sch.status == 'computed' else 'usual day of the month'}) was "
+                    f"not found within {grace} days in the data of the account it leaves"
+                    + (f"; a later matching debit was seen on {late[0].date}" if late else "")
+                    + ". Check the account or ask the lender: nothing is assumed about why.")
+            bp = {"due_date": due, "count": int(grace)}
+            if sch.status == "computed":
+                body_msg = (server_msg("loanAlert.missed.bodyScheduleLater", body, later_date=late[0].date, **bp) if late
+                            else server_msg("loanAlert.missed.bodySchedule", body, **bp))
+            else:
+                body_msg = (server_msg("loanAlert.missed.bodyUsualDayLater", body, later_date=late[0].date, **bp) if late
+                            else server_msg("loanAlert.missed.bodyUsualDay", body, **bp))
+            out.append(Alert(_aid("loan-missed", lb.id, due), "missed_payment", "high", lb.id, title, body,
+                             due, total, due, total, [p.tx_key for p in late[:1]],
+                             title_msg=server_msg("loanAlert.missed.title", title, lender=who, due_date=due), body_msg=body_msg))
     # -- amount changed (the latest payment against the one before, else against the expected amounts)
     last = obs[-1]
     prev = obs[-2] if len(obs) >= 2 else None
     if (today - last.date).days <= 62:
         if prev is not None and not _close(last.amount_c, prev.amount_c) and (last.date - prev.date).days <= 45 \
                 and last.amount_c < EXTRA_FACTOR * prev.amount_c:
-            out.append(Alert(_aid("loan-amount", lb.id, last.date), "amount_changed", "medium", lb.id,
-                             f"{who}: payment changed to {money_str(last.amount_c)}",
-                             f"The payment of {last.date} is {money_str(last.amount_c)}, the one before ({prev.date}) was "
-                             f"{money_str(prev.amount_c)}. A variable rate, a new insurance or a modulation can explain it; "
-                             "nothing is assumed.", last.date, last.amount_c, None, prev.amount_c, [last.tx_key, prev.tx_key]))
+            title = f"{who}: payment changed to {money_str(last.amount_c)}"
+            body = (f"The payment of {last.date} is {money_str(last.amount_c)}, the one before ({prev.date}) was "
+                    f"{money_str(prev.amount_c)}. A variable rate, a new insurance or a modulation can explain it; "
+                    "nothing is assumed.")
+            out.append(Alert(_aid("loan-amount", lb.id, last.date), "amount_changed", "medium", lb.id, title, body,
+                             last.date, last.amount_c, None, prev.amount_c, [last.tx_key, prev.tx_key],
+                             title_msg=server_msg("loanAlert.amountChanged.title", title, lender=who, payment_amount=money_str(last.amount_c)),
+                             body_msg=server_msg("loanAlert.amountChanged.body", body, payment_date=last.date,
+                                                 payment_amount=money_str(last.amount_c), previous_date=prev.date,
+                                                 previous_amount=money_str(prev.amount_c))))
         elif prev is None and exp and not any(_close(last.amount_c, e) for e in exp):
-            out.append(Alert(_aid("loan-amount-sched", lb.id, last.date), "amount_changed", "low", lb.id,
-                             f"{who}: payment differs from the expected amount",
-                             f"The payment of {last.date} is {money_str(last.amount_c)}; the loan file / schedule expects "
-                             f"{' or '.join(money_str(e) for e in exp[:2])}.", last.date, last.amount_c, None, exp[0], [last.tx_key]))
+            title = f"{who}: payment differs from the expected amount"
+            body = (f"The payment of {last.date} is {money_str(last.amount_c)}; the loan file / schedule expects "
+                    f"{' or '.join(money_str(e) for e in exp[:2])}.")
+            bp = {"payment_date": last.date, "payment_amount": money_str(last.amount_c), "expected_amount": money_str(exp[0])}
+            out.append(Alert(_aid("loan-amount-sched", lb.id, last.date), "amount_changed", "low", lb.id, title, body,
+                             last.date, last.amount_c, None, exp[0], [last.tx_key],
+                             title_msg=server_msg("loanAlert.amountExpected.title", title, lender=who),
+                             body_msg=(server_msg("loanAlert.amountExpected.bodyTwo", body, other_amount=money_str(exp[1]), **bp)
+                                       if len(exp) > 1 else server_msg("loanAlert.amountExpected.body", body, **bp))))
         elif prev is not None and exp and _close(last.amount_c, prev.amount_c) and not any(_close(last.amount_c, e) for e in exp) \
                 and sch.status == "computed" and not sch.approximate:
-            out.append(Alert(_aid("loan-amount-sched", lb.id, last.date), "amount_changed", "low", lb.id,
-                             f"{who}: payments differ from the schedule",
-                             f"The last payments are {money_str(last.amount_c)}; the computed schedule expects "
-                             f"{' or '.join(money_str(e) for e in exp[:2])} (rate, insurance or term in the file may differ from the contract).",
-                             last.date, last.amount_c, None, exp[0], [last.tx_key]))
+            title = f"{who}: payments differ from the schedule"
+            body = (f"The last payments are {money_str(last.amount_c)}; the computed schedule expects "
+                    f"{' or '.join(money_str(e) for e in exp[:2])} (rate, insurance or term in the file may differ from the contract).")
+            bp = {"payment_amount": money_str(last.amount_c), "expected_amount": money_str(exp[0])}
+            out.append(Alert(_aid("loan-amount-sched", lb.id, last.date), "amount_changed", "low", lb.id, title, body,
+                             last.date, last.amount_c, None, exp[0], [last.tx_key],
+                             title_msg=server_msg("loanAlert.amountSchedule.title", title, lender=who),
+                             body_msg=(server_msg("loanAlert.amountSchedule.bodyTwo", body, other_amount=money_str(exp[1]), **bp)
+                                       if len(exp) > 1 else server_msg("loanAlert.amountSchedule.body", body, **bp))))
     # -- extra payment: much larger than the instalment, or a debit away from the usual day when another one already paid that month
     #    (a lone debit that merely moved by a few days is the instalment, not an extra)
     day = expected_day(lb, obs)
@@ -217,25 +242,37 @@ def alerts(ds, lb, sch: S.LoanSchedule, obs: Optional[list[Payment]] = None, tod
         off_day = g is not None and g > grace + EARLY_DAYS
         second = off_day and ((p.date.year, p.date.month) in regular_months or not _close(p.amount_c, ref))
         if big or second:
-            out.append(Alert(_aid("loan-extra", lb.id, p.tx_key), "extra_payment", "medium", lb.id,
-                             f"{who}: unexpected payment of {money_str(p.amount_c)}",
-                             f"A debit of {money_str(p.amount_c)} on {p.date} matches this loan but is "
-                             + ("much larger than the usual instalment" if big else "away from the usual payment day, in a month that "
-                                "already has its instalment" if (p.date.year, p.date.month) in regular_months else
-                                "away from the usual payment day and of another size")
-                             + ". It may be a partial early repayment: if so, ask the lender for the new schedule and update the "
-                               "capital still due.", p.date, p.amount_c, None, ref, [p.tx_key]))
+            in_paid_month = (p.date.year, p.date.month) in regular_months
+            title = f"{who}: unexpected payment of {money_str(p.amount_c)}"
+            body = (f"A debit of {money_str(p.amount_c)} on {p.date} matches this loan but is "
+                    + ("much larger than the usual instalment" if big else "away from the usual payment day, in a month that "
+                       "already has its instalment" if in_paid_month else
+                       "away from the usual payment day and of another size")
+                    + ". It may be a partial early repayment: if so, ask the lender for the new schedule and update the "
+                      "capital still due.")
+            bp = {"payment_amount": money_str(p.amount_c), "payment_date": p.date}
+            body_msg = (server_msg("loanAlert.extra.bodyLarger", body, **bp) if big else
+                        server_msg("loanAlert.extra.bodyOffDayPaidMonth", body, **bp) if in_paid_month else
+                        server_msg("loanAlert.extra.bodyOffDayOtherSize", body, **bp))
+            out.append(Alert(_aid("loan-extra", lb.id, p.tx_key), "extra_payment", "medium", lb.id, title, body,
+                             p.date, p.amount_c, None, ref, [p.tx_key],
+                             title_msg=server_msg("loanAlert.extra.title", title, lender=who, payment_amount=money_str(p.amount_c)),
+                             body_msg=body_msg))
     # -- wrong account
     if debited_uid:
         seen: set[str] = set()
         for p in reversed(obs):
             if p.account != debited_uid and p.account not in seen and (today - p.date).days <= EXTRA_LOOKBACK_DAYS:
                 seen.add(p.account)
-                out.append(Alert(_aid("loan-account", lb.id, p.account, p.date), "wrong_account", "medium", lb.id,
-                                 f"{who}: paid from another account",
-                                 f"The payment of {p.date} ({money_str(p.amount_c)}) left {p.account_label}, not "
-                                 f"{ds.label(debited_uid)}, the account the loan is recorded to be debited from.",
-                                 p.date, p.amount_c, None, None, [p.tx_key]))
+                title = f"{who}: paid from another account"
+                body = (f"The payment of {p.date} ({money_str(p.amount_c)}) left {p.account_label}, not "
+                        f"{ds.label(debited_uid)}, the account the loan is recorded to be debited from.")
+                out.append(Alert(_aid("loan-account", lb.id, p.account, p.date), "wrong_account", "medium", lb.id, title, body,
+                                 p.date, p.amount_c, None, None, [p.tx_key],
+                                 title_msg=server_msg("loanAlert.wrongAccount.title", title, lender=who),
+                                 body_msg=server_msg("loanAlert.wrongAccount.body", body, payment_date=p.date,
+                                                     payment_amount=money_str(p.amount_c), account=p.account_label,
+                                                     expected_account=ds.label(debited_uid))))
     order = {"high": 0, "medium": 1, "low": 2}
     return sorted(out, key=lambda a: (order[a.severity], a.date), reverse=False)
 

@@ -4,10 +4,11 @@ import type { ParseKeys } from "i18next";
 import { Building2, CalendarClock, FileText, Plus, Scale } from "lucide-react";
 import { Async, Badge, Button, Card, Dialog, DiffView, EmptyState, Field, Input, Money, Notice, PageHeader, ProgressBar, Segmented, Select, Skeleton, Stat, Tabs } from "@/components/ui";
 import { RentalChart } from "@/components/charts";
-import { useDryRun, useRental, useRentalIndicators, useRentalList, useRentalTax, useWrite } from "@/api/hooks";
+import { useDisclaimers, useDryRun, useRental, useRentalIndicators, useRentalList, useRentalTax, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate, fmtMoney, fmtMonth, fmtPct } from "@/lib/format";
-import type { EditResult, RentalDetail, RentalMonth, RentalPnl, RentalScheme } from "@/api/types";
+import { serverLabel, tServer, tServerList } from "@/i18n/server";
+import type { DisclaimerKey, Disclaimers, EditResult, ReadingMsg, RentalDetail, RentalMonth, RentalPnl, RentalScheme } from "@/api/types";
 
 type RentalKey = ParseKeys<"rental">;
 type TabKey = "cashflow" | "scheme" | "tax" | "sell";
@@ -20,6 +21,20 @@ const LINK_TEXT: Record<string, RentalKey> = { declared: "link.declared", only_o
 const STATE_TEXT: Record<string, RentalKey> = { unknown: "state.unknown", not_started: "state.notStarted", active: "state.active", ended: "state.ended" };
 const DECISION_TEXT: Record<string, RentalKey> = { extend: "decision.extend", not_extend: "decision.notExtend", undecided: "decision.undecided" };
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+// The server's sentences come with a message (code + params) the web translates, the English being the fallback (docs/i18n.md, "Server text").
+// A legal text is never a translation: the server names it by key and its wording comes from GET /meta/disclaimers in the interface language.
+function disclaimerText(texts: Disclaimers["texts"] | undefined, key: DisclaimerKey | undefined, english: string): string {
+  return (key && texts?.[key]) || english;
+}
+/** A reading of the indicators: the sentence, then the disclaimer it carries (general advice). Until the disclaimers are known, the English
+ *  reading, which already ends with it. */
+function readingText(msg: ReadingMsg | undefined, english: string, texts: Disclaimers["texts"] | undefined): string {
+  if (!msg) return english;
+  if (!msg.disclaimer) return tServer(msg, english);
+  const line = texts?.[msg.disclaimer];
+  return line ? `${tServer(msg, english)} ${line}` : english;
+}
 
 export default function Rental() {
   const { t } = useTranslation("rental");
@@ -134,7 +149,7 @@ function Links({ d, onEdit }: { d: RentalDetail; onEdit: () => void }) {
         {d.scheme.missing.length > 0 && <Badge tone="warn">{t("links.missing", { n: d.scheme.missing.length })}</Badge>}
       </div>
       {!ok && <p className="mt-2 text-xs text-muted">{t("links.hint")}</p>}
-      {d.links.notes.map((n) => <p key={n} className="mt-1 text-xs text-warn">{n}</p>)}
+      {tServerList(d.links.notes, d.links.notes_msg).map((n, i) => <p key={i} className="mt-1 text-xs text-warn">{n}</p>)}
     </Card>
   );
 }
@@ -274,7 +289,7 @@ function SchemeTab({ id }: { id: string }) {
                       </>
                     )}
                   </p>
-                  {s.rent_cap.rent_basis && <p className="mt-1 text-xs text-faint">{t("rentCap.basis", { rent: s.rent_cap.rent_basis, cap: s.rent_cap.cap_basis })}</p>}
+                  {s.rent_cap.rent_basis && <p className="mt-1 text-xs text-faint">{t("rentCap.basis", { rent: tServer(s.rent_cap.rent_basis_msg, s.rent_cap.rent_basis), cap: tServer(s.rent_cap.cap_basis_msg, s.rent_cap.cap_basis ?? "–") })}</p>}
                 </Card>
                 <Card title={t("tenantIncome.title")} subtitle={t("tenantIncome.subtitle")}>
                   <p className="text-sm">
@@ -292,7 +307,7 @@ function SchemeTab({ id }: { id: string }) {
               <Card title={t("missingFacts.title")} subtitle={t("missingFacts.subtitle")}>
                 <ul className="grid gap-1 text-sm">
                   {s.missing.map((m) => (
-                    <li key={m.field}><code className="text-[13px]">{m.field}</code> <span className="text-muted">{t("missingFacts.neededFor", { what: m.needed_for })}</span></li>
+                    <li key={m.field}><code className="text-[13px]">{m.field}</code> <span className="text-muted">{t("missingFacts.neededFor", { what: tServer(m.needed_for_msg, m.needed_for) })}</span></li>
                   ))}
                 </ul>
               </Card>
@@ -314,7 +329,7 @@ function SchemeBody({ s, onExtension }: { s: RentalScheme; onExtension: () => vo
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Stat label={t("schemeBody.start")} value={s.start_date ? fmtDate(s.start_date) : "–"} />
         <Stat label={t("schemeBody.length")} value={s.years ? t("schemeBody.years", { count: s.years }) : "–"} />
-        <Stat label={t("schemeBody.end")} value={s.end_date ? fmtDate(s.end_date) : "–"} hint={s.end_source ?? undefined} />
+        <Stat label={t("schemeBody.end")} value={s.end_date ? fmtDate(s.end_date) : "–"} hint={s.end_source ? tServer(s.end_source_msg, s.end_source) : undefined} />
         <Stat
           label={t("schemeBody.left")}
           value={s.state === "unknown" ? "–" : s.state === "ended" ? t("state.ended") : s.state === "not_started" ? t("state.notStarted") : t("common.months", { count: s.months_left ?? 0 })}
@@ -337,7 +352,7 @@ function SchemeBody({ s, onExtension }: { s: RentalScheme; onExtension: () => vo
           {t("schemeBody.reminders", { list: s.reminders.map((r) => t("schemeBody.reminder", { n: r.months_before, date: fmtDate(r.date) })).join(", ") })}
         </p>
       )}
-      {s.warnings?.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}
+      {tServerList(s.warnings, s.warnings_msg).map((w, i) => <Notice key={i} tone="warn">{w}</Notice>)}
     </div>
   );
 }
@@ -397,6 +412,7 @@ function TaxTab({ id }: { id: string }) {
   const [year, setYear] = useState<number | undefined>();
   const q = useRentalTax(id, year);
   const [done, setDone] = useState<Record<string, boolean>>({});
+  const disclaimers = useDisclaimers();
   const now = new Date();
   const first = now.getMonth() >= 9 ? now.getFullYear() : now.getFullYear() - 1;
   const years = [first, first - 1, first - 2, first - 3];
@@ -409,10 +425,10 @@ function TaxTab({ id }: { id: string }) {
       <Async q={q} skeleton={<Skeleton className="h-96 w-full" />}>
         {(t) =>
           t.status !== "computed" ? (
-            <Card><EmptyState icon={<FileText className="size-6" />} title={tr("tax.notModelled")}>{t.note}</EmptyState></Card>
+            <Card><EmptyState icon={<FileText className="size-6" />} title={tr("tax.notModelled")}>{tServer(t.note_msg, t.note ?? "")}</EmptyState></Card>
           ) : (
             <div className="grid gap-4">
-              <Notice tone="warn">{tr("tax.candidates")} {t.disclaimer}</Notice>
+              <Notice tone="warn">{tr("tax.candidates")} {disclaimerText(disclaimers, t.disclaimer_key, t.disclaimer)}</Notice>
               {(t.months_incomplete?.length || t.months_missing_data?.length) ? (
                 <Notice tone="info">
                   {tr("tax.notCovered", {
@@ -437,13 +453,13 @@ function TaxTab({ id }: { id: string }) {
                 <Card title={tr("tax.reel.title")} subtitle={tr("tax.reel.subtitle")}>
                   <Row label={tr("tax.grossRents")} v={t.reel!.gross_rents} />
                   {t.reel!.deductible.map((i) => (
-                    <div key={i.item} className="flex items-baseline justify-between gap-3 border-t border-border py-1.5 text-sm" title={`${i.source}: ${i.bound}`}>
-                      <span>− {i.item}<span className="block text-[11px] text-faint">{i.bound}</span></span>
+                    <div key={i.item} className="flex items-baseline justify-between gap-3 border-t border-border py-1.5 text-sm" title={`${tServer(i.source_msg, i.source)}: ${tServer(i.bound_msg, i.bound)}`}>
+                      <span>− {tServer(i.item_msg, i.item)}<span className="block text-[11px] text-faint">{tServer(i.bound_msg, i.bound)}</span></span>
                       <Money v={i.amount} />
                     </div>
                   ))}
                   <Row label={tr("tax.reel.net")} v={t.reel!.net} bold />
-                  {t.reel!.unknown.map((u) => <p key={u} className="mt-2 text-xs text-warn">{tr("tax.reel.unknown", { what: u })}</p>)}
+                  {tServerList(t.reel!.unknown, t.reel!.unknown_msg).map((u, i) => <p key={i} className="mt-2 text-xs text-warn">{tr("tax.reel.unknown", { what: u })}</p>)}
                 </Card>
               </div>
               <Card title={tr("tax.lower.title")} subtitle={tr("tax.lower.subtitle")}>
@@ -463,12 +479,12 @@ function TaxTab({ id }: { id: string }) {
                     <li key={d.id}>
                       <label className="flex items-start gap-2">
                         <input type="checkbox" className="mt-1" checked={!!done[d.id]} onChange={(e) => setDone({ ...done, [d.id]: e.target.checked })} />
-                        <span>{d.item} <span className="text-faint">({d.from})</span></span>
+                        <span>{serverLabel("rentalDocument", d.id, d.item)} <span className="text-faint">({serverLabel("rentalDocumentFrom", d.id, d.from)})</span></span>
                       </label>
                     </li>
                   ))}
                 </ul>
-                <ul className="mt-3 grid gap-1 text-xs text-muted">{t.notes?.map((n) => <li key={n}>{n}</li>)}</ul>
+                <ul className="mt-3 grid gap-1 text-xs text-muted">{tServerList(t.notes, t.notes_msg).map((n, i) => <li key={i}>{n}</li>)}</ul>
               </Card>
             </div>
           )
@@ -494,7 +510,7 @@ function SchemeReductionCard({ t: tax }: { t: import("@/api/types").RentalTax })
   return (
     <Card title={t("reduction.title")} subtitle={t("reduction.subtitle")}>
       {r.status === "needs_fields" ? (
-        <p className="text-sm text-muted">{t("common.missing", { fields: r.missing?.join(", ") })}</p>
+        <p className="text-sm text-muted">{t("common.missing", { fields: tServerList(r.missing, r.missing_msg).join(", ") })}</p>
       ) : (
         <div className="grid gap-2 text-sm">
           <p>
@@ -503,7 +519,7 @@ function SchemeReductionCard({ t: tax }: { t: import("@/api/types").RentalTax })
           <p className="text-xs text-muted">
             <Trans t={t} i18nKey="reduction.calc" values={{ rate: r.rate_pct, n: r.years, first: r.first_year, last: r.last_year }} components={{ base: <Money v={r.base} />, total: <Money v={r.total} /> }} />
           </p>
-          {r.notes?.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+          {tServerList(r.notes, r.notes_msg).map((n, i) => <p key={i} className="text-xs text-faint">{n}</p>)}
         </div>
       )}
     </Card>
@@ -519,6 +535,7 @@ function SellTab({ id }: { id: string }) {
   const params = useMemo(() => ({ ...(rate ? { market_rate: Number(rate) } : {}), ...(rate && day ? { market_date: day } : {}), ...(fees ? { bank_fees: Number(fees) } : {}) }), [rate, day, fees]);
   const q = useRentalIndicators(id, params);
   const [save, setSave] = useState(false);
+  const disclaimers = useDisclaimers();
   return (
     <div className="grid gap-4">
       <Card title={t("market.title")} subtitle={t("market.subtitle")}>
@@ -534,7 +551,7 @@ function SellTab({ id }: { id: string }) {
           <div className="grid gap-4">
             <div className="grid gap-4 lg:grid-cols-3">
               <Card title={t("vsMarket.title")}>
-                {d.loan_rate.loan_rate_pct === undefined ? <p className="text-sm text-muted">{t("common.missing", { fields: d.loan_rate.missing?.join(", ") })}</p> : (
+                {d.loan_rate.loan_rate_pct === undefined ? <p className="text-sm text-muted">{t("common.missing", { fields: tServerList(d.loan_rate.missing, d.loan_rate.missing_msg).join(", ") })}</p> : (
                   <div className="grid gap-1 text-sm">
                     <Stat
                       label={t("vsMarket.yourLoan")}
@@ -542,11 +559,11 @@ function SellTab({ id }: { id: string }) {
                       hint={d.loan_rate.market_rate_pct !== undefined ? t("vsMarket.gap", { market: d.loan_rate.market_rate_pct, gap: d.loan_rate.gap_pts?.toFixed(2) }) : t("vsMarket.enterRate")}
                       tone={d.loan_rate.status === "above_market" ? "warn" : undefined}
                     />
-                    {d.loan_rate.reading && <p className="mt-1 text-xs text-muted">{d.loan_rate.reading}</p>}
+                    {d.loan_rate.reading && <p className="mt-1 text-xs text-muted">{readingText(d.loan_rate.reading_msg, d.loan_rate.reading, disclaimers)}</p>}
                   </div>
                 )}
-                {d.market_rate.status === "missing" && <p className="mt-2 text-xs text-faint">{d.market_rate.note}</p>}
-                {d.market_rate.warning && <p className="mt-2 text-xs text-warn">{d.market_rate.warning}</p>}
+                {d.market_rate.status === "missing" && <p className="mt-2 text-xs text-faint">{tServer(d.market_rate.note_msg, d.market_rate.note ?? "")}</p>}
+                {d.market_rate.warning && <p className="mt-2 text-xs text-warn">{tServer(d.market_rate.warning_msg, d.market_rate.warning)}</p>}
               </Card>
               <Card title={t("commitmentEnd.title")}>
                 <Stat
@@ -559,8 +576,8 @@ function SellTab({ id }: { id: string }) {
               <Card title={t("equity.title")} subtitle={t("equity.subtitle")}>
                 {d.equity.status === "computed" ? (
                   <Stat label={t("equity.title")} value={<Money v={d.equity.net_equity} colored />} hint={t("equity.hint", { value: fmtMoney(d.equity.value), due: fmtMoney(d.equity.outstanding), pct: d.equity.equity_share_pct })} />
-                ) : <p className="text-sm text-muted">{t("equity.unknown", { fields: d.equity.missing?.join(", ") })}</p>}
-                {d.equity.value_warning && <p className="mt-2 text-xs text-warn">{d.equity.value_warning}</p>}
+                ) : <p className="text-sm text-muted">{t("equity.unknown", { fields: tServerList(d.equity.missing, d.equity.missing_msg).join(", ") })}</p>}
+                {d.equity.value_warning && <p className="mt-2 text-xs text-warn">{tServer(d.equity.value_warning_msg, d.equity.value_warning)}</p>}
               </Card>
             </div>
             {d.loan_rate.renegotiation?.status === "computed" && (
@@ -571,13 +588,13 @@ function SellTab({ id }: { id: string }) {
                   <Stat label={t("renegotiation.netSaving")} value={<Money v={d.loan_rate.renegotiation.net_saving} colored signed />} />
                   <Stat label={t("renegotiation.breakEven")} value={d.loan_rate.renegotiation.break_even_months === null ? t("renegotiation.never") : t("common.months", { count: d.loan_rate.renegotiation.break_even_months })} />
                 </div>
-                {d.loan_rate.renegotiation_note && <p className="mt-2 text-xs text-faint">{d.loan_rate.renegotiation_note}</p>}
+                {d.loan_rate.renegotiation_note && <p className="mt-2 text-xs text-faint">{tServer(d.loan_rate.renegotiation_note_msg, d.loan_rate.renegotiation_note)}</p>}
               </Card>
             )}
             <Card title={t("indicators.title")} subtitle={t("indicators.subtitle", { amount: fmtMoney(d.trailing_effort) })}>
-              <ul className="grid gap-2 text-sm">{d.signals.length === 0 ? <li className="text-muted">{t("indicators.none")}</li> : d.signals.map((s) => <li key={s.id}>{s.reading}</li>)}</ul>
-              <ul className="mt-3 grid gap-1 text-xs text-muted">{d.scenarios.map((s) => <li key={s}>{s}</li>)}</ul>
-              <p className="mt-3 text-xs text-faint">{d.disclaimer}</p>
+              <ul className="grid gap-2 text-sm">{d.signals.length === 0 ? <li className="text-muted">{t("indicators.none")}</li> : d.signals.map((s) => <li key={s.id}>{readingText(s.reading_msg, s.reading, disclaimers)}</li>)}</ul>
+              <ul className="mt-3 grid gap-1 text-xs text-muted">{tServerList(d.scenarios, d.scenarios_msg).map((s, i) => <li key={i}>{s}</li>)}</ul>
+              <p className="mt-3 text-xs text-faint">{disclaimerText(disclaimers, d.disclaimer_key, d.disclaimer)}</p>
             </Card>
           </div>
         )}

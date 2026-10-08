@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from coach import config as config_mod, db as db_mod, egress
+from coach.i18n_msg import server_msg
 from coach.setup import doctor as doctor_mod, eb_guide, init as init_mod
 
 STATE_NAME = "setup-state.json"
@@ -134,13 +135,18 @@ class Detected:
     id: str
     status: str            # done | partial | todo | skipped | blocked
     detail: str = ""
+    detail_msg: Optional[dict] = None      # the detail for the web app: {code, params, text} (docs/i18n.md "Server text")
+
+    @classmethod
+    def of(cls, id: str, status: str, msg: dict) -> "Detected":
+        return cls(id, status, msg["text"], msg)
 
     @property
     def title(self) -> str:
         return TITLES[self.id]
 
     def to_dict(self, container: bool = False) -> dict:
-        return {"id": self.id, "title": self.title, "status": self.status, "detail": self.detail,
+        return {"id": self.id, "title": self.title, "status": self.status, "detail": self.detail, "detail_msg": self.detail_msg,
                 "command": command_for(self.id, container), "optional": self.id in OPTIONAL}
 
 
@@ -186,49 +192,59 @@ def detect(cfg, state: Optional[State] = None) -> list[Detected]:
     checks = [c for c in doctor_mod.run_checks(cfg) if c.id in core_ids]
     bad = [c for c in checks if c.level == "fail"]
     out: dict[str, Detected] = {}
-    out["init"] = Detected("init", "done" if not bad else "todo", "ready" if not bad else "; ".join(f"{c.title}: {c.detail}" for c in bad)[:240])
+    if bad:                                   # the doctor's own titles and details (English), passed as they are
+        problems = "; ".join(f"{c.title}: {c.detail}" for c in bad)[:240]
+        out["init"] = Detected.of("init", "todo", server_msg("wizard.initProblems", problems, problems=problems))
+    else:
+        out["init"] = Detected.of("init", "done", server_msg("wizard.ready", "ready"))
 
     eb_ok = bool(cfg.eb_app_id and cfg.eb_redirect_url and cfg.eb_private_key_path)
     if not eb_ok:
-        out["enablebanking"] = Detected("enablebanking", "todo", "app id, redirect URL or key not set")
+        out["enablebanking"] = Detected.of("enablebanking", "todo", server_msg("wizard.ebNotSet", "app id, redirect URL or key not set"))
     elif state.step("enablebanking").get("status") == "done":
-        out["enablebanking"] = Detected("enablebanking", "done", "configured and validated")
+        out["enablebanking"] = Detected.of("enablebanking", "done", server_msg("wizard.ebValidated", "configured and validated"))
     else:
-        out["enablebanking"] = Detected("enablebanking", "partial", "configured, not validated with `coach check` yet")
+        out["enablebanking"] = Detected.of("enablebanking", "partial", server_msg("wizard.ebNotValidated", "configured, not validated with "
+                                                                                  "`coach check` yet", command="coach check"))
 
     counts = _counts(cfg) if not bad else None
     if counts is None:
         for s in ("connect", "sync", "classify"):
-            out[s] = Detected(s, "blocked", "needs a working database (step 1)")
+            out[s] = Detected.of(s, "blocked", server_msg("wizard.needsDatabase", "needs a working database (step 1)"))
     else:
-        out["connect"] = Detected("connect", "done" if counts["accounts"] else "todo", f"{counts['accounts']} bank account(s) linked")
-        out["sync"] = Detected("sync", "done" if counts["transactions"] else "todo", f"{counts['transactions']} transaction(s)")
+        n_acc, n_tx, n_lab = counts["accounts"], counts["transactions"], counts["labelled"]
+        out["connect"] = Detected.of("connect", "done" if n_acc else "todo",
+                                     server_msg("wizard.accountsLinked", f"{n_acc} bank account(s) linked", count=n_acc))
+        out["sync"] = Detected.of("sync", "done" if n_tx else "todo", server_msg("wizard.transactions", f"{n_tx} transaction(s)", count=n_tx))
         if state.step("classify").get("status") == "skipped":
-            out["classify"] = Detected("classify", "skipped", "skipped for now (rules and memory still apply)")
-        elif counts["labelled"]:
-            out["classify"] = Detected("classify", "done", f"{counts['labelled']} merchant(s) labelled")
+            out["classify"] = Detected.of("classify", "skipped", server_msg("wizard.classifySkipped", "skipped for now (rules and memory still apply)"))
+        elif n_lab:
+            out["classify"] = Detected.of("classify", "done", server_msg("wizard.merchantsLabelled", f"{n_lab} merchant(s) labelled", count=n_lab))
         elif counts["normalized"]:
-            out["classify"] = Detected("classify", "partial", "normalized, no model labelling yet")
+            out["classify"] = Detected.of("classify", "partial", server_msg("wizard.normalizedOnly", "normalized, no model labelling yet"))
         else:
-            out["classify"] = Detected("classify", "todo", "nothing normalized yet")
+            out["classify"] = Detected.of("classify", "todo", server_msg("wizard.nothingNormalized", "nothing normalized yet"))
 
     n = _members(cfg)
     if state.step("onboarding").get("status") == "skipped" and not n:
-        out["onboarding"] = Detected("onboarding", "skipped", "skipped for now")
+        out["onboarding"] = Detected.of("onboarding", "skipped", server_msg("wizard.skipped", "skipped for now"))
     else:
-        out["onboarding"] = Detected("onboarding", "done" if n else "todo", f"{n} household member(s) declared")
+        out["onboarding"] = Detected.of("onboarding", "done" if n else "todo",
+                                        server_msg("wizard.members", f"{n} household member(s) declared", count=n))
 
     if state.step("schedule").get("status") == "skipped":
-        out["schedule"] = Detected("schedule", "skipped", "skipped for now")
+        out["schedule"] = Detected.of("schedule", "skipped", server_msg("wizard.skipped", "skipped for now"))
     elif state.step("schedule").get("status") == "done" or _schedule_installed():
-        out["schedule"] = Detected("schedule", "done", "daily job installed")
+        out["schedule"] = Detected.of("schedule", "done", server_msg("wizard.scheduleInstalled", "daily job installed"))
     else:
-        out["schedule"] = Detected("schedule", "todo", "no daily job")
+        out["schedule"] = Detected.of("schedule", "todo", server_msg("wizard.noSchedule", "no daily job"))
 
     for step, need in NEEDS.items():          # a step whose predecessor is not done cannot start
         ready = out[need].status in ("done", "skipped") or (need == "enablebanking" and out[need].status == "partial")   # configured counts
         if out[step].status in ("todo", "partial") and not ready:
-            out[step] = Detected(step, "blocked", f"finish '{TITLES[need]}' first")
+            # `need` is the step id: the web shows its label (labels.setupStep.<need>) in place of the English title `step`
+            out[step] = Detected.of(step, "blocked", server_msg("wizard.finishFirst", f"finish '{TITLES[need]}' first", step=TITLES[need],
+                                                                 need=need))
     return [out[s] for s in STEPS]
 
 
@@ -581,7 +597,8 @@ def cmd_setup(a, cfg, *, ctx: Optional[Ctx] = None) -> None:
         return
     if getattr(a, "status", False) or getattr(a, "json", False):
         if getattr(a, "json", False):
-            print(json.dumps(status(cfg, state), indent=2))
+            from coach.i18n_msg import strip_msgs
+            print(json.dumps(strip_msgs(status(cfg, state)), indent=2))
         else:
             print_status(cfg, state)
         return

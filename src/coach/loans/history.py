@@ -20,6 +20,7 @@ import json
 from typing import Optional
 
 from coach.analytics.common import add_months_key, last_closed_month, month_end, month_key, money_str
+from coach.i18n_msg import server_msg
 from coach.loans import networth as NW, schedule as S
 
 COLS = ("as_of", "month", "source", "net_worth_c", "assets_c", "liabilities_c", "cash_c", "savings_c", "investments_c",
@@ -41,7 +42,7 @@ def _put(con, as_of: dt.date, source: str, assets_by_cat: dict, liabilities_c: i
 
 def record_snapshot(con, nw: NW.NetWorth) -> None:
     """Store `nw` as the snapshot of its day (replacing the one already stored for that day)."""
-    unknown = [{k: u[k] for k in ("type", "id", "label", "reason")} for u in nw.unknown]
+    unknown = [{k: u[k] for k in ("type", "id", "label", "reason", "reason_msg") if k in u} for u in nw.unknown]   # reason_msg: the web's
     _put(con, nw.as_of, "snapshot", {c: nw.by_category_c.get(c, 0) for c in NW.CATEGORIES}, nw.liabilities_c, unknown,
          {o: v for o, v in nw.by_owner.items()}, sum(1 for c in nw.components if c.type == "account" and c.balance_type and c.balance_type not in NW.BOOKED))
     con.commit()
@@ -70,7 +71,7 @@ def month_figures(ds, day: dt.date, schedules: dict) -> tuple[dict, int, list, d
         v = _balance_on(ds, acc.uid, day)
         o = own(acc.owner or NW.UNASSIGNED)
         if v is None:
-            unknown.append({"type": "account", "id": acc.uid, "label": acc.label, "reason": "balance not known on that date"})
+            unknown.append(NW._unknown("account", acc.uid, acc.label, server_msg("netWorth.balanceNotKnownOnDate", "balance not known on that date")))
             o["n_unknown"] += 1
         else:
             cats[NW.account_category(acc)] += v
@@ -81,10 +82,12 @@ def month_figures(ds, day: dt.date, schedules: dict) -> tuple[dict, int, list, d
         o = own(NW._holder(a))
         label = a.description or a.id
         if a.amount is None:
-            unknown.append({"type": "asset", "id": a.id, "label": label, "reason": "no value recorded"})
+            unknown.append(NW._unknown("asset", a.id, label, server_msg("netWorth.noValue", "no value recorded")))
             o["n_unknown"] += 1
         elif a.as_of is None or day < a.as_of:
-            unknown.append({"type": "asset", "id": a.id, "label": label, "reason": "value only known from " + (str(a.as_of) if a.as_of else "an unknown date")})
+            m = (server_msg("netWorth.valueKnownFrom", f"value only known from {a.as_of}", from_date=a.as_of) if a.as_of else
+                 server_msg("netWorth.valueKnownFromUnknownDate", "value only known from an unknown date"))
+            unknown.append(NW._unknown("asset", a.id, label, m))
             o["n_unknown"] += 1
         else:
             v = int(round(a.amount * 100))
@@ -97,7 +100,7 @@ def month_figures(ds, day: dt.date, schedules: dict) -> tuple[dict, int, list, d
         if sch is not None and sch.status == "not_applicable":
             continue                                          # a lease owes no capital
         if sch is None or sch.status != "computed":
-            unknown.append({"type": "liability", "id": lb.id, "label": label, "reason": "no amortization schedule"})
+            unknown.append(NW._unknown("liability", lb.id, label, server_msg("netWorth.noSchedule", "no amortization schedule")))
             o["n_unknown"] += 1
             continue
         if sch.mode == "from_principal" and lb.start_date and day < lb.start_date:
@@ -107,7 +110,7 @@ def month_figures(ds, day: dt.date, schedules: dict) -> tuple[dict, int, list, d
         else:
             bal = S.balance_on(sch, day)
         if bal is None:
-            unknown.append({"type": "liability", "id": lb.id, "label": label, "reason": "capital not known on that date"})
+            unknown.append(NW._unknown("liability", lb.id, label, server_msg("netWorth.capitalNotKnownOnDate", "capital not known on that date")))
             o["n_unknown"] += 1
             continue
         liab += bal
@@ -153,16 +156,18 @@ def series(con, months: Optional[int] = None) -> list[dict]:
         except ValueError:
             detail = {}
         nb = detail.get("non_booked_accounts", 0)
+        caveat = server_msg("netWorth.nonBookedCaveat", f"{nb} account balance(s) are available / expected balances (ITAV, XPCD...), not booked "
+                            "ones: pending items can make this month differ slightly from the bank's own figure", count=nb) if nb else None
         out.append({"month": m, "as_of": d["as_of"], "non_booked_accounts": nb,
-                    "caveat": (f"{nb} account balance(s) are available / expected balances (ITAV, XPCD...), not booked ones: pending items can make "
-                               "this month differ slightly from the bank's own figure") if nb else None, "source": d["source"], "net_worth": money_str(d["net_worth_c"]),
+                    "caveat": caveat and caveat["text"], "caveat_msg": caveat, "source": d["source"], "net_worth": money_str(d["net_worth_c"]),
                     "assets": money_str(d["assets_c"]), "liabilities": money_str(d["liabilities_c"]),
                     "by_category": {c: money_str(d[f"{c}_c"]) for c in NW.CATEGORIES}, "n_unknown": d["n_unknown"],
                     "complete": bool(d["complete"]), "unknown": detail.get("unknown", [])})
     for prev, cur in zip(out, out[1:]):               # an item known from this month on: the jump is not a change in wealth
         was = {(u["type"], u["id"]): u for u in prev["unknown"]}
         now = {(u["type"], u["id"]) for u in cur["unknown"]}
-        cur["newly_counted"] = [{"type": k[0], "id": k[1], "label": u["label"], "reason_before": u["reason"]} for k, u in was.items() if k not in now]
+        cur["newly_counted"] = [{"type": k[0], "id": k[1], "label": u["label"], "reason_before": u["reason"],
+                                 "reason_before_msg": u.get("reason_msg")} for k, u in was.items() if k not in now]
     if out:
         out[0].setdefault("newly_counted", [])
     return out[-months:] if months else out

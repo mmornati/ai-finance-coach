@@ -2,13 +2,13 @@
 //
 // The API keeps its English sentence and sends, next to it, a CODE and RAW parameters: `{ code, params, text }` (built by
 // `coach.i18n_msg.server_msg` in Python). The code is a key of the `server` namespace (src/locales/<lang>/server.json); a param is
-// formatted from its NAME (`*_date`, `*_month`, `*_amount`, `*_pct`, `*_category`, `*_group`, `count`); an unknown code shows the English
+// formatted from its NAME (`*_date`, `*_month`, `*_amount`, `*_pct`, `*_num`, `*_category`, `*_group`, `count`); an unknown code shows the English
 // `text`. A fixed vocabulary (an alert kind, a balance type, a setup step...) is a code the payload already carries: `serverLabel(family, code,
 // english)` looks up `labels.<family>.<code>`. An API error is translated by its `code` (`error.<code>`), else its own message.
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { ApiError } from "@/lib/api";
-import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel } from "@/lib/format";
+import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtNumber, fmtPct, groupLabel } from "@/lib/format";
 
 export type ServerParam = string | number | null;
 /** A sentence of the server: translated by `code` when the web knows it, else `text` (English). */
@@ -19,7 +19,8 @@ export interface ServerMsg {
 }
 
 /** The fixed vocabularies the server sends as codes (keys `labels.<family>.<code>` of server.json). */
-export type LabelFamily = "alertKind" | "subsGroup" | "balanceType" | "setupStep" | "onboardingStep" | "forecast" | "forecastFlag" | "accountPurpose";
+export type LabelFamily = "alertKind" | "subsGroup" | "balanceType" | "setupStep" | "onboardingStep" | "forecast" | "forecastFlag" | "accountPurpose" | "cadence" | "explainStep"
+  | "loanField" | "loanOption" | "loanVerdict" | "rentalDocument" | "rentalDocumentFrom" | "bankGroup" | "memoryField" | "questionTopic";
 
 // untyped access: the codes come from the server at run time, so they cannot be checked against the key types
 const T = i18n as unknown as { exists: (k: string, o: object) => boolean; t: (k: string, o: object) => string };
@@ -32,14 +33,25 @@ function tr(key: string, vars: Record<string, unknown> = {}): string {
 }
 
 /** A param's display value, from its name: `*_date` -> date, `*_month` -> month, `*_amount` -> money, `*_pct` -> percent,
- *  `*_category` / `*_group` -> the category's name; `count` stays a number (it picks the plural form); anything else as it is. */
+ *  `*_category` / `*_group` -> the category's name, `*_kind` -> the kind of a memory item (`holdingKindLabel`), `fields` -> a comma-separated
+ *  list of memory fields (`fieldListLabel`), `cadence` -> its label (`labels.cadence.<code>`); `count` stays a number (it picks the
+ *  plural form); anything else as it is (a key may format a number itself: `{{excess_km, number}}`). */
 export function formatParam(name: string, v: ServerParam): string | number {
   if (v === null || v === undefined) return "–";
   if (name === "count") return v;
+  if (name === "cadence") return serverLabel("cadence", String(v), String(v));
+  if (name === "fields") return fieldListLabel(String(v));
+  if (name.endsWith("_kind")) return holdingKindLabel(String(v));
   if (name.endsWith("_date")) return fmtDate(String(v));
   if (name.endsWith("_month")) return fmtMonth(String(v), "long");
   if (name.endsWith("_amount")) return fmtMoney(v);
   if (name.endsWith("_pct")) return fmtPct(Number(v));
+  if (name.endsWith("_num")) {
+    // a plain decimal in the reader's format, with the decimals the server sent ("2.40" stays two decimals, 2.4 one)
+    const s = String(v);
+    const n = Number(s);
+    return Number.isFinite(n) ? fmtNumber(n, s.includes(".") ? s.length - s.indexOf(".") - 1 : 0) : s;
+  }
   if (name.endsWith("_category")) return catLabel(String(v));
   if (name.endsWith("_group")) return groupLabel(String(v));
   return v;
@@ -54,6 +66,35 @@ export function tServer(msg: ServerMsg | null | undefined, fallback = ""): strin
   if (!msg) return fallback;
   if (!msg.code || !has(msg.code)) return msg.text ?? fallback;
   return tr(msg.code, formatParams(msg.params));
+}
+
+/** The web knows this server code (a key of the `server` namespace, or its plural forms). */
+export function knowsCode(code: string | null | undefined): boolean {
+  return !!code && has(code);
+}
+
+/** The title and the body of an insight card or an alert event: each translated from its `*_msg` when the web knows the code, else the
+ *  English (through `legacy`). A body sent with a `disclaimer` key (its English already ends with the text) gets the text of that key in the
+ *  interface language (`useDisclaimers()`: the wording lives only in src/coach/disclaimers.py). */
+export function cardText(
+  item: { title: string; body: string; title_msg?: ServerMsg | null; body_msg?: ServerMsg | null },
+  opts: { legacy?: (s: string) => string; disclaimer?: unknown; disclaimers?: Record<string, string | undefined> } = {},
+): { title: string; body: string } {
+  const title = tServerOr(item.title_msg, item.title, opts.legacy);
+  let body = tServerOr(item.body_msg, item.body, opts.legacy);
+  if (knowsCode(item.body_msg?.code) && typeof opts.disclaimer === "string") {
+    const legal = opts.disclaimers?.[opts.disclaimer];
+    // never without it: until the text in the interface language is loaded, the English body (it ends with the English text)
+    body = legal ? `${body} ${legal}` : opts.legacy ? opts.legacy(item.body) : item.body;
+  }
+  return { title, body };
+}
+
+/** A sentence that may come with its message: the translation when the web knows the code, else the English `text` passed through
+ *  `legacy` (e.g. the `humanize` re-rendering of the ids, dates and amounts of an older English-only text). */
+export function tServerOr(msg: ServerMsg | null | undefined, text: string, legacy?: (s: string) => string): string {
+  if (msg && msg.code && has(msg.code)) return tServer(msg, text);
+  return legacy ? legacy(text) : text;
 }
 
 /** A list of English sentences and their `<field>_msg` siblings (same order; an entry may be null, the server may be older and send
@@ -97,6 +138,16 @@ export function holdingKindLabel(kind: string | null | undefined): string {
   return groupLabel(kind);
 }
 
+/** A field of the memory files (`rate.nominal`, `notice_period_days`, `owner`): `labels.memoryField.<field, dots as _>`, else the field itself. */
+export function fieldLabel(field: string): string {
+  return serverLabel("memoryField", field.replace(/\./g, "_"), field);
+}
+
+/** A list of memory fields as the server joins them (`"lender, rate.nominal"`), each one named in the interface language. */
+export function fieldListLabel(fields: string): string {
+  return fields.split(",").map((f) => f.trim()).filter(Boolean).map(fieldLabel).join(", ");
+}
+
 /** The forecast line of an account, or of the whole household (`account: null`). */
 export function forecastLabel(f: { account: string | null; label: string }): string {
   return f.account === null ? serverLabel("forecast", "household", f.label) : f.label;
@@ -113,5 +164,5 @@ export function errorText(e: unknown, fallback = ""): string {
 /** The same helpers, re-rendering the component when the language changes. */
 export function useServerText() {
   const { i18n: inst } = useTranslation("server");
-  return { tServer, tServerList, serverLabel, flagLabel, errorText, forecastLabel, language: inst.resolvedLanguage ?? inst.language };
+  return { tServer, tServerOr, cardText, tServerList, serverLabel, flagLabel, errorText, forecastLabel, language: inst.resolvedLanguage ?? inst.language };
 }

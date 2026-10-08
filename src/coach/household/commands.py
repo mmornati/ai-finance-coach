@@ -28,6 +28,7 @@ from coach.analytics import api as analytics_api
 from coach.analytics.common import money_str
 from coach.household import allocation as alloc_mod, attribution as attr_mod, kidbudgets, kids as kids_mod, people as people_mod, users as users_mod
 from coach.household.attribution import HouseholdError
+from coach.i18n_msg import strip_msgs
 from coach.memory.edit import jsonable
 from coach.memory.store import MemoryStore, MemoryStoreError, ValidationFailed
 
@@ -53,7 +54,8 @@ def _fail(e) -> None:
 
 
 def _j(obj) -> str:
-    return json.dumps(jsonable(obj), ensure_ascii=False, indent=2, default=str)
+    from coach.i18n_msg import strip_msgs
+    return json.dumps(strip_msgs(jsonable(obj)), ensure_ascii=False, indent=2, default=str)   # the *_msg siblings are the web's only
 
 
 def _eur(c) -> str:
@@ -171,7 +173,7 @@ def cmd_why(a, cfg):
     except HouseholdError as e:
         _fail(e)
     if a.json:
-        print(_j(x))
+        print(_j(strip_msgs(x)))          # the web's messages are not part of the CLI's JSON
         return
     print(print_why(x))
 

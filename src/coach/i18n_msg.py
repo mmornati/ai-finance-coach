@@ -16,6 +16,8 @@ as it is). Next to it, a field the web app translates::
   ``*_month``               ``YYYY-MM``                                 ``fmtMonth``
   ``*_amount``              decimal string ``"-12.34"`` (EUR)           ``fmtMoney``
   ``*_pct``                 a ratio (``0.12`` = 12 %)                    ``fmtPct``
+  ``*_num``                 a plain decimal: a number, or a decimal      ``fmtNumber`` (the decimals
+                            string ``"2.40"`` to keep its decimals       sent are kept)
   ``*_category``            a category id ``group.leaf``                ``catLabel``
   ``*_group``               a category group id                         ``groupLabel``
   anything else             a string or a number, shown as it is        -
@@ -44,7 +46,7 @@ MONTH_RE = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
 AMOUNT_RE = re.compile(r"^-?\d+(\.\d+)?$")
 CATEGORY_RE = re.compile(r"^[a-z0-9_]+\.[a-z0-9_]+$")
 GROUP_RE = re.compile(r"^[a-z0-9_]+$")
-SUFFIXES = ("_date", "_month", "_amount", "_pct", "_category", "_group")
+SUFFIXES = ("_date", "_month", "_amount", "_pct", "_num", "_category", "_group")
 
 
 class MessageError(ValueError):
@@ -80,6 +82,14 @@ def _param(name: str, v: Any) -> Any:
         if isinstance(v, str) and AMOUNT_RE.match(v):
             return v
         raise MessageError(f"{name}: a decimal string (money_str of cents), not {type(v).__name__}")
+    if name.endswith("_num"):
+        if isinstance(v, Decimal):
+            v = str(v)
+        if isinstance(v, str) and AMOUNT_RE.match(v):
+            return v
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            return v
+        raise MessageError(f"{name}: a plain decimal number (a number, or a decimal string \"2.40\" to keep its decimals)")
     if name.endswith("_pct"):
         if isinstance(v, bool) or not isinstance(v, (int, float)):
             raise MessageError(f"{name}: a ratio (0.12 = 12 %)")
@@ -119,3 +129,12 @@ def strip_msgs(obj: Any) -> Any:
     if isinstance(obj, list):
         return [strip_msgs(v) for v in obj]
     return obj
+
+
+def server_msg_or_none(code: str, text: str, **params: Any) -> dict | None:
+    """:func:`server_msg` for a message whose params come from DATA that may not follow the convention (a budget target, a category id the
+    household wrote): None instead of an error, and the web shows the English ``text``."""
+    try:
+        return server_msg(code, text, **params)
+    except MessageError:
+        return None

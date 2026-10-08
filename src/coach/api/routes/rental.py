@@ -68,7 +68,8 @@ def tax(prop_id: str, year: Optional[int] = None, snap: Snapshot = Depends(get_s
     y = year or (ds.today.year if ds.today.month >= 10 else ds.today.year - 1)
     if not 2000 <= y <= ds.today.year:
         raise ApiError(422, "bad_year", "the year must be between 2000 and the current year")
-    return jsonable(plain(TX.tax_year(ds, p, y)))
+    # `disclaimer` is the tax helper's fixed bilingual text (CLI, tool); the web shows the `tax` disclaimer of GET /meta/disclaimers in its language
+    return jsonable(plain({**TX.tax_year(ds, p, y), "disclaimer_key": "tax"}))
 
 
 @router.get("/rental/{prop_id}/indicators", summary="Renegotiate-or-sell indicators: loan rate vs the market rate you entered, end of the commitment, net equity")
@@ -81,7 +82,8 @@ def indicators(prop_id: str, market_rate: Optional[float] = None, market_date: O
         raise ApiError(422, "bad_rate", "the market rate is a percentage between 0 and 25")
     fees = {k: v for k, v in (("bank_fees", bank_fees), ("guarantee_fees", guarantee_fees), ("other_fees", other_fees), ("penalty", penalty))
             if v is not None}
-    return jsonable(plain(IND.indicators(ds, p, market_rate_pct=market_rate, market_rate_date=market_date, fees=fees)))
+    # `disclaimer` is the English text (CLI, tool); the web shows the `loan` disclaimer of GET /meta/disclaimers in its language
+    return jsonable(plain({**IND.indicators(ds, p, market_rate_pct=market_rate, market_rate_date=market_date, fees=fees), "disclaimer_key": "loan"}))
 
 
 @router.get("/rental/{prop_id}/flows", summary="Flows of the property account that are in no property category (to label)")

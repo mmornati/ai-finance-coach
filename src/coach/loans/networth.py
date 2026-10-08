@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from coach.analytics.common import Result, add_months, money_str
+from coach.i18n_msg import server_msg
 from coach.loans import schedule as S
 
 CATEGORIES = ("cash", "savings", "investments", "real_estate", "vehicles", "other")
@@ -60,6 +61,7 @@ class Component(Result):
     balance_type: Optional[str] = None
     note: Optional[str] = None
     kind: Optional[str] = None      # the asset / liability kind
+    note_msg: Optional[dict] = None  # the note for the web app (coach.i18n_msg): {code, params, text}
 
 
 @dataclass
@@ -72,10 +74,11 @@ class NetWorth(Result):
     by_category_c: dict             # category -> cents (assets) ; "liabilities" -> cents owed
     by_owner: dict                  # owner -> {assets_c, liabilities_c, net_worth_c, n_unknown}
     components: list                # [Component]
-    unknown: list                   # [{type, id, label, reason}]
+    unknown: list                   # [{type, id, label, reason, reason_msg}]
     stale: list                     # [{type, id, label}]
     n_unknown: int = 0
     notes: list = field(default_factory=list)
+    notes_msg: list = field(default_factory=list)   # the notes for the web app, same order
 
     def to_dict(self) -> dict:
         return {"as_of": self.as_of.isoformat(), "net_worth": money_str(self.net_worth_c), "assets": money_str(self.assets_c),
@@ -83,7 +86,8 @@ class NetWorth(Result):
                 "by_category": {k: money_str(v) for k, v in self.by_category_c.items()},
                 "by_owner": {o: {"assets": money_str(v["assets_c"]), "liabilities": money_str(v["liabilities_c"]),
                                  "net_worth": money_str(v["net_worth_c"]), "n_unknown": v["n_unknown"]} for o, v in self.by_owner.items()},
-                "components": [c.to_dict() for c in self.components], "unknown": self.unknown, "stale": self.stale, "notes": self.notes}
+                "components": [c.to_dict() for c in self.components], "unknown": self.unknown, "stale": self.stale, "notes": self.notes,
+                "notes_msg": self.notes_msg}
 
 
 def _holder(a) -> str:
@@ -108,6 +112,29 @@ def _months_ago(today: dt.date, n: int) -> dt.date:
     return add_months(today, -n)
 
 
+def _unknown(type_: str, id_: str, label: str, msg: dict) -> dict:
+    return {"type": type_, "id": id_, "label": label, "reason": msg["text"], "reason_msg": msg}
+
+
+def _liability_note(src: str, approximate: bool, declared_date, check: Optional[dict]) -> dict:
+    """The note of a liability counted from its schedule (or its declared capital): a message whose text is the English note."""
+    if src == "declared_rolled":
+        text, code = f"the declared capital of {declared_date} rolled forward with the loan's rate and instalments", "netWorth.declaredRolled"
+    elif src == "declared":
+        text, code = f"the declared capital of {declared_date} (it cannot be rolled forward)", "netWorth.declaredAsIs"
+    elif approximate:
+        text, code = "computed from the amortization schedule (variable rate: approximate)", "netWorth.fromScheduleApprox"
+    else:
+        text, code = "computed from the amortization schedule", "netWorth.fromSchedule"
+    theoretical = None
+    if check:
+        theoretical = check.get("theoretical_capital_today")
+        text += (f"; it differs from the theoretical table ({theoretical} EUR today): "
+                 "early repayment or renegotiation? update the loan")
+        code += "Differs"                     # netWorth.fromScheduleDiffers, netWorth.declaredRolledDiffers, ... (server.json)
+    return server_msg(code, text, declared_date=declared_date, theoretical_amount=theoretical)
+
+
 def build(ds, today: Optional[dt.date] = None, *, asset_stale_months: int = 3, liability_stale_months: int = 6,
           balance_stale_days: int = BALANCE_STALE_DAYS, schedules: Optional[dict] = None) -> NetWorth:
     """The net worth of a Dataset on `today`. `schedules`: liability id -> LoanSchedule (computed when absent)."""
@@ -120,14 +147,14 @@ def build(ds, today: Optional[dt.date] = None, *, asset_stale_months: int = 3, l
         b = ds.balance_of(acc.uid)
         owner = acc.owner or UNASSIGNED
         if b is None:
-            comps.append(Component("account", acc.uid, acc.label, account_category(acc), owner, "unknown",
-                                   note="no balance synced yet"))
-            unknown.append({"type": "account", "id": acc.uid, "label": acc.label, "reason": "no balance synced yet"})
+            m = server_msg("netWorth.noBalance", "no balance synced yet")
+            comps.append(Component("account", acc.uid, acc.label, account_category(acc), owner, "unknown", note=m["text"], note_msg=m))
+            unknown.append(_unknown("account", acc.uid, acc.label, m))
             continue
         st = (today - b.as_of).days > balance_stale_days
-        note = None if b.type in BOOKED else f"{b.type} balance (not a booked one)"
+        m = None if b.type in BOOKED else server_msg("netWorth.nonBooked", f"{b.type} balance (not a booked one)", balance_type=b.type)
         comps.append(Component("account", acc.uid, acc.label, account_category(acc), owner, "known", b.amount_c, b.as_of, st,
-                               "balance", b.type, note))
+                               "balance", b.type, m and m["text"], note_msg=m))
         if st:
             stale.append({"type": "account", "id": acc.uid, "label": acc.label})
     for a in ds.memory.assets:
@@ -138,12 +165,14 @@ def build(ds, today: Optional[dt.date] = None, *, asset_stale_months: int = 3, l
             continue                                  # counted through the balance of its bank account
         v = a.amount
         if v is None:
-            comps.append(Component("asset", a.id, label, cat, owner, "unknown", note="no value recorded", kind=a.kind))
-            unknown.append({"type": "asset", "id": a.id, "label": label, "reason": "no value recorded"})
+            m = server_msg("netWorth.noValue", "no value recorded")
+            comps.append(Component("asset", a.id, label, cat, owner, "unknown", note=m["text"], kind=a.kind, note_msg=m))
+            unknown.append(_unknown("asset", a.id, label, m))
             continue
         st = a.as_of is None or a.as_of < a_cut
+        m = server_msg("netWorth.valueDateUnknown", "value date unknown") if a.as_of is None else None
         comps.append(Component("asset", a.id, label, cat, owner, "known", int(round(v * 100)), a.as_of, st, "declared",
-                               note=("value date unknown" if a.as_of is None else None), kind=a.kind))
+                               note=m and m["text"], kind=a.kind, note_msg=m))
         if st:
             stale.append({"type": "asset", "id": a.id, "label": label})
     scheds = schedules or {}
@@ -155,34 +184,31 @@ def build(ds, today: Optional[dt.date] = None, *, asset_stale_months: int = 3, l
             remaining = None
             if lb.end_date and lb.end_date > today and lb.monthly_payment:
                 remaining = S.months_left_instalments(lb, today) * int(round(lb.monthly_payment * 100))
+            m = (server_msg("netWorth.leaseRents", "lease: no capital owed, not counted; the remaining rents are a commitment shown as the amount")
+                 if remaining is not None else server_msg("netWorth.lease", "lease: no capital owed, not counted"))
             comps.append(Component("liability", lb.id, label, "liability", owner, "excluded", remaining, None, False, None, None,
-                                   "lease: no capital owed, not counted" + ("; the remaining rents are a commitment shown as the amount"
-                                                                           if remaining is not None else ""), lb.kind))
+                                   m["text"], lb.kind, m))
             continue
         if lb.end_date and lb.end_date < today and lb.outstanding is None and sch.status != "computed":
             continue                                  # a closed loan with nothing recorded: nothing owed
         if sch.status == "computed" and sch.remaining_capital_c is not None:
             src = sch.source or "schedule"
-            note = "computed from the amortization schedule" + (" (variable rate: approximate)" if sch.approximate else "")
-            if src == "declared_rolled":
-                note = f"the declared capital of {lb.outstanding_as_of} rolled forward with the loan's rate and instalments"
-            elif src == "declared":
-                note = f"the declared capital of {lb.outstanding_as_of} (it cannot be rolled forward)"
-            if sch.outstanding_check:
-                note += (f"; it differs from the theoretical table ({sch.outstanding_check.get('theoretical_capital_today')} EUR today): "
-                         "early repayment or renegotiation? update the loan")
+            m = _liability_note(src, sch.approximate, lb.outstanding_as_of, sch.outstanding_check)
             comps.append(Component("liability", lb.id, label, "liability", owner, "known", sch.remaining_capital_c,
-                                   lb.outstanding_as_of if src != "schedule" else today, False, src, None, note, lb.kind))
+                                   lb.outstanding_as_of if src != "schedule" else today, False, src, None, m["text"], lb.kind, m))
         elif lb.outstanding is not None:
             st = lb.outstanding_as_of is None or lb.outstanding_as_of < l_cut
+            m = server_msg("netWorth.declaredNoSchedule", "declared capital, no schedule")
             comps.append(Component("liability", lb.id, label, "liability", owner, "known", int(round(lb.outstanding * 100)),
-                                   lb.outstanding_as_of, st, "declared", None, "declared capital, no schedule", lb.kind))
+                                   lb.outstanding_as_of, st, "declared", None, m["text"], lb.kind, m))
             if st:
                 stale.append({"type": "liability", "id": lb.id, "label": label})
         else:
-            why = "capital unknown: " + ", ".join(sch.missing[:4]) if sch.missing else "capital unknown"
-            comps.append(Component("liability", lb.id, label, "liability", owner, "unknown", note=why, kind=lb.kind))
-            unknown.append({"type": "liability", "id": lb.id, "label": label, "reason": why})
+            fields = ", ".join(sch.missing[:4])
+            m = (server_msg("netWorth.capitalUnknownFields", "capital unknown: " + fields, fields=fields)
+                 if sch.missing else server_msg("netWorth.capitalUnknown", "capital unknown"))
+            comps.append(Component("liability", lb.id, label, "liability", owner, "unknown", note=m["text"], kind=lb.kind, note_msg=m))
+            unknown.append(_unknown("liability", lb.id, label, m))
     by_cat = {c: 0 for c in CATEGORIES}
     by_cat["liabilities"] = 0
     owners: dict[str, dict] = {}
@@ -202,6 +228,7 @@ def build(ds, today: Optional[dt.date] = None, *, asset_stale_months: int = 3, l
     for o in owners.values():
         o["net_worth_c"] = o["assets_c"] - o["liabilities_c"]
     assets = sum(by_cat[c] for c in CATEGORIES)
-    notes = ["only what is known is added up: an unknown item is listed and NOT counted, so the real figure differs"] if unknown else []
+    msgs = [server_msg("netWorth.knownOnly", "only what is known is added up: an unknown item is listed and NOT counted, so the real "
+                                             "figure differs")] if unknown else []
     return NetWorth(today, assets - by_cat["liabilities"], assets, by_cat["liabilities"], not unknown, by_cat,
-                    dict(sorted(owners.items())), comps, unknown, stale, len(unknown), notes)
+                    dict(sorted(owners.items())), comps, unknown, stale, len(unknown), [m["text"] for m in msgs], msgs)

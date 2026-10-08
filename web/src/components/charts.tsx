@@ -4,6 +4,7 @@ import type { ParseKeys } from "i18next";
 import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { fmtDate, fmtMoney, fmtMonth, fmtPct, parseMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { tServer } from "@/i18n/server";
 import type { Forecast, MonthFlow, CategoryDetail, NetWorthPoint, RentalMonth } from "@/api/types";
 
 const n = (v: string | null | undefined) => parseMoney(v) ?? 0;
@@ -373,9 +374,9 @@ export function NetWorthChart({ points }: { points: NetWorthPoint[] }) {
                       { color: "var(--neg)", label: t("charts.netWorth.owed"), value: fmtMoney(p.liabilities, { round: true }) },
                     ]}
                     note={[
-                      p.complete ? "" : t("charts.netWorth.unknownNote", { count: p.n_unknown, reasons: p.unknown.map((u) => u.reason).filter((x, i, a) => a.indexOf(x) === i).join("; ") }),
+                      p.complete ? "" : t("charts.netWorth.unknownNote", { count: p.n_unknown, reasons: p.unknown.map((u) => tServer(u.reason_msg, u.reason)).filter((x, i, a) => a.indexOf(x) === i).join("; ") }),
                       (p.newly_counted ?? []).length ? t("charts.netWorth.countedFrom", { items: (p.newly_counted ?? []).map((x) => x.label).join(", ") }) : "",
-                      p.caveat ?? "",
+                      tServer(p.caveat_msg, p.caveat ?? ""),
                     ].filter(Boolean).join(" ") || undefined}
                   />
                 );

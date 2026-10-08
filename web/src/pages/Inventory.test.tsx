@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/utils";
+import { setLanguage } from "@/i18n";
 import InventoryView from "./Inventory";
 import { resetCsrfForTests } from "@/lib/api";
 import type { InvAlternative, InvRow } from "@/api/types";
@@ -33,8 +34,11 @@ const fit = row({ ref: "rec_2", name: "Fitclub", group: "memberships", group_lab
   alternatives: { count: 0, current: 0, outdated: 0, best: null, items: [], note: "quotes older than 30 days are outdated" } });
 const telco = row({ ref: "rec_3", name: "TelcoCo", group: "telecom", group_label: "Telecom", kind: "telecom", monthly: "29.99", yearly: "359.88", series_id: "rec_3", contract_id: "telco", contract: { status: "expired", id: "telco", expired_on: "2026-01-15" },
   usage: { frequency: "unknown", last_used: null, note: null, recorded: false, measurable: false, question_asked: false, note_not_measurable: null, signals: [] },
-  cancellation: cancellation({ family: "telecom", earliest_effective_date: "2026-10-14", notice_period_days: 10, early_termination_cost: { basis: "25 %", share_pct: 25, remaining_months: 4, free_exit_date: "2027-01-15", amount: 29.99 },
-    legal_basis: [{ id: "fr-telecom", name: "Telecom contracts (Loi Chatel)", law: "loi n° 2008-3", source: "loi n° 2008-3 du 3 janvier 2008", last_reviewed: "2026-10" }] }),
+  cancellation: cancellation({ family: "telecom", earliest_effective_date: "2026-10-14", notice_period_days: 10, disclaimer_key: "contract", verify_key: "contract_verify",
+    method: "online (termination button)", method_msg: { code: "cancel.method.telecomFr", params: {}, text: "online (termination button)" },
+    conditions: ["leaving early costs; waiting until 2027-01-15 is free"], conditions_msg: [{ code: "cancel.condition.telecomCommitment", params: { free_date: "2027-01-15" }, text: "leaving early costs; waiting until 2027-01-15 is free" }], early_termination_cost: { basis: "25 %", share_pct: 25, remaining_months: 4, free_exit_date: "2027-01-15", amount: 29.99 },
+    legal_basis: [{ id: "fr-telecom", name: "Telecom contracts (Loi Chatel)", law: "loi n° 2008-3", source: "loi n° 2008-3 du 3 janvier 2008", last_reviewed: "2026-10",
+                    name_msg: { code: "cancel.rule.frTelecom.name", params: {}, text: "Telecom contracts (Loi Chatel)" } }] }),
   alternatives: { count: 0, current: 0, outdated: 0, best: null, items: [], note: "quotes older than 30 days are outdated" } });
 
 const inventory = {
@@ -57,6 +61,8 @@ beforeEach(() => {
     let body: unknown = {};
     if (url.endsWith("/session")) body = { csrf_token: "tok" };
     else if (url.startsWith("/api/v1/subs/inventory")) body = inventory;
+    // the disclaimers come from the server in the asked language (synthetic sentinels: the web copies no wording)
+    else if (url.startsWith("/api/v1/meta/disclaimers")) body = url.includes("lang=fr") ? { lang: "fr", texts: { ai_label: "-", ai_label_short: "-", contract: "AVIS-CONTRAT-FR", contract_verify: "VERIFIER-FR" } } : { lang: "en", texts: { ai_label: "-", ai_label_short: "-" } };
     else if (url.startsWith("/api/v1/subs/savings")) body = { ...inventory.savings, as_of: "2026-10-04", decisions: [], proposed: [{ id: "dec_p1", decision: "cancelled", name: "Oldapp", source: "coach-llm", before_monthly: 3.99, after_monthly: 0, note: null }], reminders: [], note: "" };
     else if (url.startsWith("/api/v1/subs/letter")) body = { ...letter, lang: new URL(url, "http://x").searchParams.get("lang"), channel: new URL(url, "http://x").searchParams.get("channel") };
     else if (url.startsWith("/api/v1/subs/contact") && init?.method === "PUT") body = { dry_run: false, changed: true, diff: "", change_id: null, warnings: [] };
@@ -122,6 +128,21 @@ describe("the subscriptions inventory", () => {
     expect(within(panel).getByText(/4 months left, 25 % still due/)).toBeInTheDocument();
     expect(within(panel).getByText(/Source: loi n° 2008-3 du 3 janvier 2008. Reviewed 2026-10/)).toBeInTheDocument();
     expect(within(panel).getByText(/Verify with your contract and the official source before acting/)).toBeInTheDocument();
+  });
+
+  it("shows the server's cancellation sentences and disclaimers in the interface language; the legal citation stays as it is", async () => {
+    await setLanguage("fr");
+    renderApp(<InventoryView />);
+    const card = (await screen.findByRole("heading", { name: "TelcoCo" })).closest("section")!;
+    await userEvent.click(within(card).getByRole("button", { name: /détails/i }));
+    const panel = within(card).getByRole("region", { name: "Résiliation" });
+    expect(within(panel).getByText(/^en ligne \(bouton de résiliation\)/)).toBeInTheDocument();
+    expect(within(panel).getByText(/résilier avant la fin de l'engagement coûte .* attendre le 15 janv\. 2027 est sans frais/)).toBeInTheDocument();
+    expect(within(panel).getByText("Contrats de communications électroniques (loi Chatel)")).toBeInTheDocument();
+    expect(within(panel).getByText(/Source : loi n° 2008-3 du 3 janvier 2008/)).toBeInTheDocument();
+    expect(await within(panel).findByText("VERIFIER-FR AVIS-CONTRAT-FR")).toBeInTheDocument();
+    // the English fallback of the disclaimer is no longer shown
+    expect(within(panel).queryByText(/Verify with your contract/)).not.toBeInTheDocument();
   });
 
   it("records usage in the contract file", async () => {

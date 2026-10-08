@@ -26,6 +26,7 @@ from typing import Optional
 
 from coach.alerts.settings import RANK, AlertSettings
 from coach.analytics.common import to_cents
+from coach.i18n_msg import server_msg
 
 
 @dataclass
@@ -36,6 +37,8 @@ class Candidate:
     title: str
     body: str
     payload: dict = field(default_factory=dict)
+    title_msg: Optional[dict] = None       # the title / body for the web ({code, params, text}); stored in the event's payload
+    body_msg: Optional[dict] = None        # (``title_msg`` / ``body_msg`` keys), local only: never part of a channel message
 
     @property
     def id(self) -> str:
@@ -64,10 +67,12 @@ def consent_candidates(con, now: Optional[dt.datetime] = None) -> list[Candidate
             continue
         top = crossed[-1]
         sev = "high" if top in ("d3", "expired") else "medium"
-        out.append(Candidate("consent", f"consent:{c.session_id}:{top}", sev, C.describe(c).split(" - run ")[0],
-                             "Reconnect the bank from the app (Connections) or with `coach reconnect`. Until then the data goes stale.",
+        title = C.describe(c).split(" - run ")[0]
+        body = "Reconnect the bank from the app (Connections) or with `coach reconnect`. Until then the data goes stale."
+        out.append(Candidate("consent", f"consent:{c.session_id}:{top}", sev, title, body,
                              {"session_id": c.session_id, "bank": c.bank, "threshold": top, "days_left": c.days_left,
-                              "valid_until": c.valid_until}))
+                              "valid_until": c.valid_until},
+                             title_msg=C.describe_msg(c, title), body_msg=server_msg("alert.consent.reconnect", body)))
     return out
 
 
@@ -89,10 +94,13 @@ def sync_candidates(con, n_min: int) -> list[Candidate]:
             continue
         first = streak[-1]
         sev = "high" if len(streak) >= 2 * n_min else "medium"
-        out.append(Candidate("sync_failing", f"sync:{uid}:{first}", sev, f"{label}: the last {len(streak)} syncs failed",
-                             "The transactions of this account are not up to date. Run `coach health` to see the error; an expired "
-                             "consent needs `coach reconnect`.",
-                             {"account": label, "failures": len(streak), "since": first}))
+        title = f"{label}: the last {len(streak)} syncs failed"
+        body = ("The transactions of this account are not up to date. Run `coach health` to see the error; an expired "
+                "consent needs `coach reconnect`.")
+        out.append(Candidate("sync_failing", f"sync:{uid}:{first}", sev, title, body,
+                             {"account": label, "failures": len(streak), "since": first},
+                             title_msg=server_msg("alert.syncFailing.title", title, account=label, count=len(streak)),
+                             body_msg=server_msg("alert.syncFailing.body", body)))
     return out
 
 
@@ -125,38 +133,41 @@ def card_candidates(cards: list[dict], s: AlertSettings) -> list[Candidate]:
         payload = {"card": c["id"], "subtype": sub, "subject": c.get("subject"), "date": c.get("date"), "amount_c": amount_c,
                    "evidence": list(c.get("evidence") or [])[:10]}
         title, body = c["title"], c["body"]
+        msgs = {"title_msg": c.get("title_msg"), "body_msg": c.get("body_msg")}
+        if c.get("disclaimer"):
+            payload["disclaimer"] = c["disclaimer"]
         if kind == "anomaly":
             if RANK.get(sev, 0) < RANK[s.anomaly_min_severity] or sev == "low":
                 continue
-            out.append(Candidate("unusual_charge", c["id"], sev, title, body, payload))
+            out.append(Candidate("unusual_charge", c["id"], sev, title, body, payload, **msgs))
         elif kind == "price_change":
-            out.append(Candidate("price_increase", c["id"], "medium", title, body, payload))
+            out.append(Candidate("price_increase", c["id"], "medium", title, body, payload, **msgs))
         elif kind == "forecast":
             if not c.get("date"):
                 continue
-            out.append(Candidate("low_balance", f"forecast:{c.get('subject')}:{sub}", sev, title, body, payload))
+            out.append(Candidate("low_balance", f"forecast:{c.get('subject')}:{sub}", sev, title, body, payload, **msgs))
         elif kind == "budget":
-            out.append(Candidate("budget", f"budget:{c.get('subject')}:{c.get('date')}", sev, title, body, payload))
+            out.append(Candidate("budget", f"budget:{c.get('subject')}:{c.get('date')}", sev, title, body, payload, **msgs))
         elif kind == "loan":
             if sub == "loa_end":
-                out.append(Candidate("loa_end", c["id"], sev, title, body, payload))
+                out.append(Candidate("loa_end", c["id"], sev, title, body, payload, **msgs))
             elif sub == "loa_mileage":
-                out.append(Candidate("loa_end", c["id"], sev, title, body, payload))
+                out.append(Candidate("loa_end", c["id"], sev, title, body, payload, **msgs))
             elif sub in ("extra_payment", "loa_mileage_missing"):
                 continue                              # informational: the feed shows them, they do not alert
             else:                                    # missed_payment / amount_changed / wrong_account / capital_differs
-                out.append(Candidate("loan_alert", c["id"], sev, title, body, payload))
+                out.append(Candidate("loan_alert", c["id"], sev, title, body, payload, **msgs))
         elif kind == "rental":                           # E15: the scheme commitment, a rent that did not arrive, a declared limit exceeded
             key = {"scheme_end": "scheme_end", "rent_missing": "rent_missing", "rent_cap": "scheme_check", "tenant_income": "scheme_check"}.get(sub)
             if key:
-                out.append(Candidate(key, c["id"], sev, title, body, payload))
+                out.append(Candidate(key, c["id"], sev, title, body, payload, **msgs))
         elif kind == "subscription":
             if sub == "unused":
-                out.append(Candidate("unused_subscription", f"sub-unused:{c.get('subject')}", sev, title, body, payload))
+                out.append(Candidate("unused_subscription", f"sub-unused:{c.get('subject')}", sev, title, body, payload, **msgs))
             elif sub == "notice":
-                out.append(Candidate("contract_notice", c["id"], sev, title, body, payload))
+                out.append(Candidate("contract_notice", c["id"], sev, title, body, payload, **msgs))
             elif sub == "decision_check" and sev == "high":          # contradicted by the bank data (still charged)
-                out.append(Candidate("decision_contradicted", c["id"], sev, title, body, payload))
+                out.append(Candidate("decision_contradicted", c["id"], sev, title, body, payload, **msgs))
     return out
 
 

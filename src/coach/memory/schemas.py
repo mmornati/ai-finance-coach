@@ -779,12 +779,42 @@ class SuggestedTarget(Strict):
     field: Optional[str] = None
 
 
+class TextMsg(Strict):
+    """A sentence the web app translates (docs/i18n.md "Server text"): ``code`` (a key of the web's ``server`` namespace), RAW params typed
+    by their name (``coach.i18n_msg``), and ``text`` (the English, shown when the web does not know the code)."""
+    code: str
+    params: dict[str, Any] = Field(default_factory=dict)
+    text: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def _check(cls, v):
+        from coach.i18n_msg import MessageError, server_msg
+        if not isinstance(v, dict):
+            raise ValueError("a message is a mapping {code, params, text}")
+        extra = sorted(set(v) - {"code", "params", "text"})
+        if extra:
+            raise ValueError(f"unknown key(s) of a message: {', '.join(map(str, extra))}")
+        params = v.get("params") or {}
+        if not isinstance(params, dict):
+            raise ValueError("params must be a mapping")
+        # YAML reads an unquoted date as a date: a param keeps its ISO text whatever its name
+        params = {k: (x.isoformat() if isinstance(x, dt.date) else x) for k, x in params.items()}
+        try:
+            return server_msg(v.get("code") or "", v.get("text") or "", **params)
+        except (MessageError, TypeError) as e:
+            raise ValueError(str(e)) from None
+
+
 class Question(Strict):
     id: str
     status: Literal["open", "answered", "dismissed"] = "open"
     topic: str = "General"
+    topic_code: Optional[str] = None                            # generated questions: the topic's code (the web's labels.questionTopic.<code>)
     question: str
+    question_msg: Optional[TextMsg] = None                      # generated questions: the web's translation of `question` (same English text)
     context: Optional[str] = None
+    context_msg: Optional[TextMsg] = None
     evidence: dict[str, Any] = Field(default_factory=dict)     # amounts / counts / dates, never raw descriptions
     suggested_target: Optional[SuggestedTarget] = None
     created: Optional[dt.date] = None
@@ -801,6 +831,13 @@ class Question(Strict):
     def _id(cls, v):
         if not re.match(r"^[a-z0-9][a-z0-9_-]*$", v):
             raise ValueError(f"question id must be lowercase letters, digits, '-' '_' (got {v!r})")
+        return v
+
+    @field_validator("topic_code")
+    @classmethod
+    def _topic_code(cls, v):
+        if v is not None and not re.match(r"^[a-z][a-zA-Z0-9]*$", v):
+            raise ValueError(f"topic_code must be lower camel case (got {v!r})")
         return v
 
     @field_validator("evidence")
@@ -820,6 +857,11 @@ class Question(Strict):
             raise ValueError("an answered question needs an answer text")
         if self.status != "answered" and self.answer:
             raise ValueError("only an answered question can carry an answer (reopen it first)")
+        # a message translates its English sibling: a hand-edited question (or context) keeps its own words, the stale message is dropped
+        if self.question_msg is not None and self.question_msg.text != self.question:
+            self.question_msg = None
+        if self.context_msg is not None and self.context_msg.text != self.context:
+            self.context_msg = None
         return self
 
 

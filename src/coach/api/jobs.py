@@ -13,6 +13,7 @@ from typing import Callable, Optional
 from coach.classify.normalize import normalize_all
 from coach.ingest import auth, consent as consent_mod
 from coach.ingest.client import EnableBankingClient
+from coach.i18n_msg import server_msg
 from coach.ingest.sync import sync_all
 
 
@@ -27,6 +28,7 @@ class Job:
         self.started_at: Optional[str] = None
         self.finished_at: Optional[str] = None
         self.message: Optional[str] = None
+        self.message_msg: Optional[dict] = None     # the message for the web app ({code, params, text}); None for an error's own text
         self.results: list = []
         self.log: list[str] = []
         self.url: Optional[str] = None  # connect: the bank's login page
@@ -34,7 +36,7 @@ class Job:
 
     def to_dict(self) -> dict:
         return {"kind": self.kind, "state": self.state, "started_at": self.started_at,
-                "finished_at": self.finished_at, "message": self.message, "results": self.results,
+                "finished_at": self.finished_at, "message": self.message, "message_msg": self.message_msg, "results": self.results,
                 "log": self.log[-30:], "url": self.url, **self.extra}
 
 
@@ -72,7 +74,7 @@ class Jobs:
                 try:
                     res = sync_all(con, EnableBankingClient.from_config(cfg), account, False, False,
                                    cfg.sync_daily_limit, out=job.log.append, memory_dir=cfg.memory_dir)
-                    job.results = [{k: r.get(k) for k in ("uid", "bank", "status", "new", "pending", "note", "consent")
+                    job.results = [{k: r.get(k) for k in ("uid", "bank", "status", "new", "pending", "note", "note_msg", "consent")
                                     if r.get(k) is not None} for r in res]
                     n_new = sum(r.get("new", 0) or 0 for r in res)
                     if n_new:
@@ -83,9 +85,10 @@ class Jobs:
                                                       **transfers_mod.opts(cfg))
                     failed = sum(1 for r in res if r["status"] == "failed")
                     job.state = "failed" if failed and failed == len(res) else "done"
-                    job.message = (f"{n_new} new transaction(s); "
-                                   f"{sum(1 for r in res if r['status'] == 'skipped')} account(s) skipped (daily limit); "
-                                   f"{failed} failed")
+                    skipped = sum(1 for r in res if r["status"] == "skipped")
+                    msg = server_msg("job.syncSummary", f"{n_new} new transaction(s); {skipped} account(s) skipped (daily limit); {failed} failed",
+                                     count=n_new, skipped=skipped, failed=failed)
+                    job.message, job.message_msg = msg["text"], msg
                 finally:
                     con.close()
             except Exception as e:                      # noqa: BLE001 - reported to the page, never raised
@@ -120,8 +123,13 @@ class Jobs:
                                          no_browser=False, open_browser=open_url,
                                          out=lambda m="": job.log.append(str(m)))
                 job.state = "done" if code == 0 else "failed"
-                job.message = ("connected" if code == 0 else "the authorisation did not complete: "
-                               + (job.log[-1] if job.log else "see the terminal"))
+                if code == 0:
+                    msg = server_msg("job.connected", "connected")
+                elif job.log:                            # the last line of the flow's own output (English), as it is
+                    msg = server_msg("job.authIncomplete", "the authorisation did not complete: " + job.log[-1], detail=job.log[-1])
+                else:
+                    msg = server_msg("job.authIncompleteTerminal", "the authorisation did not complete: see the terminal")
+                job.message, job.message_msg = msg["text"], msg
             except Exception as e:                        # noqa: BLE001
                 job.state, job.message = "failed", f"{type(e).__name__}: {str(e)[:200]}"
             finally:

@@ -3,10 +3,10 @@ import { Trans, useTranslation } from "react-i18next";
 import type { ParseKeys } from "i18next";
 import { AlertTriangle, Bell, BellOff, Check, FileText, FlaskConical, RotateCcw, ShieldCheck, VolumeX, Volume2 } from "lucide-react";
 import { Async, Badge, Button, Card, Dialog, EmptyState, Notice, PageHeader, Segmented, Select, Skeleton } from "@/components/ui";
-import { useAlertChannels, useAlertDigest, useAlerts, useWrite } from "@/api/hooks";
+import { useAlertChannels, useAlertDigest, useAlerts, useDisclaimers, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
-import { serverLabel } from "@/i18n/server";
+import { cardText, serverLabel } from "@/i18n/server";
 import { cn } from "@/lib/utils";
 import type { AlertChannel, AlertChannelTest, AlertEvent, AlertKindRow } from "@/api/types";
 
@@ -30,6 +30,9 @@ function EventCard({ e, kinds, act }: { e: AlertEvent; kinds: AlertKindRow[]; ac
   const tone = e.severity === "high" ? "neg" : e.severity === "medium" ? "warn" : "neutral";
   const sentTo = Object.keys(e.channels_sent);
   const kind = kinds.find((k) => k.kind === e.kind);
+  const disclaimers = useDisclaimers();
+  // the event's messages (stored in its payload) in the interface language; an older event has none: its English title and body
+  const txt = cardText(e, { disclaimer: e.payload?.disclaimer, disclaimers });
   return (
     <li>
       <Card>
@@ -39,7 +42,7 @@ function EventCard({ e, kinds, act }: { e: AlertEvent; kinds: AlertKindRow[]; ac
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-[15px] font-semibold">{e.title}</h3>
+              <h3 className="text-[15px] font-semibold">{txt.title}</h3>
               <Badge tone={tone}>{SEVERITY[e.severity] ? t(SEVERITY[e.severity]) : e.severity}</Badge>
               <Badge>{serverLabel("alertKind", e.kind, kind?.label)}</Badge>
               {e.status === "new" && <Badge tone="pos">{t("event.new")}</Badge>}
@@ -49,7 +52,7 @@ function EventCard({ e, kinds, act }: { e: AlertEvent; kinds: AlertKindRow[]; ac
               {e.escalations > 0 && <Badge tone="warn" title={t("event.escalatedTitle")}>{t("event.escalated")}</Badge>}
               {e.resolved && <Badge title={t("event.resolvedTitle")}>{t("event.resolved")}</Badge>}
             </div>
-            <p className="mt-1 text-sm text-muted">{e.body}</p>
+            <p className="mt-1 text-sm text-muted">{txt.body}</p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="text-xs text-faint">
                 {sentTo.length > 0 ? t("event.firstSeenSent", { date: fmtDate(e.created.slice(0, 10), "dayMonth"), channels: sentTo.join(", ") }) : t("event.firstSeen", { date: fmtDate(e.created.slice(0, 10), "dayMonth") })}

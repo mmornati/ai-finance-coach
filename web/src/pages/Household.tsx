@@ -9,7 +9,7 @@ import { useDryRun, useGet, useHousehold, usePeople, useWrite } from "@/api/hook
 import { api } from "@/lib/api";
 import { useUser } from "@/lib/app";
 import { fmtDateTime } from "@/lib/format";
-import { purposeLabel } from "@/i18n/server";
+import { purposeLabel, useServerText } from "@/i18n/server";
 import i18n from "@/i18n";
 import type { AttributionRule, AuditRows, EditResult, HouseholdAccount, HouseholdOverview } from "@/api/types";
 
@@ -17,6 +17,7 @@ const ROLE: Record<string, ParseKeys<"household">> = { adult: "household.role.ad
 
 export default function Household() {
   const { t } = useTranslation("household");
+  const { tServerList } = useServerText();
   const q = useHousehold();
   return (
     <>
@@ -24,7 +25,7 @@ export default function Household() {
       <Async q={q} skeleton={<Skeleton className="h-96 w-full" />}>
         {(d) => (
           <div className="grid gap-4">
-            {d.warnings.map((w) => (
+            {tServerList(d.warnings, d.warnings_msg).map((w) => (
               <Notice key={w} tone="warn">{w}</Notice>
             ))}
             <Members d={d} />

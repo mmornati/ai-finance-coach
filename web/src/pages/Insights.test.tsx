@@ -22,7 +22,7 @@ beforeEach(() => {
     if (url.endsWith("/session")) body = { csrf_token: "tok" };
     else if (url.endsWith("/insights")) body = { as_of: "2026-10-04", cards, hidden: 0, counts: { loan: cards.length }, coach: { configured: true, items, hidden: 0, message: "" } };
     else if (url.endsWith("/coach/resolve")) body = { refs: { [REF]: { kind: "transaction", tx_key: "real-key-1", date: "2026-09-27", amount: "-1200.00", category: "shopping.electronics", merchant: "Big shop" } } };
-    else if (url.includes("/meta/disclaimers")) body = { lang: "en", texts: { ai_label: "AI-generated content: it can contain mistakes.", ai_label_short: "AI-generated" } };
+    else if (url.includes("/meta/disclaimers")) body = { lang: "en", texts: { ai_label: "AI-generated content: it can contain mistakes.", ai_label_short: "AI-generated", tax_short: "General information, not tax advice." } };
     return new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } });
   }));
 });
@@ -99,6 +99,19 @@ describe("insights feed: rental property (E15)", () => {
     expect(within(card).getByText("Rental property")).toBeInTheDocument();
     expect(within(card).queryByRole("link", { name: /see the transaction/i })).not.toBeInTheDocument();
     expect(within(card).getByRole("link", { name: "Open the property" })).toHaveAttribute("href", "/rental");
+  });
+
+  it("renders a card from its messages (i18n step 4c): formatted params, the disclaimer by its key", async () => {
+    const core = "No decision about the extension is recorded.";
+    cards = [
+      { id: "ins_9", kind: "rental", subtype: "scheme_end", severity: "medium", title: "rental-flat-1: the scheme commitment ends on 2027-03-04 (about 5 month(s) left)",
+        title_msg: { code: "rentalAlert.schemeEnd.title", params: { property: "rental-flat-1", end_date: "2027-03-04", count: 5 }, text: "x" },
+        body: `${core} General information, not tax advice.`, body_msg: { code: "rentalAlert.schemeEnd.body", params: {}, text: core }, disclaimer: "tax_short",
+        amount: null, date: "2027-03-04", subject: "rental-flat-1", evidence: ["rental-flat-1"], persist: "ui" },
+    ];
+    renderApp(<Insights />);
+    const card = (await screen.findByText(/rental-flat-1: the scheme commitment ends on .*2027 \(about 5 months left\)/)).closest("section")!;
+    expect(await within(card).findByText(/record the decision \(`coach rental extension`\)\. General information, not tax advice\.$/)).toBeInTheDocument();
   });
 });
 

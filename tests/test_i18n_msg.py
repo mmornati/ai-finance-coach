@@ -46,13 +46,14 @@ def test_a_message_carries_the_code_raw_params_and_the_english_text():
 
 def test_dates_months_and_decimals_are_normalised():
     m = server_msg("a.b", "x", end_date=dt.datetime(2026, 1, 2, 10, 30), first_month=dt.date(2026, 3, 9), cap_amount=Decimal("10.50"),
-                   gone_date=None)
-    assert m["params"] == {"end_date": "2026-01-02", "first_month": "2026-03", "cap_amount": "10.50", "gone_date": None}
+                   gone_date=None, gap_num=Decimal("2.40"), n_num=2.4, k_num=3)
+    assert m["params"] == {"end_date": "2026-01-02", "first_month": "2026-03", "cap_amount": "10.50", "gone_date": None, "gap_num": "2.40",
+                           "n_num": 2.4, "k_num": 3}
 
 
 @pytest.mark.parametrize("params", [
     {"count": "2"}, {"count": True}, {"due_date": "05/10/2026"}, {"due_month": "2026-13"}, {"rent_amount": 1234},
-    {"rent_amount": 12.5}, {"rent_amount": "12,50"}, {"rise_pct": "12%"}, {"top_category": "groceries"}, {"top_group": "food.groceries"},
+    {"rent_amount": 12.5}, {"rent_amount": "12,50"}, {"rise_pct": "12%"}, {"gap_num": "2,4"}, {"gap_num": True}, {"gap_num": "two"}, {"top_category": "groceries"}, {"top_group": "food.groceries"},
     {"label": ["a"]}, {"label": True}, {"BadName": "x"},
 ])
 def test_a_param_of_the_wrong_type_is_refused(params):
@@ -77,10 +78,11 @@ def test_every_literal_code_built_in_the_package_exists_in_the_english_server_na
     en = _bundle("en", "server")
     used = set()
     for p in (ROOT / "src" / "coach").rglob("*.py"):
-        # server_msg(...) and the coverage notes' analytics.common.note(...)
-        used |= set(re.findall(r"\b(?:server_msg|note)\(\s*\"([a-zA-Z0-9_.]+)\"", p.read_text(encoding="utf-8")))
+        # server_msg(...), server_msg_or_none(...), the coverage notes' analytics.common.note(...) and the generated questions' memory.qgen.qmsg(...)
+        used |= set(re.findall(r"\b(?:server_msg|server_msg_or_none|note|qmsg)\(\s*\"([a-zA-Z0-9_.]+)\"", p.read_text(encoding="utf-8")))
     assert "balances.oneBalance" in used and "balances.mixedTypes" in used     # the guard sees the real calls
     assert "coverage.nonEur" in used and "coverage.incompleteMonths" in used
+    assert "question.merchant" in used and "wizard.ready" in used
     missing = sorted(c for c in used if not _has(en, c))
     assert not missing, f"add these codes to web/src/locales/en/server.json (and fr, it): {missing}"
 
@@ -91,10 +93,14 @@ def _label_families() -> dict[str, set]:
     from coach.setup.wizard import TITLES
     from coach.subs.inventory import GROUP_LABEL
     from coach.ingest.accounts import PURPOSES
+    from coach.memory.qgen import TOPIC_CODE
+    from coach.skills import onboarding as OB
+    fields = {f.replace(".", "_") for f in (*OB.MORTGAGE_FIELDS, *OB.LOAN_FIELDS, *OB.LEASE_FIELDS, *OB.CONTRACT_FIELDS)}
     onboarding = set(re.findall(r"\"id\": \"([a-z_]+)\", \"heading\"", (ROOT / "src/coach/skills/onboarding.py").read_text(encoding="utf-8")))
     assert len(onboarding) == 7
     return {"alertKind": set(KIND_LABEL), "subsGroup": set(GROUP_LABEL), "balanceType": set(BALANCE_TYPE), "setupStep": set(TITLES),
-            "onboardingStep": onboarding, "accountPurpose": set(PURPOSES)}
+            "onboardingStep": onboarding, "accountPurpose": set(PURPOSES), "questionTopic": set(TOPIC_CODE.values()),
+            "memoryField": fields | {"owner", "purpose", "payment_match"}, "bankGroup": {"manual"}}
 
 
 @pytest.mark.parametrize("lang", ["en", "fr", "it"])

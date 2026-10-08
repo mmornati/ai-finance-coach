@@ -18,6 +18,7 @@ from typing import Optional
 
 from coach import disclaimers as D
 from coach.analytics.common import add_months
+from coach.i18n_msg import server_msg, strip_msgs
 
 DISCLAIMER = D.get("contract")      # the wording lives in coach.disclaimers (E11-5)
 
@@ -168,9 +169,18 @@ def rules_table(country: Optional[str] = None) -> list[dict]:
              "summary": v["summary"], "applies_to": list(v["families"])} for k, v in RULES.items() if country is None or v["country"] == country.upper()]
 
 
+def rule_code(rid: str) -> str:
+    """The message code of a rule's texts: ``cancel.rule.<id in lower camel case>`` (``fr-3-clics`` -> ``cancel.rule.fr3Clics``), then
+    ``.name`` / ``.summary`` (web/src/locales/<lang>/server.json). The ``law`` (the legal citation) is never translated."""
+    head, *rest = rid.split("-")
+    return "cancel.rule." + head + "".join(p[:1].upper() + p[1:] for p in rest)
+
+
 def _rule(rid: str) -> dict:
     r = RULES[rid]
-    return {"id": rid, "name": r["name"], "law": r["law"], "source": r["source"], "last_reviewed": r["last_reviewed"], "summary": r["summary"]}
+    code = rule_code(rid)
+    return {"id": rid, "name": r["name"], "law": r["law"], "source": r["source"], "last_reviewed": r["last_reviewed"], "summary": r["summary"],
+            "name_msg": server_msg(code + ".name", r["name"]), "summary_msg": server_msg(code + ".summary", r["summary"])}
 
 
 def _next_renewal(renewal: dt.date, today: dt.date) -> dt.date:
@@ -182,55 +192,74 @@ def _next_renewal(renewal: dt.date, today: dt.date) -> dt.date:
     return d
 
 
-def cancellability(terms: Terms, today: dt.date, country: str = "FR") -> dict:
-    """Apply the rules of `country` (FR / IT) to the dates on file. Returns a JSON-safe dict."""
+def cancellability(terms: Terms, today: dt.date, country: str = "FR", *, messages: bool = False) -> dict:
+    """Apply the rules of `country` (FR / IT) to the dates on file. Returns a JSON-safe dict.
+
+    ``messages``: also the ``*_msg`` siblings the web app translates (``method_msg``, ``conditions_msg``, ``unknown_msg``, the rules'
+    ``name_msg`` / ``summary_msg``, ...; docs/i18n.md "Server text"). Off by default: the MCP tool, the CLI and the letters read the
+    English only (the coach must not get a second copy of every sentence)."""
     country = country.upper()
     if country not in ("FR", "IT"):
         raise ValueError("country must be FR or IT")
     fam = family_of(terms.kind)
     rules: list[str] = []
     unknown: list[str] = []
+    unknown_msg: list[dict] = []
     conditions: list[str] = []
+    conditions_msg: list[dict] = []
     can: Optional[bool] = None
     effective: Optional[dt.date] = None
     notice: Optional[int] = terms.notice_period_days
-    method = None
+    method_msg: Optional[dict] = None
     extra: dict = {}
     start = terms.start_date
     anniv = add_months(start, 12) if start else None
     renewal = terms.renewal
+
+    def cond(m: dict) -> None:
+        conditions.append(m["text"])
+        conditions_msg.append(m)
+
+    def unk(m: dict) -> None:
+        unknown.append(m["text"])
+        unknown_msg.append(m)
 
     def anniversary_route(label: str = "anniversary", months_notice: int = 2):
         if renewal is None:
             return
         nxt = _next_renewal(renewal, today)
         send_by = add_months(nxt, -months_notice)
+        assumes = _ASSUMES_ANNUAL if nxt != renewal else None
         extra["anniversary_route"] = {"effective": nxt, "send_notice_by": send_by, "months_notice": months_notice,
-                                      "notice_assumption": "two months unless the contract says otherwise (L113-12)",
+                                      "notice_assumption": _TWO_MONTHS["text"], "notice_assumption_msg": _TWO_MONTHS,
                                       "notice_still_possible": send_by >= today,
-                                      "assumes": "annual renewal on this date" if nxt != renewal else None}
+                                      "assumes": assumes and assumes["text"], "assumes_msg": assumes}
 
     if country == "FR" and fam in ("insurance_home", "insurance_car", "insurance_health"):
         rules += ["fr-ria-sante"] if fam == "insurance_health" else ["fr-hamon"]
         rules.append("fr-chatel-insurance")
         if fam == "insurance_health" and terms.group_contract:
             can = False
-            conditions.append("an employer-mandated group contract cannot be cancelled this way (only on a qualifying event)")
+            cond(server_msg("cancel.condition.groupContract",
+                            "an employer-mandated group contract cannot be cancelled this way (only on a qualifying event)"))
         elif start is None:
-            unknown.append("start_date")
+            unk(server_msg("cancel.unknown.startDate", "start_date"))
         elif today >= anniv:
             can, effective, notice = True, add_months(today, 1), 30
         elif terms.start_is_lower_bound:
-            unknown.append("contract start date (only the first payment seen is known, and it is less than a year old)")
+            unk(server_msg("cancel.unknown.startLowerBound",
+                           "contract start date (only the first payment seen is known, and it is less than a year old)"))
         else:
             can, effective, notice = False, add_months(anniv, 1), 30
             extra["first_request_date"] = anniv
         if can is False and "first_request_date" in extra:
-            conditions.append("free cancellation opens after the first year; before that, the contract ends at its anniversary "
-                              "with the notice of the contract (commonly two months)")
+            cond(server_msg("cancel.condition.firstYear",
+                            "free cancellation opens after the first year; before that, the contract ends at its anniversary "
+                            "with the notice of the contract (commonly two months)"))
         anniversary_route()
-        method = ("written request (registered letter, e-mail or the insurer's online form), or let the new insurer send it for "
-                  "you; a contract signed online can be terminated online (3 clicks)")
+        method_msg = server_msg("cancel.method.insuranceFr",
+                                "written request (registered letter, e-mail or the insurer's online form), or let the new insurer send it for "
+                                "you; a contract signed online can be terminated online (3 clicks)")
         rules.append("fr-3-clics")
     elif country == "FR" and fam == "insurance_other":
         # pet, legal protection, accident...: the Code des assurances anniversary rule (L113-12, L113-15-1); the free mid-term cancellation
@@ -238,19 +267,22 @@ def cancellability(terms: Terms, today: dt.date, country: str = "FR") -> dict:
         rules += ["fr-chatel-insurance", "fr-3-clics"]
         anniversary_route()
         if renewal is None:
-            unknown.append("renewal (anniversary date)")
+            unk(server_msg("cancel.unknown.renewalAnniversary", "renewal (anniversary date)"))
         else:
             can, effective = False, _next_renewal(renewal, today)
-        conditions.append("free cancellation at any time (Hamon) applies to eligible car and home policies: check whether yours is one; "
-                          "otherwise the contract ends at its anniversary with the notice of the contract (commonly two months)")
-        method = "written request (registered letter, e-mail or the insurer's online form) before the notice deadline"
+        cond(server_msg("cancel.condition.hamonEligible",
+                        "free cancellation at any time (Hamon) applies to eligible car and home policies: check whether yours is one; "
+                        "otherwise the contract ends at its anniversary with the notice of the contract (commonly two months)"))
+        method_msg = server_msg("cancel.method.insuranceOtherFr",
+                                "written request (registered letter, e-mail or the insurer's online form) before the notice deadline")
     elif country == "FR" and fam == "loan_insurance":
         rules.append("fr-lemoine")
         can, notice = True, None
         extra["lender_answer_working_days"] = 10
-        conditions += ["the replacement policy must offer equivalent guarantees", "the old policy ends the day the new one starts: "
-                       "there must be no gap in cover"]
-        method = "send the new policy's offer to the lender (the new insurer usually does the paperwork)"
+        cond(server_msg("cancel.condition.equivalentGuarantees", "the replacement policy must offer equivalent guarantees"))
+        cond(server_msg("cancel.condition.noGapInCover", "the old policy ends the day the new one starts: there must be no gap in cover"))
+        method_msg = server_msg("cancel.method.loanInsuranceFr",
+                                "send the new policy's offer to the lender (the new insurer usually does the paperwork)")
     elif country == "FR" and fam == "telecom":
         rules += ["fr-telecom", "fr-3-clics"]
         if terms.commitment_end and terms.commitment_end > today:
@@ -271,94 +303,109 @@ def cancellability(terms: Terms, today: dt.date, country: str = "FR") -> dict:
             if fee is None:
                 cost["needs"] = "billing.amount of the contract to price it"
             extra["early_termination_cost"] = cost
-            conditions.append("leaving before the end of the commitment costs the amount in early_termination_cost; waiting until "
-                              f"{terms.commitment_end.isoformat()} is free")
+            cond(server_msg("cancel.condition.telecomCommitment",
+                            "leaving before the end of the commitment costs the amount in early_termination_cost; waiting until "
+                            f"{terms.commitment_end.isoformat()} is free", free_date=terms.commitment_end))
         else:
             can, notice = True, terms.notice_period_days or 10
             effective = today + dt.timedelta(days=notice)
-        method = "online (termination button), by letter or e-mail, or through the new operator (number portability ends the old line)"
+        method_msg = server_msg("cancel.method.telecomFr",
+                                "online (termination button), by letter or e-mail, or through the new operator (number portability ends the old line)")
     elif country == "FR" and fam == "energy":
         rules.append("fr-energy")
         can, notice = True, terms.notice_period_days
         if terms.commitment_end and terms.commitment_end > today:
-            conditions.append("this looks like a fixed-term offer: read its conditions for any exit clause")
-        method = "subscribe to the new supplier, who cancels the old contract for you; do not cancel first (no gap in supply)"
+            cond(server_msg("cancel.condition.fixedTermOffer", "this looks like a fixed-term offer: read its conditions for any exit clause"))
+        method_msg = server_msg("cancel.method.energyFr",
+                                "subscribe to the new supplier, who cancels the old contract for you; do not cancel first (no gap in supply)")
     elif country == "FR":                                         # subscriptions and other contracts
         rules += ["fr-chatel-renewal", "fr-3-clics"] if fam == "subscription" else ["fr-chatel-renewal"]
-        can, effective, notice = _generic(terms, today, conditions, extra, unknown)
-        method = "online termination button if you signed online, else the method in the contract (letter or e-mail)"
+        can, effective, notice = _generic(terms, today, cond, extra, unk)
+        method_msg = server_msg("cancel.method.genericFr",
+                                "online termination button if you signed online, else the method in the contract (letter or e-mail)")
     elif country == "IT" and fam == "telecom":
         rules.append("it-bersani-telecom")
         if terms.commitment_end and terms.commitment_end > today:
             can, effective = False, terms.commitment_end
-            conditions.append("an early exit can only cost what is justified or proportionate to the discount received")
+            cond(server_msg("cancel.condition.earlyExitJustified",
+                            "an early exit can only cost what is justified or proportionate to the discount received"))
         else:
             can, notice = True, min(30, terms.notice_period_days or 30)
             effective = today + dt.timedelta(days=notice)
-        method = "written request to the operator (e-mail or registered letter) or through the new operator"
+        method_msg = server_msg("cancel.method.telecomIt",
+                                "written request to the operator (e-mail or registered letter) or through the new operator")
     elif country == "IT" and fam == "energy":
         rules.append("it-bersani-energy")
         can, notice = True, min(30, terms.notice_period_days or 30)
         effective = today + dt.timedelta(days=notice)
-        method = "sign with the new supplier, who sends the recesso; a direct request goes to the current supplier"
+        method_msg = server_msg("cancel.method.energyIt",
+                                "sign with the new supplier, who sends the recesso; a direct request goes to the current supplier")
     elif country == "IT" and fam == "insurance_car":
         rules.append("it-rcauto")
         if renewal:
             can, effective = False, _next_renewal(renewal, today)
-            conditions.append("no notice is needed: the policy simply ends at expiry (the cover lasts 15 more days); mid-term only for "
-                              "sale, destruction or theft of the vehicle")
+            cond(server_msg("cancel.condition.rcAutoExpiry",
+                            "no notice is needed: the policy simply ends at expiry (the cover lasts 15 more days); mid-term only for "
+                            "sale, destruction or theft of the vehicle"))
         else:
-            unknown.append("renewal (expiry date)")
+            unk(server_msg("cancel.unknown.renewalExpiry", "renewal (expiry date)"))
         notice = None
-        method = "do nothing at expiry and buy the new policy beforehand"
+        method_msg = server_msg("cancel.method.carInsuranceIt", "do nothing at expiry and buy the new policy beforehand")
     elif country == "IT" and fam in ("insurance_home", "insurance_health", "insurance_other"):
         rules.append("it-insurance")
-        can, effective, notice = _notice_by_renewal(terms, today, unknown, extra, default_notice=None)
-        conditions.append("a policy longer than five years (with a duration discount) can be ended by the insured after the fifth year with "
-                          "60 days' notice, effective at the end of the policy year (art. 1899 c.c.); annual policies follow the contract")
-        method = "disdetta by registered letter or certified e-mail within the period in the policy"
+        can, effective, notice = _notice_by_renewal(terms, today, unk, extra, default_notice=None)
+        cond(server_msg("cancel.condition.longPolicyIt",
+                        "a policy longer than five years (with a duration discount) can be ended by the insured after the fifth year with "
+                        "60 days' notice, effective at the end of the policy year (art. 1899 c.c.); annual policies follow the contract"))
+        method_msg = server_msg("cancel.method.insuranceIt", "disdetta by registered letter or certified e-mail within the period in the policy")
     elif country == "IT" and fam == "loan_insurance":
         rules.append("it-loan-insurance")
         can = True
-        conditions += ["the replacement policy must be equivalent to what the bank requires",
-                       "a single premium: ask for the refund of the unused part on early closure"]
-        method = "present the new policy to the bank"
+        cond(server_msg("cancel.condition.equivalentToBank", "the replacement policy must be equivalent to what the bank requires"))
+        cond(server_msg("cancel.condition.singlePremiumRefund", "a single premium: ask for the refund of the unused part on early closure"))
+        method_msg = server_msg("cancel.method.loanInsuranceIt", "present the new policy to the bank")
     else:                                                          # IT subscriptions and anything else
         rules.append("it-subscription")
-        can, effective, notice = _generic(terms, today, conditions, extra, unknown)
-        method = "the method in the contract (online area, letter or certified e-mail)"
+        can, effective, notice = _generic(terms, today, cond, extra, unk)
+        method_msg = server_msg("cancel.method.genericIt", "the method in the contract (online area, letter or certified e-mail)")
     if terms.notice_period_days and renewal and "contract_notice_deadline" not in extra:
         nxt = _next_renewal(renewal, today)
         send_by = nxt - dt.timedelta(days=terms.notice_period_days)
+        assumes = _ASSUMES_ANNUAL if nxt != renewal else None
         extra["contract_notice_deadline"] = {"renewal": nxt, "send_notice_by": send_by, "notice_period_days": terms.notice_period_days,
                                              "days_left": (send_by - today).days,
-                                             "assumes": "annual renewal on this date" if nxt != renewal else None}
+                                             "assumes": assumes and assumes["text"], "assumes_msg": assumes}
     out = {"country": country, "family": fam, "kind": terms.kind, "can_cancel_now": can, "earliest_effective_date": effective,
-           "notice_period_days": notice, "method": method, "conditions": conditions, "unknown": unknown,
+           "notice_period_days": notice, "method": method_msg["text"], "method_msg": method_msg, "conditions": conditions,
+           "conditions_msg": conditions_msg, "unknown": unknown, "unknown_msg": unknown_msg,
            "rules": [_rule(r) for r in dict.fromkeys(rules)], "disclaimer": DISCLAIMER}
     out.update(extra)
-    return out
+    return out if messages else strip_msgs(out)
 
 
-def _notice_by_renewal(terms: Terms, today: dt.date, unknown: list, extra: dict, default_notice: Optional[int]):
+_ASSUMES_ANNUAL = server_msg("cancel.assumes.annualRenewal", "annual renewal on this date")
+_TWO_MONTHS = server_msg("cancel.noticeAssumption.twoMonths", "two months unless the contract says otherwise (L113-12)")
+
+
+def _notice_by_renewal(terms: Terms, today: dt.date, unk, extra: dict, default_notice: Optional[int]):
     renewal = terms.renewal
     notice = terms.notice_period_days or default_notice
     if renewal is None:
-        unknown.append("renewal (expiry date)")
+        unk(server_msg("cancel.unknown.renewalExpiry", "renewal (expiry date)"))
         return None, None, notice
     nxt = _next_renewal(renewal, today)
     if notice is None:
-        unknown.append("notice_period_days")
+        unk(server_msg("cancel.unknown.noticePeriodDays", "notice_period_days"))
         return False, nxt, None
     send_by = nxt - dt.timedelta(days=notice)
     extra["send_notice_by"] = send_by
     return False, nxt, notice
 
 
-def _generic(terms: Terms, today: dt.date, conditions: list, extra: dict, unknown: list):
+def _generic(terms: Terms, today: dt.date, cond, extra: dict, unk):
     """Subscriptions and other contracts: a commitment, a tacit renewal with notice, or a rolling period."""
     if terms.commitment_end and terms.commitment_end > today:
-        conditions.append("the minimum term runs until this date: leaving earlier is governed by the contract")
+        cond(server_msg("cancel.condition.minimumTerm", "the minimum term runs until this date: leaving earlier is governed by the contract"))
         return False, terms.commitment_end, terms.notice_period_days
     renewal = terms.renewal
     if renewal is not None:
@@ -367,13 +414,14 @@ def _generic(terms: Terms, today: dt.date, conditions: list, extra: dict, unknow
         send_by = nxt - dt.timedelta(days=notice)
         extra["send_notice_by"] = send_by
         if renewal < today:
-            conditions.append("it renewed on " + renewal.isoformat() + ": if the provider did not remind you before that "
-                              "date, you may be able to terminate at any time (see the rules)")
+            cond(server_msg("cancel.condition.renewedWithoutReminder",
+                            "it renewed on " + renewal.isoformat() + ": if the provider did not remind you before that "
+                            "date, you may be able to terminate at any time (see the rules)", renewal_date=renewal))
         return (send_by >= today and renewal >= today), nxt, notice or None
     if terms.billing_period == "monthly" or terms.tacit_renewal is False:
-        conditions.append("a rolling monthly subscription normally ends at the end of the period already paid")
+        cond(server_msg("cancel.condition.rollingMonthly", "a rolling monthly subscription normally ends at the end of the period already paid"))
         return True, None, terms.notice_period_days
-    unknown.append("renewal or commitment_end")
+    unk(server_msg("cancel.unknown.renewalOrCommitmentEnd", "renewal or commitment_end"))
     return None, None, terms.notice_period_days
 
 
@@ -401,15 +449,24 @@ def terms_for_series(x, contract=None, *, infer_fee: bool = False, **override) -
 
 def legal_basis(res: dict) -> list[dict]:
     """The rules that apply, each with its law, its source and when the table was last reviewed."""
-    return [{"id": r["id"], "name": r["name"], "law": r["law"], "source": r["source"], "last_reviewed": r["last_reviewed"]}
-            for r in res.get("rules", [])]
+    out = []
+    for r in res.get("rules", []):
+        row = {"id": r["id"], "name": r["name"], "law": r["law"], "source": r["source"], "last_reviewed": r["last_reviewed"]}
+        if "name_msg" in r:
+            row["name_msg"] = r["name_msg"]
+        out.append(row)
+    return out
 
 
 def cancellation_info(res: dict) -> dict:
     """The part of a :func:`cancellability` result that the subscriptions view shows: can cancel now, earliest date, notice,
-    method, early-termination cost, legal basis + source + review date, the 'verify' disclaimer."""
+    method, early-termination cost, legal basis + source + review date, the 'verify' disclaimer.
+
+    A result computed with ``messages=True`` brings its ``*_msg`` siblings along; the KEYS of the two disclaimers (``disclaimer_key``,
+    ``verify_key``) are always there: the web app shows their wording in its language (``GET /meta/disclaimers``)."""
     ec = res.get("early_termination_cost")
-    return {"country": res["country"], "family": res["family"], "can_cancel_now": res["can_cancel_now"],
+    msgs = {k: res[k] for k in ("method_msg", "conditions_msg", "unknown_msg") if k in res}
+    return {**msgs, "disclaimer_key": "contract", "verify_key": "contract_verify","country": res["country"], "family": res["family"], "can_cancel_now": res["can_cancel_now"],
             "earliest_effective_date": res["earliest_effective_date"], "notice_period_days": res["notice_period_days"],
             "method": res["method"], "conditions": res["conditions"], "unknown": res["unknown"],
             "early_termination_cost": ec, "legal_basis": legal_basis(res),
@@ -417,6 +474,13 @@ def cancellation_info(res: dict) -> dict:
             "first_request_date": res.get("first_request_date"), "send_notice_by": res.get("send_notice_by"),
             "last_reviewed": max((r["last_reviewed"] for r in res.get("rules", [])), default=None),
             "verify": VERIFY, "disclaimer": res["disclaimer"]}
+
+
+# what a deadline refers to: the English word stays the ``reference`` (the calendar and the reminders build their sentences on it)
+_REFERENCE = {"renews": server_msg("cancel.reference.renews", "renews"),
+              "commitment ends": server_msg("cancel.reference.commitmentEnds", "commitment ends"),
+              "anniversary": server_msg("cancel.reference.anniversary", "anniversary"),
+              "free cancellation opens": server_msg("cancel.reference.freeCancellationOpens", "free cancellation opens")}
 
 
 def notice_deadlines(contract, res: dict, today: dt.date, horizon: Optional[dt.date] = None) -> list[dict]:
@@ -437,15 +501,17 @@ def notice_deadlines(contract, res: dict, today: dt.date, horizon: Optional[dt.d
             continue
         nd = date_ - dt.timedelta(days=n)
         if keep(nd):
-            out.append({"date": nd, "kind": "contract_notice", "reference_date": date_, "reference": what, "days": n,
+            out.append({"date": nd, "kind": "contract_notice", "reference_date": date_, "reference": what, "reference_msg": _REFERENCE[what], "days": n,
                         "rules": [r["name"] for r in res.get("rules", [])]})
     ar = res.get("anniversary_route")
     if not n and ar and keep(ar["send_notice_by"]) and ar["effective"] >= today:
         out.append({"date": ar["send_notice_by"], "kind": "legal_notice", "reference_date": ar["effective"], "reference": "anniversary",
+                    "reference_msg": _REFERENCE["anniversary"],
                     "days": None, "months": ar["months_notice"], "rules": [r["name"] for r in res.get("rules", [])
                                                                           if r["id"] == "fr-chatel-insurance"] or [r["name"] for r in res.get("rules", [])]})
     fr = res.get("first_request_date")
     if fr and keep(fr):
-        out.append({"date": fr, "kind": "window_opens", "reference_date": fr, "reference": "free cancellation opens", "days": None,
+        out.append({"date": fr, "kind": "window_opens", "reference_date": fr, "reference": "free cancellation opens",
+                    "reference_msg": _REFERENCE["free cancellation opens"], "days": None,
                     "rules": [r["name"] for r in res.get("rules", [])][:1]})
     return out

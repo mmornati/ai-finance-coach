@@ -600,7 +600,8 @@ def _qline(q) -> str:
 def cmd_q_list(a, cfg):
     qs = q_mod.listing(_store(cfg), "open" if a.open else a.status)
     if a.json:
-        print(_j([q.model_dump(mode="python", exclude_none=True) for q in qs]))
+        from coach.i18n_msg import strip_msgs                  # the *_msg translations are the web app's only
+        print(_j([strip_msgs(q.model_dump(mode="python", exclude_none=True)) for q in qs]))
         return
     if not qs:
         print("no questions" + (" open" if a.open else "") + " (`coach questions generate`)")
@@ -721,4 +722,4 @@ def cmd_explain(a, cfg):
                 print(f"  {r[0]}  {r[1]}  {r[2]:+9.2f}  {r[3]}  {r[4]}")
         sys.exit(1)
     x = explain_mod.explain(con, store, rows[0][0])
-    print(_j(x) if a.json else explain_mod.format_explanation(x))
+    print(_j(explain_mod.plain(x)) if a.json else explain_mod.format_explanation(x))

@@ -3,10 +3,11 @@ import { Trans, useTranslation } from "react-i18next";
 import { AlertTriangle, Calculator, CarFront, Check, FileSpreadsheet, Lightbulb } from "lucide-react";
 import { Badge, Button, DiffView, Dialog, Disclosure, Field, Input, Money, Notice, Select, Spinner, Stat, Tabs } from "./ui";
 import { CopyCommand } from "./CopyCommand";
-import { useDryRun, useGet, useWrite } from "@/api/hooks";
+import { useDisclaimers, useDryRun, useGet, useWrite } from "@/api/hooks";
+import { serverLabel, tServerOr, useServerText } from "@/i18n/server";
 import { api } from "@/lib/api";
 import { fmtDate, fmtNumber, parseMoney } from "@/lib/format";
-import type { EditResult, InferredField, LeaseStatus, Liability, LoanAlert, LoanDetail, ScenarioResult, ScheduleRow } from "@/api/types";
+import type { EditResult, InferredField, LeaseStatus, Liability, LoanAlert, LoanDetail, ScenarioResult, ScheduleRow, ServerMsg } from "@/api/types";
 
 type Tab = "schedule" | "payments" | "scenario" | "suggestions" | "lease";
 
@@ -24,8 +25,8 @@ export function AlertList({ alerts }: { alerts: LoanAlert[] }) {
         <li key={a.id} className="flex gap-2 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <div>
-            <div className="font-medium">{a.title}</div>
-            <div>{a.body}</div>
+            <div className="font-medium">{tServerOr(a.title_msg, a.title)}</div>
+            <div>{tServerOr(a.body_msg, a.body)}</div>
           </div>
         </li>
       ))}
@@ -56,7 +57,7 @@ export default function LoanDialog({ loan, onClose, onEdit }: { loan: Liability;
         {detail.data && tab === "schedule" && <ScheduleTab d={detail.data} onEdit={onEdit} />}
         {detail.data && tab === "payments" && <PaymentsTab d={detail.data} loan={loan} />}
         {tab === "scenario" && <ScenarioTab loan={loan} />}
-        {tab === "suggestions" && <SuggestionsTab loan={loan} fields={loan.inferred} notes={detail.data?.inference.notes ?? []} />}
+        {tab === "suggestions" && <SuggestionsTab loan={loan} fields={loan.inferred} notes={detail.data?.inference.notes ?? []} notesMsg={detail.data?.inference.notes_msg} />}
         {tab === "lease" && <LeaseTab loan={loan} lease={detail.data?.lease ?? loan.lease} />}
       </div>
     </Dialog>
@@ -67,13 +68,14 @@ export default function LoanDialog({ loan, onClose, onEdit }: { loan: Liability;
 
 function ScheduleTab({ d, onEdit }: { d: LoanDetail; onEdit: () => void }) {
   const { t } = useTranslation();
+  const { tServer, tServerList } = useServerText();
   const s = d.schedule;
   const [all, setAll] = useState(false);
   if (s.status !== "computed")
     return (
       <Notice tone="warn" title={t("loan.schedule.none")}>
-        {s.status === "not_applicable" ? s.alternative : <>
-          {t("loan.schedule.toCompute")} <strong>{(s.missing ?? []).join(", ")}</strong>. {s.alternative}
+        {s.status === "not_applicable" ? tServer(s.alternative_msg, s.alternative ?? "") : <>
+          {t("loan.schedule.toCompute")} <strong>{tServerList(s.missing, s.missing_msg).join(", ")}</strong>. {tServer(s.alternative_msg, s.alternative ?? "")}
           <div className="mt-2"><Button size="sm" onClick={onEdit}>{t("loan.schedule.fillIn")}</Button></div>
         </>}
       </Notice>
@@ -90,8 +92,8 @@ function ScheduleTab({ d, onEdit }: { d: LoanDetail; onEdit: () => void }) {
         <Stat label={s.total_cost ? t("loan.schedule.totalCost") : t("loan.schedule.interestToPay")} value={<Money v={s.total_cost ?? s.remaining_interest} round />} hint={s.total_interest ? t("loan.schedule.interestHint", { amount: fmtMoneyShort(s.total_interest) }) : t("loan.schedule.pastUnknown")} />
       </div>
       {s.approximate && <Notice tone="warn">{t("loan.schedule.variable")}</Notice>}
-      {s.outstanding_check && <Notice tone="warn" title={t("loan.schedule.differsTitle")}>{t("loan.schedule.differs", { computed: fmtMoneyShort(s.outstanding_check.computed), date: fmtDate(s.outstanding_check.as_of), declared: fmtMoneyShort(s.outstanding_check.declared), hint: s.outstanding_check.hint })}</Notice>}
-      {s.payment_check?.status === "differs" && <Notice tone="warn">{s.payment_check.hint ? t("loan.schedule.paymentDiffersHint", { hint: s.payment_check.hint }) : t("loan.schedule.paymentDiffers")}</Notice>}
+      {s.outstanding_check && <Notice tone="warn" title={t("loan.schedule.differsTitle")}>{t("loan.schedule.differs", { computed: fmtMoneyShort(s.outstanding_check.computed), date: fmtDate(s.outstanding_check.as_of), declared: fmtMoneyShort(s.outstanding_check.declared), hint: tServer(s.outstanding_check.hint_msg, s.outstanding_check.hint) })}</Notice>}
+      {s.payment_check?.status === "differs" && <Notice tone="warn">{s.payment_check.hint ? t("loan.schedule.paymentDiffersHint", { hint: tServer(s.payment_check.hint_msg, s.payment_check.hint) }) : t("loan.schedule.paymentDiffers")}</Notice>}
       <div>
         <h3 className="mb-1.5 text-sm font-semibold">{t("loan.schedule.byYear")}</h3>
         <div className="overflow-x-auto rounded-lg border border-border">
@@ -120,7 +122,7 @@ function ScheduleTab({ d, onEdit }: { d: LoanDetail; onEdit: () => void }) {
         </div>
       </div>
       <Disclosure summary={t("loan.schedule.how")}>
-        <ul className="list-disc pl-5 text-sm text-muted">{(s.assumptions ?? []).map((a) => <li key={a}>{a}</li>)}</ul>
+        <ul className="list-disc pl-5 text-sm text-muted">{tServerList(s.assumptions, s.assumptions_msg).map((a) => <li key={a}>{a}</li>)}</ul>
       </Disclosure>
     </div>
   );
@@ -203,22 +205,26 @@ function ScenarioTab({ loan }: { loan: Liability }) {
 
 function ScenarioView({ type, r }: { type: ScenarioType; r: ScenarioResult }) {
   const { t } = useTranslation();
-  if (r.status === "needs_fields") return <Notice tone="warn" title={t("loan.scenario.notEnough")}>{r.missing?.length ? <>{t("loan.scenario.record")} <strong>{r.missing.join(", ")}</strong>. </> : null}{r.alternative ?? r.note}</Notice>;
-  if (r.status === "payoff") return <Notice tone="info">{r.note}</Notice>;
+  const { tServer, tServerList } = useServerText();
+  const disclaimers = useDisclaimers();
+  if (r.status === "needs_fields") return <Notice tone="warn" title={t("loan.scenario.notEnough")}>{r.missing?.length ? <>{t("loan.scenario.record")} <strong>{tServerList(r.missing, r.missing_msg).join(", ")}</strong>. </> : null}{r.alternative ? tServer(r.alternative_msg, r.alternative) : tServer(r.note_msg, r.note ?? "")}</Notice>;
+  if (r.status === "payoff") return <Notice tone="info">{tServer(r.note_msg, r.note ?? "")}</Notice>;
   if (r.status === "nothing_left") return <Notice tone="info">{t("loan.scenario.nothingLeft")}</Notice>;
   const months = (n: number | null | undefined) => (n === null || n === undefined ? t("loan.scenario.never") : n === 0 ? t("loan.scenario.immediately") : t("loan.scenario.months", { count: n }));
   const basis = <span className="text-muted" />;
+  const verdict = (code: string | null | undefined, english: string | null | undefined) => serverLabel("loanVerdict", code, english ?? String(code ?? "").replace(/_/g, " "));
+  const notes = tServerList(r.notes, r.notes_msg);
   if (type === "prepay")
     return (
       <div className="grid gap-3">
         <p className="text-sm">
-          <Trans i18nKey="loan.scenario.prepaySummary" count={r.remaining_instalments} values={{ date: fmtDate(r.date, "medium"), basis: r.penalty_basis }}
+          <Trans i18nKey="loan.scenario.prepaySummary" count={r.remaining_instalments} values={{ date: fmtDate(r.date, "medium"), basis: tServer(r.penalty_basis_msg, r.penalty_basis ?? "") }}
             components={{ amount: <Money v={r.amount} />, before: <Money v={r.capital_before} round />, after: <Money v={r.capital_after} round />, instalment: <Money v={r.instalment} />, penalty: <strong><Money v={r.penalty} /></strong>, basis }} />
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           {(r.options ?? []).map((o) => (
             <div key={o.mode} className="rounded-lg border border-border p-3 text-sm">
-              <div className="font-semibold">{o.label}</div>
+              <div className="font-semibold">{serverLabel("loanOption", o.mode, o.label)}</div>
               <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1">
                 <dt className="text-muted">{t("loan.scenario.newInstalment")}</dt><dd className="num text-right"><Money v={o.new_instalment} /></dd>
                 <dt className="text-muted">{t("loan.scenario.monthlyChange")}</dt><dd className="num text-right"><Money v={o.monthly_change} signed /></dd>
@@ -228,11 +234,12 @@ function ScenarioView({ type, r }: { type: ScenarioType; r: ScenarioResult }) {
                 <dt className="text-muted">{t("loan.scenario.netOfPenalty")}</dt><dd className="num text-right font-semibold"><Money v={o.net_saving} signed colored /></dd>
                 <dt className="text-muted">{t("loan.scenario.breakEven")}</dt><dd className="num text-right">{months(o.break_even_months)}</dd>
               </dl>
-              <p className="mt-2 text-xs text-muted">{o.verdict}</p>
+              <p className="mt-2 text-xs text-muted">{verdict(o.verdict_code, o.verdict)}</p>
             </div>
           ))}
         </div>
-        {(r.notes ?? []).map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+        {notes.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+        {r.disclaimer_key && disclaimers?.[r.disclaimer_key] && <p className="text-xs text-faint">{disclaimers[r.disclaimer_key]}</p>}
       </div>
     );
   if (type === "renegotiate")
@@ -242,23 +249,24 @@ function ScenarioView({ type, r }: { type: ScenarioType; r: ScenarioResult }) {
           components={{ current: <Money v={r.current_payment} />, next: <Money v={r.new_payment} />, saving: <Money v={r.monthly_saving} /> }} /></p>
         <p><Trans i18nKey="loan.scenario.renegotiateCosts" values={{ basis: r.penalty_basis, breakEven: months(r.break_even_months) }}
           components={{ gross: <Money v={r.gross_interest_saving} />, costs: <Money v={r.total_costs} />, penalty: <Money v={r.penalty} />, basis, net: <strong><Money v={r.net_saving} signed colored /></strong> }} /></p>
-        <p className="text-muted">{String(r.verdict ?? "").replace(/_/g, " ")}</p>
-        {(r.notes ?? []).map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+        <p className="text-muted">{verdict(r.verdict, null)}</p>
+        {notes.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
       </div>
     );
   return (
     <div className="grid gap-2 text-sm">
-      <p><Trans i18nKey="loan.scenario.insuranceLine" values={{ months: r.remaining_months, verdict: String(r.verdict ?? "").replace(/_/g, " ") }}
+      <p><Trans i18nKey="loan.scenario.insuranceLine" values={{ months: r.remaining_months, verdict: verdict(r.verdict, null) }}
         components={{ current: <Money v={r.current_monthly} />, alternative: <Money v={r.alternative_monthly} />, saving: <Money v={r.monthly_saving} />, net: <strong><Money v={r.net_saving} signed colored /></strong> }} /></p>
-      {(r.notes ?? []).map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+      {notes.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ suggestions inferred from the payments (E9-1) */
 
-function SuggestionsTab({ loan, fields, notes }: { loan: Liability; fields: InferredField[]; notes: string[] }) {
+function SuggestionsTab({ loan, fields, notes, notesMsg }: { loan: Liability; fields: InferredField[]; notes: string[]; notesMsg?: ServerMsg[] }) {
   const { t } = useTranslation();
+  const { tServer, tServerList } = useServerText();
   const [out, setOut] = useState<{ id: string; accept_command: string } | null>(null);
   const propose = useWrite(() => api.post<{ id: string; accept_command: string }>(`/loans/${loan.id}/infer/propose`, { min_confidence: "medium" }), { success: t("loan.suggestions.created"), invalidate: true, onSuccess: setOut });
   const usable = fields.filter((f) => f.confidence !== "low");
@@ -269,12 +277,12 @@ function SuggestionsTab({ loan, fields, notes }: { loan: Liability; fields: Infe
         <ul className="divide-y divide-border rounded-lg border border-border text-sm">
           {fields.map((f) => (
             <li key={f.field} className="flex items-start justify-between gap-3 px-3 py-2">
-              <div><div className="font-medium">{f.field} = {String(f.value)} <Badge tone={f.confidence === "high" ? "pos" : f.confidence === "medium" ? "info" : "warn"}>{t("loan.suggestions.badge", { confidence: f.confidence })}</Badge></div><div className="text-xs text-muted">{f.method}{f.note ? ` - ${f.note}` : ""}</div></div>
+              <div><div className="font-medium">{f.field} = {String(f.value)} <Badge tone={f.confidence === "high" ? "pos" : f.confidence === "medium" ? "info" : "warn"}>{t("loan.suggestions.badge", { confidence: f.confidence })}</Badge></div><div className="text-xs text-muted">{tServer(f.method_msg, f.method)}{f.note ? ` - ${tServer(f.note_msg, f.note)}` : ""}</div></div>
             </li>
           ))}
         </ul>
       )}
-      {notes.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+      {tServerList(notes, notesMsg).map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
       {usable.length > 0 && <Button variant="primary" busy={propose.isPending} onClick={() => propose.mutate(undefined as never)}><FileSpreadsheet className="size-4" aria-hidden /> {t("loan.suggestions.queue")}</Button>}
       {out && <div className="grid gap-1.5"><p className="text-sm"><Trans i18nKey="loan.suggestions.waiting" values={{ id: out.id }} components={{ strong: <strong /> }} /></p><CopyCommand command={out.accept_command} /></div>}
     </div>
@@ -285,6 +293,7 @@ function SuggestionsTab({ loan, fields, notes }: { loan: Liability; fields: Infe
 
 function LeaseTab({ loan, lease }: { loan: Liability; lease: LeaseStatus | null }) {
   const { t } = useTranslation();
+  const { tServerList } = useServerText();
   const [km, setKm] = useState("");
   const [date, setDate] = useState("");
   const body = { km: km ? Number.parseInt(km, 10) : 0, date: date || undefined };
@@ -301,12 +310,12 @@ function LeaseTab({ loan, lease }: { loan: Liability; lease: LeaseStatus | null 
         </Notice>
       ) : <Notice tone="warn" title={t("loan.lease.endUnknownTitle")}>{t("loan.lease.endUnknown")}</Notice>}
       <div className="grid gap-3 sm:grid-cols-3">
-        <Stat label={t("loan.lease.optionPrice")} value={lease.decision.residual_value ? <Money v={lease.decision.residual_value} round /> : t("loan.unknown")} hint={lease.decision.needs?.join(", ")} />
+        <Stat label={t("loan.lease.optionPrice")} value={lease.decision.residual_value ? <Money v={lease.decision.residual_value} round /> : t("loan.unknown")} hint={lease.decision.needs ? tServerList(lease.decision.needs, lease.decision.needs_msg).join(", ") : undefined} />
         <Stat label={t("loan.lease.mileageLimit")} value={m.limit_km != null ? t("loan.lease.km", { km: fmtNumber(m.limit_km) }) : t("loan.unknown")} hint={m.excess_km_fee ? t("loan.lease.excessPerKm", { amount: m.excess_km_fee }) : t("loan.lease.excessUnknown")} />
         <Stat label={t("loan.lease.projected")} value={m.projected_contract_km != null ? t("loan.lease.km", { km: fmtNumber(m.projected_contract_km) }) : t("loan.lease.needsReadings")} hint={m.pace ? t("loan.lease.kmPerYear", { km: fmtNumber(m.pace.km_per_year) }) : undefined} tone={m.status === "over_limit" ? "neg" : m.status === "within_limit" ? "pos" : undefined} />
       </div>
       {m.status === "over_limit" && <Notice tone="neg" title={t("loan.lease.overTitle")}>{t("loan.lease.overBy", { km: fmtNumber(m.excess_km) })}{m.excess_cost ? <Trans i18nKey="loan.lease.overCost" components={{ cost: <Money v={m.excess_cost} /> }} /> : t("loan.lease.overNoFee")}</Notice>}
-      {m.needs.length > 0 && <p className="text-xs text-muted">{t("loan.lease.needs", { needs: m.needs.join("; ") })}</p>}
+      {m.needs.length > 0 && <p className="text-xs text-muted">{t("loan.lease.needs", { needs: tServerList(m.needs, m.needs_msg).join("; ") })}</p>}
       <div className="grid gap-2">
         <h3 className="flex items-center gap-1.5 text-sm font-semibold"><CarFront className="size-4" aria-hidden /> {t("loan.lease.odometer")}</h3>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -319,7 +328,7 @@ function LeaseTab({ loan, lease }: { loan: Liability; lease: LeaseStatus | null 
         {(loan.odometer ?? []).length > 0 && <p className="text-xs text-muted">{t("loan.lease.readings", { list: (loan.odometer ?? []).map((o) => t("loan.lease.reading", { km: fmtNumber(o.km), date: fmtDate(o.date, "medium") })).join(", ") })}</p>}
       </div>
       <Disclosure summary={t("loan.lease.checklist")} defaultOpen={!!lease.end.reminder_active}>
-        <ul className="list-disc pl-5 text-sm text-muted">{lease.checklist.map((c) => <li key={c}>{c}</li>)}</ul>
+        <ul className="list-disc pl-5 text-sm text-muted">{tServerList(lease.checklist, lease.checklist_msg).map((c) => <li key={c}>{c}</li>)}</ul>
         <p className="mt-2 text-xs text-faint">{t("loan.lease.checklistNote")}</p>
       </Disclosure>
     </div>

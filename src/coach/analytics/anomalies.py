@@ -34,6 +34,7 @@ from coach.analytics.common import non_eur_note, note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import CAPITAL_TAG, NO_AVERAGE_TAGS, Dataset, Tx, is_spending
 from coach.analytics.recurring import RecurringResult, detect_recurring
+from coach.i18n_msg import server_msg, server_msg_or_none
 
 SEVERITIES = ("high", "medium", "low")
 
@@ -53,6 +54,7 @@ class Anomaly(Result):
     accounts: list = field(default_factory=list)       # account labels
     dismissed: bool = False
     first_seen: Optional[str] = None
+    message_msg: Optional[dict] = None         # the message for the web ({code, params, text}); stored in the payload, absent from older rows
 
 
 @dataclass
@@ -120,11 +122,15 @@ def category_spikes(ds: Dataset, scope: Optional[Scope] = None) -> list[Anomaly]
                 sev = "high" if z >= 8 or excess >= 50000 else "medium" if z >= 5 or excess >= 20000 else "low"
                 zr = round(z, 2)
             big = sorted((t for t in txs if t.month == m), key=lambda t: (t.amount_c, t.key))[:5]
-            out.append(Anomaly(_id("category_spike", cat, m), "category_spike", sev, cat, m, x, med, zr,
-                               f"Spending in {cat} in {m} is {_eur(x)}, versus a typical {_eur(med)} per month "
-                               + (f"(robust z-score {z:.1f}, {len(hist)} earlier months)." if zr is not None else
-                                  f"(usually nothing in this category; {len(hist)} earlier months)."),
-                               [t.key for t in big], sorted({ds.label(a) for a in carriers})))
+            text = (f"Spending in {cat} in {m} is {_eur(x)}, versus a typical {_eur(med)} per month "
+                    + (f"(robust z-score {z:.1f}, {len(hist)} earlier months)." if zr is not None else
+                       f"(usually nothing in this category; {len(hist)} earlier months)."))
+            params = {"spike_category": cat, "spike_month": m, "spent_amount": money_str(x), "typical_amount": money_str(med),
+                      "count": len(hist)}
+            msg = (server_msg_or_none("anomaly.categorySpike", text, z=round(z, 1), **params) if zr is not None    # None: a category id
+                   else server_msg_or_none("anomaly.categorySpikeUsuallyNothing", text, **params))       # off the convention
+            out.append(Anomaly(_id("category_spike", cat, m), "category_spike", sev, cat, m, x, med, zr, text,
+                               [t.key for t in big], sorted({ds.label(a) for a in carriers}), message_msg=msg))
     return out
 
 
@@ -156,12 +162,14 @@ def duplicate_charges(ds: Dataset, scope: Optional[Scope], recurring: RecurringR
                 continue                                  # all inside one recurring series
             extra = (len(cluster) - 1) * -amt
             sev = "high" if extra >= 10000 else "low" if extra < 2000 else "medium"
+            days = (cluster[-1].date - cluster[0].date).days
+            text = (f"{len(cluster)} payments of {_eur(-amt)} to {ent} within {days} day(s) "
+                    f"({cluster[0].date} to {cluster[-1].date}).")
             out.append(Anomaly(_id("duplicate_charge", acc, cluster[0].key), "duplicate_charge", sev, ent,
-                               cluster[-1].date.isoformat(), extra, -amt, None,
-                               f"{len(cluster)} payments of {_eur(-amt)} to {ent} within "
-                               f"{(cluster[-1].date - cluster[0].date).days} day(s) "
-                               f"({cluster[0].date} to {cluster[-1].date}).",
-                               [t.key for t in cluster], [ds.label(acc)]))
+                               cluster[-1].date.isoformat(), extra, -amt, None, text,
+                               [t.key for t in cluster], [ds.label(acc)],
+                               message_msg=server_msg("anomaly.duplicateCharge", text, payments=len(cluster), payment_amount=money_str(-amt),
+                                                      merchant=ent, count=days, first_date=cluster[0].date, last_date=cluster[-1].date)))
     return out
 
 
@@ -188,11 +196,13 @@ def new_merchants(ds: Dataset, scope: Optional[Scope]) -> list[Anomaly]:
     for key, txs in sorted(big.items()):
         top = max(-t.amount_c for t in txs)
         sev = "high" if top >= 3 * minimum else "medium"
+        text = f"New merchant {key} (first seen {first[key]}) with a payment of {_eur(top)}."
         out.append(Anomaly(_id("new_merchant", key, first_key[key]), "new_merchant", sev, key, first[key].isoformat(), top,
-                           minimum, None,
-                           f"New merchant {key} (first seen {first[key]}) with a payment of {_eur(top)}.",
+                           minimum, None, text,
                            [t.key for t in sorted(txs, key=lambda t: (t.amount_c, t.key))],
-                           sorted({ds.label(t.account) for t in txs})))
+                           sorted({ds.label(t.account) for t in txs}),
+                           message_msg=server_msg("anomaly.newMerchant", text, merchant=key, first_date=first[key],
+                                                  payment_amount=money_str(top))))
     return out
 
 
@@ -217,11 +227,14 @@ def large_transactions(ds: Dataset, scope: Optional[Scope], recurring: Recurring
             if t.date >= since and -t.amount_c >= thr and t.key not in in_series:
                 ratio = -t.amount_c / thr
                 sev = "high" if ratio >= 3 else "medium" if ratio >= 1.5 else "low"
+                text = (f"A payment of {_eur(-t.amount_c)} to {t.entity} on {t.date} is far above the usual "
+                        f"{cat} payments (median {_eur(med)}, threshold {_eur(int(thr))}).")
+                msg = server_msg_or_none("anomaly.largeTransaction", text, payment_amount=money_str(-t.amount_c), merchant=t.entity or "",
+                                         payment_date=t.date, usual_category=cat, median_amount=money_str(med),
+                                         threshold_amount=money_str(int(thr)))
                 out.append(Anomaly(_id("large_transaction", t.key), "large_transaction", sev, cat, t.date.isoformat(),
-                                   -t.amount_c, med, round(ratio, 2),
-                                   f"A payment of {_eur(-t.amount_c)} to {t.entity} on {t.date} is far above the usual "
-                                   f"{cat} payments (median {_eur(med)}, threshold {_eur(int(thr))}).",
-                                   [t.key], [ds.label(t.account)]))
+                                   -t.amount_c, med, round(ratio, 2), text,
+                                   [t.key], [ds.label(t.account)], message_msg=msg))
     return out
 
 
