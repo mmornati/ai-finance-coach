@@ -327,7 +327,7 @@ def load_dataset(con, memory_dir=None, *, today: Optional[dt.date] = None, setti
     foreign: list[str] = []
     txs: list[Tx] = []
     for t in categorised(con, rules=rules, annotations=annotations, memory_dir=memory_dir):
-        if t["account"] not in accounts or d(t["date"]) > today:       # nothing after `today`: as-of runs see the past only
+        if t["account"] not in accounts or not t["date"] or d(t["date"]) > today:   # nothing after `today`: as-of runs see the past only
             continue
         if currency.get(t["tx_key"]) not in (None, "", "EUR"):
             if t["tx_key"] not in foreign:

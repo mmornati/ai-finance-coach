@@ -35,6 +35,18 @@ def _description(tx) -> str:
     return " | ".join(ri) if isinstance(ri, list) else str(ri)
 
 
+def _booked(tx) -> dict | None:
+    """The transaction as a booked row, or None when it is not one. Only BOOK (or no status at all) is booked: PDNG,
+    and any other status a bank sends (OTHR, HOLD, INFO...), is not final and goes to `pending_transactions`. A
+    booked entry without a booking date takes its value or transaction date; one with no date at all is not usable."""
+    if tx.get("status") not in (None, "", "BOOK"):
+        return None
+    if tx.get("booking_date"):
+        return tx
+    day = tx.get("value_date") or tx.get("transaction_date")
+    return {**tx, "booking_date": day} if day else None
+
+
 def _btc(tx) -> str:
     b = tx.get("bank_transaction_code") or {}
     return b.get("code") or b.get("description") or "" if isinstance(b, dict) else str(b)
@@ -158,9 +170,10 @@ def sync_account(con, client, uid: str, full: bool, force: bool, daily_limit: in
         while True:
             res = client.call("GET", f"/accounts/{api_uid}/transactions", params=params)
             pages += 1
-            for tx in res.get("transactions", []):
-                if tx.get("status") == "PDNG":
-                    pending.append(tx)
+            for raw in res.get("transactions", []):
+                tx = _booked(raw)
+                if tx is None:
+                    pending.append(raw)
                     continue
                 booked_seen += 1
                 amount, cur = _amount(tx)
@@ -220,7 +233,7 @@ def sync_account(con, client, uid: str, full: bool, force: bool, daily_limit: in
         for tx in pending:
             amount, cur = _amount(tx)
             con.execute("INSERT INTO pending_transactions VALUES (?,?,?,?,?,?,?)", (
-                uid, tx.get("booking_date") or tx.get("transaction_date"), amount, cur,
+                uid, tx.get("booking_date") or tx.get("transaction_date") or tx.get("value_date"), amount, cur,
                 _counterparty(tx, amount), _description(tx), json.dumps(tx)))
 
         bal = client.call("GET", f"/accounts/{api_uid}/balances")
