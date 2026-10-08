@@ -22,6 +22,7 @@ from dataclasses import dataclass
 import requests
 
 from coach import egress
+from coach.claude_cli import claude_env
 
 BACKENDS = ("claude-code", "anthropic-api", "ollama")
 ALIASES = {"haiku": "claude-haiku-4-5", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
@@ -175,7 +176,10 @@ class ClaudeCodeBackend(LLMBackend):
                    "--tools", "", "--strict-mcp-config", "--disable-slash-commands",
                    "--json-schema", json.dumps(schema)]
             timeout = 600
-        out = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=timeout)
+        # the same minimal environment as the coach runtime: never COACH_DB_KEY, COACH_BACKUP_KEY, ANTHROPIC_API_KEY ... (no cfg:
+        # the activated or loaded configuration the egress gate above used, for its [coach] claude_env extras)
+        env = claude_env(egress.policy_of(self.cfg).cfg)
+        out = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=timeout, env=env)
         res = json.loads(out.stdout) if out.stdout.strip().startswith("{") else {}
         if out.returncode != 0 or res.get("is_error"):
             diag = safe_diagnostic(out.stderr, prompt)
