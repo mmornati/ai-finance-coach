@@ -9,6 +9,8 @@ Backends (``[coach] backend``):
 * ``anthropic-api`` the SDK's tool-use loop in this process over the SAME :class:`~coach.mcp.tools.ToolSession`, with prompt
                     caching (system prompt + tool definitions) and the base url pinned.
 * ``ollama``        a tool-calling loop against the local server; refuses clearly when the model has no tool support.
+* ``openai-compatible`` the OpenAI ``/chat/completions`` tool-calling loop against ``[llm] openai_base_url`` (OpenRouter, Eden AI, vLLM ...),
+                    same tool session; refuses clearly when the model has no tool support.
 
 Every backend feeds one :class:`RunState`, which enforces the tool budget, collects what the safety checks need (numbers,
 evidence refs, instruction-like text, proposal and insight ids) and emits the events the UI shows. Nothing here ever sees a
@@ -39,8 +41,10 @@ from coach.mcp.tools import REF_RE, TOOL_NAMES, ToolSession
 
 MCP_PREFIX = "mcp__finance__"
 ALLOWED_EXTRA_TOOLS = {"ListMcpResourcesTool", "ReadMcpResourceTool"}        # claude's own helpers for MCP resources
+# where the finance MCP server (a child of claude) finds its configuration and its secrets: LOCATIONS only, never a secret value
 FORWARD_ENV = ("COACH_HOME", "COACH_DB", "COACH_MEMORY_DIR", "COACH_DATA_DIR", "COACH_CONFIG_DIR", "COACH_CONFIG",
-               "COACH_TAXONOMY_FILE", "COACH_RULES_FILE", "PYTHONPATH", "PATH", "HOME", "LANG", "LC_ALL")
+               "COACH_TAXONOMY_FILE", "COACH_RULES_FILE", "COACH_SECRETS_BACKEND", "COACH_SECRETS_DIR", "COACH_SECRETS_ALLOW_READABLE",
+               "COACH_IN_CONTAINER", "PYTHONPATH", "PATH", "HOME", "LANG", "LC_ALL")
 DENIED_BUILTINS = "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,WebSearch,WebFetch,Task,NotebookEdit,TodoWrite"
 Emit = Callable[[str, dict], None]
 
@@ -294,7 +298,8 @@ def egress_purpose(spec) -> str:
 def preflight(cfg, backend: str, spec) -> None:
     """E11-4: a backend the privacy mode forbids is refused BEFORE a run starts, as 'the coach is unavailable' with the reason (the
     refusal is journaled). The per-request gates below stay the authority."""
-    host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if backend == "ollama" else ""
+    host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if backend == "ollama" else (
+        egress.host_of(getattr(cfg, "llm_openai_base_url", "")) if backend == "openai-compatible" else "")
     try:
         egress.require(f"llm.{backend}", {"host": host, "purpose": egress_purpose(spec)}, cfg=cfg)
     except egress.EgressDenied as e:
@@ -621,6 +626,98 @@ def run_ollama(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool
     return st.result(finish, usage, "ollama", model, err)
 
 
+# ---------------------------------------------------------------- openai-compatible
+
+def run_openai(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool, post=None, api_key: Optional[str] = None,
+               tools: Optional[ToolSession] = None) -> RunResult:
+    from coach.classify.backends import OpenAICompatBackend
+    if not model:
+        raise CoachUnavailable("no model for the openai-compatible backend: set [coach] model or [llm] openai_model to the provider's "
+                               "model id (for example \"anthropic/claude-sonnet-4.5\" on OpenRouter)")
+    if api_key is None:
+        from coach import secrets
+        if not secrets.get_secret("openai_api_key", required=False):
+            raise CoachUnavailable("no API key for the openai-compatible backend: run `uv run coach config set-secret openai_api_key`, "
+                                   "or choose another [coach] backend")
+    be = OpenAICompatBackend(cfg.llm_openai_base_url, api_key=api_key, post=post,
+                             deny_data_collection=cfg.llm_openrouter_deny_data_collection, cfg=cfg)
+    own = tools is None
+    tools = tools or ToolSession(cfg, insecure=insecure, session_id=st.session_id)
+    names = spec.tools or TOOL_NAMES
+    tools.specs = {k: v for k, v in tools.specs.items() if k in names}
+    fdefs = [{"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}}
+             for t in tools.listing()]
+    msgs: list = [{"role": "system", "content": P.system_prompt(st.max_calls)}, {"role": "user", "content": user}]
+    tin = tout = cached = 0
+    cost: Optional[float] = 0.0
+    t0 = time.monotonic()
+    finish, err = "stop", None
+    deadline = t0 + cfg.coach_timeout * spec.timeout_factor
+    try:
+        for _ in range(st.max_calls + 2):
+            if st.cancel.is_set():
+                finish = "cancelled"
+                break
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                finish = "timeout"
+                break
+            body = {"model": model, "temperature": 0, "max_tokens": cfg.coach_max_tokens, "messages": msgs, "tools": fdefs}
+            if st.over_budget:
+                body["tool_choice"] = "none"
+            r = be.chat(body, egress_purpose(spec), timeout=min(remaining, 300))
+            if r.status_code in (400, 404) and "tool" in (r.text or "").lower():
+                raise CoachUnavailable(f"the model {model!r} at {be.host} does not support tool calling, which the coach needs to read "
+                                       "your figures without receiving raw data: pick a model with tool support in [coach] model")
+            if r.status_code in (401, 403):
+                raise CoachUnavailable(f"{be.host} refused the API key (HTTP {r.status_code}): check the openai_api_key secret")
+            if r.status_code >= 400:
+                raise RuntimeError(f"HTTP {r.status_code}")
+            res = r.json()
+            a, b, c, usd = be.usage_of(res)
+            tin, tout, cached = tin + a, tout + b, cached + c
+            cost = None if cost is None or usd is None else cost + usd
+            choice = (res.get("choices") or [{}])[0]
+            m = choice.get("message") or {}
+            calls = m.get("tool_calls") or []
+            if m.get("content"):
+                st.text(m["content"])
+            if not calls:
+                fr = choice.get("finish_reason")
+                finish = "max_tokens" if fr == "length" else "refused" if fr == "content_filter" else "stop"
+                break
+            msgs.append({"role": "assistant", "content": m.get("content") or None, "tool_calls": calls})
+            for i, call in enumerate(calls):
+                fn = call.get("function") or {}
+                cid = call.get("id") or f"oa{len(st.calls)}_{i}"
+                args = fn.get("arguments") or {}
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args) if args.strip() else {}
+                    except ValueError:
+                        args = {}
+                if not st.tool_call(cid, fn.get("name", ""), args):
+                    msgs.append({"role": "tool", "tool_call_id": cid, "content": "tool budget spent: answer now with what you already have"})
+                    finish = "max_tool_calls"
+                    continue
+                out = tools.call(fn.get("name", ""), args if isinstance(args, dict) else {})
+                st.tool_result(cid, out.text, out.ok)
+                msgs.append({"role": "tool", "tool_call_id": cid, "content": out.text})
+        else:
+            finish = "max_tool_calls"
+    except CoachUnavailable:
+        raise
+    except Exception as e:                                                     # noqa: BLE001
+        finish, err = "error", f"{be.host} error ({type(e).__name__}): {str(e)[:160]}"
+    finally:
+        if own:
+            tools.close()
+    # cost: what the provider reported (OpenRouter does); None when it did not, never a guess
+    usage = Usage("openai-compatible", model, f"coach:{spec.id}", len(st.calls), tin, tout, cached, 0,
+                  None if cost is None else round(cost, 6), cost is None, round(time.monotonic() - t0, 2))
+    return st.result(finish, usage, "openai-compatible", model, err)
+
+
 # ---------------------------------------------------------------- entry point
 
 def run_agent(cfg, spec: P.PromptSpec, question: Optional[str] = None, *, emit: Optional[Emit] = None,
@@ -644,4 +741,6 @@ def run_agent(cfg, spec: P.PromptSpec, question: Optional[str] = None, *, emit: 
         return run_anthropic(cfg, spec, user, st, model, insecure=insecure, **backend_kw)
     if backend == "ollama":
         return run_ollama(cfg, spec, user, st, model, insecure=insecure, **backend_kw)
+    if backend == "openai-compatible":
+        return run_openai(cfg, spec, user, st, model, insecure=insecure, **backend_kw)
     raise CoachUnavailable(f"unknown coach backend {backend!r}")

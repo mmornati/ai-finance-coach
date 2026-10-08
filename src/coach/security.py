@@ -339,6 +339,14 @@ def audit(cfg, *, scan_root: Optional[Path] = None, lsof: Optional[LsofRunner] =
     needs_key = "anthropic-api" in (cfg.llm_backend, cfg.coach_backend)
     add(Check("secrets", "anthropic_api_key", WARN if needs_key and origin is None else (OK if origin else INFO),
               f"anthropic_api_key: " + (f"set ({origin})" if origin else "not set" + (" but a backend uses anthropic-api" if needs_key else " (optional)"))))
+    origin, err = secret_state("claude_code_oauth_token")
+    add(Check("secrets", "claude_code_oauth_token", OK if origin else INFO,
+              "claude_code_oauth_token: " + (f"set ({origin}); the claude-code backend logs in with it" if origin else
+                                             "not set (optional: the claude CLI uses its own login)")))
+    origin, err = secret_state("openai_api_key")
+    needs_key = "openai-compatible" in (cfg.llm_backend, cfg.coach_backend)
+    add(Check("secrets", "openai_api_key", WARN if needs_key and origin is None else (OK if origin else INFO),
+              f"openai_api_key: " + (f"set ({origin})" if origin else "not set" + (" but a backend uses openai-compatible" if needs_key else " (optional)"))))
 
     # Enable Banking private key file
     key = cfg.eb_private_key_path

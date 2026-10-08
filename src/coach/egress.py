@@ -93,6 +93,16 @@ INVENTORY: tuple[Flow, ...] = (
          external=False, local_only="loopback only", offline="loopback only",
          purposes=("classify.label", "classify.compare", "coach.ask", "coach.digest", "coach.skill", "memory.doc_extract", "eval.models"),
          host="localhost", mode="item-redact"),
+    Flow("llm.openai-compatible", "LLM through an OpenAI-compatible API (OpenRouter, Eden AI, vLLM ...; key in the Keychain)",
+         "the host of [llm] openai_base_url (default openrouter.ai), which may forward to the model's own provider",
+         "same as the claude-code row (classify label/compare, coach, doc extract); web search is NOT available on this backend",
+         "item-redact (see above); on OpenRouter, [llm] openrouter_deny_data_collection = true (default) routes only to providers "
+         "that do not store or train on prompts",
+         "llm.backend / coach.backend = \"openai-compatible\" and the openai_api_key secret",
+         "[privacy] local_only = true; or switch the backend to ollama / claude-code / anthropic-api",
+         local_only="refused", offline="refused",
+         purposes=("classify.label", "classify.compare", "coach.ask", "coach.digest", "coach.skill", "memory.doc_extract", "eval.models"),
+         host="openrouter.ai", mode="item-redact"),
     Flow("alerts.ntfy", "Alert channel: ntfy push",
          "the ntfy server of [alerts.ntfy] url (public ntfy.sh or your own)",
          "an alert title + one short line (minimal: no merchant, no account, no bank, no name; amounts only in `summary` detail)",
@@ -142,9 +152,9 @@ ENFORCED = tuple(k for k in KINDS if k != "skill.web_search")     # called throu
 # file (relative to src/coach) -> (kinds it can reach, one-line description)
 CALL_SITES: dict[str, tuple[tuple[str, ...], str]] = {
     "ingest/client.py": (("enable_banking",), "Enable Banking REST client (requests)"),
-    "classify/backends.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama"),
+    "classify/backends.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama", "llm.openai-compatible"),
                              "LLM backends of classify run/enrich/compare and memory doc extract"),
-    "agent/runner.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama"), "the coach runtime (ask, digests, skills)"),
+    "agent/runner.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama", "llm.openai-compatible"), "the coach runtime (ask, digests, skills)"),
     "alerts/channels.py": (("alerts.ntfy", "alerts.email", "alerts.telegram", "alerts.macos"), "alert channels"),
     "classify/llm.py": ((), "re-exports `subprocess` for tests; no call"),
     "notify.py": (("alerts.macos",), "osascript notification (this machine)"),
@@ -404,7 +414,8 @@ def status(cfg) -> dict:
     llm = {"classify": getattr(cfg, "llm_backend", "claude-code"), "coach": getattr(cfg, "coach_backend", "claude-code")}
     paths = {}
     for k in ENFORCED:
-        meta = {"host": host_of(getattr(cfg, "llm_ollama_url", "")) if k == "llm.ollama" else ""}
+        meta = {"host": host_of(getattr(cfg, "llm_ollama_url", "")) if k == "llm.ollama" else
+                host_of(getattr(cfg, "llm_openai_base_url", "")) if k == "llm.openai-compatible" else ""}
         ok, code, msg = evaluate(k, meta, policy=pol)
         paths[k] = {"allowed": ok, "code": code}
     web_ok, web_code, _ = evaluate("llm.claude-code", {"web_search": True}, policy=pol)

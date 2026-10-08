@@ -37,7 +37,7 @@ def test_the_dockerfile_runs_as_a_numeric_non_root_user_with_a_healthcheck_and_e
 
 def test_every_base_image_is_pinned_by_a_digest_or_carries_the_placeholder_comment():
     froms = [(a, c) for _, h, a, c in L._instructions(DOCKERFILE) if h == "FROM"]
-    assert len(froms) == 3
+    assert len(froms) == 4
     for image, comments in froms:
         assert L.DIGEST.search(image) or any("PIN-DIGEST" in c for c in comments), image
         assert ":" in image.split()[0] and not image.split()[0].endswith(":latest")
@@ -49,9 +49,17 @@ def test_the_web_build_stays_out_of_the_runtime_stage():
     assert "COPY --from=build /opt/venv /opt/venv" in final
 
 
-def test_the_container_has_no_keychain_and_no_claude_code_backend():
+def test_the_container_has_no_keychain_and_the_claude_cli_is_opt_in_pinned_and_verified():
     assert "COACH_SECRETS_BACKEND=file" in DOCKERFILE and "COACH_SECRETS_DIR=/run/secrets" in DOCKERFILE and "COACH_IN_CONTAINER=1" in DOCKERFILE
-    assert "keyring" not in DOCKERFILE.lower() and "claude" not in DOCKERFILE.replace("coach-entrypoint", "").lower().replace("claude-code backend", "")
+    assert "keyring" not in DOCKERFILE.lower()
+    cli = DOCKERFILE[DOCKERFILE.index("AS claude-cli"):DOCKERFILE.rindex("FROM ")]
+    assert "ARG WITH_CLAUDE_CODE=0" in cli                                           # off by default: the default image has no claude
+    assert re.search(r"ARG CLAUDE_CODE_VERSION=\d+\.\d+\.\d+\n", cli)                  # an exact version, never latest
+    assert cli.count("ARG CLAUDE_CODE_INTEGRITY_") == 2 and "integrity mismatch" in cli and "curl" not in cli
+    final = DOCKERFILE[DOCKERFILE.rindex("FROM "):]
+    assert "COPY --from=claude-cli /out /opt/claude" in final and "/opt/claude/bin" in final
+    assert "DISABLE_AUTOUPDATER=1" in final and "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1" in final
+    assert "node" not in final.split("\n", 1)[0] and "npm" not in final                 # one native binary, no Node in the runtime
 
 
 def test_compose_publishes_the_web_app_on_the_host_loopback_only():

@@ -70,7 +70,8 @@ def availability(cfg) -> tuple[bool, str]:
     """(usable, message) of the configured backend, without calling anything."""
     b = cfg.coach_backend
     from coach import egress
-    host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if b == "ollama" else ""
+    host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if b == "ollama" else (
+        egress.host_of(getattr(cfg, "llm_openai_base_url", "")) if b == "openai-compatible" else "")
     ok_policy, _, why = egress.evaluate(f"llm.{b}", {"host": host}, cfg=cfg)
     if not ok_policy:                       # E11-4: the privacy mode refuses this backend
         return False, why
@@ -85,6 +86,16 @@ def availability(cfg) -> tuple[bool, str]:
         except Exception:                                                      # noqa: BLE001
             ok = False
         return (True, "") if ok else (False, "No Anthropic API key: run `uv run coach config set-secret anthropic_api_key`, or choose another [coach] backend.")
+    if b == "openai-compatible":
+        from coach import secrets as sec
+        try:
+            ok = bool(sec.lookup("openai_api_key")[0])
+        except Exception:                                                      # noqa: BLE001
+            ok = False
+        if not ok:
+            return False, "No API key for the OpenAI-compatible provider: run `uv run coach config set-secret openai_api_key`, or choose another [coach] backend."
+        if not cfg.coach_model_effective:
+            return False, "No model for the OpenAI-compatible provider: set [coach] model or [llm] openai_model in config.toml."
     return True, ""
 
 

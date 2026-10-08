@@ -5,6 +5,20 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: the `claude-code` backend in Docker
+- Opt-in: `--build-arg WITH_CLAUDE_CODE=1` adds the self-contained Claude Code CLI at a pinned version, checked against a pinned integrity hash (no Node at runtime);
+  on a Linux host the host's own native `claude` binary can be bind-mounted on `/opt/claude/bin/claude` instead. The default image is unchanged.
+- New optional secret `claude_code_oauth_token` (`claude setup-token`), passed to `claude` as `CLAUDE_CODE_OAUTH_TOKEN` by the coach and by classification.
+  The finance MCP server started by `claude` now receives the secret-store LOCATIONS (`COACH_SECRETS_BACKEND`, `COACH_SECRETS_DIR` ...), so it opens the
+  database in a container. `coach doctor` checks the CLI and the token in a container; `coach security audit` lists the token. See `docs/docker.md`.
+
+### Added: OpenAI-compatible model providers (OpenRouter, Eden AI, vLLM ...)
+- A fourth LLM backend, `openai-compatible`, for AI categorization (`[llm] backend`) and the coach (`[coach] backend`): any OpenAI-style `/chat/completions` API.
+  Settings `[llm] openai_base_url` (default `https://openrouter.ai/api/v1`; https, or http on this machine only), `[llm] openai_model` (the provider's model id) and the secret
+  `openai_api_key` (environment `COACH_OPENAI_API_KEY`, deliberately not `OPENAI_API_KEY`). The coach needs a model with tool calling and refuses clearly otherwise.
+- Its own egress flow `llm.openai-compatible` (refused under `[privacy] local_only`), `coach doctor` and `coach security audit` checks for the key. On OpenRouter the requests ask
+  for providers that do not store or train on prompts (`[llm] openrouter_deny_data_collection`, on by default). The cost is logged only when the provider reports it.
+
 ### Security
 - The classification backend `claude-code` (`claude -p` for labelling and `classify enrich`) no longer inherits the whole process environment: it gets the
   same minimal environment as the coach runtime (`PATH`, `HOME`, `USER`, `LANG`, `LC_*` ... plus the names listed in `[coach] claude_env`), so `COACH_DB_KEY`, `COACH_BACKUP_KEY`,

@@ -9,12 +9,15 @@ backend caches it (prompt caching); ``dynamic`` carries the user's examples and 
 * ``anthropic-api`` official SDK, key from the ``anthropic_api_key`` secret, JSON-schema structured output, cached
                     static prompt, optional Message Batches API (50 % cheaper, asynchronous)
 * ``ollama``        local HTTP server, JSON schema through ``format``
+* ``openai-compatible`` any OpenAI-style ``/chat/completions`` endpoint (OpenRouter, Eden AI, a self-hosted vLLM / LM Studio ...): base
+                    url in ``[llm] openai_base_url``, key from the ``openai_api_key`` secret, JSON schema through ``response_format``
 
 Nothing here knows about banks or people: the caller redacts every item first (:mod:`coach.classify.redact`).
 """
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import time
 from dataclasses import dataclass
@@ -24,7 +27,7 @@ import requests
 from coach import egress
 from coach.claude_cli import claude_env
 
-BACKENDS = ("claude-code", "anthropic-api", "ollama")
+BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible")
 ALIASES = {"haiku": "claude-haiku-4-5", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
 # USD per million tokens (input, output); cached reads cost 0.1x input, cache writes 1.25x, batch calls 0.5x
 PRICES = {"claude-haiku-4-5": (1.0, 5.0), "claude-sonnet-5-5": (2.0, 10.0), "claude-sonnet-5": (2.0, 10.0),
@@ -409,10 +412,122 @@ class OllamaBackend(LLMBackend):
         return data, usage
 
 
+# ---------------------------------------------------------------- OpenAI-compatible (OpenRouter, Eden AI, vLLM ...)
+
+def check_openai_url(url: str) -> None:
+    """The base url of an OpenAI-compatible provider: https, or plain http only on this machine (a local vLLM / LM Studio)."""
+    from urllib.parse import urlparse
+    u = urlparse(url or "")
+    host = (u.hostname or "").lower()
+    if not host or u.scheme not in ("http", "https"):
+        raise ValueError(f"openai_base_url {url!r} is not an http(s) URL (for example https://openrouter.ai/api/v1)")
+    if u.scheme == "http" and not egress._loopback(host):
+        raise ValueError(f"openai_base_url {url!r} must use https: your redacted bank data would cross the network in clear text")
+    if u.query or u.fragment or u.username or u.password:
+        raise ValueError("openai_base_url must not carry a query, a fragment or credentials (the key is the openai_api_key secret)")
+
+
+def _strict_ok(schema) -> bool:
+    """OpenAI's strict structured output needs every property of every object listed in `required`."""
+    if isinstance(schema, dict):
+        if schema.get("type") == "object" and set(schema.get("properties") or {}) - set(schema.get("required") or []):
+            return False
+        return all(_strict_ok(v) for v in schema.values())
+    if isinstance(schema, list):
+        return all(_strict_ok(v) for v in schema)
+    return True
+
+
+def parse_json_text(text: str) -> dict:
+    """The JSON object of a model answer; tolerates a ```json fence around it (json_object mode on some models)."""
+    t = (text or "").strip()
+    if t.startswith("```"):
+        t = t.split("\n", 1)[1] if "\n" in t else ""
+        t = t.rsplit("```", 1)[0]
+    return json.loads(t)
+
+
+class OpenAICompatBackend(LLMBackend):
+    name = "openai-compatible"
+
+    def __init__(self, base_url: str = "https://openrouter.ai/api/v1", api_key: str | None = None, timeout: float = 600.0,
+                 deny_data_collection: bool = True, post=None, cfg=None):
+        self.cfg = cfg
+        check_openai_url(base_url)
+        self.base_url, self.timeout = base_url.rstrip("/"), timeout
+        self._key, self._post = api_key, post
+        self.deny_data_collection = deny_data_collection
+
+    @property
+    def host(self) -> str:
+        return egress.host_of(self.base_url)
+
+    def _headers(self) -> dict:
+        key = self._key
+        if key is None:
+            from coach import secrets
+            key = secrets.get_secret("openai_api_key", required=False)
+        if not key:
+            raise RuntimeError("no API key for the openai-compatible backend: run `coach config set-secret openai_api_key`")
+        return {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+
+    def provider_options(self) -> dict:
+        """OpenRouter only: route to upstream providers that do not store or train on the prompts ([llm] openrouter_deny_data_collection)."""
+        if self.deny_data_collection and self.host == "openrouter.ai":
+            return {"provider": {"data_collection": "deny"}}
+        return {}
+
+    def chat(self, body: dict, purpose: str, timeout: float | None = None):
+        """POST /chat/completions after the egress gate. Returns the raw response (status_code, json(), text)."""
+        payload = {**body, **self.provider_options()}
+        egress.allow("llm.openai-compatible", {"host": self.host, "purpose": purpose,
+                                               "bytes": len(json.dumps(payload, default=str))}, cfg=self.cfg)
+        post = self._post or requests.post
+        return post(f"{self.base_url}/chat/completions", json=payload, headers=self._headers(), timeout=timeout or self.timeout)
+
+    @staticmethod
+    def usage_of(body: dict) -> tuple[int, int, int, float | None]:
+        """(tokens_in, tokens_out, cached_in, provider-reported USD cost or None)."""
+        u = body.get("usage") or {}
+        cached = int(((u.get("prompt_tokens_details") or {}).get("cached_tokens")) or 0)
+        cost = u.get("cost")
+        return int(u.get("prompt_tokens") or 0), int(u.get("completion_tokens") or 0), cached, \
+            (float(cost) if isinstance(cost, (int, float)) else None)
+
+    def complete(self, static, dynamic, schema, model, purpose="label", items=0, web_search=False):
+        if web_search:
+            raise NotImplementedError("web enrichment needs the claude-code backend (WebSearch tool)")
+        t0 = time.monotonic()
+        s = with_additional_properties_false(schema)
+        msgs = [{"role": "system", "content": static}, {"role": "user", "content": dynamic}]
+        body = {"model": model, "temperature": 0, "messages": msgs,
+                "response_format": {"type": "json_schema", "json_schema": {"name": "result", "strict": _strict_ok(s), "schema": s}}}
+        r = self.chat(body, journal_purpose(purpose))
+        if r.status_code == 400 and any(w in (r.text or "") for w in ("response_format", "json_schema", "structured")):
+            # a model without JSON-schema output: JSON mode, with the schema spelled out in the instructions
+            body["response_format"] = {"type": "json_object"}
+            body["messages"] = [{"role": "system", "content": static + "\n\nAnswer with ONE JSON object matching this JSON schema:\n"
+                                 + json.dumps(s)}, msgs[1]]
+            r = self.chat(body, journal_purpose(purpose))
+        if r.status_code >= 400:
+            raise RuntimeError(f"{self.host} answered HTTP {r.status_code}: {safe_diagnostic(r.text, static + dynamic)}")
+        res = r.json()
+        tin, tout, cached, cost = self.usage_of(res)
+        usage = Usage(self.name, model, purpose, items, tin, tout, cached, 0, cost, cost is None, round(time.monotonic() - t0, 2))
+        choice = (res.get("choices") or [{}])[0]
+        try:
+            if choice.get("finish_reason") in ("length", "content_filter"):
+                raise RuntimeError(f"model stopped with {choice['finish_reason']}")
+            return parse_json_text((choice.get("message") or {}).get("content") or ""), usage
+        except Exception as e:                                    # noqa: BLE001  (truncation, refusal, bad JSON)
+            raise LLMError(str(e)[:200], usage) from e
+
+
 def get_backend(cfg=None, name: str | None = None) -> LLMBackend:
     name = name or (cfg.llm_backend if cfg else "claude-code")
     if cfg is not None and name in BACKENDS:      # E11-4: a configured backend the privacy mode forbids is refused up front
-        host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if name == "ollama" else ""
+        host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if name == "ollama" else (
+            egress.host_of(getattr(cfg, "llm_openai_base_url", "")) if name == "openai-compatible" else "")
         egress.require(f"llm.{name}", {"host": host, "purpose": "classify.backend"}, cfg=cfg)
     if name == "claude-code":
         return ClaudeCodeBackend(cfg=cfg)
@@ -422,6 +537,9 @@ def get_backend(cfg=None, name: str | None = None) -> LLMBackend:
     if name == "ollama":
         return OllamaBackend(getattr(cfg, "llm_ollama_url", "http://localhost:11434"),
                              allow_remote=bool(getattr(cfg, "llm_ollama_allow_remote", False)), cfg=cfg)
+    if name == "openai-compatible":
+        return OpenAICompatBackend(getattr(cfg, "llm_openai_base_url", "https://openrouter.ai/api/v1"),
+                                   deny_data_collection=bool(getattr(cfg, "llm_openrouter_deny_data_collection", True)), cfg=cfg)
     raise ValueError(f"unknown llm backend {name!r}; allowed: {', '.join(BACKENDS)}")
 
 
@@ -430,6 +548,8 @@ def default_model(cfg, backend: LLMBackend) -> str:
         return getattr(cfg, "llm_anthropic_model", "claude-haiku-4-5")
     if backend.name == "ollama":
         return getattr(cfg, "llm_ollama_model", "llama3.1")
+    if backend.name == "openai-compatible":
+        return getattr(cfg, "llm_openai_model", "")
     return cfg.llm_model
 
 

@@ -76,7 +76,7 @@ def gold_merchants(con, cfg, sample: int = 0, seed: int = 7) -> dict:
 
 
 def parse_spec(spec: str, cfg) -> tuple[str, str]:
-    """('claude-code' | 'anthropic-api' | 'ollama', model) of a --models item: `ollama:<model>`, or a model alias / id (haiku, sonnet, ...)
+    """('claude-code' | 'anthropic-api' | 'ollama' | 'openai-compatible', model) of a --models item: `ollama:<model>`, or a model alias / id (haiku, sonnet, ...)
     asked of the configured [llm] backend (claude-code when that is ollama)."""
     spec = spec.strip()
     if not spec:
@@ -110,12 +110,14 @@ def plan(con, cfg, specs: list[str], sample: int = 0, seed: int = 7, batch: int 
         cost = 0.0 if backend == "ollama" else B.estimate_cost(mid, tin, tout)
         kind = f"llm.{backend}"
         host = egress.host_of(cfg.llm_ollama_url) if backend == "ollama" else (
-            egress.host_of(cfg.llm_anthropic_base_url or B.AnthropicBackend.OFFICIAL_URL) if backend == "anthropic-api" else "api.anthropic.com (via the claude CLI)")
+            egress.host_of(cfg.llm_anthropic_base_url or B.AnthropicBackend.OFFICIAL_URL) if backend == "anthropic-api" else
+            egress.host_of(cfg.llm_openai_base_url) if backend == "openai-compatible" else "api.anthropic.com (via the claude CLI)")
         ok, code, why = egress.evaluate(kind, {"host": host if backend == "ollama" else "", "purpose": "eval.models"}, cfg=cfg)
         out["models"].append({"spec": spec, "backend": backend, "model": model, "requests": len(jobs), "merchants": len(gm["keys"]),
                               "payload_bytes": nbytes, "payload_chars": chars, "est_tokens_in": tin, "est_tokens_out": tout,
                               "est_cost_usd": cost, "cost_basis": "notional (subscription)" if backend == "claude-code" else
-                              "local, free" if backend == "ollama" else "API price estimate", "egress_kind": kind, "host": host,
+                              "local, free" if backend == "ollama" else
+                              "billed by the provider (no local price table)" if backend == "openai-compatible" else "API price estimate", "egress_kind": kind, "host": host,
                               "egress_allowed": ok, "egress_reason": "" if ok else why, "jobs": jobs})
     return out
 
