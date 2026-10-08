@@ -36,8 +36,9 @@ uv run coach dev release-check --skip-tests --skip-web   # the quick part of the
 ```
 
 The same checks run in CI (`.github/workflows/ci.yml`). A pull request needs them green. Tests must stay independent of each other and of
-their order: CI runs them in parallel processes (`-n auto`). A guard that needs the results of other tests (like `tests/test_api_zz_coverage.py`)
-hands its data to the xdist controller (`tests/conftest.py`) instead of relying on running last in the same process.
+their order: CI splits them over 3 jobs (`--shard K/3`) and runs each in parallel processes (`-n auto`). A guard that needs the results of
+other tests (like `tests/test_api_zz_coverage.py`) hands its data to the end of the session (`tests/conftest.py`; across the CI shards,
+`tests/check_api_coverage.py`) instead of relying on running last in the same process.
 
 ### Rules for tests
 

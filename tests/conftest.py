@@ -134,28 +134,54 @@ def egress_policy_reset():
     egress._pending.clear()
 
 
-# pytest-xdist (`-n auto`, as CI runs the suite): the endpoint-coverage guard of test_api_zz_coverage.py needs the API calls
-# of EVERY test, but each worker only sees its own. Each worker hands its calls to the controller, which checks their union.
-_XDIST_API_CALLS: set = set()
-_XDIST_API_SPEC: dict = {}
+
+# CI splits the suite over N jobs (`--shard K/N`, round robin over the collected tests: their times are flat) and runs each
+# with pytest-xdist (`-n auto`). The endpoint-coverage guard of test_api_zz_coverage.py needs the API calls of EVERY test:
+# each xdist worker hands its calls to its controller; a shard writes the union to `--api-calls-out` and CI checks the union
+# of the shards (`tests/check_api_coverage.py`); a plain `-n auto` run checks the union of its workers here.
+def pytest_addoption(parser):
+    parser.addoption("--shard", default=None, metavar="K/N", help="run only the K-th of N round-robin slices of the tests (CI)")
+    parser.addoption("--api-calls-out", default=None, metavar="FILE",
+                     help="write the API calls (and the schema, when the coverage guard ran) to FILE: tests/check_api_coverage.py checks them")
+
+
+@pytest.hookimpl(trylast=True)
+def pytest_collection_modifyitems(config, items):
+    shard = config.getoption("--shard")
+    if not shard:
+        return
+    k, n = (int(x) for x in shard.split("/"))
+    if not 1 <= k <= n:
+        raise pytest.UsageError(f"--shard {shard}: K must be between 1 and N")
+    keep = [item for i, item in enumerate(items) if i % n == k - 1]
+    config.hook.pytest_deselected(items=[item for i, item in enumerate(items) if i % n != k - 1])
+    items[:] = keep
 
 
 def pytest_sessionfinish(session):
-    workeroutput = getattr(session.config, "workeroutput", None)
-    if workeroutput is not None:                                   # an xdist worker
-        from apihelpers import CALLS
+    import json
+
+    from apihelpers import CALLS, SPEC, missing_endpoints
+    config = session.config
+    workeroutput = getattr(config, "workeroutput", None)
+    if workeroutput is not None:                                   # an xdist worker: hand everything to the controller
         workeroutput["api_calls"] = sorted(CALLS)
-    elif _XDIST_API_SPEC:                                          # the controller, and a worker ran the guard
-        from apihelpers import missing_endpoints
-        missing = missing_endpoints(_XDIST_API_SPEC, _XDIST_API_CALLS)
+        workeroutput["api_spec"] = SPEC
+        return
+    out = config.getoption("--api-calls-out")
+    if out:                                                        # a CI shard: the union of the shards is checked later
+        Path(out).write_text(json.dumps({"shard": config.getoption("--shard"), "calls": sorted(CALLS), "spec": SPEC}))
+    elif SPEC:                                                     # an xdist controller, and a worker ran the guard
+        missing = missing_endpoints(SPEC, CALLS)
         if missing:
-            session.config.get_terminal_writer().line(
+            config.get_terminal_writer().line(
                 f"FAILED test_api_zz_coverage (union of the xdist workers): no successful call to {missing}", red=True)
             session.exitstatus = pytest.ExitCode.TESTS_FAILED
 
 
 @pytest.hookimpl(optionalhook=True)
 def pytest_testnodedown(node, error):
+    from apihelpers import CALLS, SPEC
     output = getattr(node, "workeroutput", {})
-    _XDIST_API_CALLS.update(tuple(c) for c in output.get("api_calls", ()))
-    _XDIST_API_SPEC.update(output.get("api_spec", {}))
+    CALLS.update(tuple(c) for c in output.get("api_calls", ()))
+    SPEC.update(output.get("api_spec", {}))
