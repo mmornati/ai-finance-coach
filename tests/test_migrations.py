@@ -27,7 +27,7 @@ def test_migrations_on_empty_db_create_everything(cfg):
     con = dbm.connect(cfg, insecure=True, create=True)
     assert set(PROTO_TABLES) <= set(dbm.user_tables(con))
     st = dbm.status(con)
-    assert [v for v, _, _ in st["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] and st["pending"] == []
+    assert [v for v, _, _ in st["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] and st["pending"] == []
 
 
 def test_migrations_idempotent_and_lossless_on_prototype_db(cfg):
@@ -43,7 +43,7 @@ def test_migrations_idempotent_and_lossless_on_prototype_db(cfg):
         con = dbm.connect(cfg, insecure=True)
         assert dbm.apply_migrations(con) == []
         assert con.execute("SELECT applied_at FROM schema_migrations WHERE version=1").fetchone() == first_stamp
-        assert con.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 22
+        assert con.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 23
         con.close()
     assert dump(cfg.db_path) == before
 
@@ -144,3 +144,26 @@ def test_0022_household_tables_are_additive_and_constrained(cfg):
         con.execute("INSERT INTO ui_users(id, role, created_at) VALUES ('x', 'root', 't')")
     con.execute("INSERT INTO ui_users(id, role, created_at) VALUES ('x', 'child', 't')")
     assert con.execute("SELECT prefs FROM ui_users").fetchone()[0] == "{}"
+
+
+def test_0023_moves_dateless_rows_to_pending_and_dates_the_others(cfg, tmp_path):
+    import json
+    import shutil
+    d = tmp_path / "mig"
+    d.mkdir()
+    for f in dbm.MIGRATIONS_DIR.iterdir():
+        if f.is_file() and not f.name.startswith("0023"):
+            shutil.copy(f, d / f.name)
+    con = dbm.connect(cfg, insecure=True, create=True, migrate=False)
+    dbm.apply_migrations(con, d, safety_copy=False)
+    ins = "INSERT INTO transactions(tx_key, account_uid, booking_date, amount, currency, description, raw) VALUES (?,?,?,?,?,?,?)"
+    con.execute(ins, ("a:ref:ok", "a", "2026-10-01", -1.0, "EUR", "KEEP", "{}"))
+    con.execute(ins, ("a:ref:none", "a", None, -2.0, "EUR", "OTHER", json.dumps({"status": "OTHR"})))
+    con.execute(ins, ("a:ref:vd", "a", None, -3.0, "EUR", "VALUE", json.dumps({"status": "BOOK", "value_date": "2026-10-02"})))
+    con.execute("INSERT INTO tx_enriched(tx_key) VALUES ('a:ref:none')")
+    con.commit()
+    dbm.apply_migrations(con, safety_copy=False)
+    rows = dict(con.execute("SELECT tx_key, booking_date FROM transactions").fetchall())
+    assert rows == {"a:ref:ok": "2026-10-01", "a:ref:vd": "2026-10-02"}
+    assert con.execute("SELECT description FROM pending_transactions").fetchall() == [("OTHER",)]
+    assert con.execute("SELECT COUNT(*) FROM tx_enriched WHERE tx_key='a:ref:none'").fetchone()[0] == 0

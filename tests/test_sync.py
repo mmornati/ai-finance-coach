@@ -180,3 +180,19 @@ def test_client_sends_jwt_and_maps_http_errors(monkeypatch, rsa_key):
 def test_client_returns_json_on_success(monkeypatch, rsa_key):
     monkeypatch.setattr(client_mod.requests, "request", lambda *a, **k: FakeResp(200, {"ok": 1}))
     assert EnableBankingClient("a", str(rsa_key)).call("GET", "/application") == {"ok": 1}
+
+
+def test_only_booked_entries_become_transactions_and_a_dateless_one_never_does(con):
+    """A bank sent entries with status OTHR and no date at all: they used to land in `transactions` with a NULL
+    booking_date and the analytics could not load the dataset. Anything but BOOK is pending; a booked entry without
+    a booking date takes its value date; one with no date at all is not a booked row."""
+    other = {k: v for k, v in eb_tx("o1", "2025-10-02", -3.0, "CARTE X", status="OTHR").items()
+             if k not in ("booking_date", "value_date")}
+    no_bdate = {**eb_tx("b1", "2025-10-03", -4.0, "CARTE Y"), "booking_date": None}
+    no_date = {k: v for k, v in eb_tx("b2", "2025-10-04", -5.0, "CARTE Z").items() if k not in ("booking_date", "value_date")}
+    fc = FakeClient({"acc1": [{"transactions": [eb_tx("r1", "2025-10-01", -5.0, "CARTE A"), other, no_bdate, no_date]}]})
+    res = sync_account(con, fc, "acc1", full=False, force=False, out=lambda *_: None)
+    assert res["new"] == 2 and res["pending"] == 2
+    assert con.execute("SELECT COUNT(*) FROM transactions WHERE booking_date IS NULL").fetchone()[0] == 0
+    assert con.execute("SELECT booking_date FROM transactions WHERE entry_reference='b1'").fetchone()[0] == "2025-10-03"
+    assert con.execute("SELECT COUNT(*) FROM pending_transactions").fetchone()[0] == 2

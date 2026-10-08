@@ -997,7 +997,7 @@ def test_r2_auto_migrate_opt_out_and_notice(cfg, tmp_path, capsys):
     with pytest.raises(dbm.MigrationError, match="auto_migrate"):
         dbm.connect(cfg, insecure=True)
     c = dbm.connect(cfg, insecure=True, migrate=False)              # `db migrate` / `db status` stay possible
-    assert [v for v, *_ in dbm.status(c)["pending"]] == [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    assert [v for v, *_ in dbm.status(c)["pending"]] == [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
     c.close()
     cfg.db_auto_migrate = True
     capsys.readouterr()
