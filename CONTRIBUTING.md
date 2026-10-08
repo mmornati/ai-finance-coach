@@ -28,14 +28,16 @@ COACH_SECRETS_BACKEND=file COACH_SECRETS_DIR=$COACH_HOME/secrets uv run coach in
 ## Tests and checks
 
 ```bash
-uv run pytest                            # the Python suite: synthetic data only, no network, no real Keychain
+uv run pytest -n auto                    # the Python suite (pytest-xdist: one worker per CPU): synthetic data only, no network, no real Keychain
 uv run ruff check src tests              # lint: correctness rules (pyproject [tool.ruff.lint])
 cd web && pnpm test && pnpm typecheck    # vitest and the TypeScript check
 uv run coach dev hygiene --ci            # structural rules over every publishable file (the real-data rule needs your local term file: see below)
 uv run coach dev release-check --skip-tests --skip-web   # the quick part of the release gate
 ```
 
-The same checks run in CI (`.github/workflows/ci.yml`). A pull request needs them green.
+The same checks run in CI (`.github/workflows/ci.yml`). A pull request needs them green. Tests must stay independent of each other and of
+their order: CI runs them in parallel processes (`-n auto`). A guard that needs the results of other tests (like `tests/test_api_zz_coverage.py`)
+hands its data to the xdist controller (`tests/conftest.py`) instead of relying on running last in the same process.
 
 ### Rules for tests
 

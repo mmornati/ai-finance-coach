@@ -16,6 +16,7 @@ Nothing here sends anything anywhere; it runs local tools only.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 import subprocess
@@ -275,7 +276,8 @@ def default_runner(cmd: list[str], cwd: Path, timeout: int) -> tuple[int, str]:
 
 def run_tools(root: Path, *, tests: bool, web: bool, runner: Runner) -> list[Check]:
     out: list[Check] = []
-    plan = [("pytest", "Python tests", [sys.executable, "-m", "pytest", "-q", "-x"], 3600, tests),
+    parallel = ["-n", "auto"] if importlib.util.find_spec("xdist") else []          # pytest-xdist (a dev dependency): one worker per CPU
+    plan = [("pytest", "Python tests", [sys.executable, "-m", "pytest", "-q", "-x", *parallel], 3600, tests),
             ("ruff", "Lint (ruff)", [sys.executable, "-m", "ruff", "check", "src", "tests"], 300, tests),
             ("vitest", "Web tests (vitest)", ["pnpm", "--dir", "web", "test"], 900, web),
             ("typecheck", "Web type check", ["pnpm", "--dir", "web", "typecheck"], 600, web)]
