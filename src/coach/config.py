@@ -23,7 +23,7 @@ class ConfigError(Exception):
     pass
 
 
-ALLOWED_LLM_BACKENDS = ("claude-code", "anthropic-api", "ollama")
+ALLOWED_LLM_BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible")
 
 
 def _typed(name: str, value, typ):
@@ -129,6 +129,9 @@ class Config:
     llm_ollama_model: str = "llama3.1"
     llm_ollama_allow_remote: bool = False    # the ollama server must be on this machine unless set
     llm_anthropic_base_url: str | None = None  # None = the official endpoint (ANTHROPIC_BASE_URL is ignored)
+    llm_openai_base_url: str = "https://openrouter.ai/api/v1"  # openai-compatible: the provider's /v1 root (OpenRouter, Eden AI, vLLM ...)
+    llm_openai_model: str = ""           # openai-compatible: the provider's model id (e.g. "anthropic/claude-haiku-4.5" on OpenRouter)
+    llm_openrouter_deny_data_collection: bool = True   # OpenRouter: only route to providers that do not store / train on prompts
     llm_allowlist: tuple = ()            # regexes of transfer-like merchant keys that may be sent to the LLM
     knn_enabled: bool = True             # label near-duplicates of already-labelled merchants without the LLM
     knn_threshold: float = 0.92          # minimum cosine similarity for such an automatic label
@@ -169,10 +172,10 @@ class Config:
     ui_remote_tls_ack: bool = False      # [ui] remote_tls_ack: required with allow_remote: "an HTTPS proxy (tailscale serve) fronts this"
     ui_open_browser: bool = True         # [ui] open_browser: `coach ui` opens the page in the default browser
     ui_container_bind: bool = False      # [ui] container_bind: written by the container image's `coach init` ONLY; with a real container, allows 0.0.0.0 (E13 MJ-1)
-    coach_backend: str = "claude-code"   # [coach] backend: claude-code | anthropic-api | ollama (the LLM coach, not the classifier)
+    coach_backend: str = "claude-code"   # [coach] backend: claude-code | anthropic-api | ollama | openai-compatible (the LLM coach, not the classifier)
     coach_model: str | None = None       # [coach] model; None = the backend's default (see coach_model_effective)
     coach_max_tool_calls: int = 12       # [coach] max_tool_calls per question (digests get twice as many)
-    coach_max_tokens: int = 4096         # [coach] max_tokens per model answer (anthropic-api / ollama)
+    coach_max_tokens: int = 4096         # [coach] max_tokens per model answer (anthropic-api / ollama / openai-compatible)
     coach_timeout: int = 180             # [coach] timeout_seconds for one question (digests: three times)
     coach_schedule_weekly: bool = False  # [coach] schedule_weekly: `schedule run` also writes the weekly digest (opt-in)
     coach_schedule_monthly: bool = False  # [coach] schedule_monthly: ... and the monthly review (opt-in)
@@ -196,6 +199,8 @@ class Config:
     def coach_model_effective(self) -> str:
         if self.coach_model:
             return self.coach_model
+        if self.coach_backend == "openai-compatible":
+            return self.llm_openai_model
         return {"claude-code": "sonnet", "anthropic-api": "claude-sonnet-5-5"}.get(self.coach_backend, self.llm_ollama_model)
 
     @property
@@ -302,6 +307,10 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         llm_ollama_model=_typed("llm.ollama_model", pick("llm.ollama_model", "llm", "llama3.1"), str),
         llm_ollama_allow_remote=_typed("llm.ollama_allow_remote", pick("llm.ollama_allow_remote", "llm", False), bool),
         llm_anthropic_base_url=pick("llm.anthropic_base_url", "llm", None),
+        llm_openai_base_url=_typed("llm.openai_base_url", pick("llm.openai_base_url", "llm", "https://openrouter.ai/api/v1"), str),
+        llm_openai_model=_typed("llm.openai_model", pick("llm.openai_model", "llm", ""), str),
+        llm_openrouter_deny_data_collection=_typed("llm.openrouter_deny_data_collection",
+                                                   pick("llm.openrouter_deny_data_collection", "llm", True), bool),
         llm_allowlist=_names_re(pick("classify.llm_allowlist", "classify", [])),
         knn_enabled=_typed("classify.knn_enabled", pick("classify.knn_enabled", "classify", True), bool),
         knn_threshold=_conf_knn(pick("classify.knn_threshold", "classify", 0.92)),
@@ -398,11 +407,22 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         raise ConfigError("coach.max_tokens must be between 256 and 64000")
     if not 10 <= cfg.coach_timeout <= 3600:
         raise ConfigError("coach.timeout_seconds must be between 10 and 3600")
-    from coach.classify.backends import check_ollama_url
+    from coach.classify.backends import check_ollama_url, check_openai_url
     try:
         check_ollama_url(cfg.llm_ollama_url, cfg.llm_ollama_allow_remote)
     except ValueError as e:
         raise ConfigError(str(e))
+    if "openai-compatible" in (cfg.llm_backend, cfg.coach_backend):
+        try:
+            check_openai_url(cfg.llm_openai_base_url)
+        except ValueError as e:
+            raise ConfigError(f"llm.{e}")
+        if cfg.llm_backend == "openai-compatible" and not cfg.llm_openai_model or (
+                cfg.coach_backend == "openai-compatible" and not cfg.coach_model_effective):
+            raise ConfigError('the openai-compatible backend needs a model: set [llm] openai_model (the provider\'s model id, '
+                              'e.g. "anthropic/claude-haiku-4.5" on OpenRouter) or [coach] model')
+    if cfg.llm_openai_model and not re.fullmatch(r"[\w.:/@-]{1,100}", cfg.llm_openai_model):
+        raise ConfigError(f"llm.openai_model must be a model id, got {cfg.llm_openai_model!r}")
     if not 1 <= cfg.ui_port <= 65535:
         raise ConfigError(f"ui.port must be between 1 and 65535, got {cfg.ui_port}")
     if not 1 <= cfg.ui_session_hours <= 24 * 30 or cfg.ui_key_rotation_days < 1:
@@ -442,6 +462,10 @@ def effective(cfg: Config) -> list[tuple[str, str, str]]:
         ("llm.ollama_model", cfg.llm_ollama_model, s.get("llm.ollama_model", "")),
         ("llm.ollama_allow_remote", str(cfg.llm_ollama_allow_remote).lower(), s.get("llm.ollama_allow_remote", "")),
         ("llm.anthropic_base_url", cfg.llm_anthropic_base_url or "(official endpoint)", s.get("llm.anthropic_base_url", "")),
+        ("llm.openai_base_url", cfg.llm_openai_base_url, s.get("llm.openai_base_url", "")),
+        ("llm.openai_model", cfg.llm_openai_model or "(unset)", s.get("llm.openai_model", "")),
+        ("llm.openrouter_deny_data_collection", str(cfg.llm_openrouter_deny_data_collection).lower(),
+         s.get("llm.openrouter_deny_data_collection", "")),
         ("classify.llm_allowlist", ", ".join(cfg.llm_allowlist) or "(none)", s.get("classify.llm_allowlist", "")),
         ("classify.knn_enabled", str(cfg.knn_enabled).lower(), s.get("classify.knn_enabled", "")),
         ("classify.knn_threshold", str(cfg.knn_threshold), s.get("classify.knn_threshold", "")),

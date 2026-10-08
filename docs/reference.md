@@ -89,6 +89,7 @@ group / other READABLE files, for Docker swarm / Kubernetes mounts that are 0444
 | `db_key` | `COACH_DB_KEY` | SQLCipher encryption of the database |
 | `backup_key` | `COACH_BACKUP_KEY` | AES-256-GCM encryption of backups |
 | `anthropic_api_key` | `ANTHROPIC_API_KEY` | optional; needed only for `llm.backend = "anthropic-api"` |
+| `openai_api_key` | `COACH_OPENAI_API_KEY` | optional; needed only for the `openai-compatible` backend (OpenRouter, Eden AI ...). Not `OPENAI_API_KEY`, on purpose |
 
 Set with `uv run coach config set-secret NAME [--generate]`. `coach config show` only reports
 whether a secret is set and where it comes from, never its value.
@@ -328,7 +329,9 @@ gets its text refreshed; `coach health` flags syncs that kept both rows.
 
 **LLM backends (`[llm]`).** `claude-code` (headless `claude -p`, unchanged), `anthropic-api` (official SDK, key from the
 `anthropic_api_key` secret, JSON-schema output, cached static prompt, optional `batch_api = true` Message Batches run)
-and `ollama` (local server, `format` = JSON schema). Same prompt and output contract; every call is recorded in
+`ollama` (local server, `format` = JSON schema) and `openai-compatible` (any OpenAI-style `/chat/completions` API such as
+OpenRouter or Eden AI: `openai_base_url`, `openai_model`, secret `openai_api_key`, JSON schema through `response_format` with a
+JSON-mode fallback for models without it). Same prompt and output contract; every call is recorded in
 `llm_usage` (backend, model, tokens in/out/cache, cost estimate, duration, purpose). Every item is redacted first
 (IBAN, e-mail, phone, long digit runs, ids, the household's own name tokens). `classify enrich` (web search) needs
 `claude-code` and is OFF unless `[privacy] web_enrich = true` (shops only, never a person-like name; `--dry-run` shows the request). Model output is validated (category must be in the taxonomy, confidence clamped, ids in range). Each
@@ -540,7 +543,7 @@ closed), and it can only *propose* memory changes. Full design, tools, privacy a
 costs: [docs/coach.md](coach.md).
 
 ```
-uv run coach coach ask "Why was September high?"      # [coach] backend: claude-code | anthropic-api | ollama
+uv run coach coach ask "Why was September high?"      # [coach] backend: claude-code | anthropic-api | ollama | openai-compatible
 uv run coach coach digest --weekly --dry-run          # the exact prompt + the redacted tool outputs; no model is called
 uv run coach coach digest --monthly                   # opt-in in the scheduler: [coach] schedule_weekly / schedule_monthly
 uv run coach coach tools --sizes                      # the 28 tools and the size of each (redacted, privacy-checked) output
@@ -551,7 +554,7 @@ uv run coach coach tools --sizes                      # the 28 tools and the siz
 * **Web app**: the Ask the coach page and the Insights feed (the coach's digests and findings with evidence, dismiss / done /
   snooze). One question at a time, cancellable, with a timeout; usage logged in `llm_usage`.
 * **Backends**: `claude-code` runs headless `claude -p` on your Claude subscription (personal, low-frequency use: for automation
-  or sharing use an API key); `anthropic-api` uses your API key with prompt caching; `ollama` needs a model with tool support.
+  or sharing use an API key); `anthropic-api` uses your API key with prompt caching; `ollama` and `openai-compatible` (OpenRouter, Eden AI ...) need a model with tool support.
 * **Proposals**: the coach's `memory_propose` (and `questions_propose`) creates a sealed proposal (source `coach-llm`); review it in
   the web app and accept it yourself in a terminal. A session that saw instruction-like text in your data marks its proposals so
   that each field needs its own confirmation.

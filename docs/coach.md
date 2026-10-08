@@ -145,8 +145,9 @@ included); the real names stay in standard mode.
 | `claude-code` (default) | headless `claude -p` + the finance MCP server | your Claude subscription. **Policy note:** a Max subscription is for personal, interactive-scale use. This runner is for you asking a few questions a day and an opt-in weekly digest. For automation at scale, sharing the app with other people or anything unattended and frequent, use an API key (`anthropic-api`). Check Anthropic's current usage terms. Cost shown is notional. |
 | `anthropic-api` | the SDK's tool-use loop in this process over the same tools, prompt caching on the system prompt and the tool definitions, base url pinned, key from the Keychain secret `anthropic_api_key` | per-token billing, estimated cost logged. |
 | `ollama` | tool-calling loop against `[llm] ollama_url` (loopback unless allowed) | only models whose capabilities include `tools`; otherwise the coach refuses with a clear message. Not streamed token by token. |
+| `openai-compatible` | the OpenAI `/chat/completions` tool-calling loop against `[llm] openai_base_url` (OpenRouter by default, Eden AI, a self-hosted vLLM ...), same tools, key from the secret `openai_api_key` (environment: `COACH_OPENAI_API_KEY`, never `OPENAI_API_KEY`) | the model id is the provider's (`anthropic/claude-sonnet-4.5` on OpenRouter) and must support tool calling, otherwise the coach refuses. Cost logged only when the provider reports it (OpenRouter does), never guessed. On OpenRouter, `[llm] openrouter_deny_data_collection = true` (default) routes only to providers that do not store or train on prompts. Not streamed token by token. |
 
-`model` defaults to `sonnet` (claude-code), `claude-sonnet-5-5` (anthropic-api) or `[llm] ollama_model`; `max_tool_calls` (12;
+`model` defaults to `sonnet` (claude-code), `claude-sonnet-5-5` (anthropic-api), `[llm] ollama_model` or `[llm] openai_model`; `max_tool_calls` (12;
 digests x2 / x3), `max_tokens` (4096), `timeout_seconds` (180; digests x3). `coach config show` lists them.
 
 ### The exact `claude -p` invocation (web app jobs)

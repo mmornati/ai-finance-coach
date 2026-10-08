@@ -107,11 +107,18 @@ def test_the_claude_command_matters_only_for_the_claude_code_backend(home, monke
     assert D.check_claude_cli(cfg).level == "info"
 
 
-def test_in_a_container_the_claude_code_backend_is_a_failure(home, monkeypatch):
+def test_in_a_container_the_claude_code_backend_needs_the_cli_and_the_token(home, monkeypatch):
     monkeypatch.setenv("COACH_IN_CONTAINER", "1")
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
     cfg = cfg_of(home)
+    monkeypatch.setattr(D.shutil, "which", lambda name: None)
     c = D.check_claude_cli(cfg)
-    assert c.level == "fail" and "anthropic-api" in c.hint
+    assert c.level == "fail" and "WITH_CLAUDE_CODE=1" in c.hint and "anthropic-api" in c.hint
+    monkeypatch.setattr(D.shutil, "which", lambda name: "/opt/claude/bin/claude")
+    c = D.check_claude_cli(cfg)
+    assert c.level == "fail" and "claude setup-token" in c.hint                  # no interactive login in a container
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "test-token")
+    assert D.check_claude_cli(cfg).level == "ok"
     cfg.llm_backend = cfg.coach_backend = "anthropic-api"
     assert D.check_claude_cli(cfg).level == "info"
     assert by_id(D.check_backends(cfg))["anthropic_key"].level == "fail"       # the API backend needs its key

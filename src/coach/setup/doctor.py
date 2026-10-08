@@ -183,14 +183,25 @@ def check_claude_cli(cfg) -> Check:
     needs = "claude-code" in (cfg.llm_backend, cfg.coach_backend)
     found = shutil.which("claude")
     if in_container():
-        if needs:
-            return Check("claude", "fail", "claude command", "the claude-code backend is not available in a container", 'set [llm] backend and [coach] backend to "anthropic-api" (secret anthropic_api_key) or "ollama"')
-        return Check("claude", "info", "claude command", "not used in a container (backend: " + cfg.coach_backend + ")")
+        if not needs:
+            return Check("claude", "info", "claude command", "not used (backend: " + cfg.coach_backend + ")")
+        if not found:
+            return Check("claude", "fail", "claude command", "a backend is set to claude-code but this image has no `claude`",
+                         "build the image with `--build-arg WITH_CLAUDE_CODE=1`, or on a Linux host bind-mount its native claude binary on "
+                         '/opt/claude/bin/claude (docs/docker.md); or set the backends to "anthropic-api", "openai-compatible" or "ollama"')
+        try:
+            token = secrets.lookup("claude_code_oauth_token")[0]
+        except secrets.SecretBackendError:
+            token = None
+        if not token:
+            return Check("claude", "fail", "claude command", "found, but a container has no login: the secret claude_code_oauth_token is missing",
+                         "run `claude setup-token` on your computer and store the token as the secret claude_code_oauth_token (docs/docker.md)")
+        return Check("claude", "ok", "claude command", "found, with the claude_code_oauth_token secret (used by the claude-code backend)")
     if found:
         return Check("claude", "ok" if needs else "info", "claude command", f"found ({'used by the claude-code backend' if needs else 'optional, not used by the current backends'})")
     if needs:
         return Check("claude", "warn", "claude command", "not found, but a backend is set to claude-code",
-                     'install Claude Code, or set [llm] backend / [coach] backend to "anthropic-api" or "ollama"')
+                     'install Claude Code, or set [llm] backend / [coach] backend to "anthropic-api", "openai-compatible" or "ollama"')
     return Check("claude", "info", "claude command", "not installed (optional: only the claude-code backend needs it)")
 
 
@@ -203,6 +214,13 @@ def check_backends(cfg, env=None) -> list[Check]:
             v = None
         out.append(Check("anthropic_key", "ok" if v else "fail", "Secret anthropic_api_key", "set" if v else "a backend is set to anthropic-api but the secret is missing",
                          "" if v else "`coach config set-secret anthropic_api_key` (or the ANTHROPIC_API_KEY environment variable)"))
+    if "openai-compatible" in (cfg.llm_backend, cfg.coach_backend):
+        try:
+            v, _ = secrets.lookup("openai_api_key", env)
+        except secrets.SecretBackendError:
+            v = None
+        out.append(Check("openai_key", "ok" if v else "fail", "Secret openai_api_key", "set" if v else "a backend is set to openai-compatible but the secret is missing",
+                         "" if v else "`coach config set-secret openai_api_key` (or the COACH_OPENAI_API_KEY environment variable)"))
     return out
 
 

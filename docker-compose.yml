@@ -37,6 +37,8 @@ x-coach: &coach
     # Optional: the Anthropic API key (llm.backend = anthropic-api) can be passed as an environment variable or as a fourth secret
     # file named anthropic_api_key (docs/docker.md). Do not write a key in this file.
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    # The claude-code backend (your Claude subscription) needs the CLI and a token: a docker-compose.override.yml, see docs/docker.md
+    # "Claude Code in the container". An OpenAI-compatible provider (OpenRouter, Eden AI): the secret openai_api_key, see docs/coach.md.
   restart: unless-stopped
 
 services:

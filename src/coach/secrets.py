@@ -23,12 +23,17 @@ SECRETS: dict[str, str] = {
     "db_key": "COACH_DB_KEY",
     "backup_key": "COACH_BACKUP_KEY",
     "anthropic_api_key": "ANTHROPIC_API_KEY",  # optional, for llm.backend = anthropic-api
+    # optional, for llm.backend = openai-compatible (OpenRouter, Eden AI ...). Deliberately NOT OPENAI_API_KEY: an unrelated OpenAI key in
+    # the environment must never be sent to a third-party provider by accident.
+    "openai_api_key": "COACH_OPENAI_API_KEY",
+    # optional, for the claude-code backend where no interactive login exists (a container): a long-lived token from `claude setup-token`
+    "claude_code_oauth_token": "CLAUDE_CODE_OAUTH_TOKEN",
     "proposal_key": "COACH_PROPOSAL_KEY",      # optional: HMAC key that seals memory proposals against tampering
     "ntfy_token": "COACH_NTFY_TOKEN",          # optional: access token of a protected ntfy topic ([alerts.ntfy])
     "smtp_password": "COACH_SMTP_PASSWORD",    # needed only when [alerts.email] is enabled
     "telegram_bot_token": "COACH_TELEGRAM_BOT_TOKEN",   # needed only when [alerts.telegram] is enabled
 }
-OPTIONAL = {"anthropic_api_key", "proposal_key", "ntfy_token", "smtp_password", "telegram_bot_token"}
+OPTIONAL = {"anthropic_api_key", "openai_api_key", "claude_code_oauth_token", "proposal_key", "ntfy_token", "smtp_password", "telegram_bot_token"}
 
 
 BACKENDS = ("keychain", "file")
@@ -260,3 +265,13 @@ def in_keychain(name: str) -> bool:
         return bool(keyring.get_password(SERVICE, name))
     except KeyringError as e:
         raise SecretBackendError(f"Cannot read '{name}' from the Keychain ({type(e).__name__}: {e})") from e
+
+
+def claude_auth_env() -> dict:
+    """{"CLAUDE_CODE_OAUTH_TOKEN": ...} for the `claude` process when the secret claude_code_oauth_token is set (`claude setup-token`; a container
+    has no interactive login), else {}: the CLI then uses its own login (the macOS Keychain on a Mac)."""
+    try:
+        token = get_secret("claude_code_oauth_token", required=False)
+    except SecretBackendError:
+        token = None
+    return {"CLAUDE_CODE_OAUTH_TOKEN": token} if token else {}

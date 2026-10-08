@@ -58,7 +58,8 @@ def status(state: AppState = Depends(get_state)):
     note = {"claude-code": "Runs headless `claude -p` on your Claude subscription: personal, low-frequency use only. For "
                            "automation or sharing use an API key ([coach] backend = \"anthropic-api\").",
             "anthropic-api": "Billed per token on your API key.",
-            "ollama": "Runs on this machine; needs a model with tool support."}[cfg.coach_backend]
+            "ollama": "Runs on this machine; needs a model with tool support.",
+            "openai-compatible": "Billed by your OpenAI-compatible provider; needs a model with tool support."}[cfg.coach_backend]
     return {"configured": ok, "backend": cfg.coach_backend, "model": cfg.coach_model_effective, "message": msg or note,
             "max_tool_calls": cfg.coach_max_tool_calls, "timeout_seconds": cfg.coach_timeout, "busy": cur is not None,
             "current_job": cur.id if cur else None, "tools": list(TOOL_NAMES)}

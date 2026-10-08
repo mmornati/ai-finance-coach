@@ -292,3 +292,75 @@ def test_anthropic_coach_runs_are_journaled_as_coach_purposes(cfg, world, db_key
     rows = con.execute("SELECT kind, purpose FROM egress_journal").fetchall()
     con.close()
     assert rows and all(k == "llm.anthropic-api" and p.startswith("coach.") for k, p in rows), rows
+
+
+# ---------------------------------------------------------------- openai-compatible
+
+def _oa(cfg):
+    cfg.llm_openai_base_url = "https://openrouter.ai/api/v1"
+    return cfg
+
+
+def test_openai_compatible_tool_loop(cfg, world):
+    bodies = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        bodies.append(json)
+        assert url == "https://openrouter.ai/api/v1/chat/completions" and headers["Authorization"] == "Bearer k"
+        if not any(m["role"] == "tool" for m in json["messages"]):
+            return R({"choices": [{"finish_reason": "tool_calls", "message": {"content": None, "tool_calls": [
+                {"id": "call_1", "type": "function", "function": {"name": "coverage", "arguments": "{}"}}]}}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 2, "cost": 0.001}})
+        tool_msg = next(m for m in json["messages"] if m["role"] == "tool")
+        assert tool_msg["tool_call_id"] == "call_1"
+        return R({"choices": [{"finish_reason": "stop", "message": {"content": "Coverage looks fine."}}],
+                  "usage": {"prompt_tokens": 20, "completion_tokens": 5, "cost": 0.002}})
+    res, _ = go(_oa(cfg), backend="openai-compatible", model="anthropic/claude-sonnet-4.5", post=post, api_key="k")
+    assert res.text == "Coverage looks fine." and res.finish_reason == "stop"
+    assert [c["name"] for c in res.tool_calls] == ["coverage"]
+    assert res.usage.tokens_in == 30 and res.usage.cost_usd == pytest.approx(0.003) and res.usage.cost_is_estimate is False
+    assert bodies[0]["tools"][0]["type"] == "function" and bodies[0]["provider"] == {"data_collection": "deny"}
+
+
+def test_openai_compatible_model_without_tools_is_a_clear_refusal(cfg, world):
+    def post(url, **kw):
+        return R({}, 404, '{"error":{"message":"No endpoints found that support tool use"}}')
+    with pytest.raises(CoachUnavailable, match="tool calling"):
+        run_agent(_oa(cfg), P.ASK, "q", insecure=True, backend="openai-compatible", model="x/y", post=post, api_key="k")
+
+
+def _no_network(*a, **k):
+    raise AssertionError("no request may be sent")
+
+
+def test_openai_compatible_needs_a_key_and_a_model(cfg, world, monkeypatch):
+    monkeypatch.setattr("coach.secrets.get_secret", lambda *a, **k: None)
+    with pytest.raises(CoachUnavailable, match="openai_api_key"):
+        run_agent(_oa(cfg), P.ASK, "q", insecure=True, backend="openai-compatible", model="x/y", post=_no_network)
+    cfg.coach_backend, cfg.coach_model, cfg.llm_openai_model = "openai-compatible", None, ""
+    with pytest.raises(CoachUnavailable, match="no model"):
+        run_agent(cfg, P.ASK, "q", insecure=True, post=_no_network, api_key="k")
+
+
+def test_openai_compatible_is_refused_in_local_only_mode(cfg, world):
+    cfg.privacy_local_only = True
+    with pytest.raises(CoachUnavailable, match="local_only"):
+        run_agent(_oa(cfg), P.ASK, "q", insecure=True, backend="openai-compatible", model="x/y", api_key="k", post=_no_network)
+
+
+
+# ---------------------------------------------------------------- claude-code in a container
+
+def test_claude_gets_the_oauth_token_secret_and_the_mcp_server_the_secret_locations_only(cfg, monkeypatch):
+    from coach import secrets
+    from coach.agent.runner import claude_env
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
+    assert "CLAUDE_CODE_OAUTH_TOKEN" not in claude_env(cfg)                     # no secret: the CLI's own login
+    secrets.set_secret("claude_code_oauth_token", "test-oauth-token")
+    assert claude_env(cfg)["CLAUDE_CODE_OAUTH_TOKEN"] == "test-oauth-token"
+    monkeypatch.setenv("COACH_SECRETS_BACKEND", "file")
+    monkeypatch.setenv("COACH_SECRETS_DIR", "/run/secrets")
+    monkeypatch.setenv("COACH_DB_KEY", "secret-db-key")
+    env = mcp_config(cfg, "s1", insecure=True)["mcpServers"]["finance"]["env"]
+    assert env["COACH_SECRETS_BACKEND"] == "file" and env["COACH_SECRETS_DIR"] == "/run/secrets"   # the child finds /run/secrets
+    assert "COACH_DB_KEY" not in env and "CLAUDE_CODE_OAUTH_TOKEN" not in env                     # never a secret value

@@ -1,6 +1,6 @@
 # Copy to config.toml (git-ignored) and adjust.  `uv run coach config show` prints the effective
 # configuration.  Relative paths are resolved against the folder containing this file.
-# Secrets (db_key, backup_key, anthropic_api_key) are NOT stored here: they live in the macOS
+# Secrets (db_key, backup_key, anthropic_api_key, openai_api_key) are NOT stored here: they live in the macOS
 # Keychain (service "ai-finance-coach") or in environment variables, see README.md.
 
 data_dir = "data"                 # database, logs
@@ -21,7 +21,8 @@ private_key_path = ""             # the .pem downloaded when you created the app
 
 [llm]
 backend = "claude-code"           # claude-code (headless `claude -p`) | anthropic-api (SDK, key = secret
-                                  # anthropic_api_key) | ollama (local HTTP server)
+                                  # anthropic_api_key) | ollama (local HTTP server) | openai-compatible (OpenRouter,
+                                  # Eden AI, vLLM ...: any OpenAI-style /chat/completions API, key = secret openai_api_key)
 model = "sonnet"                  # model for claude-code (sonnet | haiku | opus); `classify run --model` overrides
 anthropic_model = "claude-haiku-4-5"   # anthropic-api: model id (aliases haiku | sonnet | opus also accepted)
 batch_api = false                 # anthropic-api: send a run as ONE Message Batches request (50% cheaper, async)
@@ -30,6 +31,10 @@ ollama_model = "llama3.1"         # ollama: model name (must support JSON-schema
 ollama_allow_remote = false       # the ollama server must be on this machine (loopback) unless you set true:
                                   # prompts contain (redacted) bank data
 # anthropic_base_url = ""         # anthropic-api talks to https://api.anthropic.com; ANTHROPIC_BASE_URL is ignored
+# openai_base_url = "https://openrouter.ai/api/v1"   # openai-compatible: the provider's OpenAI-compatible root (the part before
+                                  # /chat/completions; https, or http on this machine only). Eden AI: see its "OpenAI compatible" docs
+# openai_model = "anthropic/claude-haiku-4.5"        # openai-compatible: the PROVIDER's model id (required with this backend)
+# openrouter_deny_data_collection = true             # OpenRouter only: route to providers that do not store / train on prompts
 # Every call is logged in the llm_usage table (backend, model, tokens, cost estimate, duration, purpose).
 
 [classify]
@@ -141,9 +146,11 @@ egress_journal_days = 365         # `schedule run` deletes journal rows older th
 backend = "claude-code"           # "claude-code" (headless `claude -p`, your personal Max subscription: low-frequency personal use only)
                                   # | "anthropic-api" (API key from the Keychain secret anthropic_api_key: use it for automation / sharing)
                                   # | "ollama" ([llm] ollama_url; only models that support tool calling, otherwise the coach refuses)
-# model = "sonnet"                # default: sonnet (claude-code), claude-sonnet-5-5 (anthropic-api), [llm] ollama_model (ollama)
+                                  # | "openai-compatible" ([llm] openai_base_url + secret openai_api_key; a model with tool calling)
+# model = "sonnet"                # default: sonnet (claude-code), claude-sonnet-5-5 (anthropic-api), [llm] ollama_model (ollama),
+                                  # [llm] openai_model (openai-compatible; e.g. "anthropic/claude-sonnet-4.5" on OpenRouter)
 max_tool_calls = 12               # tool calls per question (digests get twice as many); the job stops beyond it
-max_tokens = 4096                 # per model answer (anthropic-api / ollama)
+max_tokens = 4096                 # per model answer (anthropic-api / ollama / openai-compatible)
 timeout_seconds = 180             # per question (digests: three times); the job is killed beyond it
 schedule_weekly = false           # opt-in: `coach schedule run` also writes the weekly digest (skipped when nothing is new)
 schedule_monthly = false          # opt-in: ... and the monthly review

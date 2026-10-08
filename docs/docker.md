@@ -36,6 +36,11 @@ On the first start the entrypoint runs `coach init --non-interactive`: it writes
 **container defaults** (`[llm]` and `[coach]` backend `anthropic-api`, `[ui] host = "0.0.0.0"` inside the container, no browser), copies the
 memory skeleton, and creates the empty encrypted database with the `db_key` secret. Existing files are never overwritten.
 
+No Anthropic key? Use an OpenAI-compatible provider (OpenRouter, Eden AI ...) instead: in `/config/config.toml` set `backend = "openai-compatible"`
+under both `[llm]` and `[coach]`, plus `[llm] openai_base_url` (OpenRouter is the default) and `[llm] openai_model` (the provider's model id; the coach
+needs one with tool calling, and `[coach] model` can name a different one), then store the key with
+`docker compose run --rm coach config set-secret openai_api_key`. Details: `docs/coach.md`, Backends.
+
 ```bash
 docker compose run --rm coach doctor               # what is ready
 docker compose run --rm coach setup enablebanking  # your own Enable Banking application (docs: README, quick start step 3)
@@ -96,8 +101,50 @@ home, not the container's.
 * **Ollama** (a model on your own machine): set `[llm] backend` and `[coach] backend` to `"ollama"` and `[llm] ollama_url` to a server reachable
   from the container (`http://host.docker.internal:11434` for Ollama on the Docker host). That address is not the container's loopback, so it
   needs `[llm] ollama_allow_remote = true`, and `[privacy] local_only = true` **refuses** it (local-only means a loopback server). To keep the
-  strict mode, run `coach` and Ollama in the same network namespace yourself; the shipped compose file does not. `coach doctor` flags a
-  `claude-code` backend as a failure in a container.
+  strict mode, run `coach` and Ollama in the same network namespace yourself; the shipped compose file does not.
+* **Claude Code** (your Claude subscription): see the next section. Without the CLI and its token, `coach doctor` flags a `claude-code` backend as a failure.
+
+## Claude Code in the container (the `claude-code` backend)
+
+The `claude-code` backend runs the `claude` CLI **inside** the container (so the finance tools it starts sit next to the database) and logs in with a
+long-lived token, because a container has no interactive login and no Keychain. Two ways to get the CLI on `/opt/claude/bin/claude`:
+
+* **Built into the image** (any host, including a Mac): `docker compose build --build-arg WITH_CLAUDE_CODE=1`, or put the argument in the override below.
+  The `claude-cli` stage downloads the self-contained Linux binary of the version pinned in the `Dockerfile` (`CLAUDE_CODE_VERSION`) and refuses it
+  unless it matches the pinned integrity hash. No Node in the runtime image; the image is about 240 MB larger. Without the argument the image is unchanged.
+* **The host's own binary** (a Linux host with Claude Code installed natively, same CPU architecture): bind-mount it read-only on `/opt/claude/bin/claude`.
+  Mount the **versioned file** (`claude --version`, then `ls ~/.local/share/claude/versions/`), not the `~/.local/bin/claude` symlink, whose target changes
+  at every auto-update. A macOS binary cannot run in the Linux container: on a Mac, build it into the image. Never mount `~/.claude/.credentials.json`:
+  the CLI rewrites it to refresh the login (read-only breaks that, read-write lets the container change your host login); use the token.
+
+**The login token.** On your computer run `claude setup-token` (it uses your Claude subscription), and save what it prints in
+`secrets/claude_code_oauth_token` (`chmod 600`, like the other secrets). The coach passes it to `claude` as `CLAUDE_CODE_OAUTH_TOKEN`; it is never written to
+a log, an argument or the finance tools' environment. The image sets `DISABLE_AUTOUPDATER=1` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`.
+
+Then a `docker-compose.override.yml` next to `docker-compose.yml` (compose reads it automatically; keep the `secrets` lists complete):
+
+```yaml
+x-claude: &claude
+  build:
+    args:
+      WITH_CLAUDE_CODE: "1"            # drop this line when you mount the host's binary instead
+  secrets: [db_key, backup_key, proposal_key, claude_code_oauth_token]
+  # volumes:                           # a Linux host's own binary instead of WITH_CLAUDE_CODE (replace <version>)
+  #   - ${HOME}/.local/share/claude/versions/<version>:/opt/claude/bin/claude:ro
+
+services:
+  coach: *claude
+  scheduler: *claude
+
+secrets:
+  claude_code_oauth_token:
+    file: ./secrets/claude_code_oauth_token
+```
+
+Set `backend = "claude-code"` under `[llm]` and `[coach]` in `coach-home/config/config.toml`, rebuild (`docker compose build`), and check with
+`docker compose run --rm coach doctor`: the "claude command" line is OK only with both the binary and the token. **Usage terms:** a subscription is for
+personal, interactive-scale use (see `docs/coach.md`, Backends); the scheduler classifying every day and opt-in digests are the most it should carry.
+For anything heavier use an API key (`anthropic-api` or `openai-compatible`).
 
 ## The daily job
 
@@ -136,7 +183,7 @@ socket, the port published as `127.0.0.1:8765:8765` only.
 
 ## Pinning the base images
 
-The three `FROM` lines carry a `PIN-DIGEST` comment: before you publish an image, replace each tag by `tag@sha256:<digest>`
+The four `FROM` lines carry a `PIN-DIGEST` comment: before you publish an image, replace each tag by `tag@sha256:<digest>`
 (`docker buildx imagetools inspect python:3.13-slim-bookworm`). `coach dev release-check` accepts a digest or the comment, and refuses a floating
 tag without one.
 

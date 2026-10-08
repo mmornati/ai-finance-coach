@@ -117,8 +117,8 @@ def seed(con, names):
 def test_claude_code_backend_command_prompt_and_usage(monkeypatch):
     seen = {}
 
-    def fake_run(cmd, input, capture_output, text, timeout):
-        seen.update(cmd=cmd, prompt=input)
+    def fake_run(cmd, input, capture_output, text, timeout, env=None):
+        seen.update(cmd=cmd, prompt=input, env=env)
         return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps(
             {"structured_output": results_json(1), "total_cost_usd": 0.0123,
              "usage": {"input_tokens": 500, "output_tokens": 60, "cache_read_input_tokens": 10}}))
@@ -327,3 +327,124 @@ def test_enrich_refuses_a_backend_without_web_search(cfg, con, monkeypatch, caps
     with pytest.raises(SystemExit) as e:
         cc.cmd_enrich(Namespace(insecure=True, model=None, max_conf=0.7, limit=5, batch=5, workers=1), cfg)
     assert "claude-code" in str(e.value)
+
+
+# ---------------------------------------------------------------- openai-compatible (OpenRouter, Eden AI, vLLM ...)
+
+class OAResp:
+    def __init__(self, body, status=200, text=""):
+        self._b, self.status_code, self.text = body, status, text
+
+    def json(self):
+        return self._b
+
+
+def oa_answer(content, usage=None, finish="stop"):
+    return {"choices": [{"message": {"content": content}, "finish_reason": finish}],
+            "usage": usage or {"prompt_tokens": 100, "completion_tokens": 20}}
+
+
+def test_openai_compatible_http_contract_and_provider_cost():
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append({"url": url, "body": json, "headers": headers})
+        return OAResp(oa_answer(__import__("json").dumps(results_json(1)),
+                                {"prompt_tokens": 300, "completion_tokens": 40, "cost": 0.0012,
+                                 "prompt_tokens_details": {"cached_tokens": 200}}))
+    b = backends.OpenAICompatBackend("https://openrouter.ai/api/v1/", api_key="test-key", post=post)
+    data, usage = b.complete("STATIC", "DYNAMIC", LABEL_SCHEMA, "anthropic/claude-haiku-4.5", "label", 1)
+    s = sent[0]
+    assert s["url"] == "https://openrouter.ai/api/v1/chat/completions"
+    assert s["headers"]["Authorization"] == "Bearer test-key"
+    assert [m["role"] for m in s["body"]["messages"]] == ["system", "user"]
+    rf = s["body"]["response_format"]
+    assert rf["type"] == "json_schema" and rf["json_schema"]["schema"] == with_additional_properties_false(LABEL_SCHEMA)
+    assert s["body"]["provider"] == {"data_collection": "deny"}               # OpenRouter: no provider that stores prompts
+    assert data["results"][0]["merchant"] == "Shop 0"
+    assert (usage.backend, usage.tokens_in, usage.tokens_out, usage.cache_read_tokens) == ("openai-compatible", 300, 40, 200)
+    assert usage.cost_usd == 0.0012 and usage.cost_is_estimate is False       # reported by the provider, not guessed
+
+
+def test_openai_compatible_other_hosts_get_no_openrouter_options_and_unknown_cost():
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append(json)
+        return OAResp(oa_answer("```json\n" + __import__("json").dumps(results_json(1)) + "\n```"))
+    b = backends.OpenAICompatBackend("https://llm.example.test/v1", api_key="k", post=post)
+    data, usage = b.complete("S", "D", LABEL_SCHEMA, "some/model", "label", 1)
+    assert "provider" not in sent[0] and data["results"][0]["id"] == 0      # a ```json fence is tolerated
+    assert usage.cost_usd is None and usage.cost_is_estimate is True         # unknown, never shown as 0
+
+
+def test_openai_compatible_falls_back_to_json_mode_when_the_model_has_no_schema_output():
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append(__import__("copy").deepcopy(json))
+        if json["response_format"]["type"] == "json_schema":
+            return OAResp({}, 400, '{"error": "response_format json_schema is not supported by this model"}')
+        return OAResp(oa_answer(__import__("json").dumps(results_json(1))))
+    b = backends.OpenAICompatBackend("https://llm.example.test/v1", api_key="k", post=post)
+    data, _ = b.complete("S", "D", LABEL_SCHEMA, "m", "label", 1)
+    assert [x["response_format"]["type"] for x in sent] == ["json_schema", "json_object"]
+    assert "JSON schema" in sent[1]["messages"][0]["content"] and data["results"]
+
+
+def test_openai_compatible_truncated_answer_is_a_billed_error():
+    b = backends.OpenAICompatBackend("https://llm.example.test/v1", api_key="k",
+                                     post=lambda *a, **k: OAResp(oa_answer('{"results": [', finish="length")))
+    with pytest.raises(backends.LLMError) as e:
+        b.complete("S", "D", LABEL_SCHEMA, "m", "label", 1)
+    assert e.value.usage.tokens_in == 100
+
+
+@pytest.mark.parametrize("url", ["http://openrouter.ai/api/v1", "ftp://x.test/v1", "https://k:s@x.test/v1", "https://x.test/v1?key=1", ""])
+def test_openai_compatible_rejects_unsafe_base_urls(url):
+    with pytest.raises(ValueError):
+        backends.check_openai_url(url)
+    backends.check_openai_url("http://localhost:8000/v1")                   # a local vLLM / LM Studio may use plain http
+
+
+def test_openai_compatible_web_search_is_refused():
+    with pytest.raises(NotImplementedError):
+        backends.OpenAICompatBackend(api_key="k").complete("s", "d", {}, "m", web_search=True)
+
+
+def test_openai_compatible_config(tmp_path):
+    p = tmp_path / "c.toml"
+    p.write_text('[llm]\nbackend = "openai-compatible"\nopenai_base_url = "https://api.edenai.test/v3/llm"\n'
+                 'openai_model = "openai/gpt-4o-mini"\n[coach]\nbackend = "openai-compatible"\nmodel = "anthropic/claude-sonnet-4.5"\n')
+    cfg = load_config(p, env={})
+    b = get_backend(cfg)
+    assert isinstance(b, backends.OpenAICompatBackend) and b.base_url == "https://api.edenai.test/v3/llm"
+    assert backends.default_model(cfg, b) == "openai/gpt-4o-mini" and cfg.coach_model_effective == "anthropic/claude-sonnet-4.5"
+    p.write_text('[llm]\nbackend = "openai-compatible"\n')                    # no model: refused with a clear message
+    with pytest.raises(ConfigError, match="openai_model"):
+        load_config(p, env={})
+    p.write_text('[llm]\nbackend = "openai-compatible"\nopenai_model = "m"\nopenai_base_url = "http://openrouter.ai/api/v1"\n')
+    with pytest.raises(ConfigError, match="https"):
+        load_config(p, env={})
+
+
+def test_openai_secret_is_not_read_from_the_generic_openai_variable():
+    from coach import secrets
+    assert secrets.SECRETS["openai_api_key"] == "COACH_OPENAI_API_KEY"
+    assert secrets.lookup("openai_api_key", {"OPENAI_API_KEY": "sk-unrelated"})[0] is None
+
+
+def test_claude_code_backend_logs_in_with_the_oauth_token_secret_when_set(monkeypatch):
+    seen = []
+
+    def fake_run(cmd, input, capture_output, text, timeout, env=None):
+        seen.append(env)
+        return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({"structured_output": results_json(1), "usage": {}}))
+    monkeypatch.setattr("coach.classify.backends.subprocess.run", fake_run)
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
+    ClaudeCodeBackend().complete("S", "D", LABEL_SCHEMA, "haiku")
+    from coach import secrets
+    secrets.set_secret("claude_code_oauth_token", "test-oauth-token")
+    ClaudeCodeBackend().complete("S", "D", LABEL_SCHEMA, "haiku")
+    assert seen[0] is None                                          # no token: the CLI's own login, the call is unchanged
+    assert seen[1]["CLAUDE_CODE_OAUTH_TOKEN"] == "test-oauth-token"
