@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { addMonthsKey, catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel, parseMoney, tone } from "./format";
+import { setLanguage } from "@/i18n";
+import { addMonthsKey, allOfGroupLabel, catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel, parseMoney, tone } from "./format";
 import { qs } from "./utils";
 
 const nbsp = (s: string) => s.replace(/[  ]/g, " ");
@@ -57,11 +58,29 @@ describe("dates and percentages", () => {
 describe("labels and query strings", () => {
   it("labels categories, keeping the group for income and transfers", () => {
     expect(catLabel("food.groceries")).toBe("Groceries");
-    expect(catLabel("shopping.tobacco_press")).toBe("Tobacco press");
+    expect(catLabel("shopping.tobacco_press")).toBe("Tobacco and newsagents");
     expect(catLabel("transfer.internal")).toBe("Transfer: internal");
     expect(catLabel("income.salary")).toBe("Income: salary");
     expect(groupLabel("personal_care")).toBe("Personal care");
     expect(catLabel(null)).toBe("–");
+  });
+  it("a leaf or group the built-in taxonomy does not have keeps its id, title-cased", () => {
+    expect(catLabel("food.street_market")).toBe("Street market");
+    expect(catLabel("income.side_gig")).toBe("Income: side gig");
+    expect(groupLabel("hobbies_extra")).toBe("Hobbies extra");
+    expect(allOfGroupLabel("food")).toBe("all food");
+  });
+  it("names the categories in the interface language, at call time", async () => {
+    await setLanguage("fr", { persist: false });
+    expect(catLabel("food.groceries")).toBe("Courses");
+    expect(catLabel("transfer.internal")).toBe("Virements : entre vos comptes");
+    expect(groupLabel("housing")).toBe("Logement");
+    expect(allOfGroupLabel("food")).toBe("toute la catégorie alimentation");
+    expect(catLabel("food.street_market")).toBe("Street market");
+    await setLanguage("it", { persist: false });
+    expect(catLabel("food.restaurants")).toBe("Ristoranti");
+    expect(catLabel("income.salary")).toBe("Entrate: stipendio");
+    await setLanguage("en", { persist: false });
   });
   it("builds query strings: arrays repeat, empty values vanish", () => {
     expect(qs({ a: "x y", b: ["1", "2"], c: "", d: undefined, e: false, f: 0 })).toBe("?a=x+y&b=1&b=2&f=0");

@@ -6,8 +6,9 @@ import { Bot, Eye, Send, ShieldAlert, Sparkles, Square } from "lucide-react";
 import { Badge, Button, Card, Disclosure, Notice, PageHeader } from "@/components/ui";
 import { CopyCommand } from "@/components/CopyCommand";
 import { CoachText } from "@/components/CoachText";
-import { useGet } from "@/api/hooks";
+import { useDisclaimers, useGet } from "@/api/hooks";
 import { api, streamSSE } from "@/lib/api";
+import { errorText } from "@/i18n/server";
 import { cn } from "@/lib/utils";
 import type { Compliance, CoachStatus } from "@/api/types";
 
@@ -28,9 +29,8 @@ interface Msg {
   compliance?: Compliance;
 }
 let n = 0;
-// EU AI Act transparency (E11-5): every coach text is labelled; the server sends the label in the answer's language, this one shows while it streams
-// (its wording lives in src/coach/disclaimers.py: not a translation key)
-const AI_LABEL = "AI-generated content: it can contain mistakes. Check the figures against your accounts.";
+// EU AI Act transparency (E11-5): every coach text is labelled. The server sends the label in the answer's language with the answer; while it
+// streams, the label of the interface language (GET /meta/disclaimers). Its wording lives only in src/coach/disclaimers.py: never a translation key.
 
 const TOOLS = [
   "coverage", "category_averages", "cashflow", "recurring", "price_changes", "anomalies", "forecast", "budget_status", "budget_suggestions", "calendar",
@@ -51,6 +51,7 @@ export default function Coach() {
   const end = useRef<HTMLDivElement>(null);
   const ctl = useRef<AbortController | null>(null);
   const { t } = useTranslation("coach");
+  const disclaimers = useDisclaimers();
   useEffect(() => end.current?.scrollIntoView?.({ block: "end", behavior: "smooth" }), [msgs]);
   useEffect(() => () => ctl.current?.abort(), []);
 
@@ -83,7 +84,7 @@ export default function Coach() {
         } else if (ev === "done") patch((x) => ({ ...x, pending: false }));
       }, ctl.current.signal);
     } catch (e) {
-      setMsgs((m) => [...m.filter((x) => x.id !== reply || x.text), { id: ++n, role: "notice", text: (e as Error).message }]);
+      setMsgs((m) => [...m.filter((x) => x.id !== reply || x.text), { id: ++n, role: "notice", text: errorText(e) }]);
     } finally {
       patch((x) => ({ ...x, pending: false }));
       setBusy(false);
@@ -131,7 +132,7 @@ export default function Coach() {
                           <span data-testid="compliance-banner">{m.compliance.banner}</span>
                         </Notice>
                       )}
-                      {m.text && <p className="mt-2 flex items-start gap-1.5 text-[12px] text-faint" data-testid="ai-label"><Bot className="mt-0.5 size-3.5 shrink-0" aria-hidden /><span>{m.compliance?.label ?? AI_LABEL}</span></p>}
+                      {m.text && <p className="mt-2 flex items-start gap-1.5 text-[12px] text-faint" data-testid="ai-label"><Bot className="mt-0.5 size-3.5 shrink-0" aria-hidden /><span>{m.compliance?.label ?? disclaimers?.ai_label}</span></p>}
                       {m.suspicious && (
                         <Notice tone="warn" className="mt-2" title={t("suspiciousTitle")}>
                           <span className="inline-flex items-center gap-1"><ShieldAlert className="size-3.5" aria-hidden /></span> {t("suspiciousBody")}

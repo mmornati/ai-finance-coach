@@ -3,8 +3,9 @@ import { Trans, useTranslation } from "react-i18next";
 import { AlertTriangle, ArrowRight, Bell, CalendarClock, CircleHelp, Lightbulb } from "lucide-react";
 import { Async, Badge, Card, Dot, EmptyState, Money, Notice, PageHeader, ProgressBar, Skeleton, Stat } from "@/components/ui";
 import { CashflowChart, ForecastChart, ShareBar } from "@/components/charts";
-import { useAlerts, useBalances, useBudgets, useCashflow, useForecast, useGet, useHealth, useHumanize, useInsights, useMonthCategories, useQuestions, useScoped } from "@/api/hooks";
+import { useAlerts, useBalances, useBudgets, useCashflow, useDisclaimers, useForecast, useGet, useHealth, useHumanize, useInsights, useMonthCategories, useQuestions, useScoped } from "@/api/hooks";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, fmtRelativeDays, parseMoney } from "@/lib/format";
+import { cardText, forecastLabel, serverLabel, tServer, tServerList, tServerOr } from "@/i18n/server";
 import type { CalendarResult, SavingsView } from "@/api/types";
 import { cn } from "@/lib/utils";
 
@@ -53,14 +54,14 @@ function BalanceCard() {
                   <span className="min-w-0 truncate">
                     {a.label}
                     {a.stale && <Badge tone="warn" className="ml-2" title={t("balances.oldTitle", { count: a.age_days })}>{t("balances.old")}</Badge>}
-                    {a.balance !== null && !a.booked && <Badge className="ml-2" title={t("balances.typeTitle")}>{a.balance_type_label}</Badge>}
+                    {a.balance !== null && !a.booked && <Badge className="ml-2" title={t("balances.typeTitle")}>{serverLabel("balanceType", a.balance_type, a.balance_type_label)}</Badge>}
                   </span>
                   <Money v={a.balance} colored className="font-medium" />
                 </li>
               ))}
             </ul>
             {d.accounts.length > 6 && <p className="mt-2 text-xs text-faint">{t("balances.more", { count: d.accounts.length - 6 })}</p>}
-            {d.mixed_types && <p className="mt-2 text-xs text-faint">{d.note}</p>}
+            {d.mixed_types && <p className="mt-2 text-xs text-faint">{tServer(d.note_msg, d.note)}</p>}
           </>
         )}
       </Async>
@@ -140,7 +141,7 @@ function CashflowCard() {
         {(d) => (
           <>
             <CashflowChart months={d.household.months} />
-            {d.coverage.notes.slice(0, 2).map((n) => (
+            {tServerList(d.coverage.notes, d.coverage.notes_msg).slice(0, 2).map((n) => (
               <p key={n} className="mt-2 text-xs text-faint">{n}</p>
             ))}
           </>
@@ -169,7 +170,7 @@ function ForecastCard() {
                   {risky.slice(0, 3).map((a) => (
                     <li key={a.label}>
                       <Notice tone={a.first_negative ? "neg" : "warn"}>
-                        <b>{a.label}</b>: {a.first_negative ? t("forecast.belowZero", { date: fmtDate(a.first_negative, "dayMonth") }) : t("forecast.short", { date: fmtDate(a.first_at_risk, "dayMonth") })}
+                        <b>{forecastLabel(a)}</b>: {a.first_negative ? t("forecast.belowZero", { date: fmtDate(a.first_negative, "dayMonth") }) : t("forecast.short", { date: fmtDate(a.first_at_risk, "dayMonth") })}
                       </Notice>
                     </li>
                   ))}
@@ -267,7 +268,7 @@ function UpcomingCard() {
                     <div className="font-medium text-text">{fmtDate(i.date, "dayMonth")}</div>
                     <div>{fmtRelativeDays(i.days_until)}</div>
                   </div>
-                  <span className="min-w-0 flex-1 truncate">{i.title}</span>
+                  <span className="min-w-0 flex-1 truncate">{tServer(i.title_msg, i.title)}</span>
                   {i.amount !== null && <Money v={i.amount} colored className="shrink-0 text-sm font-medium" />}
                 </li>
               ))}
@@ -321,7 +322,7 @@ export function AlertsCard() {
                 {high > 0 && <Badge tone="neg">{t("alerts.highCount", { count: high })}</Badge>}
               </div>
               <ul className="mt-2 grid gap-1 text-sm">
-                {open.slice(0, 3).map((e) => <li key={e.id} className="truncate">{e.title}</li>)}
+                {open.slice(0, 3).map((e) => <li key={e.id} className="truncate">{tServerOr(e.title_msg, e.title)}</li>)}
               </ul>
             </Link>
           );
@@ -334,6 +335,7 @@ export function AlertsCard() {
 function InsightsCard() {
   const q = useInsights();
   const h = useHumanize();
+  const disclaimers = useDisclaimers();
   const { t } = useTranslation("dashboard");
   return (
     <Card title={t("insights.title")} action={<Link to="/insights" className="text-xs text-accent hover:underline">{t("insights.all")}</Link>}>
@@ -342,12 +344,12 @@ function InsightsCard() {
           if (!d.cards.length) return <EmptyState icon={<Lightbulb className="size-6" />} title={t("insights.emptyTitle")}>{t("insights.emptyBody")}</EmptyState>;
           return (
             <ul className="grid gap-2.5">
-              {d.cards.slice(0, 4).map((c) => (
+              {d.cards.slice(0, 4).map((c) => ({ c, txt: cardText(c, { legacy: h, disclaimer: c.disclaimer, disclaimers }) })).map(({ c, txt }) => (
                 <li key={c.id} className="flex gap-2.5 text-sm">
                   <AlertTriangle className={cn("mt-0.5 size-4 shrink-0", c.severity === "high" ? "text-neg" : c.severity === "medium" ? "text-warn" : "text-faint")} aria-label={t(`insights.severity.${c.severity}`)} />
                   <div className="min-w-0">
-                    <div className="truncate font-medium">{h(c.title)}</div>
-                    <div className="line-clamp-2 text-[13px] text-muted">{h(c.body)}</div>
+                    <div className="truncate font-medium">{txt.title}</div>
+                    <div className="line-clamp-2 text-[13px] text-muted">{txt.body}</div>
                   </div>
                 </li>
               ))}
@@ -396,7 +398,7 @@ function HealthCard() {
             {d.banks.map((b) => (
               <li key={`${b.bank}${b.session_id}`} className="flex items-center gap-2">
                 <Dot level={b.level} />
-                <span className="min-w-0 flex-1 truncate">{b.bank}</span>
+                <span className="min-w-0 flex-1 truncate">{serverLabel("bankGroup", b.bank_code, b.bank)}</span>
                 <span className="text-xs text-muted">{b.consent_days_left !== null ? t("health.daysLeft", { days: b.consent_days_left }) : b.consent_status ?? t("health.manual")}</span>
               </li>
             ))}

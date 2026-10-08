@@ -33,6 +33,7 @@ from typing import Optional
 from coach import disclaimers as D
 from coach.analytics.common import money_str
 from coach.analytics.dataset import Dataset
+from coach.i18n_msg import strip_msgs
 from coach.skills import loans as L
 from coach.skills.money import cents, pct_of_c
 
@@ -257,7 +258,7 @@ def _fr(ds: Dataset, year: int, txs: list, members: list, assets: list) -> tuple
                 "source": "CGI art. 199 novovicies", "notes": ["Pinel applied to purchases up to 31 December 2024; the reduction is spread over the commitment"],
                 "estimated_benefit": _range(None, None), "_high": 0, "_low": 0}
         from coach.rental import reduction as RED
-        red = RED.compute(a, year)                      # E15-4: the ONE shared function (rental page and tool use it too)
+        red = strip_msgs(RED.compute(a, year))          # E15-4: the ONE shared function (rental page and tool use it too); *_msg: the web's only
         if red["status"] == "computed":
             item["declared_reduction"] = red
             alt = None

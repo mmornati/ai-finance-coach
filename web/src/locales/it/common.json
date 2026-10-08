@@ -60,6 +60,12 @@
     "reset": "Reimposta",
     "done": "Fatto"
   },
+  "people": {
+    "unassigned": "Non assegnato",
+    "joint": "Comune",
+    "someoneElse": "Qualcun altro",
+    "unknownSource": "Origine sconosciuta"
+  },
   "sync": {
     "now": "Sincronizza ora",
     "running": "Sincronizzazione…",

@@ -6,6 +6,7 @@ import { ShareBar } from "@/components/charts";
 import { useScoped } from "@/api/hooks";
 import { catLabel, fmtMoney, fmtMonth, groupLabel, parseMoney } from "@/lib/format";
 import type { CategoryOverview } from "@/api/types";
+import { tServerList } from "@/i18n/server";
 
 export default function Categories() {
   const q = useScoped<CategoryOverview>("/categories");
@@ -31,7 +32,7 @@ export default function Categories() {
                   </div>
                   <Input aria-label={t("overview.filter")} type="search" placeholder={t("overview.filter")} value={text} onChange={(e) => setText(e.target.value)} className="max-w-60" />
                 </div>
-                {d.coverage.notes.map((n) => <Notice key={n} tone="warn" className="mt-3">{n}</Notice>)}
+                {tServerList(d.coverage.notes, d.coverage.notes_msg).map((n) => <Notice key={n} tone="warn" className="mt-3">{n}</Notice>)}
               </Card>
               {rows.length === 0 && <Card><EmptyState title={t("overview.empty")} /></Card>}
               {view === "flat" ? (

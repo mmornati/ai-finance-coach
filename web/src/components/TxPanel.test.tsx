@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/utils";
 import { TxPanel } from "./TxPanel";
 import { resetCsrfForTests } from "@/lib/api";
+import { setLanguage } from "@/i18n";
 
 const detail = {
   transaction: { tx_key: "a:ref:1", date: "2026-10-03", amount: "-29.54", description: "CARTE WHATNOT", bank: "Revolut", account: "Main", account_purpose: "main" },
@@ -47,7 +48,7 @@ describe("category fix panel", () => {
   it("previews what will really change and writes only on Apply, with the same scope", async () => {
     const onClose = await open();
     expect(await screen.findByTestId("effect")).toHaveTextContent("3 transactions will change to Pets");
-    expect(screen.getByText(/Currently: Marketplace ×3/)).toBeInTheDocument();
+    expect(screen.getByText(/Currently: Online marketplaces ×3/)).toBeInTheDocument();
     expect(JSON.parse(previews().at(-1)!.init!.body as string)).toMatchObject({ tx_key: "a:ref:1", category: "pets.pets", scope: "merchant" });
     expect(writes()).toHaveLength(0);
     const apply = screen.getByRole("button", { name: "Apply" });
@@ -82,6 +83,32 @@ describe("category fix panel", () => {
     await open();
     expect(await screen.findByTestId("effect")).toHaveTextContent("3 transactions");
     await waitFor(() => expect(screen.getByRole("button", { name: "Apply" })).toBeEnabled());
+  });
+});
+
+describe("the why in the reader's language (i18n 4d)", () => {
+  const saved = { steps: detail.steps, memory: detail.memory };
+  afterEach(() => Object.assign(detail, saved));
+
+  it("translates the steps, the annotation reasons and the warnings by their codes; merchant keys and patterns stay as they are", async () => {
+    detail.steps = [{ step: "user merchant label", step_code: "userLabel", applies: true, detail: "you labelled 'WHATNOT' as shopping.marketplace (t)",
+      detail_msg: { code: "explain.userLabel", params: { merchant_key: "WHATNOT", label_category: "shopping.marketplace", updated: "2026-01-02" }, text: "you labelled 'WHATNOT' as shopping.marketplace (t)" },
+      category: "shopping.marketplace", source: "user", decides: true },
+      { step: "future step", step_code: "notYetKnown", applies: false, detail: "a sentence of a newer server", detail_msg: { code: "explain.notYetKnown", params: {}, text: "a sentence of a newer server" }, category: null, source: null, decides: false }] as never;
+    detail.memory = { annotations: [{ id: "pin-it", matched: false, reason: "merchant_key /^PIN/ does not match 'WHATNOT'", line: 3,
+      reason_msg: { code: "annotation.merchantKey", params: { pattern: "^PIN", merchant_key: "WHATNOT" }, text: "merchant_key /^PIN/ does not match 'WHATNOT'" } }], winner: null } as never;
+    preview = { ...preview, warnings: ["1 transaction(s) keep their category because of a per-transaction override"],
+      warnings_msg: [{ code: "categoryEdit.keptByOverride", params: { count: 1 }, text: "1 transaction(s) keep their category because of a per-transaction override" }] };
+    await setLanguage("fr", { persist: false });
+    renderApp(<TxPanel txKey="a:ref:1" onClose={vi.fn()} />);
+    await screen.findByText("CARTE WHATNOT");
+    expect(screen.getByText("votre libellé du commerçant")).toBeInTheDocument();
+    expect(screen.getByText(/vous avez classé « WHATNOT » en/)).toBeInTheDocument();
+    expect(screen.getByText("future step")).toBeInTheDocument();                     // unknown code: the English the server sent
+    expect(screen.getByText("a sentence of a newer server")).toBeInTheDocument();
+    expect(screen.getByText(/merchant_key \/\^PIN\/ ne correspond pas à « WHATNOT »/)).toBeInTheDocument();
+    await userEvent.selectOptions(await screen.findByLabelText("Nouvelle catégorie"), "pets.pets");
+    expect(await screen.findByText("1 transaction garde sa catégorie à cause d'une correction propre à la transaction")).toBeInTheDocument();
   });
 });
 

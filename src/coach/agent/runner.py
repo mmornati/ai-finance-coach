@@ -33,15 +33,14 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from coach import egress
-from coach import secrets as secrets_mod
 from coach.agent import prompt as P
+from coach.claude_cli import ENV_ALLOW, SECRET_ENV, claude_env  # noqa: F401  (re-exported: tests and callers import them here)
 from coach.classify.backends import Usage, estimate_cost
 from coach.mcp import guard as G
 from coach.mcp.tools import REF_RE, TOOL_NAMES, ToolSession
 
 MCP_PREFIX = "mcp__finance__"
 ALLOWED_EXTRA_TOOLS = {"ListMcpResourcesTool", "ReadMcpResourceTool"}        # claude's own helpers for MCP resources
-SECRET_ENV = ("ANTHROPIC_API_KEY", "COACH_DB_KEY", "COACH_BACKUP_KEY", "COACH_PROPOSAL_KEY", "ANTHROPIC_AUTH_TOKEN")
 # where the finance MCP server (a child of claude) finds its configuration and its secrets: LOCATIONS only, never a secret value
 FORWARD_ENV = ("COACH_HOME", "COACH_DB", "COACH_MEMORY_DIR", "COACH_DATA_DIR", "COACH_CONFIG_DIR", "COACH_CONFIG",
                "COACH_TAXONOMY_FILE", "COACH_RULES_FILE", "COACH_SECRETS_BACKEND", "COACH_SECRETS_DIR", "COACH_SECRETS_ALLOW_READABLE",
@@ -148,12 +147,6 @@ class RunState:
 
 # ---------------------------------------------------------------- claude -p
 
-# What `claude` is started with. A MINIMAL allowlist: no proxy variable, no ANTHROPIC_BASE_URL, no API key, no COACH_* secret.
-# macOS authentication of a subscription login reads the Keychain through HOME / USER; extra names (a proxy, a config dir,
-# ...) are passed only when listed in [coach] claude_env. Without an interactive login (a container) the secret claude_code_oauth_token
-# is passed as CLAUDE_CODE_OAUTH_TOKEN (claude_auth_env). The two DISABLE flags only switch things off (the image sets them).
-ENV_ALLOW = ("PATH", "HOME", "USER", "LOGNAME", "LANG", "TMPDIR", "TERM", "SHELL", "__CF_USER_TEXT_ENCODING",
-             "DISABLE_AUTOUPDATER", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC")
 BUILTIN_AGENTS = {"general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide"}
 INIT_TIMEOUT = 45.0
 ISOLATION = ("claude starts in an EMPTY temporary directory outside the repository (no CLAUDE.md, no .claude/, no project "
@@ -162,16 +155,6 @@ ISOLATION = ("claude starts in an EMPTY temporary directory outside the reposito
              "tools. The run is stopped if the init event reports any plugin, skill, hook, agent beyond the built-in ones, or MCP "
              "server other than `finance`. What this does NOT do: it does not sandbox the `claude` binary itself, and the user-level "
              "~/.claude.json (login) is still read for authentication.")
-
-
-def claude_env(cfg) -> dict:
-    env = {k: os.environ[k] for k in ENV_ALLOW if os.environ.get(k)}
-    env.update({k: v for k, v in os.environ.items() if k.startswith("LC_")})
-    for k in getattr(cfg, "coach_claude_env", ()) or ():
-        if k in os.environ and k not in SECRET_ENV:
-            env[k] = os.environ[k]
-    env.update(secrets_mod.claude_auth_env())
-    return env
 
 
 def mcp_config(cfg, session_id: str, insecure: bool, only=None) -> dict:

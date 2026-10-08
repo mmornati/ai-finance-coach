@@ -11,11 +11,13 @@ import type kids from "../locales/en/kids.json";
 import type memory from "../locales/en/memory.json";
 import type quality from "../locales/en/quality.json";
 import type rental from "../locales/en/rental.json";
+import type server from "../locales/en/server.json";
 import type setup from "../locales/en/setup.json";
 import type wealth from "../locales/en/wealth.json";
 import type dashboard from "../locales/en/dashboard.json";
 import type insights from "../locales/en/insights.json";
 import type subscriptions from "../locales/en/subscriptions.json";
+import type taxonomy from "../locales/en/taxonomy.json";
 import type transactions from "../locales/en/transactions.json";
 
 declare module "i18next" {
@@ -30,6 +32,7 @@ declare module "i18next" {
       memory: typeof memory;
       quality: typeof quality;
       rental: typeof rental;
+      server: typeof server;
       setup: typeof setup;
       wealth: typeof wealth;
       budgets: typeof budgets;
@@ -39,6 +42,7 @@ declare module "i18next" {
       dashboard: typeof dashboard;
       insights: typeof insights;
       subscriptions: typeof subscriptions;
+      taxonomy: typeof taxonomy;
       transactions: typeof transactions;
     };
   }

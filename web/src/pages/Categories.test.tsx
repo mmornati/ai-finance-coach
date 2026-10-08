@@ -40,7 +40,7 @@ describe("categories page shows the analytics' group figures, never its own sums
     await userEvent.type(screen.getByRole("searchbox", { name: /filter categories/i }), "energy");
     const housing = screen.getByRole("link", { name: "Housing" }).closest("section")!;
     expect(within(housing).queryByText("Mortgage")).not.toBeInTheDocument();
-    expect(within(housing).getByText("Energy")).toBeInTheDocument();
+    expect(within(housing).getByText("Electricity and gas")).toBeInTheDocument();          // the id matches too
     expect(nb(housing.textContent)).toContain("2 051 €");
     expect(screen.queryByRole("link", { name: "Food" })).not.toBeInTheDocument();      // a group with no matching row disappears
   });

@@ -7,7 +7,8 @@ import { Async, Badge, Button, Card, DiffView, Field, Input, Notice, PageHeader,
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import type { EditResult, Onboarding, OnboardingStep, WizardStatus } from "@/api/types";
+import { fieldLabel, holdingKindLabel, serverLabel, tServer, useServerText } from "@/i18n/server";
+import type { EditResult, Onboarding, OnboardingStep, ServerMsg, WizardStatus } from "@/api/types";
 
 const LINKS: Record<OnboardingStep["id"], { to: string; label: ParseKeys<"setup"> }> = {
   household: { to: "/memory?tab=household", label: "links.household" },
@@ -21,14 +22,25 @@ const LINKS: Record<OnboardingStep["id"], { to: string; label: ParseKeys<"setup"
 const ICON = { done: <Check className="size-4 text-pos" aria-hidden />, partial: <CircleDot className="size-4 text-warn" aria-hidden />, todo: <Circle className="size-4 text-faint" aria-hidden /> };
 const TONE = { done: "pos", partial: "warn", todo: "neutral" } as const;
 
+/** The names of memory fields (`rate.nominal`, `owner`) in the interface language. */
+const fields = (names: string[]) => names.map(fieldLabel).join(", ");
+
 function missingLines(s: OnboardingStep, t: TFunction<"setup">): string[] {
   const out: string[] = [];
-  for (const m of s.missing ?? []) out.push(typeof m === "string" ? m : t("missing.account", { account: m.label ?? m.account, fields: m.missing.join(", ") }));
-  for (const l of s.liabilities ?? []) if (l.missing.length) out.push(t("missing.liability", { id: l.id, kind: l.kind, fields: l.missing.join(", ") }));
+  (s.missing ?? []).forEach((m, i) => out.push(typeof m === "string" ? tServer(s.missing_msg?.[i], m) : t("missing.account", { account: m.label ?? m.account, fields: fields(m.missing) })));
+  for (const l of s.liabilities ?? []) if (l.missing.length) out.push(t("missing.liability", { id: l.id, kind: holdingKindLabel(l.kind), fields: fields(l.missing) }));
   if (s.loan_payments_without_file?.length) out.push(t("missing.loanPayments", { count: s.loan_payments_without_file.length }));
   if (s.recurring_without_contract?.length) out.push(t("missing.recurring", { count: s.recurring_without_contract.length }));
-  for (const c of s.contracts_with_empty_fields ?? []) out.push(t("missing.contract", { id: c.id, fields: c.missing.join(", ") }));
+  for (const c of s.contracts_with_empty_fields ?? []) out.push(t("missing.contract", { id: c.id, fields: fields(c.missing) }));
   return out;
+}
+
+/** A wizard detail: "finish '<step>' first" names the step by its label in the interface language (`need` is its id). */
+function wizardDetail(msg: ServerMsg | null | undefined, detail: string): string {
+  if (msg?.code === "wizard.finishFirst" && msg.params?.need) {
+    return tServer({ ...msg, params: { ...msg.params, step: serverLabel("setupStep", String(msg.params.need), String(msg.params.step ?? "")) } }, detail);
+  }
+  return tServer(msg, detail);
 }
 
 const WIZARD_TONE = { done: "pos", partial: "warn", todo: "neutral", skipped: "neutral", blocked: "neutral" } as const;
@@ -37,6 +49,7 @@ const WIZARD_TONE = { done: "pos", partial: "warn", todo: "neutral", skipped: "n
  *  consent in a terminal before anything leaves this machine, so the page shows the state and the command, and starts nothing. */
 function FirstRun() {
   const { t } = useTranslation("setup");
+  useServerText();
   const q = useGet<WizardStatus>("/setup/wizard");
   const d = q.data;
   if (!d || !Array.isArray(d.steps) || d.progress.next_step === null) return null;
@@ -52,8 +65,8 @@ function FirstRun() {
         {d.steps.map((s) => (
           <li key={s.id} className="flex flex-wrap items-center gap-2">
             <Badge tone={WIZARD_TONE[s.status]}>{t(`status.${s.status}`)}</Badge>
-            <span>{s.title}{s.optional ? t("firstRun.optional") : ""}</span>
-            {s.detail && <span className="text-muted">{s.detail}</span>}
+            <span>{serverLabel("setupStep", s.id, s.title)}{s.optional ? t("firstRun.optional") : ""}</span>
+            {s.detail && <span className="text-muted">{wizardDetail(s.detail_msg, s.detail)}</span>}
           </li>
         ))}
       </ul>
@@ -100,15 +113,16 @@ export default function Setup() {
   );
 }
 
-function StepCard({ s, cmd, declared }: { s: OnboardingStep; cmd: { do: string; command: string }[]; declared?: Record<ListKey, string[]> }) {
+function StepCard({ s, cmd, declared }: { s: OnboardingStep; cmd: Onboarding["next_actions"]; declared?: Record<ListKey, string[]> }) {
   const { t } = useTranslation("setup");
+  useServerText();
   const lines = missingLines(s, t);
   const link = LINKS[s.id];
   return (
     <Card>
       <div className="flex flex-wrap items-center gap-2">
         {ICON[s.status]}
-        <h2 className="text-[15px] font-semibold">{s.heading}</h2>
+        <h2 className="text-[15px] font-semibold">{serverLabel("onboardingStep", s.id, s.heading)}</h2>
         <Badge tone={TONE[s.status]}>{t(`status.${s.status}`)}</Badge>
         <Link to={link.to} className="ml-auto text-sm text-accent hover:underline">{t(link.label)}</Link>
       </div>
@@ -116,7 +130,7 @@ function StepCard({ s, cmd, declared }: { s: OnboardingStep; cmd: { do: string; 
       {s.id === "household" && s.status !== "done" && <HouseholdForm have={s.have} declared={declared} />}
       {s.id === "preferences" && s.status !== "done" && <PreferencesForm />}
       {s.status !== "done" && cmd.length > 0 && s.id !== "household" && s.id !== "preferences" && (
-        <div className="mt-3 grid gap-1.5">{cmd.slice(0, 1).map((c) => <div key={c.command}><div className="mb-1 text-xs text-muted">{c.do}</div><CopyCommand command={c.command} /></div>)}</div>
+        <div className="mt-3 grid gap-1.5">{cmd.slice(0, 1).map((c) => <div key={c.command}><div className="mb-1 text-xs text-muted">{tServer(c.do_msg, c.do)}</div><CopyCommand command={c.command} /></div>)}</div>
       )}
     </Card>
   );

@@ -19,6 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
+from coach.i18n_msg import server_msg
+
 RENTAL_KIND = "real_estate_rental"
 RENTAL_PURPOSE = "rental"
 TAG_PREFIX = "property-"
@@ -35,7 +37,8 @@ CATEGORY_BUCKET = {
 }
 PROPERTY_CATEGORIES = tuple(CATEGORY_BUCKET)
 REVIEW_EXEMPT = frozenset({"fees.bank_fees"})            # in the "other flows" line, but nothing to label
-LABEL = {"rent": "rent received", "loan": "loan instalments", "charges": "co-ownership charges", "fees": "management fees",
+# English bucket names (no API payload carries them: the web names a bucket with its own pnl.row.* keys of rental.json)
+LABEL = {"rent":"rent received", "loan": "loan instalments", "charges": "co-ownership charges", "fees": "management fees",
          "taxes": "property tax", "insurance": "insurance (PNO, GLI)", "works": "works and repairs", "other": "other flows"}
 
 
@@ -59,7 +62,8 @@ class Property:
     account_link: str = "none"                      # declared | only_one | none | unknown (the declared account is not in the data)
     loans: list = field(default_factory=list)       # [Liability]
     loan_link: str = "none"                         # declared | asset | account | none | unknown
-    notes: list = field(default_factory=list)
+    notes: list = field(default_factory=list)       # English (the CLI); notes_msg: the web's messages, same order
+    notes_msg: list = field(default_factory=list)
 
     @property
     def commitment(self):
@@ -71,13 +75,14 @@ def rental_assets(ds) -> list:
 
 
 def _loan_candidates(ds, asset, accounts: list) -> tuple[list, str, list]:
+    """(loans, link, notes as messages)."""
     lbs = [lb for _rel, lb in ds.memory.liabilities]
     notes: list = []
     if getattr(asset, "loan", None):
         hit = [lb for lb in lbs if lb.id == asset.loan]
         if hit:
             return hit, "declared", notes
-        notes.append("the loan named on the property is not in the loan files")
+        notes.append(server_msg("rental.links.loanNotOnFile", "the loan named on the property is not in the loan files"))
         return [], "unknown", notes
     hit = [lb for lb in lbs if (lb.asset or "").strip().lower() == asset.id.lower()]
     if hit:
@@ -105,7 +110,10 @@ def properties(ds) -> list[Property]:
             acc = ds.resolve_account(ref)
             if acc is None:
                 p.account_link = "unknown"
-                p.notes.append("the account named on the property is not in the data (excluded, to review, or a wrong uid / label)")
+                m = server_msg("rental.links.accountNotInData",
+                               "the account named on the property is not in the data (excluded, to review, or a wrong uid / label)")
+                p.notes.append(m["text"])
+                p.notes_msg.append(m)
             else:
                 p.accounts, p.account_link = [acc.uid], "declared"
                 claimed.add(acc.uid)
@@ -116,7 +124,8 @@ def properties(ds) -> list[Property]:
         free_props[0].accounts, free_props[0].account_link = [free_acc[0]], "only_one"
     for p in out:
         p.loans, p.loan_link, n = _loan_candidates(ds, p.asset, p.accounts)
-        p.notes += n
+        p.notes += [m["text"] for m in n]
+        p.notes_msg += n
     ds._cache["rental_properties"] = out
     return out
 

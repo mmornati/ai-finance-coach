@@ -19,6 +19,7 @@ from typing import Optional
 from coach.analytics.common import median_c, money_str, month_end, month_key, month_start
 from coach.analytics.dataset import Dataset, is_spending
 from coach.household.people import People
+from coach.i18n_msg import server_msg
 
 WARN_AT = 0.8
 UNUSUAL_FACTOR = 4
@@ -93,7 +94,8 @@ def candidates(ds: Dataset) -> list:
         name = people.first_name(s["member"])
         what = (s["category"] or s["group"] or "spending").replace("_", " ").replace(".", " / ")
         per = "this week" if s["period"] == "weekly" else "this month"
-        if s["status"] == "over":
+        over = s["status"] == "over"
+        if over:
             title = f"{name} went over the {s['period']} limit ({what})"
             body = (f"{money_str(s['spent_c'])} EUR spent {per} against a limit of {money_str(s['limit_c'])} EUR. "
                     "A friendly chat, not a telling-off: look at it together.")
@@ -102,12 +104,42 @@ def candidates(ds: Dataset) -> list:
             title = f"{name} is close to the {s['period']} limit ({what})"
             body = (f"{money_str(s['spent_c'])} EUR of {money_str(s['limit_c'])} EUR used {per}, {s['days_left']} day(s) left.")
             sev = "low"
+        title_msg, body_msg = _limit_msgs(s, name, over, title, body)
         out.append(Candidate("kid_budget", f"kidbudget:{s['id']}:{s['period_start'].isoformat()}", sev, title, body,
-                             {"subtype": "limit", "budget": s["id"], "amount_c": s["spent_c"], "period_start": s["period_start"].isoformat()}))
+                             {"subtype": "limit", "budget": s["id"], "amount_c": s["spent_c"], "period_start": s["period_start"].isoformat()},
+                             title_msg=title_msg, body_msg=body_msg))
     for m in people.children():
         for t in unusual(ds, m):
             name = people.first_name(m)
-            out.append(Candidate("kid_budget", f"kidunusual:{t.key}", "low", f"{name}: an unusually large payment",
-                                 f"{money_str(-t.amount_c)} EUR on {t.date.isoformat()}, well above {name}'s usual payments. Maybe worth a quiet word.",
-                                 {"subtype": "unusual", "amount_c": -t.amount_c, "evidence": [t.key]}))
+            title = f"{name}: an unusually large payment"
+            body = f"{money_str(-t.amount_c)} EUR on {t.date.isoformat()}, well above {name}'s usual payments. Maybe worth a quiet word."
+            out.append(Candidate("kid_budget", f"kidunusual:{t.key}", "low", title, body,
+                                 {"subtype": "unusual", "amount_c": -t.amount_c, "evidence": [t.key]},
+                                 title_msg=server_msg("alert.kidBudget.unusualTitle", title, name=name),
+                                 body_msg=server_msg("alert.kidBudget.unusualBody", body, name=name, payment_amount=money_str(-t.amount_c),
+                                                     payment_date=t.date)))
     return out
+
+
+PERIOD_CODE = {"weekly": "Weekly", "monthly": "Monthly"}
+
+
+def _limit_msgs(s: dict, name: str, over: bool, title: str, body: str) -> tuple[Optional[dict], Optional[dict]]:
+    """The messages of a kid-budget alert (local only: a child's name never leaves the machine). The code says the period and what the
+    budget covers: ``alert.kidBudget.<over|close><Weekly|Monthly><Category|Group|All>`` (the params of a category and a group differ)."""
+    from coach.i18n_msg import server_msg_or_none
+    per = PERIOD_CODE.get(s["period"])
+    if per is None:
+        return None, None
+    if s["category"]:
+        target, tp = "Category", {"limit_category": s["category"]}
+    elif s["group"]:
+        target, tp = "Group", {"limit_group": s["group"]}
+    else:
+        target, tp = "All", {}
+    state = "over" if over else "close"
+    title_msg = server_msg_or_none(f"alert.kidBudget.{state}{per}{target}", title, name=name, **tp)
+    amounts = {"spent_amount": money_str(s["spent_c"]), "limit_amount": money_str(s["limit_c"])}
+    body_msg = (server_msg_or_none(f"alert.kidBudget.overBody{per}", body, **amounts) if over
+                else server_msg_or_none(f"alert.kidBudget.closeBody{per}", body, count=int(s["days_left"]), **amounts))
+    return title_msg, body_msg

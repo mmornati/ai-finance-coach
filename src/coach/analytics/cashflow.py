@@ -38,6 +38,7 @@ from typing import Optional
 
 from coach.analytics.common import (to_cents, CoverageInfo, Result, Scope, add_months_key, last_closed_month, month_key,
                                     months_between, pct)
+from coach.analytics.common import non_eur_note, note
 from coach.analytics.dataset import Dataset, Tx, is_income, is_spending, is_transfer
 from coach.loans import service as loans_service
 
@@ -284,11 +285,14 @@ def cashflow(ds: Dataset, scope: Optional[Scope] = None, months: int = 6, end: O
     complete = [r.month for r in hh.months if r.complete]
     notes = []
     if ds.foreign:
-        notes.append(f"{len(ds.foreign)} non-EUR transaction(s) left out")
+        notes.append(non_eur_note(len(ds.foreign)))
     incomplete = [r for r in hh.months if not r.complete]
     if incomplete:
-        notes.append("incomplete months: " + ", ".join(f"{r.month} (no full data for {', '.join(r.missing_accounts)})"
-                                                         for r in incomplete))
+        text = "incomplete months: " + ", ".join(f"{r.month} (no full data for {', '.join(r.missing_accounts)})" for r in incomplete)
+        # the web says it shorter: the first and last incomplete months, and every account lacking data (labels, not translated)
+        lacking = sorted({lab for r in incomplete for lab in r.missing_accounts})
+        notes.append(note("coverage.incompleteMonths", text, count=len(incomplete), first_month=incomplete[0].month,
+                          last_month=incomplete[-1].month, accounts=", ".join(lacking)))
     cov = ds.coverage.info(uids, complete, "a month is complete when every account of the scope covers all its days; "
                            "totals_complete sums complete months only, totals_all every listed month", notes)
     cov.skipped_months = [r.month for r in incomplete]

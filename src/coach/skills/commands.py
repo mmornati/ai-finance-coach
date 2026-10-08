@@ -46,7 +46,8 @@ def cmd_status(a, cfg):
         if a.json:
             import json
             from coach.analytics.common import _plain
-            print(json.dumps(_plain(st), ensure_ascii=False, indent=2))
+            from coach.i18n_msg import strip_msgs
+            print(json.dumps(strip_msgs(_plain(st)), ensure_ascii=False, indent=2))
             return
         p = st["progress"]
         print(f"onboarding: {p['done']}/{p['total']} steps done" + (f"; next: {p['next_step']}" if p["next_step"] else ""))

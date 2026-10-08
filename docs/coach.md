@@ -184,6 +184,8 @@ instructions and every tool definition (the same functions build the real run).
 * `claude` gets a minimal environment: `PATH, HOME, USER, LOGNAME, LANG, LC_*, TMPDIR, TERM, SHELL,
   __CF_USER_TEXT_ENCODING`. No `ANTHROPIC_BASE_URL`, no proxy variable, no API key, no `COACH_*` secret, no cloud credential.
   Names listed in `[coach] claude_env` are passed too (for example `HTTPS_PROXY`); a secret name is never passed.
+  The classification backend (`[llm] backend = "claude-code"`, `coach.classify.backends.ClaudeCodeBackend`) starts its
+  `claude -p` with the same environment (`coach.claude_cli.claude_env`).
 * The question goes through stdin, never argv. The MCP child is `python -m coach [--insecure] [--config ...] mcp serve --session
   <job id> [--only <tools>]`; it never migrates the database and refuses to start while migrations are pending
   (`uv run coach db migrate` first).

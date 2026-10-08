@@ -10,6 +10,7 @@ from coach.analytics.common import money_str, to_cents
 from coach.analytics.forecast import resolve_liability_account
 from coach.api.deps import get_snapshot, get_state
 from coach.api.state import AppState, Snapshot
+from coach.i18n_msg import server_msg
 from coach.loans import history as nw_history, networth as nw_mod, service as loans_service
 from coach.memory import qgen
 
@@ -42,30 +43,35 @@ def asset_dict(a, today: dt.date, months: int) -> dict:
 LIABILITY_FIELDS = (("monthly_payment", "monthly payment"), ("outstanding", "outstanding capital"),
                     ("outstanding_as_of", "date of the outstanding capital"), ("end_date", "end date"),
                     ("debited_account", "debited account"), ("payment_match", "how its payments are recognised"))
+RATE_FIELD = ("rate", "interest rate")
+# the English label of each field a loan card says is missing; the web translates `labels.loanField.<code>` (server.json)
+LOAN_FIELD_LABEL = dict(LIABILITY_FIELDS + (RATE_FIELD,))
 
 
 def _loan_extras(ds, rec, l) -> dict:
     """E9: the schedule summary, the capital still due and where it comes from, the payment alerts, the lease view and the suggestions."""
     o = loans_service.overview_of(ds, rec, l)
     sch = o["schedule"]
-    summary = {k: sch.get(k) for k in ("status", "mode", "missing", "alternative", "approximate", "payment", "remaining_capital", "next_due",
-                                       "first_due", "last_due", "remaining_instalments", "payments_made", "term_instalments", "total_interest",
-                                       "total_insurance", "total_cost", "interest_paid", "remaining_interest", "payment_check",
-                                       "outstanding_check", "assumptions", "source") if k in sch}
+    summary = {k: sch.get(k) for k in ("status", "mode", "missing", "missing_msg", "alternative", "alternative_msg", "approximate", "payment",
+                                       "remaining_capital", "next_due", "first_due", "last_due", "remaining_instalments", "payments_made",
+                                       "term_instalments", "total_interest", "total_insurance", "total_cost", "interest_paid", "remaining_interest",
+                                       "payment_check", "outstanding_check", "assumptions", "assumptions_msg", "source") if k in sch}
     summary["by_year"] = sch.get("by_year", [])
     cap, source = (sch.get("remaining_capital"), sch.get("source") or "schedule") if sch["status"] == "computed" else (
         (_m(l.outstanding), "declared") if l.outstanding is not None else (None, None))
     inf = o["inference"]
     return {"schedule": summary, "remaining_capital": cap, "remaining_capital_source": source, "alerts": o["alerts"],
             "payments_seen": o["payments"]["count"], "lease": o["lease"],
-            "inferred": [{k: f[k] for k in ("field", "value", "confidence", "method", "note") if k in f} for f in inf.get("fields", [])]}
+            "inferred": [{k: f[k] for k in ("field", "value", "confidence", "method", "method_msg", "note", "note_msg") if k in f}
+                         for f in inf.get("fields", [])]}
 
 
 def liability_dict(ds, rec, questions, rel: str, l, months: int) -> dict:
     today = ds.today
-    missing = [label for f, label in LIABILITY_FIELDS if getattr(l, f) in (None, "")]
+    codes = [f for f, _label in LIABILITY_FIELDS if getattr(l, f) in (None, "")]
     if l.rate is None or l.rate.nominal is None:
-        missing.append("interest rate")
+        codes.append(RATE_FIELD[0])
+    missing = [LOAN_FIELD_LABEL[c] for c in codes]
     uid = resolve_liability_account(ds, l)
     series = [x for x in rec.series if any(k.kind == "liability" and k.id == l.id for k in x.links)]
     s = max(series, key=lambda x: x.last_date, default=None)
@@ -90,7 +96,7 @@ def liability_dict(ds, rec, questions, rel: str, l, months: int) -> dict:
             "first_payment": _m(l.first_payment), "residual_value": _m(l.residual_value), "mileage_limit_km": l.mileage_limit_km,
             "excess_km_fee": _m(l.excess_km_fee), "initial_km": l.initial_km,
             "odometer": [{"date": o.date.isoformat(), "km": o.km} for o in sorted(l.odometer, key=lambda o: o.date)], "notes": l.notes,
-            "missing": missing, "open_questions": qs,
+            "missing": missing, "missing_codes": codes, "open_questions": qs,
             "payments": ({"series_id": s.id, "last_date": s.last_date.isoformat(), "next_expected": _date(s.next_expected),
                           "amount": money_str(abs(s.expected_amount_c)), "status": s.status} if s else None),
             **_loan_extras(ds, rec, l)}
@@ -107,7 +113,13 @@ def liabilities(snap: Snapshot = Depends(get_snapshot), state: AppState = Depend
             "totals": {"outstanding_known": money_str(owed),
                        "monthly_payments": money_str(sum(to_cents(r["monthly_payment"]) for r in rows if r["monthly_payment"])),
                        "n_unknown_outstanding": sum(1 for r in rows if r["remaining_capital"] is None and r["kind"] not in ("loa", "lld"))},
-            "note": "Remaining capital comes from the amortization schedule when it is computable, else the declared figure."}
+            **_note(server_msg("netWorth.liabilitiesNote", "Remaining capital comes from the amortization schedule when it is computable, else "
+                                                          "the declared figure."))}
+
+
+def _note(m: dict, field: str = "note") -> dict:
+    """``{note: <English>, note_msg: <message>}`` (docs/i18n.md, "Server text")."""
+    return {field: m["text"], f"{field}_msg": m}
 
 
 @router.get("/assets", summary="Assets that are not synced (savings, property, vehicles) with stale value flags")
@@ -154,7 +166,7 @@ def net_worth(history: bool = False, months: int = 24, snap: Snapshot = Depends(
         row["counted"] = bool(c and c.status == "known")
         row["category"] = nw_mod.category_of_asset(a.kind)
         if a.connected:
-            row["note"] = "synced from a bank: counted through its balance"
+            row.update(_note(server_msg("netWorth.syncedAsset", "synced from a bank: counted through its balance")))
             a_connected += 1
         elif c and c.status == "known":
             a_total += c.amount_c
@@ -169,9 +181,10 @@ def net_worth(history: bool = False, months: int = 24, snap: Snapshot = Depends(
         l_rows.append({"id": c.id, "kind": lb.kind, "lender": lb.lender,
                        "outstanding": money_str(c.amount_c) if c.amount_c is not None else None, "as_of": _date(c.as_of),
                        "stale": c.stale, "counted": c.status == "known", "source": c.source, "excluded": c.status == "excluded",
-                       "note": c.note})
+                       "note": c.note, "note_msg": c.note_msg})
     out = {"as_of": ds.today.isoformat(), "net_worth": money_str(nw.net_worth_c), "complete": nw.complete,
-           "unknown": [{"kind": u["type"], "id": u["id"], "label": u["label"], "reason": u["reason"]} for u in nw.unknown],
+           "unknown": [{"kind": u["type"], "id": u["id"], "label": u["label"], "reason": u["reason"], "reason_msg": u.get("reason_msg")}
+                       for u in nw.unknown],
            "stale": [{"kind": x["type"], "id": x["id"]} for x in nw.stale],
            "bank": {"total": money_str(bank_total), "accounts": bank},
            "assets": {"total": money_str(a_total), "items": a_rows, "connected_not_counted": a_connected},
@@ -180,9 +193,11 @@ def net_worth(history: bool = False, months: int = 24, snap: Snapshot = Depends(
            "by_owner": {o: {"assets": money_str(v["assets_c"]), "liabilities": money_str(v["liabilities_c"]),
                             "net_worth": money_str(v["net_worth_c"]), "n_unknown": v["n_unknown"]} for o, v in nw.by_owner.items()},
            "n_unknown": nw.n_unknown,
-           "note": ("The total counts only what is known" + ("" if not nw.unknown else f"; {len(nw.unknown)} item(s) have no value and are "
-                                                              "NOT included, so the real figure differs") +
-                    ". Liabilities come from the amortization schedule when it is computable, else the declared capital.")}
+           **_note(server_msg("netWorth.totalPartial", f"The total counts only what is known; {len(nw.unknown)} item(s) have no value and are NOT "
+                              "included, so the real figure differs. Liabilities come from the amortization schedule when it is computable, else "
+                              "the declared capital.", count=len(nw.unknown)) if nw.unknown else
+                   server_msg("netWorth.total", "The total counts only what is known. Liabilities come from the amortization schedule when it "
+                              "is computable, else the declared capital."))}
     if history:
         out["history"] = _history(state, months)
     return out
@@ -199,8 +214,9 @@ def _history(state: AppState, months: int) -> list:
 @router.get("/net-worth/history", summary="Monthly net worth: stored snapshots plus months rebuilt from the data (unknowns counted per month)")
 def net_worth_history(months: int = 24, state: AppState = Depends(get_state)):
     return {"history": _history(state, months),
-            "note": ("'snapshot' = recorded on that day; 'backfill' = rebuilt from bank balances and transactions (bank accounts only), "
-                     "amortization schedules and manual assets from their own as_of date. A month with unknown items is the known part only.")}
+            **_note(server_msg("netWorth.historyNote", "'snapshot' = recorded on that day; 'backfill' = rebuilt from bank balances and transactions "
+                               "(bank accounts only), amortization schedules and manual assets from their own as_of date. A month with unknown "
+                               "items is the known part only."))}
 
 
 @router.post("/net-worth/snapshot", summary="Record today's net worth snapshot and back-fill the past months (database only)")

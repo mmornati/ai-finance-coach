@@ -60,6 +60,12 @@
     "reset": "Reset",
     "done": "Done"
   },
+  "people": {
+    "unassigned": "Unassigned",
+    "joint": "Joint",
+    "someoneElse": "Someone else",
+    "unknownSource": "Unknown source"
+  },
   "sync": {
     "now": "Sync now",
     "running": "Syncing…",

@@ -40,6 +40,7 @@ from datetime import date, timedelta
 from typing import Optional
 
 from coach.analytics.common import CoverageInfo, Result, Scope, add_months, median_c
+from coach.analytics.common import non_eur_note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset, is_spending, is_transfer
 from coach.analytics.recurring import RecurringResult, detect_recurring, occurrences
@@ -275,7 +276,7 @@ def forecast(ds: Dataset, days: int = 90, scope: Optional[Scope] = None, recurri
             warnings.append(f"liability {lb.id}: debited account unknown (set `debited_account`), left out of this scoped forecast")
             continue
         for dd, amount, cert, _note in loans_service.upcoming_payments(ds, lb, today + timedelta(days=1), end):
-            ev_by_acc[uid].append(ForecastEvent(dd, uid, ds.label(uid) if uid else "(account unresolved)", lb.id,
+            ev_by_acc[uid].append(ForecastEvent(dd, uid, ds.label(uid) if uid else "(account unresolved)", lb.id,   # web: account None -> labels.forecast.accountUnresolved
                                                 -amount, -amount, -amount, "liability", lb.id,
                                                 "assumed" if cert == "assumed" else "scheduled"))
             used.add(lb.id)
@@ -306,7 +307,8 @@ def forecast(ds: Dataset, days: int = 90, scope: Optional[Scope] = None, recurri
     hh_events.sort(key=lambda e: (e.date, e.account or "", e.ref))
     # household = the accounts with a balance + the household-level liability debits
     with_bal = [a for a in accs if a.start_balance_c is not None]
-    hh_flags = [f"{len(accs) - len(with_bal)} account(s) without balance left out"] if len(with_bal) != len(accs) else []
+    # a flag is a code, `code:value` when it carries one number (the web translates labels.forecastFlag.<code> with {{value}})
+    hh_flags = [f"accounts_without_balance:{len(accs) - len(with_bal)}"] if len(with_bal) != len(accs) else []
     if any("balance_stale" in a.flags for a in with_bal):
         hh_flags.append("balance_stale")
     pts = []
@@ -336,6 +338,7 @@ def forecast(ds: Dataset, days: int = 90, scope: Optional[Scope] = None, recurri
         hh_flags.append("projected_negative")
     elif first_risk:
         hh_flags.append("at_risk")
+    # account None = the household line (the web shows labels.forecast.household, not this English label)
     household = AccountForecast(None, "household", None, None, hh_start if with_bal else None,
                                 today if with_bal else None, None, hh_mean, int(round(math.sqrt(hh_var))), miles, min_c,
                                 min_d, first_neg, first_risk, hh_flags, pts, hh_events)
@@ -355,7 +358,7 @@ def forecast(ds: Dataset, days: int = 90, scope: Optional[Scope] = None, recurri
     if any(e.certainty == "scheduled" for e in hh_events):
         assumptions.append("liability instalments without a matching recurring series use the amortization schedule: exact due "
                            "dates and amounts (insurance included; a variable-rate loan uses its current rate)")
-    notes = [f"{len(ds.foreign)} non-EUR transaction(s) left out"] if ds.foreign else []
+    notes = [non_eur_note(len(ds.foreign))] if ds.foreign else []
     cov = ds.coverage.info([a.account for a in accs if a.account], [],
                            "variable spend: each account's own last covered months", notes)
     assumptions += warnings

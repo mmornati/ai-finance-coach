@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from coach.analytics.common import (CoverageInfo, Result, add_months, div_cents, pct)
+from coach.analytics.common import note
 from coach.analytics.coverage import last_n
 from coach.analytics.dataset import Dataset
 
@@ -159,7 +160,7 @@ def goal_progress(ds: Dataset, goals: Optional[list] = None) -> GoalsResult:
     out.sort(key=lambda p: (order.index(p.status), p.id))
     counts = {k: sum(1 for p in out if p.status == k) for k in order if any(p.status == k for p in out)}
     cov = ds.coverage.info(used_accounts, [], "pace: last 6 months covered by the accounts involved (tag / account goals)",
-                           [] if ds.memory.goals else ["no goals set: `coach goals set`"])
+                           [] if ds.memory.goals else [note("coverage.noGoals", "no goals set: `coach goals set`")])
     return GoalsResult(today, out, counts, cov, sorted({k for p in out for k in p.evidence}),
                        [f"goal {p} -- left out; run `coach memory check`" for p in ds.memory.goal_problems])
 

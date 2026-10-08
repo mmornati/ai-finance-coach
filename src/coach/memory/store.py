@@ -17,6 +17,7 @@ from typing import Callable, Optional
 
 from pydantic import BaseModel, ValidationError
 
+from coach.i18n_msg import server_msg
 from coach.memory import edit as edit_mod, schemas, yamlio
 from coach.memory.history import Change, MemoryRepo, git_available
 
@@ -56,12 +57,34 @@ class Issue:
     message: str
     path: str = ""
     line: Optional[int] = None
+    msg: Optional[dict] = None  # the message the web translates (server_msg, code memoryCheck.*); `message` is its English text
 
-    def to_dict(self) -> dict:
+    @classmethod
+    def of(cls, level: str, code: str, file: str, msg: dict, path: str = "", line: Optional[int] = None) -> "Issue":
+        """An issue from its message (:func:`coach.i18n_msg.server_msg`): the English ``message`` is the message's text."""
+        return cls(level, code, file, msg["text"], path, line, msg)
+
+    def to_dict(self, messages: bool = False) -> dict:
+        """``messages=True`` (the API, read by the web app) adds ``message_msg``; the CLI's ``--json`` keeps the English only."""
         d = {"level": self.level, "code": self.code, "file": self.file, "path": self.path, "message": self.message}
         if self.line:
             d["line"] = self.line
+        if messages:
+            d["message_msg"] = self.msg
         return d
+
+
+def _unknown_category(rel: str, category: str, path: str) -> Issue:
+    return Issue.of("error", "unknown_category", rel, server_msg(
+        "memoryCheck.unknownCategory", f"unknown category {category!r} (see `coach taxonomy list`)", category=category, command="coach taxonomy list"), path)
+
+
+def _unknown_group(rel: str, group: str, path: str) -> Issue:
+    return Issue.of("error", "unknown_group", rel, server_msg("memoryCheck.unknownGroup", f"unknown category group {group!r}", group=group), path)
+
+
+def yaml_syntax_issue(rel: str, e: Exception) -> Issue:
+    return Issue.of("error", "yaml_syntax", rel, server_msg("memoryCheck.yamlSyntax", str(e) or "invalid YAML", detail=str(e)))
 
 
 @dataclass
@@ -288,12 +311,12 @@ class MemoryStore:
         try:
             doc = yamlio.loads(text)
         except yamlio.YamlError as e:
-            return None, [Issue("error", "yaml_syntax", rel, str(e))]
+            return None, [yaml_syntax_issue(rel, e)]
         data = yamlio.to_plain(doc)
         if data is None:
             data = {}
         if not isinstance(data, dict):
-            return None, [Issue("error", "schema", rel, "the file must be a YAML mapping")]
+            return None, [Issue.of("error", "schema", rel, server_msg("memoryCheck.notAMapping", "the file must be a YAML mapping"))]
         try:
             return model_cls.model_validate(data), []
         except ValidationError as e:
@@ -301,10 +324,12 @@ class MemoryStore:
             for err in e.errors(include_url=False):
                 msg = err["msg"].removeprefix("Value error, ")
                 if err["type"] == "extra_forbidden":
-                    msg = "unknown field (typo?)"
+                    m = server_msg("memoryCheck.unknownFieldTypo", "unknown field (typo?)")
+                else:                                           # Pydantic's own English: the web translates the frame only
+                    m = server_msg("memoryCheck.invalidValue", msg or "invalid value", detail=msg)
                 loc = tuple(x for x in err["loc"] if x not in ("function-after[_has_effect(), Annotation]",))
                 line = self._line_of(doc, loc)
-                issues.append(Issue("error", "schema", rel, msg, _path_with_ids(loc, data), line))
+                issues.append(Issue.of("error", "schema", rel, m, _path_with_ids(loc, data), line))
             return None, issues
 
     @staticmethod
@@ -379,27 +404,39 @@ class MemoryStore:
     def goals(self) -> list[schemas.Goal]:
         return self._items("goals.yaml", "goals")
 
-    def _checked(self, rel: str, key: str, cls) -> tuple[list, list[str]]:
+    def _checked(self, rel: str, key: str, cls, messages: bool = False) -> tuple:
         """Entry-by-entry reading of a list file: (valid items, problems 'id: why'). One invalid entry must not hide the
-        others (a budget typo must not make every budget vanish); `memory check` reports the file as a whole."""
+        others (a budget typo must not make every budget vanish); `memory check` reports the file as a whole.
+        ``messages=True`` adds a third list: each problem as a message the web translates (same order, codes ``memoryLoad.*``)."""
         from pydantic import ValidationError as VE
+        msgs: list[dict] = []
+
+        def done(valid):
+            problems = [m["text"] for m in msgs]
+            return (valid, problems, msgs) if messages else (valid, problems)
         if not self.exists(rel):
-            return [], []
+            return done([])
         try:
             data = self.load_plain(rel)
         except Exception as e:                                          # noqa: BLE001
-            return [], [f"{rel}: not readable ({str(e)[:80]})"]
-        valid, problems, seen = [], [], set()
+            detail = str(e)[:80]
+            msgs.append(server_msg("memoryLoad.unreadable", f"{rel}: not readable ({detail})", file=rel, detail=detail))
+            return done([])
+        valid, seen = [], set()
         for i, it in enumerate(data.get(key) or []):
-            ident = str(it.get("id")) if isinstance(it, dict) and it.get("id") else f"entry #{i + 1}"
+            has_id = isinstance(it, dict) and it.get("id")
+            ident = str(it.get("id")) if has_id else f"entry #{i + 1}"
             try:
                 m = cls.model_validate(it)
             except VE as e:
                 err = e.errors(include_url=False)[0]
-                problems.append(f"{ident}: {err['msg'].removeprefix('Value error, ')}")
+                detail = err["msg"].removeprefix("Value error, ")
+                text = f"{ident}: {detail}"
+                msgs.append(server_msg("memoryLoad.invalid", text, id=ident, detail=detail) if has_id
+                            else server_msg("memoryLoad.invalidEntry", text, n=i + 1, detail=detail))
                 continue
             if m.id in seen:
-                problems.append(f"{ident}: duplicate id (ignored)")
+                msgs.append(server_msg("memoryLoad.duplicateId", f"{ident}: duplicate id (ignored)", id=ident))
                 continue
             seen.add(m.id)
             valid.append(m)
@@ -408,19 +445,19 @@ class MemoryStore:
             keep = []
             for b in valid:
                 if b.category and b.category not in CATEGORIES:
-                    problems.append(f"{b.id}: unknown category {b.category!r}")
+                    msgs.append(server_msg("memoryLoad.unknownCategory", f"{b.id}: unknown category {b.category!r}", id=b.id, category=b.category))
                 elif b.group and b.group not in TAXONOMY:
-                    problems.append(f"{b.id}: unknown category group {b.group!r}")
+                    msgs.append(server_msg("memoryLoad.unknownGroup", f"{b.id}: unknown category group {b.group!r}", id=b.id, group=b.group))
                 else:
                     keep.append(b)
             valid = keep
-        return valid, problems
+        return done(valid)
 
-    def budgets_checked(self) -> tuple[list, list[str]]:
-        return self._checked("budgets.yaml", "budgets", schemas.Budget)
+    def budgets_checked(self, messages: bool = False) -> tuple:
+        return self._checked("budgets.yaml", "budgets", schemas.Budget, messages)
 
-    def goals_checked(self) -> tuple[list, list[str]]:
-        return self._checked("goals.yaml", "goals", schemas.Goal)
+    def goals_checked(self, messages: bool = False) -> tuple:
+        return self._checked("goals.yaml", "goals", schemas.Goal, messages)
 
     def liabilities(self) -> list[tuple[str, schemas.Liability]]:
         return self._dir_models("liabilities")
@@ -492,16 +529,18 @@ class MemoryStore:
             from coach.classify.rules import CATEGORIES, TAXONOMY
             for b in model.budgets:
                 if b.category and b.category not in CATEGORIES:
-                    out.append(Issue("error", "unknown_category", rel, f"unknown category {b.category!r} "
-                                     f"(see `coach taxonomy list`)", f"budgets[{b.id}].category"))
+                    out.append(_unknown_category(rel, b.category, f"budgets[{b.id}].category"))
                 if b.group and b.group not in TAXONOMY:
-                    out.append(Issue("error", "unknown_group", rel, f"unknown category group {b.group!r} "
-                                     f"(groups: {', '.join(sorted(TAXONOMY))})", f"budgets[{b.id}].group"))
+                    groups = ", ".join(sorted(TAXONOMY))
+                    out.append(Issue.of("error", "unknown_group", rel, server_msg(
+                        "memoryCheck.unknownGroupList", f"unknown category group {b.group!r} (groups: {groups})", group=b.group, groups=groups),
+                        f"budgets[{b.id}].group"))
                 members = {m.id for m in self.members()}
                 if b.owner and members and b.owner != "joint" and b.owner not in members:
-                    out.append(Issue("error" if strict else "warning", "unknown_owner", rel,
-                                     f"owner {b.owner!r} is neither 'joint' nor a household member ({', '.join(sorted(members))})",
-                                     f"budgets[{b.id}].owner"))
+                    names = ", ".join(sorted(members))
+                    out.append(Issue.of("error" if strict else "warning", "unknown_owner", rel, server_msg(
+                        "memoryCheck.unknownOwner", f"owner {b.owner!r} is neither 'joint' nor a household member ({names})",
+                        owner=b.owner, members=names), f"budgets[{b.id}].owner"))
             return out
         if rel == "household.yaml" and model is not None:
             return self._household_issues(model, strict)
@@ -511,17 +550,17 @@ class MemoryStore:
         events = self.event_ids()
         for a in model.annotations:
             if a.category and a.category not in CATEGORIES:
-                out.append(Issue("error", "unknown_category", rel, f"unknown category {a.category!r} "
-                                 f"(see `coach taxonomy list`)", f"annotations[{a.id}].category"))
+                out.append(_unknown_category(rel, a.category, f"annotations[{a.id}].category"))
             if a.match.category_in:
                 for c in a.match.category_in:
                     if c not in CATEGORIES:
-                        out.append(Issue("error", "unknown_category", rel, f"unknown category {c!r} in category_in",
-                                         f"annotations[{a.id}].match.category_in"))
+                        out.append(Issue.of("error", "unknown_category", rel, server_msg(
+                            "memoryCheck.unknownCategoryIn", f"unknown category {c!r} in category_in", category=c),
+                            f"annotations[{a.id}].match.category_in"))
             if a.event and a.event not in events:
-                out.append(Issue("error" if strict else "warning", "unknown_event", rel,
-                                 f"event {a.event!r} is not defined in events.md (a `## {a.event}` heading) "
-                                 f"or events.yaml", f"annotations[{a.id}].event"))
+                out.append(Issue.of("error" if strict else "warning", "unknown_event", rel, server_msg(
+                    "memoryCheck.unknownEvent", f"event {a.event!r} is not defined in events.md (a `## {a.event}` heading) or events.yaml",
+                    event=a.event), f"annotations[{a.id}].event"))
         return out
 
     def _household_issues(self, model, strict: bool) -> list[Issue]:
@@ -535,27 +574,36 @@ class MemoryStore:
         def known(who, where, allow_joint=False):
             if who in ids or (allow_joint and who == "joint"):
                 return
-            out.append(Issue(level, "unknown_member", rel, f"{who!r} is not a household member ({', '.join(sorted(ids)) or 'none declared'})", where))
+            if ids:
+                names = ", ".join(sorted(ids))
+                m = server_msg("memoryCheck.unknownMember", f"{who!r} is not a household member ({names})", member=who, members=names)
+            else:
+                m = server_msg("memoryCheck.unknownMemberNone", f"{who!r} is not a household member (none declared)", member=who)
+            out.append(Issue.of(level, "unknown_member", rel, m, where))
         for m in model.members:
             if m.pocket_money is not None and m.role != "child":
-                out.append(Issue("warning", "pocket_money_adult", rel, f"pocket_money is set on {m.id!r}, who is not a child", f"members[{m.id}].pocket_money"))
+                out.append(Issue.of("warning", "pocket_money_adult", rel, server_msg(
+                    "memoryCheck.pocketMoneyAdult", f"pocket_money is set on {m.id!r}, who is not a child", member=m.id),
+                    f"members[{m.id}].pocket_money"))
         for r in model.attribution:
             known(r.member, f"attribution[{r.id}].member", allow_joint=True)
         for b in model.kid_budgets:
             known(b.member, f"kid_budgets[{b.id}].member")
             if b.category and b.category not in CATEGORIES:
-                out.append(Issue("error", "unknown_category", rel, f"unknown category {b.category!r} (see `coach taxonomy list`)", f"kid_budgets[{b.id}].category"))
+                out.append(_unknown_category(rel, b.category, f"kid_budgets[{b.id}].category"))
             if b.group and b.group not in TAXONOMY:
-                out.append(Issue("error", "unknown_group", rel, f"unknown category group {b.group!r}", f"kid_budgets[{b.id}].group"))
+                out.append(_unknown_group(rel, b.group, f"kid_budgets[{b.id}].group"))
         for a in model.allocations:
             for who in a.among:
                 known(who, f"allocations[{a.id}].among")
             for who in a.shares:
                 known(who, f"allocations[{a.id}].shares")
             if a.match.category and a.match.category not in CATEGORIES:
-                out.append(Issue("error", "unknown_category", rel, f"unknown category {a.match.category!r}", f"allocations[{a.id}].match.category"))
+                out.append(Issue.of("error", "unknown_category", rel, server_msg(
+                    "memoryCheck.unknownCategoryBare", f"unknown category {a.match.category!r}", category=a.match.category),
+                    f"allocations[{a.id}].match.category"))
             if a.match.group and a.match.group not in TAXONOMY:
-                out.append(Issue("error", "unknown_group", rel, f"unknown category group {a.match.group!r}", f"allocations[{a.id}].match.group"))
+                out.append(_unknown_group(rel, a.match.group, f"allocations[{a.id}].match.group"))
         return out
 
     # ---------------------------------------------------------------- writing
@@ -672,7 +720,7 @@ class MemoryStore:
             try:
                 doc = yamlio.loads(old_text)
             except yamlio.YamlError as e:
-                raise ValidationFailed([Issue("error", "yaml_syntax", rel, str(e))]) from e
+                raise ValidationFailed([yaml_syntax_issue(rel, e)]) from e
             rest = ops
         appended_ids: list[str] = []
         dropped: Optional[list[str]] = [] if replace_inline_comments else None

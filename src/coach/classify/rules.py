@@ -222,33 +222,68 @@ def rule_category(key: str, rules: dict | None = None, direction: str | None = N
     return None
 
 
+def _annotation_check(a, tx_key, mkey, desc, bdate, amount, category, op_date, aliases, msg: bool):
+    """The first failing criterion of annotation `a`, or None when it matches: the English sentence, or (``msg``) the pair
+    (sentence, the web's message ``{code, params, text}``). The classifier's hot path asks for the sentence only (no params built)."""
+    def out(code, text, **params):
+        if not msg:
+            return text
+        from coach.i18n_msg import MessageError, server_msg
+        try:
+            return text, server_msg(code, text, **params)
+        except MessageError:                          # an odd value in a hand-written file: no message, the web shows the English
+            return text, None
+
+    m = a.get("match", {})
+    if "category_in" in m and category not in m["category_in"]:
+        return out("annotation.categoryIn", f"category_in {m['category_in']} does not include the pre-memory category {category!r}",
+                   categories=", ".join(map(str, m["category_in"])), pre_category=category)
+    if "weekdays" in m:
+        day = WEEKDAYS[datetime.fromisoformat(op_date or bdate).weekday()]
+        if day not in m["weekdays"]:
+            return out("annotation.weekdays", f"weekdays {m['weekdays']} does not include {day} ({op_date or bdate})",
+                       weekdays=", ".join(map(str, m["weekdays"])), weekday=day, payment_date=str(op_date or bdate)[:10])
+    if "tx_keys" in m and tx_key not in m["tx_keys"] and not any(k in m["tx_keys"] for k in aliases):
+        return out("annotation.txKeys", "tx_keys does not list this transaction")
+    if "merchant_key" in m and not re.search(m["merchant_key"], mkey or "", re.I):
+        return out("annotation.merchantKey", f"merchant_key /{m['merchant_key']}/ does not match {mkey!r}",
+                   pattern=str(m["merchant_key"]), merchant_key=mkey or "")
+    if "description" in m and not re.search(m["description"], desc or "", re.I):
+        return out("annotation.description", f"description /{m['description']}/ does not match the bank description",
+                   pattern=str(m["description"]))
+    if "date_from" in m and bdate < str(m["date_from"]):
+        return out("annotation.dateFrom", f"date {bdate} is before date_from {m['date_from']}",
+                   tx_date=str(bdate)[:10], from_date=str(m["date_from"])[:10])
+    if "date_to" in m and bdate > str(m["date_to"]):
+        return out("annotation.dateTo", f"date {bdate} is after date_to {m['date_to']}",
+                   tx_date=str(bdate)[:10], to_date=str(m["date_to"])[:10])
+    if "amount_min" in m and amount < m["amount_min"]:
+        return out("annotation.amountMin", f"amount {amount} is below amount_min {m['amount_min']}",
+                   tx_amount=f"{amount:.2f}", min_amount=f"{float(m['amount_min']):.2f}")
+    if "amount_max" in m and amount > m["amount_max"]:
+        return out("annotation.amountMax", f"amount {amount} is above amount_max {m['amount_max']}",
+                   tx_amount=f"{amount:.2f}", max_amount=f"{float(m['amount_max']):.2f}")
+    return None
+
+
 def annotation_mismatch(a, tx_key, mkey, desc, bdate, amount, category=None, op_date=None, aliases=()) -> str | None:
     """Why annotation `a` does NOT apply to this transaction (first failing criterion, human readable), or None
     when it matches. `category` is the category the pipeline would assign without memory (for `category_in`);
     weekdays are checked on the real payment date (card op date) when known. `aliases`: older tx_keys of this
     transaction (re-keyed rows), so annotations written against them keep matching."""
-    m = a.get("match", {})
-    if "category_in" in m and category not in m["category_in"]:
-        return f"category_in {m['category_in']} does not include the pre-memory category {category!r}"
-    if "weekdays" in m:
-        day = WEEKDAYS[datetime.fromisoformat(op_date or bdate).weekday()]
-        if day not in m["weekdays"]:
-            return f"weekdays {m['weekdays']} does not include {day} ({op_date or bdate})"
-    if "tx_keys" in m and tx_key not in m["tx_keys"] and not any(k in m["tx_keys"] for k in aliases):
-        return "tx_keys does not list this transaction"
-    if "merchant_key" in m and not re.search(m["merchant_key"], mkey or "", re.I):
-        return f"merchant_key /{m['merchant_key']}/ does not match {mkey!r}"
-    if "description" in m and not re.search(m["description"], desc or "", re.I):
-        return f"description /{m['description']}/ does not match the bank description"
-    if "date_from" in m and bdate < str(m["date_from"]):
-        return f"date {bdate} is before date_from {m['date_from']}"
-    if "date_to" in m and bdate > str(m["date_to"]):
-        return f"date {bdate} is after date_to {m['date_to']}"
-    if "amount_min" in m and amount < m["amount_min"]:
-        return f"amount {amount} is below amount_min {m['amount_min']}"
-    if "amount_max" in m and amount > m["amount_max"]:
-        return f"amount {amount} is above amount_max {m['amount_max']}"
-    return None
+    return _annotation_check(a, tx_key, mkey, desc, bdate, amount, category, op_date, aliases, False)
+
+
+def annotation_mismatch_msg(a, tx_key, mkey, desc, bdate, amount, category=None, op_date=None,
+                            aliases=()) -> tuple[str | None, dict | None]:
+    """(:func:`annotation_mismatch`, the same as the message the web translates: ``{code, params, text}``, :mod:`coach.i18n_msg`).
+    A match is ``(None, annotation.allMatch)``; a value the message cannot carry gives no message (the web shows the English).
+    The params carry the user's own patterns and the merchant key as they are (never translated)."""
+    r = _annotation_check(a, tx_key, mkey, desc, bdate, amount, category, op_date, aliases, True)
+    if r is None:
+        from coach.i18n_msg import server_msg
+        return None, server_msg("annotation.allMatch", "all criteria match")
+    return r
 
 
 def annotation_for(annotations, tx_key, mkey, desc, bdate, amount, category=None, op_date=None,

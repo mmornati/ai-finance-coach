@@ -1,5 +1,6 @@
 """E2-6: pluggable LLM backends (all mocked: no network, no subprocess), usage log, redaction, person guard."""
 import json
+import os
 from argparse import Namespace
 from types import SimpleNamespace
 
@@ -117,7 +118,7 @@ def seed(con, names):
 def test_claude_code_backend_command_prompt_and_usage(monkeypatch):
     seen = {}
 
-    def fake_run(cmd, input, capture_output, text, timeout, env=None):
+    def fake_run(cmd, input, capture_output, text, timeout, env):
         seen.update(cmd=cmd, prompt=input, env=env)
         return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps(
             {"structured_output": results_json(1), "total_cost_usd": 0.0123,
@@ -138,6 +139,32 @@ def test_claude_code_error_is_raised(monkeypatch):
         returncode=1, stdout="", stderr="boom"))
     with pytest.raises(RuntimeError, match="boom"):
         ClaudeCodeBackend().complete("s", "d", LABEL_SCHEMA, "sonnet")
+
+
+@pytest.mark.parametrize("with_cfg", [True, False])
+def test_claude_code_backend_gets_the_minimal_environment_never_a_secret(monkeypatch, cfg, with_cfg):
+    from coach import egress
+    monkeypatch.setenv("COACH_DB_KEY", "synthetic-db-key")
+    monkeypatch.setenv("COACH_BACKUP_KEY", "synthetic-backup-key")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-synthetic")
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.invalid:3128")
+    monkeypatch.setenv("SOME_OTHER_VAR", "x")
+    cfg.coach_claude_env = ("HTTPS_PROXY", "COACH_DB_KEY", "ANTHROPIC_API_KEY")       # opt-in names; secrets never pass
+    if with_cfg:
+        egress.activate(cfg, insecure=True)
+    seen = {}
+
+    def fake_run(cmd, input, capture_output, text, timeout, env):
+        seen["env"] = env
+        return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({"structured_output": results_json(1)}))
+    monkeypatch.setattr("coach.classify.backends.subprocess.run", fake_run)
+    ClaudeCodeBackend(cfg if with_cfg else None).complete("s", "d", LABEL_SCHEMA, "haiku")
+    env = seen["env"]
+    assert env is not None and env.get("PATH") == os.environ["PATH"]
+    for secret in ("COACH_DB_KEY", "COACH_BACKUP_KEY", "ANTHROPIC_API_KEY"):
+        assert secret not in env
+    assert "SOME_OTHER_VAR" not in env
+    assert ("HTTPS_PROXY" in env) is with_cfg                    # the [coach] claude_env extras of the configuration in use
 
 
 def test_anthropic_backend_request_shape_caching_and_cost():
@@ -437,7 +464,7 @@ def test_openai_secret_is_not_read_from_the_generic_openai_variable():
 def test_claude_code_backend_logs_in_with_the_oauth_token_secret_when_set(monkeypatch):
     seen = []
 
-    def fake_run(cmd, input, capture_output, text, timeout, env=None):
+    def fake_run(cmd, input, capture_output, text, timeout, env):
         seen.append(env)
         return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({"structured_output": results_json(1), "usage": {}}))
     monkeypatch.setattr("coach.classify.backends.subprocess.run", fake_run)
@@ -446,5 +473,6 @@ def test_claude_code_backend_logs_in_with_the_oauth_token_secret_when_set(monkey
     from coach import secrets
     secrets.set_secret("claude_code_oauth_token", "test-oauth-token")
     ClaudeCodeBackend().complete("S", "D", LABEL_SCHEMA, "haiku")
-    assert seen[0] is None                                          # no token: the CLI's own login, the call is unchanged
+    assert "CLAUDE_CODE_OAUTH_TOKEN" not in seen[0]                 # no token: the CLI's own login
+    assert "COACH_DB_KEY" not in seen[1]                            # still the minimal environment
     assert seen[1]["CLAUDE_CODE_OAUTH_TOKEN"] == "test-oauth-token"

@@ -10,7 +10,7 @@ import { usePrefs, useScope, useToast } from "@/lib/app";
 import { api } from "@/lib/api";
 import { LANGUAGES, isLanguageCode } from "@/i18n/languages";
 import { cn } from "@/lib/utils";
-import { groupLabel } from "@/lib/format";
+import { purposeLabel, tServer } from "@/i18n/server";
 import type { JobState } from "@/api/types";
 
 interface NavItem { to: string; label: ParseKeys; icon: typeof Gauge; end?: boolean; key?: "insights" | "alerts" | "memory" | "connections" | "review" }
@@ -152,7 +152,7 @@ export function ScopeSwitch() {
   const [open, setOpen] = useState(false);
   const member = (id: string) => (id === "joint" ? t("scope.joint") : data?.members.find((m) => m.id === id)?.name.split(" ")[0] ?? id);
   const narrowed = !!(scope.member || scope.owner || scope.purpose);
-  const label = narrowed ? [scope.member && member(scope.member), scope.owner && !scope.member && t("scope.accountsOf", { name: member(scope.owner) }), scope.purpose && groupLabel(scope.purpose)].filter(Boolean).join(" · ") : t("scope.household");
+  const label = narrowed ? [scope.member && member(scope.member), scope.owner && !scope.member && t("scope.accountsOf", { name: member(scope.owner) }), scope.purpose && purposeLabel(scope.purpose)].filter(Boolean).join(" · ") : t("scope.household");
   const people = data?.members ?? [];
   return (
     <>
@@ -181,7 +181,7 @@ export function ScopeSwitch() {
                 <option value="">{t("scope.allPurposes")}</option>
                 {(data?.purposes ?? []).map((p) => (
                   <option key={p} value={p}>
-                    {groupLabel(p)}
+                    {purposeLabel(p)}
                   </option>
                 ))}
               </Select>
@@ -217,7 +217,7 @@ export function SyncButton({ compact }: { compact?: boolean }) {
       setJob(j);
       if (j.state !== "running") {
         void qc.invalidateQueries();
-        toast(j.message ?? t("sync.finished"), j.state === "failed" ? "error" : "success");
+        toast(j.message ? tServer(j.message_msg, j.message) : t("sync.finished"), j.state === "failed" ? "error" : "success");
       }
     }, 1500);
     return () => clearInterval(timer);

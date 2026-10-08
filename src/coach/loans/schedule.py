@@ -24,6 +24,7 @@ from decimal import Decimal
 from typing import Optional
 
 from coach.analytics.common import Result, add_months, money_str
+from coach.i18n_msg import server_msg
 from coach.skills import loans as L
 from coach.skills.money import cents, dec, round_c
 
@@ -100,6 +101,39 @@ class LoanSchedule(Result):
     payment_check: Optional[dict] = None
     outstanding_check: Optional[dict] = None
     source: Optional[str] = None                      # schedule (the table from the principal) | declared_rolled (the declared capital rolled forward) | declared
+    # the same sentences for the web app (coach.i18n_msg, docs/i18n.md "Server text"): missing / assumptions in the same order
+    missing_msg: list = field(default_factory=list)
+    alternative_msg: Optional[dict] = None
+    assumptions_msg: list = field(default_factory=list)
+
+    def assume(self, msg: dict, at: Optional[int] = None) -> None:
+        """Add an assumption (a :func:`server_msg`): its English text to ``assumptions``, the message to ``assumptions_msg``."""
+        if at is None:
+            self.assumptions.append(msg["text"])
+            self.assumptions_msg.append(msg)
+        else:
+            self.assumptions.insert(at, msg["text"])
+            self.assumptions_msg.insert(at, msg)
+
+    def set_missing(self, msgs: list) -> None:
+        self.missing, self.missing_msg = [m["text"] for m in msgs], list(msgs)
+
+    def set_alternative(self, msg: Optional[dict]) -> None:
+        self.alternative, self.alternative_msg = (msg["text"] if msg else None), msg
+
+
+# the fields the table needs (missing_for_table), as messages: the English text is the memory field
+_MISSING = {
+    "principal": lambda: server_msg("schedule.missing.principal", "principal"),
+    "rate.nominal": lambda: server_msg("schedule.missing.rateNominal", "rate.nominal"),
+    "start_date": lambda: server_msg("schedule.missing.startDate", "start_date"),
+    "end_date or term_months": lambda: server_msg("schedule.missing.endDateOrTerm", "end_date or term_months"),
+}
+
+
+def missing_msgs(missing: list[str]) -> list[dict]:
+    """The messages of a list of missing fields of :func:`missing_for_table`."""
+    return [_MISSING[m]() for m in missing]
 
 
 def due_date(first_due: dt.date, k: int, payment_day: Optional[int]) -> dt.date:
@@ -179,8 +213,9 @@ def _payment_check(lb, regular_c: int, ins_c: int) -> Optional[dict]:
         return {"status": "matches", "declared": money_str(declared), "computed_total": money_str(regular_c + ins_c)}
     if ins_c and close(declared, regular_c):
         return {"status": "matches_without_insurance", "declared": money_str(declared), "computed": money_str(regular_c)}
+    hint = server_msg("schedule.paymentDiffersHint", "variable rate, modulated instalments, fees or a wrong figure: check the loan table")
     return {"status": "differs", "declared": money_str(declared), "computed_total": money_str(regular_c + ins_c),
-            "hint": "variable rate, modulated instalments, fees or a wrong figure: check the loan table"}
+            "hint": hint["text"], "hint_msg": hint}
 
 
 def _variable(lb) -> bool:
@@ -203,8 +238,8 @@ def _finish(res: LoanSchedule, lb, rows: list[Instalment], today: dt.date, parti
     res.by_year = _years(rows, partial_first)
     res.approximate = _variable(lb)
     if res.approximate:
-        res.assumptions.append("variable / mixed rate: the current nominal rate is applied to the whole term (the bank's table "
-                               "will differ when the index moves)")
+        res.assume(server_msg("schedule.variableRate", "variable / mixed rate: the current nominal rate is applied to the whole term (the "
+                              "bank's table will differ when the index moves)"))
     return res
 
 
@@ -214,8 +249,8 @@ def compute(lb, today: dt.date) -> LoanSchedule:
     res = LoanSchedule(lb.id, lb.kind, "not_computable")
     if lb.kind in ("loa", "lld"):
         res.status = "not_applicable"
-        res.alternative = ("a lease has rents and a residual value, not an amortization table and no capital owed: see the end-of-contract "
-                           "view (`coach loans lease`)")
+        res.set_alternative(server_msg("schedule.leaseAlternative", "a lease has rents and a residual value, not an amortization table and no "
+                                       "capital owed: see the end-of-contract view (`coach loans lease`)"))
         return res
     miss = missing_for_table(lb)
     rate = None if lb.rate is None or lb.rate.nominal is None else dec(lb.rate.nominal)
@@ -224,7 +259,7 @@ def compute(lb, today: dt.date) -> LoanSchedule:
         if res.status == "computed" and res.outstanding_check:
             return _declared_wins(lb, res, rate, today)
         return res
-    res.missing = miss
+    res.set_missing(missing_msgs(miss))
     # the alternative: the capital still due on a date, the rate and an end date or an instalment
     if rate is not None and lb.outstanding is not None and lb.outstanding_as_of is not None and lb.outstanding > 0 \
             and (lb.end_date or lb.monthly_payment or (lb.start_date and term_of(lb))):
@@ -232,10 +267,11 @@ def compute(lb, today: dt.date) -> LoanSchedule:
         if out is not None:
             return out
     elif lb.outstanding is not None and rate is not None:
-        res.alternative = ("outstanding + outstanding_as_of + rate.nominal + (end_date or monthly_payment) give the FUTURE table: "
-                           "missing " + ", ".join(x for x in ("outstanding_as_of", "end_date or monthly_payment")
-                                                  if (x == "outstanding_as_of" and lb.outstanding_as_of is None)
-                                                  or (x != "outstanding_as_of" and not (lb.end_date or lb.monthly_payment))))
+        fields = ", ".join(x for x in ("outstanding_as_of", "end_date or monthly_payment")
+                           if (x == "outstanding_as_of" and lb.outstanding_as_of is None)
+                           or (x != "outstanding_as_of" and not (lb.end_date or lb.monthly_payment)))
+        res.set_alternative(server_msg("schedule.outstandingAlternative", "outstanding + outstanding_as_of + rate.nominal + (end_date or "
+                                       "monthly_payment) give the FUTURE table: missing " + fields, fields=fields))
     return res
 
 
@@ -243,18 +279,21 @@ def _declared_wins(lb, theory: LoanSchedule, rate: Decimal, today: dt.date) -> L
     """The declared capital (from a statement, dated) differs from the theoretical table beyond the tolerance: an early repayment, a
     renegotiation or a figure of the file that is wrong. The declared figure is the fact: it is rolled forward (``declared_rolled``), or used
     as it is when that is impossible (``declared``); the theoretical table stays only as the check (``outstanding_check``)."""
+    hint = server_msg("schedule.declaredWinsHint", "the declared capital wins over the theoretical table: was there an early repayment or a "
+                      "renegotiation? update the loan")
     check = {**theory.outstanding_check, "theoretical_capital_today": money_str(theory.remaining_capital_c),
-             "hint": "the declared capital wins over the theoretical table: was there an early repayment or a renegotiation? update the loan"}
+             "hint": hint["text"], "hint_msg": hint}
     rolled = _from_outstanding(lb, LoanSchedule(lb.id, lb.kind, "not_computable"), rate, today) if lb.outstanding and lb.outstanding > 0 else None
     if rolled is not None:
         rolled.outstanding_check = check
-        rolled.assumptions.insert(0, "the declared capital differs from the theoretical table: the declared figure is rolled forward from its date")
+        rolled.assume(server_msg("schedule.declaredRolled", "the declared capital differs from the theoretical table: the declared figure is "
+                                 "rolled forward from its date"), at=0)
         return rolled
     theory.outstanding_check = check
     theory.source = "declared"
     theory.remaining_capital_c = cents(lb.outstanding)
-    theory.assumptions.append("the declared capital differs from the table and cannot be rolled forward: the declared figure is used as it is; "
-                              "the instalments listed are the theoretical ones")
+    theory.assume(server_msg("schedule.declaredAsIs", "the declared capital differs from the table and cannot be rolled forward: the declared "
+                             "figure is used as it is; the instalments listed are the theoretical ones"))
     return theory
 
 
@@ -262,13 +301,15 @@ def _from_principal(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> Loa
     n_total = term_of(lb)
     principal_c = cents(lb.principal)
     if principal_c <= 0:
-        res.status, res.missing = "invalid", ["principal (must be positive)"]
+        res.status = "invalid"
+        res.set_missing([server_msg("schedule.missing.principalPositive", "principal (must be positive)")])
         return res
     first_due = instalment_due(lb, 1)
     d = lb.deferral
     d_n = d.months if d else 0
     if d_n >= n_total:
-        res.status, res.missing = "invalid", ["deferral (not shorter than the term)"]
+        res.status = "invalid"
+        res.set_missing([server_msg("schedule.missing.deferralShorter", "deferral (not shorter than the term)")])
         return res
     r = L.monthly_rate(rate)
     rows: list[Instalment] = []
@@ -291,15 +332,22 @@ def _from_principal(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> Loa
         due = instalment_due(lb, k)
         rows.append(Instalment(k, due, "regular", row.interest_c, row.principal_c, ins, row.payment_c, row.payment_c + ins,
                                row.balance_c, due <= today))
-    res.status, res.mode, res.missing, res.source = "computed", "from_principal", [], "schedule"
+    res.status, res.mode, res.source = "computed", "from_principal", "schedule"
+    res.set_missing([])
     res.term_instalments, res.capital_c = len(rows), principal_c
     res.payment_c = am[0].payment_c
-    res.assumptions = ["annuity loan, interest = capital x nominal rate / 12 per instalment",
-                       f"first instalment due {first_due}" + (f", debited on day {lb.payment_day}" if lb.payment_day else "")]
+    res.assumptions, res.assumptions_msg = [], []
+    res.assume(server_msg("schedule.annuity", "annuity loan, interest = capital x nominal rate / 12 per instalment"))
+    res.assume(server_msg("schedule.firstDueDay", f"first instalment due {first_due}, debited on day {lb.payment_day}", first_date=first_due,
+                          day=lb.payment_day) if lb.payment_day else
+               server_msg("schedule.firstDue", f"first instalment due {first_due}", first_date=first_due))
     if d:
-        res.assumptions.append(f"{'interest-only' if d.kind == 'partial' else 'total'} deferral of {d.months} month(s): "
-                               + ("the capital does not move" if d.kind == "partial" else "the interest is added to the capital")
-                               + "; the insurance is still paid")
+        if d.kind == "partial":
+            res.assume(server_msg("schedule.deferralPartial", f"interest-only deferral of {d.months} month(s): the capital does not move; the "
+                                  "insurance is still paid", count=d.months))
+        else:
+            res.assume(server_msg("schedule.deferralTotal", f"total deferral of {d.months} month(s): the interest is added to the capital; the "
+                                  "insurance is still paid", count=d.months))
     made = [x for x in rows if x.made]
     res.remaining_capital_c = made[-1].balance_c if made else principal_c
     res.payment_check = _payment_check(lb, am[0].payment_c, rows[d_n].insurance_c)
@@ -310,10 +358,10 @@ def _from_principal(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> Loa
         comp = at[-1].balance_c if at else principal_c
         decl = cents(lb.outstanding)
         if abs(decl - comp) > max(5000, int(0.02 * comp)):
+            hint = server_msg("schedule.tableDiffersHint", "the table differs from the declared capital: the rate, the term, a deferral or an "
+                              "early repayment may not be what the memory says")
             res.outstanding_check = {"status": "differs", "as_of": lb.outstanding_as_of.isoformat(), "declared": money_str(decl),
-                                     "computed": money_str(comp),
-                                     "hint": "the table differs from the declared capital: the rate, the term, a deferral or an "
-                                             "early repayment may not be what the memory says"}
+                                     "computed": money_str(comp), "hint": hint["text"], "hint_msg": hint}
     return res
 
 
@@ -329,8 +377,10 @@ def _from_outstanding(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> O
             first_due = c
             break
     ins_flat = cents(lb.insurance.monthly) if lb.insurance and lb.insurance.monthly is not None else 0
-    notes = [f"the capital still due on {as_of} is the starting point; earlier instalments are not known",
-             f"instalments assumed on day {day}" + ("" if lb.payment_day else " (payment_day is not recorded)")]
+    notes = [server_msg("schedule.outstandingStart", f"the capital still due on {as_of} is the starting point; earlier instalments are not known",
+                        as_of_date=as_of),
+             server_msg("schedule.instalmentDay", f"instalments assumed on day {day}", day=day) if lb.payment_day else
+             server_msg("schedule.instalmentDayAssumed", f"instalments assumed on day {day} (payment_day is not recorded)", day=day)]
     end = lb.end_date
     if end is None and lb.start_date and term_of(lb):
         end = instalment_due(lb, term_of(lb))
@@ -345,8 +395,10 @@ def _from_outstanding(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> O
         am = L.schedule(bal, rate, n)
     elif lb.monthly_payment:
         pay = cents(lb.monthly_payment) - ins_flat
-        notes.append("end_date unknown: the term follows from monthly_payment" + (" minus the flat insurance" if ins_flat else
-                     " (assumed to exclude insurance when the insurance amount is unknown)"))
+        notes.append(server_msg("schedule.termFromPaymentFlatInsurance", "end_date unknown: the term follows from monthly_payment minus the "
+                                "flat insurance") if ins_flat else
+                     server_msg("schedule.termFromPayment", "end_date unknown: the term follows from monthly_payment (assumed to exclude "
+                                "insurance when the insurance amount is unknown)"))
         try:
             am = L.schedule_fixed_payment(bal, rate, pay)
         except ValueError:
@@ -361,9 +413,11 @@ def _from_outstanding(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> O
         rows.append(Instalment(row.k, due, "regular", row.interest_c, row.principal_c, ins, row.payment_c, row.payment_c + ins,
                                row.balance_c, due <= today))
     res.status, res.mode, res.source = "computed", "from_outstanding", "declared_rolled"
-    res.alternative = None
+    res.set_alternative(None)
     res.term_instalments, res.capital_c, res.payment_c = len(rows), bal, am[0].payment_c
-    res.assumptions = notes
+    res.assumptions, res.assumptions_msg = [], []
+    for m in notes:
+        res.assume(m)
     made = [x for x in rows if x.made]
     res.remaining_capital_c = made[-1].balance_c if made else bal
     res.payment_check = _payment_check(lb, am[0].payment_c, rows[0].insurance_c)
@@ -371,8 +425,8 @@ def _from_outstanding(lb, res: LoanSchedule, rate: Decimal, today: dt.date) -> O
     # without the past, the whole-table totals are not known: only the future ones are
     res.interest_paid_c = res.insurance_paid_c = None
     res.total_interest_c = res.total_insurance_c = res.total_cost_c = None
-    res.assumptions.append("totals and interest paid to date are unknown (the table starts at the declared capital); "
-                           "remaining interest and the yearly figures of the future are exact")
+    res.assume(server_msg("schedule.totalsUnknown", "totals and interest paid to date are unknown (the table starts at the declared capital); "
+                          "remaining interest and the yearly figures of the future are exact"))
     return res                                       # payments_made = the instalments due since the declared date: made + left = the rows
 
 

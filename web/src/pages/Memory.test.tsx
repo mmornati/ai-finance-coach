@@ -12,6 +12,12 @@ const proposal: Proposal = {
   reason: "Add a restaurant budget", source: "coach-llm", sealed: true, applicable: true, error: null, diff: "+budgets:\n+  - id: b", changes: [], suspicious_paths: [],
 };
 
+const questions = [
+  { id: "q-fill-1", status: "open", topic: "Liabilities", topic_code: "liabilities", origin: "generated", evidence: {},
+    question: "The outstanding capital of home-loan dates from 2026-01-15: what is it now?",
+    question_msg: { code: "question.outstandingStale", params: { id: "home-loan", as_of_date: "2026-01-15" }, text: "The outstanding capital of home-loan dates from 2026-01-15: what is it now?" } },
+  { id: "q-custom-1", status: "open", topic: "Cars", origin: "coach", evidence: {}, question: "Is the car insured by the employer?" },
+];
 let calls: { url: string; init?: RequestInit }[];
 beforeEach(() => {
   resetCsrfForTests();
@@ -22,6 +28,7 @@ beforeEach(() => {
     let body: unknown = {};
     if (url.endsWith("/session")) body = { csrf_token: "tok" };
     else if (url.startsWith("/api/v1/proposals?")) body = { proposals: [proposal] };
+    else if (url.startsWith("/api/v1/questions?")) body = { questions: questions, counts: { open: 2, answered: 0, dismissed: 0 } };
     else if (url.startsWith("/api/v1/memory/overview")) body = { files: [], history_enabled: true, counts: { open_questions: 0 }, check: { errors: 0, warnings: 0, info: 0, by_code: {} } };
     else if (url.startsWith("/api/v1/memory/history?")) body = { enabled: true, changes: [{ id: "9f8e7d6", date: "2026-10-04T10:00:00", subject: "coach: set-budget", files: ["budgets.yaml"], reason: null, source: "ui" }] };
     else if (url.includes("/diff")) body = { id: "9f8e7d6", diff: "+x", revert_command: "uv run coach memory revert 9f8e7d6" };
@@ -85,5 +92,17 @@ describe("in another language", () => {
     expect(screen.getByText(/questa pagina non può accettare al posto tuo/i)).toBeInTheDocument();
     expect(screen.getByText("uv run coach memory accept p-20261004-ab12cd")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Rifiuta…" })).toBeInTheDocument();
+  });
+});
+
+describe("open questions", () => {
+  it("translates a generated question and its topic, and keeps a proposed question's own words", async () => {
+    await setLanguage("fr", { persist: false });
+    renderApp(<Memory />, "/memory?tab=questions");
+    expect(await screen.findByText(/Le capital restant dû de home-loan date du 15 janv\. 2026/)).toBeInTheDocument();
+    expect(screen.getByText("Emprunts")).toBeInTheDocument();
+    expect(screen.getByText("Is the car insured by the employer?")).toBeInTheDocument();
+    expect(screen.getByText("Cars")).toBeInTheDocument();
+    await setLanguage("en", { persist: false });
   });
 });

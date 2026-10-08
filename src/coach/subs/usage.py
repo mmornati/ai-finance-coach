@@ -16,11 +16,15 @@ from __future__ import annotations
 import datetime as dt
 from typing import Optional
 
+from coach.i18n_msg import server_msg
 from coach.memory.schemas import USAGE_FREQUENCIES, Usage
 
 UNUSED_DAYS = 60
 NOT_MEASURABLE = ("Whether a service is used is not in the bank data: only what you record (frequency, last used) is "
                   "counted. Without it the usage stays unknown.")
+NOT_MEASURABLE_MSG = server_msg("subs.usage.notMeasurable", NOT_MEASURABLE)
+MEASURABLE_LAST_USED = server_msg("subs.usage.fromLastUsed", "from the last-used date you recorded")
+MEASURABLE_NEVER = server_msg("subs.usage.neverAndPaying", "you recorded 'never' and the payments continue")
 
 
 def usage_of(contract) -> dict:
@@ -48,10 +52,11 @@ def signals(u: dict, *, paying: Optional[bool], today: dt.date, last_payment: Op
     if lu is not None:
         days = (today - lu).days
         if days > UNUSED_DAYS:
-            out.append({"kind": "unused_60_days", "days": days, "last_used": lu, "measurable": "from the last-used date you recorded",
-                        "paying": paying})
+            out.append({"kind": "unused_60_days", "days": days, "last_used": lu, "measurable": MEASURABLE_LAST_USED["text"],
+                        "measurable_msg": MEASURABLE_LAST_USED, "paying": paying})
     if u["frequency"] == "never" and paying:
-        out.append({"kind": "paid_but_never_used", "last_payment": last_payment, "measurable": "you recorded 'never' and the payments continue"})
+        out.append({"kind": "paid_but_never_used", "last_payment": last_payment, "measurable": MEASURABLE_NEVER["text"],
+                    "measurable_msg": MEASURABLE_NEVER})
     return out
 
 
@@ -76,18 +81,24 @@ def usage_question(cfg, x, fam, first, known, today: dt.date):
     """The usage question about one recurring series (the coach's ``questions_propose`` and the local generator share it, so
     the same key ``usage:<series>`` is never asked twice)."""
     from coach.memory import schemas
-    from coach.memory.qgen import _person_like, qid
+    from coach.memory.qgen import TOPIC_CODE, _person_like, qid, qmsg
     key = f"usage:{x.id}"
     name = x.entity
-    if _person_like(x.key or x.entity, None, set(), fam, first, known, cfg.llm_allowlist):
+    person = _person_like(x.key or x.entity, None, set(), fam, first, known, cfg.llm_allowlist)
+    if person:
         name = f"the {x.category.split('.')[-1].replace('_', ' ')} payment"
     monthly = abs(x.expected_amount_c) / 100 if x.cadence == "monthly" else round(x.yearly_cost_c / 1200, 2)
     link = next((l.id for l in x.links if l.kind == "contract"), None)
     target = {"file": f"contracts/{link}.yaml", "field": "usage"} if link else {"file": "contracts/"}
+    text = (f"Do you still use {name} (about {monthly:.2f} EUR a month, {x.yearly_cost_c / 100:.2f} EUR a year, paid since "
+            f"{x.first_date}; series {x.id})? How often, and by whom? Keep it, review it or stop it?")
+    common = dict(monthly_amount=f"{monthly:.2f}", yearly_amount=f"{x.yearly_cost_c / 100:.2f}", since_date=x.first_date, series=x.id)
+    # a name that may be a person's is never a param: the web says "the <category> payment" instead
+    msg = (qmsg("question.usageUnnamed", text, payment_category=x.category, **common) if person else
+           qmsg("question.usage", text, name=name, **common))
     return schemas.Question(
-        id=qid("usage", key), topic="Subscriptions", key=key, origin="coach", created=today, stake=round(x.yearly_cost_c / 100, 2),
-        question=(f"Do you still use {name} (about {monthly:.2f} EUR a month, {x.yearly_cost_c / 100:.2f} EUR a year, paid since "
-                  f"{x.first_date}; series {x.id})? How often, and by whom? Keep it, review it or stop it?"),
+        id=qid("usage", key), topic="Subscriptions", topic_code=TOPIC_CODE["Subscriptions"], key=key, origin="coach", created=today,
+        stake=round(x.yearly_cost_c / 100, 2), question=text, question_msg=msg,
         evidence={"series": x.id, "category": x.category, "monthly": monthly, "yearly": round(x.yearly_cost_c / 100, 2),
                   "since": x.first_date}, suggested_target=target)
 

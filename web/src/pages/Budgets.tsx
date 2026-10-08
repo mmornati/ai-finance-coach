@@ -9,6 +9,7 @@ import { useBudgets, useDryRun, useFilters, useGet, useScoped, useWrite } from "
 import { api } from "@/lib/api";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, fmtPct, groupLabel, parseMoney } from "@/lib/format";
 import type { BudgetProgress, BudgetSuggestion, EditResult, GoalProgress } from "@/api/types";
+import { useServerText } from "@/i18n/server";
 
 interface Draft { target: string; monthly: string; rollover: boolean; owner: string; account: string; note: string; id?: string }
 
@@ -23,6 +24,7 @@ export default function Budgets() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [goalOpen, setGoalOpen] = useState(false);
   const { t } = useTranslation("budgets");
+  const { tServerList } = useServerText();
   const del = useWrite((id: string) => api.post<EditResult>(`/budgets/${id}/delete`, {}, { dry_run: false }), { success: t("removed") });
   return (
     <>
@@ -30,7 +32,7 @@ export default function Budgets() {
       <Async q={q} skeleton={<Skeleton className="h-64 w-full" />}>
         {(d) => (
           <div className="grid gap-4">
-            {d.problems.length > 0 && <Notice tone="warn" title={t("invalidTitle")}>{t("invalidBody", { problems: d.problems.join("; ") })}</Notice>}
+            {d.problems.length > 0 && <Notice tone="warn" title={t("invalidTitle")}>{t("invalidBody", { problems: tServerList(d.problems, d.problems_msg).join("; ") })}</Notice>}
             <div className="flex flex-wrap gap-2 text-sm text-muted">
               <span>{t("asOf", { month: fmtMonth(d.month, "long"), date: fmtDate(d.as_of, "dayMonth") })}</span>
               <Badge tone="neg">{t("count.over", { n: d.counts.over ?? 0 })}</Badge><Badge tone="warn">{t("count.atRisk", { n: d.counts.at_risk ?? 0 })}</Badge><Badge tone="pos">{t("count.ok", { n: d.counts.ok ?? 0 })}</Badge>

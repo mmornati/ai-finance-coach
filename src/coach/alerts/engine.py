@@ -65,7 +65,10 @@ def sync_events(con, cands: list[signals.Candidate], s: AlertSettings, *, now: O
     res = {"new": [], "escalated": [], "reopened": [], "resolved": [], "unchanged": []}
     for c in wanted:
         old = have.get(c.id)
-        payload = json.dumps(c.payload, ensure_ascii=False, default=str)
+        # the title / body messages ride in the payload (local, for the web's translation): no schema change, and an older row
+        # without them shows its English title / body
+        msgs = {k: v for k, v in (("title_msg", c.title_msg), ("body_msg", c.body_msg)) if v}
+        payload = json.dumps({**c.payload, **msgs}, ensure_ascii=False, default=str)
         if old is None:
             status, until = _initial_status(c.kind, c.severity, s, prefs, today)
             con.execute("INSERT INTO alert_events(id, kind, severity, created, updated, last_seen, title, body, payload, status, "

@@ -8,7 +8,8 @@ import { ItemDialog, Kind } from "@/components/ItemForm";
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useProposals, useQuestions, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { fmtDate, fmtDateTime, fmtMoney, groupLabel } from "@/lib/format";
+import { errorText, holdingKindLabel, serverLabel, tServer, useServerText } from "@/i18n/server";
+import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
 import type { Annotation, Asset, Change, CheckIssue, EditResult, EventMeta, Liability, MemoryOverview, Member, Proposal, Question } from "@/api/types";
 import { cn } from "@/lib/utils";
 
@@ -72,6 +73,7 @@ function QuestionsTab() {
 
 function QuestionCard({ x }: { x: Question }) {
   const { t } = useTranslation("memory");
+  useServerText();
   const [answer, setAnswer] = useState("");
   const [open, setOpen] = useState(false);
   const [why, setWhy] = useState("");
@@ -82,9 +84,9 @@ function QuestionCard({ x }: { x: Question }) {
   const target = x.suggested_target?.file;
   return (
     <Card>
-      <div className="flex flex-wrap items-center gap-2"><Badge>{x.topic}</Badge>{x.stake && <Badge tone="warn">{t("questions.atStake", { amount: fmtMoney(x.stake, { round: true }) })}</Badge>}{x.status !== "open" && <Badge tone={x.status === "answered" ? "pos" : "neutral"}>{t(`questions.status.${x.status}`)}</Badge>}</div>
-      <p className="mt-2 text-[15px] font-medium">{x.question}</p>
-      {x.context && <p className="mt-1 text-[13px] text-muted">{x.context}</p>}
+      <div className="flex flex-wrap items-center gap-2"><Badge>{serverLabel("questionTopic", x.topic_code, x.topic)}</Badge>{x.stake && <Badge tone="warn">{t("questions.atStake", { amount: fmtMoney(x.stake, { round: true }) })}</Badge>}{x.status !== "open" && <Badge tone={x.status === "answered" ? "pos" : "neutral"}>{t(`questions.status.${x.status}`)}</Badge>}</div>
+      <p className="mt-2 text-[15px] font-medium">{tServer(x.question_msg, x.question)}</p>
+      {x.context && <p className="mt-1 text-[13px] text-muted">{tServer(x.context_msg, x.context)}</p>}
       {ev.length > 0 && <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted">{ev.slice(0, 6).map(([k, v]) => <div key={k}><dt className="inline">{k.replace(/_/g, " ")}: </dt><dd className="inline font-medium text-text">{Array.isArray(v) ? v.join(", ") : String(v)}</dd></div>)}</dl>}
       {x.answer && <p className="mt-2 rounded-lg bg-pos-soft px-3 py-2 text-[13px] text-pos">{x.answer}</p>}
       {x.note && <p className="mt-2 text-xs text-muted">{t("questions.dismissedNote", { note: x.note })}</p>}
@@ -206,13 +208,13 @@ function ItemsTab() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card title={t("items.loans")} action={<Button size="sm" onClick={() => setEdit({ kind: "liabilities" })}><Plus className="size-3.5" aria-hidden /> {t("items.addLoan")}</Button>}>
-        <Async q={liab}>{(d) => d.liabilities.length ? <ul className="divide-y divide-border">{d.liabilities.map((l) => <Row key={l.id} title={l.lender ?? l.id} sub={`${groupLabel(l.kind)}${l.monthly_payment ? t("items.perMonth", { amount: fmtMoney(l.monthly_payment) }) : ""}`} warn={l.missing.length ? t("items.missing", { fields: l.missing.join(", ") }) : undefined} onEdit={() => setEdit({ kind: "liabilities", id: l.id, initial: l })} />)}</ul> : <EmptyState title={t("items.noLoan")} />}</Async>
+        <Async q={liab}>{(d) => d.liabilities.length ? <ul className="divide-y divide-border">{d.liabilities.map((l) => <Row key={l.id} title={l.lender ?? l.id} sub={`${holdingKindLabel(l.kind)}${l.monthly_payment ? t("items.perMonth", { amount: fmtMoney(l.monthly_payment) }) : ""}`} warn={l.missing.length ? t("items.missing", { fields: l.missing.join(", ") }) : undefined} onEdit={() => setEdit({ kind: "liabilities", id: l.id, initial: l })} />)}</ul> : <EmptyState title={t("items.noLoan")} />}</Async>
       </Card>
       <Card title={t("items.contracts")} action={<Button size="sm" onClick={() => setEdit({ kind: "contracts" })}><Plus className="size-3.5" aria-hidden /> {t("items.addContract")}</Button>}>
-        <Async q={con}>{(d) => d.contracts.length ? <ul className="divide-y divide-border">{d.contracts.map((c) => <Row key={c.id} title={c.provider ?? c.id} sub={`${groupLabel(c.kind ?? "other")}${c.billing?.amount ? ` · ${fmtMoney(c.billing.amount)}` : ""}${c.renewal ? t("items.renews", { date: fmtDate(c.renewal) }) : ""}`} onEdit={() => setEdit({ kind: "contracts", id: c.id, initial: c })} />)}</ul> : <EmptyState title={t("items.noContract")}>{t("items.noContractBody")}</EmptyState>}</Async>
+        <Async q={con}>{(d) => d.contracts.length ? <ul className="divide-y divide-border">{d.contracts.map((c) => <Row key={c.id} title={c.provider ?? c.id} sub={`${holdingKindLabel(c.kind ?? "other")}${c.billing?.amount ? ` · ${fmtMoney(c.billing.amount)}` : ""}${c.renewal ? t("items.renews", { date: fmtDate(c.renewal) }) : ""}`} onEdit={() => setEdit({ kind: "contracts", id: c.id, initial: c })} />)}</ul> : <EmptyState title={t("items.noContract")}>{t("items.noContractBody")}</EmptyState>}</Async>
       </Card>
       <Card title={t("items.assets")} className="lg:col-span-2" action={<Button size="sm" onClick={() => setEdit({ kind: "assets" })}><Plus className="size-3.5" aria-hidden /> {t("items.addAsset")}</Button>}>
-        <Async q={ast}>{(d) => d.assets.length ? <ul className="divide-y divide-border">{d.assets.map((a) => <Row key={a.id} title={a.description ?? a.id} sub={`${groupLabel(a.kind)}${a.value ? ` · ${fmtMoney(a.value, { round: true })}` : ""}${a.as_of ? t("items.asOf", { date: fmtDate(a.as_of) }) : ""}`} warn={a.unknown_value ? t("items.valueUnknown") : a.stale ? t("items.valueOld") : undefined} onEdit={() => setEdit({ kind: "assets", id: a.id, initial: a })} />)}</ul> : <EmptyState title={t("items.noAsset")} />}</Async>
+        <Async q={ast}>{(d) => d.assets.length ? <ul className="divide-y divide-border">{d.assets.map((a) => <Row key={a.id} title={a.description ?? a.id} sub={`${holdingKindLabel(a.kind)}${a.value ? ` · ${fmtMoney(a.value, { round: true })}` : ""}${a.as_of ? t("items.asOf", { date: fmtDate(a.as_of) }) : ""}`} warn={a.unknown_value ? t("items.valueUnknown") : a.stale ? t("items.valueOld") : undefined} onEdit={() => setEdit({ kind: "assets", id: a.id, initial: a })} />)}</ul> : <EmptyState title={t("items.noAsset")} />}</Async>
       </Card>
       {edit && <ItemDialog {...edit} onClose={() => setEdit(null)} />}
     </div>
@@ -259,13 +261,14 @@ function DeleteAnnotation({ a, onClose }: { a: Annotation; onClose: () => void }
 function CheckTab() {
   const { t } = useTranslation("memory");
   const q = useGet<{ summary: { errors: number; warnings: number; info: number }; issues: CheckIssue[] }>("/memory/check");
+  const { tServer } = useServerText();
   return (
     <Async q={q} skeleton={<Skeleton className="h-64 w-full" />}>
       {(d) => (
         <div className="grid gap-4">
           <div className="flex gap-2"><Badge tone={d.summary.errors ? "neg" : "pos"}>{t("check.errors", { count: d.summary.errors })}</Badge><Badge tone={d.summary.warnings ? "warn" : "neutral"}>{t("check.warnings", { count: d.summary.warnings })}</Badge><Badge>{t("check.notes", { count: d.summary.info })}</Badge></div>
           {d.issues.length === 0 ? <Card><EmptyState icon={<Check className="size-6" />} title={t("check.consistent")} /></Card> : (
-            <Card pad={false}><ul className="divide-y divide-border">{d.issues.map((i, k) => <li key={k} className="flex gap-3 px-4 py-2.5 text-sm sm:px-5"><Badge tone={i.level === "error" ? "neg" : i.level === "warning" ? "warn" : "neutral"}>{t(`check.level.${i.level}`)}</Badge><div className="min-w-0"><div>{i.message}</div><div className="truncate text-xs text-faint">{i.file}{i.path ? ` · ${i.path}` : ""}{i.line ? t("check.line", { line: i.line }) : ""}</div></div></li>)}</ul></Card>
+            <Card pad={false}><ul className="divide-y divide-border">{d.issues.map((i, k) => <li key={k} className="flex gap-3 px-4 py-2.5 text-sm sm:px-5"><Badge tone={i.level === "error" ? "neg" : i.level === "warning" ? "warn" : "neutral"}>{t(`check.level.${i.level}`)}</Badge><div className="min-w-0"><div>{tServer(i.message_msg, i.message)}</div><div className="truncate text-xs text-faint">{i.file}{i.path ? ` · ${i.path}` : ""}{i.line ? t("check.line", { line: i.line }) : ""}</div></div></li>)}</ul></Card>
           )}
         </div>
       )}
@@ -296,7 +299,7 @@ function ViewChange({ c, onClose }: { c: Change; onClose: () => void }) {
   const q = useGet<{ diff: string; revert_command: string }>(`/memory/history/${c.id}/diff`);
   return (
     <Dialog open onClose={onClose} size="lg" title={c.subject} description={`${fmtDateTime(c.date)} · ${c.id}`}>
-      {q.isPending ? <Spinner /> : q.isError ? <Notice tone="neg">{q.error.message}</Notice> : (
+      {q.isPending ? <Spinner /> : q.isError ? <Notice tone="neg">{errorText(q.error)}</Notice> : (
         <div className="grid gap-4">
           <DiffView diff={q.data.diff} />
           <div className="grid gap-1.5">

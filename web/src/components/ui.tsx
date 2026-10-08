@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AlertTriangle, CheckCircle2, Info, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fmtMoney, tone as toneOf, type MoneyOpts } from "@/lib/format";
-import { ApiError } from "@/lib/api";
+import { errorText } from "@/i18n/server";
 
 /* ------------------------------------------------------------------ surfaces */
 export function Card({ title, subtitle, action, children, className, pad = true, as: Tag = "section" }: {
@@ -230,7 +230,7 @@ export function EmptyState({ title, children, action, icon }: { title: string; c
 
 export function ErrorState({ error, retry }: { error: unknown; retry?: () => void }) {
   const { t } = useTranslation();
-  const msg = error instanceof ApiError ? error.message : error instanceof Error ? error.message : t("ui.error.generic");
+  const msg = errorText(error, t("ui.error.generic"));
   const offline = error instanceof TypeError;
   return (
     <div role="alert" className="flex flex-col items-start gap-2 rounded-lg border border-neg/30 bg-neg-soft px-4 py-3 text-sm text-neg">

@@ -8,7 +8,8 @@ import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useHousehold, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { useUser } from "@/lib/app";
-import { fmtDateTime, groupLabel } from "@/lib/format";
+import { fmtDateTime } from "@/lib/format";
+import { purposeLabel, useServerText } from "@/i18n/server";
 import i18n from "@/i18n";
 import type { AttributionRule, AuditRows, EditResult, HouseholdAccount, HouseholdOverview } from "@/api/types";
 
@@ -16,6 +17,7 @@ const ROLE: Record<string, ParseKeys<"household">> = { adult: "household.role.ad
 
 export default function Household() {
   const { t } = useTranslation("household");
+  const { tServerList } = useServerText();
   const q = useHousehold();
   return (
     <>
@@ -23,7 +25,7 @@ export default function Household() {
       <Async q={q} skeleton={<Skeleton className="h-96 w-full" />}>
         {(d) => (
           <div className="grid gap-4">
-            {d.warnings.map((w) => (
+            {tServerList(d.warnings, d.warnings_msg).map((w) => (
               <Notice key={w} tone="warn">{w}</Notice>
             ))}
             <Members d={d} />
@@ -138,7 +140,7 @@ function AccountRow({ a, d, onSave }: { a: HouseholdAccount; d: HouseholdOvervie
         <Select aria-label={t("household.accounts.purposeOf", { account: a.label })} value={a.purpose ?? ""} onChange={(e) => e.target.value && onSave({ purpose: e.target.value })} className="!min-h-9">
           {!a.purpose && <option value="">{t("household.accounts.notSet")}</option>}
           {d.purposes.map((p) => (
-            <option key={p} value={p}>{groupLabel(p)}</option>
+            <option key={p} value={p}>{purposeLabel(p)}</option>
           ))}
         </Select>
       </td>

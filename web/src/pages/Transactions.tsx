@@ -11,7 +11,8 @@ import { useFilters } from "@/api/hooks";
 import i18n from "@/i18n";
 import { api } from "@/lib/api";
 import { useScope } from "@/lib/app";
-import { catLabel, fmtDate, fmtMoney, fmtNumber, getLocale, groupLabel } from "@/lib/format";
+import { catLabel, fmtDate, fmtMoney, fmtNumber, getLocale } from "@/lib/format";
+import { purposeLabel } from "@/i18n/server";
 import { cn, debounce, download } from "@/lib/utils";
 import type { TxItem, TxList } from "@/api/types";
 
@@ -141,7 +142,7 @@ export default function Transactions() {
               {(id) => (
                 <Select id={id} value={f.purpose ?? ""} onChange={(e) => set({ purpose: e.target.value })}>
                   <option value="">{t("filter.any")}</option>
-                  {filters.data?.purposes.map((p) => <option key={p} value={p}>{groupLabel(p)}</option>)}
+                  {filters.data?.purposes.map((p) => <option key={p} value={p}>{purposeLabel(p)}</option>)}
                 </Select>
               )}
             </Field>

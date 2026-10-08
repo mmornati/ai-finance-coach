@@ -7,6 +7,7 @@ import { useScoped } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { addMonthsKey, fmtDate, fmtMonth, fmtRelativeDays, getLocale, todayKey } from "@/lib/format";
 import { cn, download } from "@/lib/utils";
+import { tServer, useServerText } from "@/i18n/server";
 import type { CalendarItem, CalendarResult } from "@/api/types";
 
 const SRC: Record<string, { label: ParseKeys<"calendar">; color: string }> = {
@@ -46,9 +47,13 @@ export default function CalendarPage() {
   );
 }
 
+/** The title of an item in the interface language (a merchant's name stays as it is: it has no message). */
+const title = (i: CalendarItem) => tServer(i.title_msg, i.title);
+
 function Grid({ month, items }: { month: string; items: CalendarItem[] }) {
   const [y, m] = month.split("-").map(Number);
   const { t } = useTranslation("calendar");
+  useServerText();
   const by = useMemo(() => {
     const o: Record<string, CalendarItem[]> = {};
     items.forEach((i) => (o[i.date] ??= []).push(i));
@@ -75,9 +80,9 @@ function Grid({ month, items }: { month: string; items: CalendarItem[] }) {
                 {inMonth && <div className={cn("mb-1 text-xs", iso === today ? "inline-flex size-5 items-center justify-center rounded-full bg-accent font-semibold text-accent-fg" : "text-muted")}>{n}</div>}
                 <ul className="grid gap-0.5">
                   {its.slice(0, 3).map((it) => (
-                    <li key={it.ref + it.kind} title={it.amount ? t("amountTitle", { title: it.title, amount: it.amount }) : it.title} className="flex items-center gap-1 truncate rounded px-1 text-[11px] leading-5" style={{ background: `color-mix(in srgb, ${SRC[it.source]?.color ?? "var(--s1)"} 16%, transparent)` }}>
+                    <li key={it.ref + it.kind} title={it.amount ? t("amountTitle", { title: title(it), amount: it.amount }) : title(it)} className="flex items-center gap-1 truncate rounded px-1 text-[11px] leading-5" style={{ background: `color-mix(in srgb, ${SRC[it.source]?.color ?? "var(--s1)"} 16%, transparent)` }}>
                       <span aria-hidden className="size-1.5 shrink-0 rounded-full" style={{ background: SRC[it.source]?.color }} />
-                      <span className="truncate">{it.title}</span>
+                      <span className="truncate">{title(it)}</span>
                     </li>
                   ))}
                   {its.length > 3 && <li className="px-1 text-[11px] text-faint">{t("more", { n: its.length - 3 })}</li>}
@@ -93,6 +98,7 @@ function Grid({ month, items }: { month: string; items: CalendarItem[] }) {
 
 function Agenda({ items }: { items: CalendarItem[] }) {
   const { t } = useTranslation("calendar");
+  useServerText();
   if (!items.length) return <Card><EmptyState title={t("empty")} /></Card>;
   const dates = [...new Set(items.map((i) => i.date))];
   return (
@@ -105,7 +111,7 @@ function Agenda({ items }: { items: CalendarItem[] }) {
               {items.filter((i) => i.date === dte).map((i) => (
                 <li key={i.ref + i.kind} className="flex items-center gap-3 text-sm">
                   <span aria-hidden className="size-2.5 shrink-0 rounded-sm" style={{ background: SRC[i.source]?.color }} />
-                  <span className="min-w-0 flex-1 truncate">{i.title}{i.account_label && <span className="text-xs text-faint"> · {i.account_label}</span>}</span>
+                  <span className="min-w-0 flex-1 truncate" title={i.note ? tServer(i.note_msg, i.note) : undefined}>{title(i)}{i.account_label && <span className="text-xs text-faint"> · {i.account_label}</span>}</span>
                   {i.certainty !== "observed" && <Badge>{CERTAINTY[i.certainty] ? t(CERTAINTY[i.certainty]) : i.certainty}</Badge>}
                   {i.amount !== null && <Money v={i.amount} colored className="font-medium" />}
                 </li>

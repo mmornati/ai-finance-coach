@@ -8,7 +8,8 @@ import { ItemDialog, Kind } from "@/components/ItemForm";
 import { NetWorthChart } from "@/components/charts";
 import { useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
-import { fmtDate, fmtNumber, groupLabel } from "@/lib/format";
+import { fmtDate, fmtNumber } from "@/lib/format";
+import { holdingKindLabel, serverLabel, tServerOr, useServerText } from "@/i18n/server";
 import type { Asset, Liability, NetWorth, NetWorthPoint, NwCategory } from "@/api/types";
 
 const LoanDialog = lazy(() => import("@/components/LoanDetail"));
@@ -25,6 +26,7 @@ const RATE_TYPE: Record<string, ParseKeys<"wealth">> = { fixed: "loans.rateType.
 
 export default function Wealth() {
   const { t } = useTranslation("wealth");
+  const { tServer } = useServerText();
   const nw = useGet<NetWorth>("/net-worth", { history: true, months: 36 });
   const liab = useGet<{ liabilities: Liability[]; totals: { outstanding_known: string; monthly_payments: string; n_unknown_outstanding: number }; note: string }>("/liabilities");
   const assets = useGet<{ assets: (Asset & Record<string, any>)[] }>("/assets");
@@ -41,7 +43,7 @@ export default function Wealth() {
               <div className="grid gap-5 md:grid-cols-[1.1fr_2fr]">
                 <div>
                   <Stat big label={d.complete ? t("summary.netWorth") : t("summary.netWorthKnownPart")} value={<Money v={d.net_worth} round />} hint={d.complete ? undefined : t("summary.itemsNotCounted", { count: d.unknown.length })} />
-                  {!d.complete && <Notice tone="warn" className="mt-3" title={t("summary.notFullPicture")}>{d.note}</Notice>}
+                  {!d.complete && <Notice tone="warn" className="mt-3" title={t("summary.notFullPicture")}>{tServer(d.note_msg, d.note)}</Notice>}
                 </div>
                 <dl className="grid content-start gap-3 text-sm sm:grid-cols-3">
                   <div className="rounded-lg bg-surface-2 p-3"><dt className="text-xs text-muted">{t("summary.bankBalances")}</dt><dd className="num mt-0.5 text-lg font-semibold"><Money v={d.bank.total} round /></dd><dd className="text-xs text-faint">{t("summary.accounts", { count: d.bank.accounts.length })}</dd></div>
@@ -52,7 +54,7 @@ export default function Wealth() {
                 {d.unknown.length > 0 && (
                   <div className="md:col-span-2">
                     <h3 className="mb-1.5 text-xs font-semibold text-muted">{t("summary.notCountedUnknown")}</h3>
-                    <ul className="flex flex-wrap gap-2">{d.unknown.map((u) => <li key={u.kind + u.id}><Badge tone="warn" title={u.reason}><AlertTriangle className="size-3" aria-hidden />{t("summary.unknownItem", { kind: u.kind, label: u.label })}</Badge></li>)}</ul>
+                    <ul className="flex flex-wrap gap-2">{d.unknown.map((u) => <li key={u.kind + u.id}><Badge tone="warn" title={tServer(u.reason_msg, u.reason)}><AlertTriangle className="size-3" aria-hidden />{t("summary.unknownItem", { kind: u.kind, label: u.label })}</Badge></li>)}</ul>
                   </div>
                 )}
                 {d.stale.length > 0 && <p className="text-xs text-faint md:col-span-2">{t("summary.toRefresh", { ids: d.stale.map((s) => s.id).join(", ") })}</p>}
@@ -88,7 +90,7 @@ export default function Wealth() {
                     <li key={a.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-medium">{a.description ?? a.id}</div>
-                        <div className="text-xs text-muted">{[groupLabel(a.kind), a.provider, a.holder, a.connected ? t("assets.syncedFromBank") : null].filter(Boolean).join(" · ")}</div>
+                        <div className="text-xs text-muted">{[holdingKindLabel(a.kind), a.provider, a.holder, a.connected ? t("assets.syncedFromBank") : null].filter(Boolean).join(" · ")}</div>
                       </div>
                       <div className="text-right">
                         {a.unknown_value ? <Badge tone="warn">{t("assets.valueUnknown")}</Badge> : <div className="num font-semibold"><Money v={a.value} round /></div>}
@@ -173,18 +175,23 @@ function LoanCard({ l, onOpen, onEdit }: { l: Liability; onOpen: () => void; onE
         <Cell label={t("loans.lastPayment")} v={l.payments ? <Money v={l.payments.amount} /> : null} sub={l.payments ? (l.payments.next_expected ? t("loans.paymentNext", { date: fmtDate(l.payments.last_date), next: fmtDate(l.payments.next_expected, "dayMonth") }) : fmtDate(l.payments.last_date)) : l.payments_seen ? t("loans.paymentsMatched", { count: l.payments_seen }) : t("loans.noMatchingPayment")} />
       </dl>
       {l.alerts.length > 0 && (
-        <ul className="mt-3 grid gap-1.5">{l.alerts.map((a) => <li key={a.id} className="flex gap-2 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden /><span><strong className="font-medium">{a.title}.</strong> {a.body}</span></li>)}</ul>
+        <ul className="mt-3 grid gap-1.5">{l.alerts.map((a) => <li key={a.id} className="flex gap-2 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn"><AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden /><span><strong className="font-medium">{tServerOr(a.title_msg, a.title)}.</strong> {tServerOr(a.body_msg, a.body)}</span></li>)}</ul>
       )}
       {l.lease?.end.reminder_active && <Notice tone="warn" className="mt-3" title={t("loans.lease.endsIn", { count: l.lease.end.days_left })}>{t("loans.lease.decide")}{l.lease.mileage.status === "over_limit" && <> {t("loans.lease.overLimit", { km: fmtNumber(l.lease.mileage.excess_km) })}</>}</Notice>}
       {(l.missing.length > 0 || l.open_questions.length > 0) && (
         <div className="mt-3 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn">
-          {l.missing.length > 0 && <>{t("loans.missing", { fields: l.missing.join(", ") })} </>}
+          {l.missing.length > 0 && <>{t("loans.missing", { fields: missingLabels(l).join(", ") })} </>}
           {l.inferred.length > 0 && <>{t("loans.canSuggest", { fields: l.inferred.map((f) => f.field).join(", ") })} </>}
           {l.open_questions.length > 0 && <Link to="/memory" className="font-medium underline">{t("loans.openQuestions", { count: l.open_questions.length })}</Link>}
         </div>
       )}
     </Card>
   );
+}
+
+/** The fields a loan card says are missing, in the interface language (labels.loanField by code; the English label when the server sent no code). */
+function missingLabels(l: Liability): string[] {
+  return l.missing.map((english, i) => serverLabel("loanField", l.missing_codes?.[i], english));
 }
 
 function Cell({ label, v, sub }: { label: string; v: React.ReactNode; sub?: string }) {

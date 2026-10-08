@@ -18,11 +18,13 @@ import re
 from typing import Optional
 
 from coach.analytics.common import div_cents, money_str
+from coach.i18n_msg import server_msg
 from coach.skills import cancel as C
 from coach.skills.subaudit import group_of
 from coach.subs import alternatives as A, decisions as DEC, usage as U
 
 GROUPS = ("streaming_media", "software_cloud", "telecom", "memberships", "other_subscriptions", "insurance", "energy_utilities")
+# the web shows labels.subsGroup.<group> (web/src/locales/<lang>/server.json); this English label is the fallback
 GROUP_LABEL = {"streaming_media": "Streaming & media", "software_cloud": "Software & cloud", "telecom": "Telecom",
                "memberships": "Memberships", "other_subscriptions": "Other subscriptions", "insurance": "Insurance",
                "energy_utilities": "Energy & utilities"}
@@ -135,14 +137,15 @@ def build(ds, rec, pcs=None, *, country: Optional[str] = None, alternatives=(), 
     seen_contracts: set = set()
 
     def finish(row, terms_c, x, c, monthly_c, paying):
-        res = C.cancellability(terms_c, today, country)
+        res = C.cancellability(terms_c, today, country, messages=True)          # the web reads the *_msg siblings (MCP: subs/tools.py picks fields)
         row["cancellation"] = C.cancellation_info(res)
         u = U.usage_of(c)
         sig = U.signals(u, paying=paying, today=today, last_payment=x.last_date if x else None)
         row["usage"] = {"frequency": u["frequency"], "last_used": u["last_used"], "note": u["note"], "recorded": u["recorded"],
                         "signals": sig, "measurable": bool(sig) or u["recorded"],
                         "question_asked": bool(x and f"usage:{x.id}" in asked),
-                        "note_not_measurable": None if u["recorded"] else U.NOT_MEASURABLE}
+                        "note_not_measurable": None if u["recorded"] else U.NOT_MEASURABLE,
+                        "note_not_measurable_msg": None if u["recorded"] else U.NOT_MEASURABLE_MSG}
         ks = [k for k in (row["contract_id"], row["series_id"]) if k]
         alts = list({a.id: a for k in ks for a in alts_by.get(k, [])}.values())
         alts.sort(key=lambda a: (a.retrieved_at, a.id), reverse=True)
@@ -247,6 +250,10 @@ def _wrap(ds, rows, country, rec, alternatives, decisions) -> dict:
                        "reminders": sum(len(r["usage"]["signals"]) for r in active) + len(sav["reminders"])},
             "savings": {k: sav[k] for k in ("realised_monthly", "realised_since_decisions", "realised_yearly_run_rate", "verified",
                                             "pending", "contradicted", "claimed_monthly_unverified")},
-            "notes": ["loans, mortgages, rent and taxes are not subscriptions and are not listed",
-                      "the cost comes from the detected payments; a contract file without payments in the bank data uses its billing amount",
-                      "cancellation info is a general summary of consumer-law rules: verify with your contract"]}
+            "notes": [m["text"] for m in NOTES], "notes_msg": list(NOTES)}
+
+
+NOTES = (server_msg("subs.inventory.notSubscriptions", "loans, mortgages, rent and taxes are not subscriptions and are not listed"),
+         server_msg("subs.inventory.costSource",
+                    "the cost comes from the detected payments; a contract file without payments in the bank data uses its billing amount"),
+         server_msg("subs.inventory.cancellationSummary", "cancellation info is a general summary of consumer-law rules: verify with your contract"))

@@ -19,6 +19,60 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 - Its own egress flow `llm.openai-compatible` (refused under `[privacy] local_only`), `coach doctor` and `coach security audit` checks for the key. On OpenRouter the requests ask
   for providers that do not store or train on prompts (`[llm] openrouter_deny_data_collection`, on by default). The cost is logged only when the provider reports it.
 
+### Security
+- The classification backend `claude-code` (`claude -p` for labelling and `classify enrich`) no longer inherits the whole process environment: it gets the
+  same minimal environment as the coach runtime (`PATH`, `HOME`, `USER`, `LANG`, `LC_*` ... plus the names listed in `[coach] claude_env`), so `COACH_DB_KEY`, `COACH_BACKUP_KEY`,
+  `COACH_PROPOSAL_KEY`, `ANTHROPIC_API_KEY` and `ANTHROPIC_AUTH_TOKEN` are never passed to it. The allowlist moved to `coach.claude_cli`, shared by both.
+
+### Added: multi-language web app, part 4h (see `docs/i18n.md`, "Server text")
+- Household, Kids' money and Who pays notes, the Set up checklist and first-run wizard, the Connections health problems and sync results, the calendar titles and the
+  generated memory questions are shown in the interface language. Generated questions store optional `topic_code` / `question_msg` / `context_msg` in
+  `open-questions.yaml` (older files load unchanged; questions proposed by the coach stay plain text). The `.ics` export, the MCP tools and the CLI keep the English.
+
+### Added: multi-language web app, part 4i (see `docs/i18n.md`, "Server text")
+- The memory check (Memory > Check), the warnings of a memory write preview and the invalid budget entries are shown in the interface language (`memoryCheck.*`, `memoryLoad.*`);
+  `coach ...` commands, file names and ids stay as they are, Pydantic's own text is passed through. `coach memory check` and the MCP tools are unchanged.
+
+### Added: multi-language web app, part 4g (see `docs/i18n.md`, "Server text")
+- The rental property page shows the missing facts, the scheme warnings, the tax-year candidates (items, bounds, sources, unknowns, documents), the reduction notes,
+  the loan-rate, market and equity readings, the signals and the scenarios in the interface language. Scheme names stay as proper nouns; the general-advice, tax and
+  loan disclaimers come from `disclaimers.py` in the same language. New param type `*_num` (a plain decimal in the reader's number format). MCP and CLI unchanged.
+
+### Added: multi-language web app, part 4f (see `docs/i18n.md`, "Server text")
+- Loans and net worth: the unknown values and their reasons, the missing loan fields, the schedule hints and assumptions, the scenarios (early repayment, renegotiation,
+  insurance: notes, penalty explanations, options, verdicts), the fields inferred from the payments and the lease checks are shown in the interface language.
+  Legal citations stay as written; the loan disclaimer comes from `disclaimers.py`. The MCP tools and the CLI keep the English.
+
+### Added: multi-language web app, part 4d (see `docs/i18n.md`, "Server text")
+- The transaction panel shows why a transaction has its category (the steps of the decision chain and their details), why an annotation or an attribution rule does not match,
+  and the warnings of a category change in the interface language. `coach explain` and the MCP `explain_transaction` output are byte-identical to before.
+
+### Added: multi-language web app, part 4c (see `docs/i18n.md`, "Server text")
+- Insight cards (anomalies, price changes, forecast, budgets, subscription reminders, loan and rental alerts) and alert events (bank consent, failing sync, kid budgets, AI usage)
+  carry `title_msg` / `body_msg` and are shown in the interface language on Insights, the Dashboard, Alerts and the loan pages. New rows store the codes in the existing
+  `anomalies.payload` and `alert_events.payload` (no migration); older rows keep their English. Messages sent outside the machine (ntfy, e-mail, Telegram) and the CLI are unchanged.
+- New short disclaimer `tax_short` in `disclaimers.py` (the English is the text the rental scheme card already showed).
+
+### Added: multi-language web app, part 4e (see `docs/i18n.md`, "Server text")
+- The subscription inventory shows the cancellation rules (name, summary, method, conditions, missing facts), decision checks, usage, offer notes and contract-draft warnings
+  in the interface language; the legal citations stay as written, and the contract disclaimers come from `disclaimers.py` in the same language (`GET /meta/disclaimers`).
+  The MCP tools, the CLI, letters and the calendar keep the English (`cancellability(..., messages=False)` by default).
+
+### Added: multi-language web app, part 4b (see `docs/i18n.md`, "Server text")
+- The coverage notes of the analytics results (incomplete months, non-EUR transactions left out, low confidence of a category, partial year, ...) carry `notes_msg` next to `notes`
+  and are shown in the interface language on the Dashboard, Categories, a category's page and Subscriptions. The MCP finance tools and the CLI `--json` output never contain a `*_msg` key.
+
+### Added: multi-language web app, part 4a (see `docs/i18n.md`, "Server text")
+- Server text the web translates: next to an English sentence the API can send `<field>_msg` = `{code, params, text}` (built by `coach.i18n_msg.server_msg`, raw params typed by their name:
+  `*_date`, `*_month`, `*_amount`, `*_pct`, `*_category`, `*_group`, `count`); the web renders it with `tServer()` (new namespace `server`) and falls back to the English text. The CLI, the MCP finance tools and the stored rows keep the English.
+  First use: the balances note of the Dashboard.
+- Fixed vocabularies sent as codes are named in the interface language: alert kinds, subscription groups, balance types, the first-run wizard steps, the onboarding steps, account purposes, the household line of the forecast,
+  and the kinds of assets, loans and contracts in Memory and Wealth.
+- Category and group names are translated by id (new namespace `taxonomy`, every group and leaf of the built-in taxonomy); a custom leaf keeps its title-cased id. A few English names changed too ("Electricity and gas", "Online marketplaces", ...).
+- API errors are shown in the interface language for the generic codes (session, CSRF, rate limit, not found, validation, migration pending...); a domain rule keeps the server's own message.
+- `GET /meta/disclaimers?lang=` returns the AI-generated label in one language (its wording still lives only in `src/coach/disclaimers.py`); the web no longer copies it, and a coach insight carries `ai_label_short`.
+- The forecast flag "N account(s) without balance left out" is now the code `accounts_without_balance:N` (the MCP `forecast` / `what_if` output shows the code; the insight id of a household forecast card changes once).
+
 ### Added: multi-language web app, part 3 of 5 (see `docs/i18n.md`)
 - Translated into French and Italian: the pages Alerts, Loans & net worth, Rental property, Memory, Set up, Connections, Household, Who pays what, Kids' money, the child's home page, Gold set and AI usage
   (namespaces `alerts`, `wealth`, `rental`, `memory`, `setup`, `connections`, `household`, `kids`, `quality`). Text sent by the server, the `coach ...` commands and the legal terms of a rental scheme stay as they are.

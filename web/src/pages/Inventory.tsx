@@ -3,10 +3,11 @@ import { Trans, useTranslation } from "react-i18next";
 import type { ParseKeys } from "i18next";
 import { BellRing, ChevronDown, FilePlus2, FileText, FileWarning, Mail, PiggyBank, Scale, ThumbsUp } from "lucide-react";
 import { Async, Badge, Button, Card, Dialog, DiffView, EmptyState, Field, Input, Money, Notice, Select, Skeleton, Stat, Textarea } from "@/components/ui";
-import { useDryRun, useGet, useScoped, useWrite } from "@/api/hooks";
+import { useDisclaimers, useDryRun, useGet, useScoped, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { fmtDate, fmtMoney } from "@/lib/format";
-import type { ContactInfo, DraftPreview, InvAlternative, InvRow, Inventory as Inv, Letter, UsageFrequency } from "@/api/types";
+import { serverLabel, tServer } from "@/i18n/server";
+import type { ContactInfo, DraftPreview, InvAlternative, InvCancellation, InvRow, Inventory as Inv, Letter, ServerMsg, UsageFrequency } from "@/api/types";
 
 const FREQ: UsageFrequency[] = ["daily", "weekly", "monthly", "rarely", "never", "unknown"];
 const DECISIONS = ["cancelled", "renegotiated", "switched", "downgraded", "kept"] as const;
@@ -14,6 +15,12 @@ const STATUS_TONE = { verified: "pos", pending: "warn", contradicted: "neg", not
 const STATUS_LABEL: Record<keyof typeof STATUS_TONE, ParseKeys<"subscriptions">> = { verified: "inv.status.verified", pending: "inv.status.pending", contradicted: "inv.status.contradicted", not_applicable: "inv.status.not_applicable", ambiguous: "inv.status.ambiguous" };
 const isDecision = (d: string): d is (typeof DECISIONS)[number] => (DECISIONS as readonly string[]).includes(d);
 const isFreq = (f: string): f is UsageFrequency => (FREQ as string[]).includes(f);
+const CADENCES = ["weekly", "biweekly", "monthly", "bimonthly", "quarterly", "semiannual", "yearly"] as const;
+const isCadence = (c: string): c is (typeof CADENCES)[number] => (CADENCES as readonly string[]).includes(c);
+/** The English texts of a list, translated by their `*_msg` siblings (same order) when the server sent them (docs/i18n.md "Server text"). */
+const tList = (texts: string[], msgs: ServerMsg[] | undefined) => texts.map((x, i) => tServer(msgs?.[i], x));
+/** What is missing to decide on a cancellation, in the interface language. */
+const unknownList = (c: InvCancellation) => tList(c.unknown, c.unknown_msg).join(", ");
 
 function byGroup(rows: InvRow[]): Record<string, InvRow[]> {
   const out: Record<string, InvRow[]> = {};
@@ -46,16 +53,16 @@ export default function InventoryView() {
           {(proposed.data?.proposed ?? []).length > 0 && <ProposedDecisions items={proposed.data!.proposed} />}
           {d.rows.length === 0 ? <Card><EmptyState title={t("inv.emptyTitle")}>{t("inv.emptyBody")}</EmptyState></Card> : (
             Object.entries(byGroup(d.rows)).map(([g, rows]) => (
-              <section key={g} aria-label={d.groups_meta.find((m) => m.id === g)?.label ?? g} className="grid gap-3">
+              <section key={g} aria-label={serverLabel("subsGroup", g, d.groups_meta.find((m) => m.id === g)?.label)} className="grid gap-3">
                 <h2 className="mt-2 flex flex-wrap items-baseline gap-x-3 text-sm font-semibold text-muted">
-                  {rows[0].group_label}
+                  {serverLabel("subsGroup", g, rows[0].group_label)}
                   {d.groups[g] && <span className="text-xs font-normal text-faint">{t("inv.groupTotals", { monthly: fmtMoney(d.groups[g].monthly), yearly: fmtMoney(d.groups[g].yearly, { round: true }) })}</span>}
                 </h2>
                 <ul className="grid gap-3">{rows.map((r) => <li key={r.ref}><SubRow row={r} country={d.country} /></li>)}</ul>
               </section>
             ))
           )}
-          {d.notes.map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
+          {tList(d.notes, d.notes_msg).map((n) => <p key={n} className="text-xs text-faint">{n}</p>)}
         </div>
       )}
     </Async>
@@ -85,9 +92,10 @@ function CancelBadge({ r }: { r: InvRow }) {
   const { t } = useTranslation("subscriptions");
   const c = r.cancellation;
   const date = c.earliest_effective_date ? fmtDate(c.earliest_effective_date, "medium") : null;
-  if (c.can_cancel_now === true) return <Badge tone="info" title={c.method}>{t("row.canCancel")}{date ? t("row.effectiveFrom", { date }) : ""}</Badge>;
-  if (c.can_cancel_now === false) return <Badge tone="warn" title={c.method}>{t("row.notYet")}{date ? t("row.earliest", { date }) : ""}</Badge>;
-  return <Badge title={t("row.missing", { list: c.unknown.join(", ") || t("row.dates") })}>{t("row.moreFacts")}</Badge>;
+  const method = tServer(c.method_msg, c.method);
+  if (c.can_cancel_now === true) return <Badge tone="info" title={method}>{t("row.canCancel")}{date ? t("row.effectiveFrom", { date }) : ""}</Badge>;
+  if (c.can_cancel_now === false) return <Badge tone="warn" title={method}>{t("row.notYet")}{date ? t("row.earliest", { date }) : ""}</Badge>;
+  return <Badge title={t("row.missing", { list: unknownList(c) || t("row.dates") })}>{t("row.moreFacts")}</Badge>;
 }
 
 function SubRow({ row: r, country }: { row: InvRow; country: string }) {
@@ -116,15 +124,15 @@ function SubRow({ row: r, country }: { row: InvRow; country: string }) {
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <CancelBadge r={r} />
-            <Badge tone={r.usage.recorded ? "neutral" : "warn"} title={r.usage.note_not_measurable ?? undefined}>
+            <Badge tone={r.usage.recorded ? "neutral" : "warn"} title={r.usage.note_not_measurable ? tServer(r.usage.note_not_measurable_msg, r.usage.note_not_measurable) : undefined}>
               {r.usage.recorded ? (r.usage.last_used ? t("row.usageLast", { frequency: freq, date: fmtDate(r.usage.last_used, "medium") }) : t("row.usage", { frequency: freq })) : t("row.usageUnknown")}
             </Badge>
             {r.usage.signals.map((s) => (
-              <Badge key={s.kind} tone="warn" title={s.measurable}><BellRing className="size-3" aria-hidden /> {s.kind === "unused_60_days" ? t("row.unused", { days: s.days }) : t("row.neverUsed")}</Badge>
+              <Badge key={s.kind} tone="warn" title={tServer(s.measurable_msg, s.measurable)}><BellRing className="size-3" aria-hidden /> {s.kind === "unused_60_days" ? t("row.unused", { days: s.days }) : t("row.neverUsed")}</Badge>
             ))}
             {r.alternatives.best && <Badge tone="pos"><PiggyBank className="size-3" aria-hidden /> {t("row.cheaper", { amount: fmtMoney(r.alternatives.best.savings?.yearly, { round: true }) })}</Badge>}
             {r.alternatives.outdated > 0 && <Badge tone="warn">{t("row.outdated", { n: r.alternatives.outdated })}</Badge>}
-            {r.decision && <Badge tone={STATUS_TONE[r.decision.status]} title={r.decision.reason}>{t("row.decisionStatus", { decision: isDecision(r.decision.decision) ? t(`inv.decisionShort.${r.decision.decision}`) : r.decision.decision, status: t(STATUS_LABEL[r.decision.status]) })}</Badge>}
+            {r.decision && <Badge tone={STATUS_TONE[r.decision.status]} title={tServer(r.decision.reason_msg, r.decision.reason)}>{t("row.decisionStatus", { decision: isDecision(r.decision.decision) ? t(`inv.decisionShort.${r.decision.decision}`) : r.decision.decision, status: t(STATUS_LABEL[r.decision.status]) })}</Badge>}
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -164,6 +172,9 @@ function CancellationPanel({ row: r, country }: { row: InvRow; country: string }
   const c = r.cancellation;
   const ec = c.early_termination_cost;
   const { t } = useTranslation("subscriptions");
+  const legal = useDisclaimers();                     // the disclaimers' wording lives only in src/coach/disclaimers.py
+  const verify = (c.verify_key && legal?.[c.verify_key]) || c.verify;
+  const disclaimer = (c.disclaimer_key && legal?.[c.disclaimer_key]) || c.disclaimer;
   return (
     <section aria-label={t("cancel.region")} className="grid content-start gap-2 text-[13px]">
       <h4 className="flex items-center gap-2 text-sm font-semibold"><Scale className="size-4" aria-hidden /> {t("cancel.title", { country })}</h4>
@@ -175,21 +186,21 @@ function CancellationPanel({ row: r, country }: { row: InvRow; country: string }
         <dt className="text-muted">{t("cancel.notice")}</dt>
         <dd>{c.notice_period_days ? t("cancel.noticeDays", { n: c.notice_period_days }) : t("cancel.seeContract")}</dd>
         <dt className="text-muted">{t("cancel.method")}</dt>
-        <dd>{c.method}</dd>
+        <dd>{tServer(c.method_msg, c.method)}</dd>
         {ec && (<><dt className="text-muted">{t("cancel.early")}</dt><dd>{ec.amount !== null ? <Trans t={t} i18nKey="cancel.earlyCost" values={{ months: ec.remaining_months, share: ec.share_pct ?? "?" }} components={{ amount: <Money v={ec.amount} /> }} /> : t("cancel.costUnknown")}{t("cancel.freeFrom", { date: fmtDate(ec.free_exit_date, "medium") })}</dd></>)}
         {c.contract_notice_deadline && (<><dt className="text-muted">{t("cancel.noticeBy")}</dt><dd>{t("cancel.noticeByValue", { date: fmtDate(c.contract_notice_deadline.send_notice_by, "medium"), n: c.contract_notice_deadline.days_left })}</dd></>)}
         {c.anniversary_route && (<><dt className="text-muted">{t("cancel.anniversary")}</dt><dd>{t("cancel.anniversaryValue", { date: fmtDate(c.anniversary_route.send_notice_by, "medium"), end: fmtDate(c.anniversary_route.effective, "medium") })}</dd></>)}
         {c.first_request_date && (<><dt className="text-muted">{t("cancel.freeOpens")}</dt><dd>{fmtDate(c.first_request_date, "medium")}</dd></>)}
       </dl>
-      {c.conditions.length > 0 && <ul className="list-disc pl-5 text-muted">{c.conditions.map((x) => <li key={x}>{x}</li>)}</ul>}
-      {c.unknown.length > 0 && <p className="text-warn">{t("cancel.missing", { list: c.unknown.join(", ") })}</p>}
+      {c.conditions.length > 0 && <ul className="list-disc pl-5 text-muted">{tList(c.conditions, c.conditions_msg).map((x) => <li key={x}>{x}</li>)}</ul>}
+      {c.unknown.length > 0 && <p className="text-warn">{t("cancel.missing", { list: unknownList(c) })}</p>}
       <div>
         <p className="font-medium">{t("cancel.legalBasis")}</p>
         <ul className="mt-1 grid gap-1">
-          {c.legal_basis.map((l) => <li key={l.id} className="text-muted"><span className="text-text">{l.name}</span>{t("cancel.legalLine", { law: l.law, source: l.source, reviewed: l.last_reviewed })}</li>)}
+          {c.legal_basis.map((l) => <li key={l.id} className="text-muted"><span className="text-text">{tServer(l.name_msg, l.name)}</span>{t("cancel.legalLine", { law: l.law, source: l.source, reviewed: l.last_reviewed })}</li>)}
         </ul>
       </div>
-      <p className="text-xs text-faint">{c.verify} {c.disclaimer}</p>
+      <p className="text-xs text-faint">{verify} {disclaimer}</p>
     </section>
   );
 }
@@ -212,7 +223,7 @@ function UsagePanel({ row: r }: { row: InvRow }) {
           <div className="sm:col-span-2"><Button size="sm" busy={save.isPending} onClick={() => save.mutate(undefined)}>{t("usage.save")}</Button></div>
         </div>
       )}
-      <p className="text-xs text-faint">{t("usage.rule")} {r.usage.note_not_measurable ?? ""}</p>
+      <p className="text-xs text-faint">{t("usage.rule")} {r.usage.note_not_measurable ? tServer(r.usage.note_not_measurable_msg, r.usage.note_not_measurable) : ""}</p>
     </section>
   );
 }
@@ -232,7 +243,7 @@ function DecisionPanel({ row: r }: { row: InvRow }) {
   return (
     <section aria-label={t("decision.region")} className="grid gap-2 text-[13px]">
       <h4 className="flex items-center gap-2 text-sm font-semibold"><ThumbsUp className="size-4" aria-hidden /> {t("decision.title")}</h4>
-      {d && <p><Trans t={t} i18nKey="decision.last" count={d.months_counted} values={{ decision: isDecision(d.decision) ? t(`inv.decisionShort.${d.decision}`) : d.decision, date: fmtDate(d.decided_on, "medium"), before: fmtMoney(d.before_monthly), after: fmtMoney(d.after_monthly), reason: d.reason, since: fmtMoney(d.since_decision) }} components={{ b: <strong />, status: <Badge tone={STATUS_TONE[d.status]}>{t(STATUS_LABEL[d.status])}</Badge> }} /></p>}
+      {d && <p><Trans t={t} i18nKey="decision.last" count={d.months_counted} values={{ decision: isDecision(d.decision) ? t(`inv.decisionShort.${d.decision}`) : d.decision, date: fmtDate(d.decided_on, "medium"), before: fmtMoney(d.before_monthly), after: fmtMoney(d.after_monthly), reason: tServer(d.reason_msg, d.reason), since: fmtMoney(d.since_decision) }} components={{ b: <strong />, status: <Badge tone={STATUS_TONE[d.status]}>{t(STATUS_LABEL[d.status])}</Badge> }} /></p>}
       <div className="grid gap-2 sm:grid-cols-2">
         <Field label={t("decision.decision")}>{(id) => <Select id={id} value={decision} onChange={(e) => setDecision(e.target.value)}>{DECISIONS.map((v) => <option key={v} value={v}>{t(`inv.decision.${v}`)}</option>)}</Select>}</Field>
         <Field label={t("decision.before")}>{(id) => <Input id={id} inputMode="decimal" value={before} onChange={(e) => setBefore(e.target.value)} />}</Field>
@@ -269,7 +280,7 @@ function AlternativesPanel({ row: r }: { row: InvRow }) {
           </table>
         </div>
       )}
-      <p className="text-xs text-faint">{a.note}. {t("alt.computed")}</p>
+      <p className="text-xs text-faint">{tServer(a.note_msg, a.note)}. {t("alt.computed")}</p>
       {adding && <AlternativeForm row={r} onDone={() => setAdding(false)} />}
     </section>
   );
@@ -282,7 +293,7 @@ function AltRow({ i, best, onRemove }: { i: InvAlternative; best: boolean; onRem
       <td className="py-1.5 pr-3"><span className="font-medium">{i.provider}</span> · {i.offer}{best && <Badge tone="pos" className="ml-2">{t("alt.best")}</Badge>}{i.features && <div className="text-xs text-muted">{i.features}</div>}</td>
       <td className="pr-3 num"><Money v={i.monthly_price} /></td>
       <td className="pr-3 num">{i.savings ? <><Money v={i.savings.net_12m} />{i.savings.break_even_months ? <span className="text-xs text-muted">{t("alt.paysBack", { n: i.savings.break_even_months })}</span> : null}</> : "–"}</td>
-      <td className="pr-3">{fmtDate(i.retrieved_at, "medium")} {i.stale ? <Badge tone="warn" title={i.savings?.stale_warning ?? undefined}>{t("alt.outdated")}</Badge> : <span className="text-xs text-muted">{t("alt.age", { n: i.age_days })}</span>}</td>
+      <td className="pr-3">{fmtDate(i.retrieved_at, "medium")} {i.stale ? <Badge tone="warn" title={i.savings?.stale_warning ? tServer(i.savings.stale_warning_msg, i.savings.stale_warning) : undefined}>{t("alt.outdated")}</Badge> : <span className="text-xs text-muted">{t("alt.age", { n: i.age_days })}</span>}</td>
       <td className="pr-3">{i.source_url ? <a className="text-accent underline" href={i.source_url} target="_blank" rel="noopener noreferrer">{new URL(i.source_url).hostname}</a> : <span className="text-muted">{t("alt.noLink")}</span>}<div className="text-xs text-faint">{i.method} · {i.source}</div></td>
       <td><button className="text-xs text-muted underline hover:text-text" onClick={onRemove} aria-label={t("alt.removeLabel", { provider: i.provider, offer: i.offer })}>{t("alt.remove")}</button></td>
     </tr>
@@ -315,6 +326,11 @@ function DraftDialog({ row: r, onClose }: { row: InvRow; onClose: () => void }) 
   const pv = useDryRun<DraftPreview>("/subs/contracts/draft", { series: r.series_id }, true);
   const { t } = useTranslation("subscriptions");
   const create = useWrite(() => api.post<DraftPreview>("/subs/contracts/draft", { series: r.series_id }), { success: t("draft.created"), onSuccess: onClose });
+  // a draft warning may name the payment's cadence (a code): shown with this page's own cadence names
+  const draftWarning = (w: string, m: ServerMsg | undefined) => {
+    const cad = m?.params?.cadence;
+    return tServer(m && typeof cad === "string" && isCadence(cad) ? { ...m, params: { ...m.params, cadence: t(`cadence.${cad}`) } } : m, w);
+  };
   return (
     <Dialog open onClose={onClose} title={t("draft.title")} size="lg"
       description={t("draft.description")}
@@ -324,7 +340,7 @@ function DraftDialog({ row: r, onClose }: { row: InvRow; onClose: () => void }) 
       {pv.data && (
         <div className="grid gap-3 text-[13px]">
           <p><Trans t={t} i18nKey="draft.summary" values={{ kind: pv.data.contract.kind, provider: pv.data.contract.provider, missing: pv.data.contract.missing.join(", ") }} components={{ b: <strong /> }} /></p>
-          {pv.data.contract.warnings.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}
+          {pv.data.contract.warnings.map((w, i) => <Notice key={w} tone="warn">{draftWarning(w, pv.data!.contract.warnings_msg?.[i])}</Notice>)}
           <DiffView diff={pv.data.diff} />
           <p className="text-xs text-faint">{t("draft.startNote")}</p>
         </div>

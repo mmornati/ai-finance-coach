@@ -82,6 +82,19 @@ def taxonomy(snap: Snapshot = Depends(get_snapshot)):
     return views.taxonomy()
 
 
+# the disclaimers the web app shows itself (its locale files never copy them); general_advice, loan, tax: also the Rental page (4g)
+WEB_DISCLAIMERS = ("ai_label", "ai_label_short", "contract", "contract_verify", "general_advice", "loan", "tax", "tax_short")
+
+
+@router.get("/meta/disclaimers", tags=["core"], summary="The legal labels the web app shows, in one language")
+def meta_disclaimers(lang: str = "en"):
+    """The wording lives only in ``coach/disclaimers.py``: the web asks for it in its interface language (English for an unknown one)."""
+    from coach import disclaimers
+    code = (lang or "en").lower()[:2]
+    code = code if code in disclaimers.LANGS else "en"
+    return {"lang": code, "texts": {k: disclaimers.get(k, code) for k in WEB_DISCLAIMERS}}
+
+
 @router.get("/meta/filters", tags=["core"], summary="Values for every filter: accounts, owners, purposes, tags, events")
 def filters(snap: Snapshot = Depends(get_snapshot), state: AppState = Depends(get_state)):
     with state.read() as con:

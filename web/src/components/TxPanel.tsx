@@ -7,6 +7,7 @@ import { Badge, Button, Chips, Dialog, DiffView, Disclosure, Field, Input, Money
 import { CategoryPicker } from "./CategoryPicker";
 import { useFilters, useGet, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
+import { errorText, serverLabel, tServer, tServerList } from "@/i18n/server";
 import { catLabel, fmtDate, fmtMoney } from "@/lib/format";
 import type { AttributionWhy, CategoryChangePreview, EditResult, TxDetail } from "@/api/types";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,7 @@ export function TxPanel({ txKey, onClose }: { txKey: string | null; onClose: () 
 function Body({ txKey, onClose }: { txKey: string; onClose: () => void }) {
   const q = useGet<TxDetail>("/transactions/detail", { tx_key: txKey }, { staleTime: 0 });
   if (q.isPending) return <Spinner />;
-  if (q.isError) return <Notice tone="neg">{q.error.message}</Notice>;
+  if (q.isError) return <Notice tone="neg">{errorText(q.error)}</Notice>;
   return <Detail d={q.data} onClose={onClose} />;
 }
 
@@ -75,8 +76,8 @@ function Why({ d }: { d: TxDetail }) {
           <li key={s.step} className={cn("flex gap-2", !s.applies && "opacity-60")}>
             <span className="mt-0.5">{s.decides ? <Check className="size-4 text-pos" aria-label={t("tx.why.decidesAria")} /> : s.applies ? <CircleDot className="size-4 text-warn" aria-label={t("tx.why.appliesAria")} /> : <ChevronRight className="size-4 text-faint" aria-hidden />}</span>
             <div>
-              <div className="font-medium">{s.step}{s.decides && <span className="ml-2 text-pos">{t("tx.why.decides")}</span>}{s.applies && !s.decides && <span className="ml-2 text-warn">{t("tx.why.outranked")}</span>}</div>
-              <div className="text-muted">{s.detail}</div>
+              <div className="font-medium">{serverLabel("explainStep", s.step_code, s.step)}{s.decides && <span className="ml-2 text-pos">{t("tx.why.decides")}</span>}{s.applies && !s.decides && <span className="ml-2 text-warn">{t("tx.why.outranked")}</span>}</div>
+              <div className="text-muted">{tServer(s.detail_msg, s.detail)}</div>
             </div>
           </li>
         ))}
@@ -85,7 +86,7 @@ function Why({ d }: { d: TxDetail }) {
             <div className="font-medium">{t("tx.why.annotations")}</div>
             <ul className="mt-1 grid gap-1 text-muted">
               {d.memory.annotations.map((a) => (
-                <li key={a.id}>{a.matched ? (a.winner ? "✓ " : "~ ") : "· "}<code className="text-xs">{a.id}</code>: {a.reason}</li>
+                <li key={a.id}>{a.matched ? (a.winner ? "✓ " : "~ ") : "· "}<code className="text-xs">{a.id}</code>: {tServer(a.reason_msg, a.reason)}</li>
               ))}
             </ul>
           </li>
@@ -116,7 +117,7 @@ function ChangeCategory({ d, onDone }: { d: TxDetail; onDone: () => void }) {
     if (!changed) return;
     const ctl = new AbortController();
     const timer = setTimeout(() => {
-      api.post<CategoryChangePreview>("/transactions/category", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(e.message));
+      api.post<CategoryChangePreview>("/transactions/category", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(errorText(e)));
     }, 250);
     return () => {
       clearTimeout(timer);
@@ -176,7 +177,7 @@ function ChangeCategory({ d, onDone }: { d: TxDetail; onDone: () => void }) {
                 )}
               </p>
               {a.from_categories && a.from_categories.length > 0 && <p className="text-xs text-muted">{t("tx.effect.currently", { list: a.from_categories.map((f) => `${catLabel(f.category)} ×${f.n}`).join(", ") })}</p>}
-              {preview.warnings.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}
+              {tServerList(preview.warnings, preview.warnings_msg).map((w) => <Notice key={w} tone="warn">{w}</Notice>)}
               {scope === "memory" && <DiffView diff={preview.diff} />}
             </div>
           )}
@@ -207,7 +208,7 @@ function Annotate({ d }: { d: TxDetail }) {
     if (!tags.length && !event) return;
     const ctl = new AbortController();
     const t = setTimeout(() => {
-      api.post<EditResult>("/annotations", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(e.message));
+      api.post<EditResult>("/annotations", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(errorText(e)));
     }, 250);
     return () => {
       clearTimeout(t);
@@ -250,7 +251,7 @@ function Annotate({ d }: { d: TxDetail }) {
       {error && <Notice tone="neg">{error}</Notice>}
       {preview && (
         <div className="grid gap-2">
-          {preview.warnings.map((w) => <Notice key={w} tone="warn">{w}</Notice>)}
+          {tServerList(preview.warnings, preview.warnings_msg).map((w) => <Notice key={w} tone="warn">{w}</Notice>)}
           <DiffView diff={preview.diff} />
         </div>
       )}
@@ -325,7 +326,7 @@ function Attribution({ txKey }: { txKey: string }) {
       <Disclosure summary={t("tx.attr.why")} defaultOpen={false}>
         <ul className="grid gap-1 text-[13px] text-muted">
           {a.manual && <li>{t("tx.attr.manual", { member: people.name(a.manual.member), by: a.manual.set_by, date: fmtDate(a.manual.set_at.slice(0, 10), "medium") })}{a.manual.note ? t("tx.attr.manualNote", { note: a.manual.note }) : ""}</li>}
-          {a.rules.map((r) => <li key={r.id}>{r.matched ? "✓ " : "· "}<Trans i18nKey="tx.attr.rule" values={{ id: r.id, member: people.name(r.member) }} components={{ code: <code className="text-xs" /> }} />{r.matched ? "" : t("tx.attr.ruleWhyNot", { why: r.why_not })}</li>)}
+          {a.rules.map((r) => <li key={r.id}>{r.matched ? "✓ " : "· "}<Trans i18nKey="tx.attr.rule" values={{ id: r.id, member: people.name(r.member) }} components={{ code: <code className="text-xs" /> }} />{r.matched ? "" : t("tx.attr.ruleWhyNot", { why: tServer(r.why_not_msg, r.why_not ?? "") })}</li>)}
           <li>{t("tx.attr.account", { account: a.account ?? t("tx.attr.unknownAccount"), owner: a.account_owner ?? t("tx.attr.noOwner") })}{a.account_owner_member ? t("tx.attr.ownerMember", { name: people.name(a.account_owner_member) }) : ""}{a.card_last4 ? t("tx.attr.card", { last4: a.card_last4 }) : ""}</li>
           {a.history.map((h) => <li key={h.id}>{t("tx.attr.history", { date: fmtDate(h.at.slice(0, 10), "medium"), action: h.action, from: h.old_member ? people.name(h.old_member) : t("tx.attr.rules"), to: h.new_member ? people.name(h.new_member) : t("tx.attr.rules"), by: h.by })}</li>)}
         </ul>
