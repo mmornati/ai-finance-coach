@@ -52,7 +52,10 @@ export default function Coach() {
   const ctl = useRef<AbortController | null>(null);
   const { t } = useTranslation("coach");
   const disclaimers = useDisclaimers();
-  useEffect(() => end.current?.scrollIntoView?.({ block: "end", behavior: "smooth" }), [msgs]);
+  // A block body: recent browsers return a Promise from scrollIntoView, and React would call it as the effect's cleanup.
+  useEffect(() => {
+    end.current?.scrollIntoView?.({ block: "end", behavior: "smooth" });
+  }, [msgs]);
   useEffect(() => () => ctl.current?.abort(), []);
 
   async function ask(q: string, skill?: string) {

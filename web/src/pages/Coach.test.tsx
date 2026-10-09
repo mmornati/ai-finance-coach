@@ -108,6 +108,25 @@ describe("ask the coach", () => {
     await waitFor(() => expect(screen.getByLabelText("Your question")).toBeEnabled());
   });
 
+  it("keeps working when scrollIntoView returns a Promise (recent browsers): the scroll effect returns no cleanup", async () => {
+    const original = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = vi.fn(() => Promise.resolve()) as unknown as typeof original;
+    try {
+      stream = () => sse([["meta", { job_id: "j_6" }], ["delta", { text: "First answer." }], ["done", { finish_reason: "stop" }]]);
+      renderApp(<Coach />);
+      await userEvent.type(await screen.findByLabelText("Your question"), "one");
+      await userEvent.click(screen.getByRole("button", { name: /ask/i }));
+      await waitFor(() => expect(screen.getByTestId("coach-answer")).toHaveTextContent("First answer."));
+      await waitFor(() => expect(screen.getByLabelText("Your question")).toBeEnabled());
+      stream = () => sse([["meta", { job_id: "j_7" }], ["delta", { text: "Second answer." }], ["done", { finish_reason: "stop" }]]);
+      await userEvent.type(screen.getByLabelText("Your question"), "two");
+      await userEvent.click(screen.getByRole("button", { name: /ask/i }));
+      await waitFor(() => expect(screen.getAllByTestId("coach-answer").at(-1)).toHaveTextContent("Second answer."));
+    } finally {
+      Element.prototype.scrollIntoView = original;
+    }
+  });
+
   it("while an answer is streaming the Ask button becomes Cancel, which cancels the job server-side", async () => {
     let release: () => void = () => undefined;
     stream = () => {

@@ -1,0 +1,115 @@
+{
+  "scenarios": [
+    {
+      "keywords": [
+        "july",
+        "holiday",
+        "summer"
+      ],
+      "steps": [
+        {
+          "tool": "coverage"
+        },
+        {
+          "tool": "explain_spike",
+          "args": {
+            "category": "travel",
+            "month": "$JULY"
+          }
+        }
+      ],
+      "answer": [
+        "**July was the summer holiday.** Travel cost **{{explain_spike:totals.spent}} EUR**, against a usual month of {{explain_spike:totals.usual_ex_one_offs}} EUR.",
+        "",
+        "- Lodging: {{explain_spike:categories.0.spent}} EUR (usual {{explain_spike:categories.0.usual}})",
+        "- Flights: {{explain_spike:categories.1.spent}} EUR (usual {{explain_spike:categories.1.usual}})",
+        "- Car rental: {{explain_spike:categories.2.spent}} EUR (usual {{explain_spike:categories.2.usual}})",
+        "",
+        "The three biggest payments are the hotel ({{explain_spike:top_transactions.0.ref}}), the flights ({{explain_spike:top_transactions.1.ref}}) and the rental car ({{explain_spike:top_transactions.2.ref}}), all tagged holiday in your memory.",
+        "",
+        "Same month last year: **{{explain_spike:same_month_last_year.spent}} EUR**. It is a yearly habit rather than a surprise: without the trip, July is a usual month.",
+        "",
+        "Want me to set up a Summer 2027 goal, so the trip is saved for month by month?"
+      ]
+    },
+    {
+      "keywords": [
+        "subscription",
+        "subscriptions",
+        "review",
+        "cancel",
+        "streaming"
+      ],
+      "steps": [
+        {
+          "tool": "subscription_audit",
+          "args": {
+            "limit": 5
+          }
+        }
+      ],
+      "answer": [
+        "You have **{{subscription_audit:totals.active_series}} recurring costs** for **{{subscription_audit:totals.monthly}} EUR a month** ({{subscription_audit:totals.yearly}} EUR a year). Three worth a look:",
+        "",
+        "1. **Two video services overlap**: {{subscription_audit:overlaps.0.entities.0}} and {{subscription_audit:overlaps.0.entities.1}} cost {{subscription_audit:overlaps.0.combined_yearly}} EUR a year together. Dropping the cheaper one saves **{{subscription_audit:overlaps.0.dropping_the_cheapest_saves_yearly}} EUR a year** ({{subscription_audit:overlaps.0.series.0}}).",
+        "2. **{{subscription_audit:candidates.2.entity}} went up**: {{subscription_audit:candidates.2.monthly}} EUR a month now, expected saving {{subscription_audit:candidates.2.expected_yearly_savings.low}} to {{subscription_audit:candidates.2.expected_yearly_savings.high}} EUR a year if you drop or downgrade it ({{subscription_audit:candidates.2.series}}).",
+        "3. **Health insurance** has no contract on file: comparing offers could save {{subscription_audit:candidates.0.expected_yearly_savings.low}} to {{subscription_audit:candidates.0.expected_yearly_savings.high}} EUR a year ({{subscription_audit:candidates.0.series}}).",
+        "",
+        "I can't tell how much you use the music service: tell me and I'll record it, or answer the question in Memory."
+      ]
+    },
+    {
+      "keywords": [
+        "next month",
+        "ok",
+        "forecast",
+        "afford",
+        "short"
+      ],
+      "steps": [
+        {
+          "tool": "forecast",
+          "args": {
+            "days": 45
+          }
+        },
+        {
+          "tool": "calendar",
+          "args": {
+            "days": 30
+          }
+        }
+      ],
+      "answer": [
+        "**Yes, next month looks fine.** The household starts at {{forecast:household.start_balance}} EUR; the lowest point of the next 45 days is **{{forecast:household.min_balance}} EUR** on {{forecast:household.min_date}}, with no account at risk.",
+        "",
+        "In 30 days the projection is {{forecast:household.milestones.0.balance}} EUR (between {{forecast:household.milestones.0.low}} and {{forecast:household.milestones.0.high}}), with about {{forecast:household.variable_monthly}} EUR of day-to-day spending a month.",
+        "",
+        "The next fixed payments are the energy bill ({{forecast:household.events.0.ref}}) and the car insurance ({{forecast:household.events.1.ref}}). Nothing unusual is scheduled."
+      ]
+    }
+  ],
+  "default": {
+    "keywords": [],
+    "steps": [
+      {
+        "tool": "coverage"
+      },
+      {
+        "tool": "cashflow",
+        "args": {
+          "months": 3
+        }
+      }
+    ],
+    "answer": [
+      "Here is where you stand over the last three months (all accounts are covered):",
+      "",
+      "- **{{cashflow:household.months.0.month}}**: income {{cashflow:household.months.0.income}} EUR, spending {{cashflow:household.months.0.spending}} EUR, net {{cashflow:household.months.0.net}} EUR",
+      "- **{{cashflow:household.months.1.month}}**: income {{cashflow:household.months.1.income}} EUR, spending {{cashflow:household.months.1.spending}} EUR, net {{cashflow:household.months.1.net}} EUR",
+      "- **{{cashflow:household.months.2.month}}**: income {{cashflow:household.months.2.income}} EUR, spending {{cashflow:household.months.2.spending}} EUR, net {{cashflow:household.months.2.net}} EUR",
+      "",
+      "Ask me about a month, a category or your subscriptions for the details."
+    ]
+  }
+}
