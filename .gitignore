@@ -74,3 +74,9 @@ src/coach/api/static/
 # tools
 .DS_Store
 graphify-out/
+
+# the built documentation site (scripts/build-site.sh)
+/site/
+
+# local cache of the impeccable design hook (holds absolute paths of this machine)
+.impeccable/hook.cache.json

@@ -1,0 +1,131 @@
+/* AI Finance Coach documentation: ink, paper, cobalt and a gold coin. System fonts only (nothing is loaded from a third party,
+   like the app itself). Figures are tabular everywhere so amounts line up. */
+
+:root {
+  --afc-ink: #0e1726;
+  --afc-ink-2: #16223a;
+  --afc-paper: #f7f4ee;
+  --afc-cobalt: #3d6bff;
+  --afc-cobalt-soft: #6e93ff;
+  --afc-gold: #f5b83d;
+  --afc-credit: #1f9d6b;
+  --afc-debit: #d9473f;
+  --afc-serif: ui-serif, "New York", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --afc-sans: ui-sans-serif, -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --afc-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --md-text-font-family: var(--afc-sans);
+  --md-code-font-family: var(--afc-mono);
+}
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--afc-ink);
+  --md-primary-fg-color--light: var(--afc-ink-2);
+  --md-primary-fg-color--dark: #070c16;
+  --md-primary-bg-color: #f7f4ee;
+  --md-accent-fg-color: var(--afc-cobalt);
+  --md-accent-fg-color--transparent: rgba(61, 107, 255, 0.1);
+  --md-default-bg-color: #fbfaf7;
+  --md-typeset-a-color: #2c56e0;
+  --md-code-bg-color: #f1ede4;
+  --afc-card: #ffffff;
+  --afc-line: #e7e1d5;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 222;
+  --md-primary-fg-color: #0b1220;
+  --md-primary-fg-color--light: #16223a;
+  --md-primary-fg-color--dark: #060a12;
+  --md-primary-bg-color: #e9eefb;
+  --md-accent-fg-color: var(--afc-cobalt-soft);
+  --md-accent-fg-color--transparent: rgba(110, 147, 255, 0.12);
+  --md-default-bg-color: #0d1422;
+  --md-default-fg-color: rgba(233, 238, 251, 0.9);
+  --md-typeset-a-color: #8eabff;
+  --md-code-bg-color: #131d30;
+  --afc-card: #121b2d;
+  --afc-line: #22304a;
+}
+
+.md-typeset { font-feature-settings: "tnum" 1, "lnum" 1; }
+.md-typeset h1, .md-typeset h2 { font-family: var(--afc-serif); font-weight: 600; letter-spacing: -0.01em; }
+.md-typeset h1 { font-size: 2.1rem; color: var(--md-default-fg-color); }
+.md-typeset h2 { font-size: 1.45rem; margin-top: 2.2em; }
+.md-header__title { font-family: var(--afc-serif); font-weight: 600; }
+.md-tabs { background-color: var(--md-primary-fg-color--light); }
+.md-header { box-shadow: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+
+/* the gold rule under every page title */
+.md-typeset h1::after {
+  content: ""; display: block; width: 2.4rem; height: 3px; margin-top: .55rem; border-radius: 2px;
+  background: linear-gradient(90deg, var(--afc-gold), var(--md-accent-fg-color));
+}
+
+/* screenshots: framed like a window, light/dark pairs swap with the theme */
+.md-typeset figure.shot, .md-typeset .shot { margin: 1.4em 0; }
+.md-typeset .shot img {
+  border-radius: 12px; border: 1px solid var(--afc-line); background: var(--afc-card);
+  box-shadow: 0 1px 2px rgba(14, 23, 38, .06), 0 18px 40px -18px rgba(14, 23, 38, .35);
+}
+.md-typeset .shot figcaption { font-size: .72rem; color: var(--md-default-fg-color--light); max-width: none; }
+[data-md-color-scheme="default"] img[src$="#only-dark"], [data-md-color-scheme="default"] img[src*="-dark.webp"].theme { display: none; }
+[data-md-color-scheme="slate"] img[src$="#only-light"], [data-md-color-scheme="slate"] img[src*="-light.webp"].theme { display: none; }
+
+/* phone frames, side by side */
+.md-typeset .phones { display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; margin: 1.4em 0; }
+.md-typeset .phones img {
+  width: 220px; border-radius: 28px; border: 6px solid var(--afc-ink); background: var(--afc-ink);
+  box-shadow: 0 20px 40px -20px rgba(14, 23, 38, .55);
+}
+
+/* screencasts */
+.md-typeset video.cast {
+  width: 100%; border-radius: 12px; border: 1px solid var(--afc-line); background: #0b1220;
+  box-shadow: 0 18px 40px -18px rgba(14, 23, 38, .45);
+}
+
+/* the home page */
+.md-typeset .afc-hero {
+  position: relative; overflow: hidden; border-radius: 18px; padding: 2.4rem 2rem 2rem; margin: 0 0 2rem;
+  background: radial-gradient(1200px 400px at 80% -20%, rgba(110, 147, 255, .35), transparent 60%),
+              radial-gradient(500px 300px at 0% 120%, rgba(245, 184, 61, .18), transparent 60%), var(--afc-ink);
+  color: #e9eefb;
+}
+.md-typeset .afc-hero h1 { color: #fff; font-size: 2.3rem; margin: 0 0 .4rem; }
+.md-typeset .afc-hero h1::after { display: none; }
+.md-typeset .afc-hero p { color: rgba(233, 238, 251, .82); max-width: 40rem; font-size: .9rem; }
+.md-typeset .afc-hero .md-button { color: #fff; border-color: rgba(255, 255, 255, .35); margin: .3rem .4rem 0 0; }
+.md-typeset .afc-hero .md-button--primary { background: var(--afc-cobalt); border-color: var(--afc-cobalt); }
+.md-typeset .afc-hero .kicker { font-family: var(--afc-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--afc-gold); }
+
+.md-typeset .grid.cards > ul > li, .md-typeset .grid > .card {
+  border-radius: 14px; border-color: var(--afc-line); background: var(--afc-card);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.md-typeset .grid.cards > ul > li:hover, .md-typeset .grid > .card:hover {
+  transform: translateY(-2px); border-color: var(--md-accent-fg-color);
+  box-shadow: 0 14px 30px -18px rgba(14, 23, 38, .45);
+}
+
+/* amounts in prose: <span class="amt in">+720.00</span> */
+.md-typeset .amt { font-family: var(--afc-mono); font-size: .92em; white-space: nowrap; }
+.md-typeset .amt.in { color: var(--afc-credit); }
+.md-typeset .amt.out { color: var(--afc-debit); }
+
+/* a pseudonym chip: what the model sees */
+.md-typeset .pseudo {
+  font-family: var(--afc-mono); font-size: .8em; padding: .05em .45em; border-radius: 6px; white-space: nowrap;
+  background: var(--md-accent-fg-color--transparent); color: var(--md-accent-fg-color);
+}
+
+.md-typeset .admonition, .md-typeset details { border-radius: 10px; }
+.md-typeset table:not([class]) { border-radius: 10px; overflow: hidden; }
+.md-footer-meta { background-color: #070c16; }
+
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .grid.cards > ul > li, .md-typeset .grid > .card { transition: none; }
+}
+
+/* the announcement bar (demo notice) */
+.md-banner { background: #070c16; color: rgba(233, 238, 251, .85); }
+.md-banner a { color: var(--afc-gold); text-decoration: underline; }

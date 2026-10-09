@@ -41,11 +41,17 @@ Details: [docs/privacy.md](docs/privacy.md) (data flows, retention, delete / exp
 
 ## Screenshots
 
-<!-- Replace these placeholders with real screenshots made on SYNTHETIC data (never your own): docs/images/*.png -->
+Made on the synthetic demo household of `scripts/demo/` (every name, bank and amount is invented). The full tour, the screencasts and
+the user guide are on the documentation site: **https://mmornati.github.io/ai-finance-coach/**
 
-| Dashboard | Ask the coach | Memory and proposals |
+| Dashboard | Ask the coach | Subscriptions |
 |---|---|---|
-| `docs/images/dashboard.png` (placeholder) | `docs/images/coach.png` (placeholder) | `docs/images/memory.png` (placeholder) |
+| ![Dashboard](docs/assets/screens/dashboard-light.webp) | ![Ask the coach](docs/assets/screens/coach-answer-light.webp) | ![Subscriptions](docs/assets/screens/subscriptions-light.webp) |
+| **Loans & net worth** | **Kids' money** | **Memory and proposals** |
+| ![Loans and net worth](docs/assets/screens/wealth-light.webp) | ![Kids' money](docs/assets/screens/kids-light.webp) | ![Memory proposals](docs/assets/screens/memory-proposals-light.webp) |
+
+Try it yourself without a bank or a model: `uv run python scripts/demo/seed_demo.py --home /tmp/coach-demo`, then
+`scripts/demo/run_demo.sh /tmp/coach-demo` ([Try the demo](https://mmornati.github.io/ai-finance-coach/docs/getting-started/demo/)).
 
 ## Install
 

@@ -10,6 +10,18 @@
         "dev"
       ],
       "port": 5173
+    },
+    {
+      "name": "docs-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8000",
+        "-d",
+        "site"
+      ],
+      "port": 8000
     }
   ]
 }

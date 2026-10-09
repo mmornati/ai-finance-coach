@@ -1,0 +1,175 @@
+# Documentation site (MkDocs Material). Built by scripts/build-site.sh: the landing page (website/) at the root of
+# https://mmornati.github.io/ai-finance-coach/ and this documentation under /docs/. Every screenshot and screencast is made on the
+# SYNTHETIC demo household of scripts/demo/ (never on real data).
+
+site_name: AI Finance Coach
+site_description: "A private, self-hosted coach for your household's money: bank sync, categories, budgets, subscriptions, loans and a coach that answers with your own numbers."
+site_author: Marco Mornati
+site_url: https://mmornati.github.io/ai-finance-coach/docs/
+
+repo_name: mmornati/ai-finance-coach
+repo_url: https://github.com/mmornati/ai-finance-coach
+edit_uri: edit/main/docs/
+
+copyright: >-
+  MIT licence. Not financial advice: the coach explains your own spending and saving habits; it does not recommend investments,
+  loans or insurers. Every name, bank, merchant and amount in these pages is invented (the demo household).
+
+theme:
+  name: material
+  language: en
+  custom_dir: docs/overrides
+  font: false
+  logo: assets/brand/mark.svg
+  favicon: assets/brand/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - content.action.edit
+
+extra:
+  homepage: https://mmornati.github.io/ai-finance-coach/
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mmornati/ai-finance-coach
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+
+# The engineering notes stay in the repository, out of the site.
+exclude_docs: |
+  BACKLOG.md
+  research/
+  claude-settings.example.json
+  overrides/
+
+not_in_nav: |
+  /release.md
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - getting-started/index.md
+      - Try the demo: getting-started/demo.md
+      - Install: getting-started/install.md
+      - Quickstart: getting-started/quickstart.md
+      - Connect your banks: getting-started/banks.md
+      - Run it on a server: getting-started/server.md
+  - User guide:
+      - guide/index.md
+      - Dashboard: guide/dashboard.md
+      - Transactions: guide/transactions.md
+      - Categories & review: guide/categories.md
+      - Budgets & goals: guide/budgets.md
+      - Subscriptions & contracts: guide/subscriptions.md
+      - Loans & net worth: guide/wealth.md
+      - Rental property: guide/rental.md
+      - Calendar: guide/calendar.md
+      - Insights & alerts: guide/insights-alerts.md
+      - Ask the coach: guide/coach.md
+      - Memory & set-up: guide/memory.md
+      - Household & kids: guide/household.md
+      - Connections: guide/connections.md
+      - Quality & AI usage: guide/quality.md
+  - Configuration:
+      - configuration/index.md
+      - AI models: configuration/models.md
+      - Privacy modes: configuration/privacy.md
+      - Alerts & channels: configuration/alerts.md
+      - Daily job & backups: configuration/schedule.md
+      - Remote access: configuration/remote.md
+  - Claude Code & skills:
+      - claude-code/index.md
+      - The finance tools: claude-code/tools.md
+      - Skills: claude-code/skills.md
+  - Technical reference:
+      - Architecture: architecture.md
+      - CLI reference: reference.md
+      - Web app: ui.md
+      - Analytics: analytics.md
+      - The coach (LLM): coach.md
+      - Skills: skills.md
+      - Memory: memory.md
+      - Household: household.md
+      - Subscriptions: subscriptions.md
+      - Loans: loans.md
+      - Rental property: rental.md
+      - Alerts: alerts.md
+      - Privacy: privacy.md
+      - Security: security.md
+      - Quality: quality.md
+      - Docker: docker.md
+      - Languages: i18n.md
+  - FAQ: faq.md
+  - Changelog: changelog.md

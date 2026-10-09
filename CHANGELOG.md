@@ -5,6 +5,20 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed: "Ask the coach" went blank after a question in recent browsers
+- Recent Chromium returns a Promise from `scrollIntoView`; the page's auto-scroll effect returned it to React, which called it as a cleanup function and
+  unmounted the whole app on the next answer. The effect now has a block body (regression test in `Coach.test.tsx`).
+
+### Added: documentation site and demo household
+- A public site (GitHub Pages, `.github/workflows/docs.yml`): a landing page (`website/`) and a MkDocs Material documentation under `/docs/` with a
+  getting-started path (demo, install, quickstart, banks, running on a server), a user guide of every page with light / dark / phone screenshots,
+  the configuration (models, privacy modes, alerts, daily job, remote access), Claude Code and its skills; the existing technical docs are its reference.
+  Build: `bash scripts/build-site.sh` (strict).
+- `scripts/demo/`: a fully SYNTHETIC demo household (`seed_demo.py`: the Rossi family, 24 months on invented banks and merchants, loans, a lease, a rental
+  flat, subscriptions, budgets, goals, questions, proposals, alerts, insights, a child login) in a scratch home that never touches the Keychain; `run_demo.sh`
+  starts the web app on it with a scripted `claude` that makes real tool calls and fills a pre-written answer with the figures they return (no model, no
+  network); `shoot.py` and `make_film.py` produce the screenshots, screencasts and film of the site.
+
 ### Fixed: a bank entry that is not booked no longer breaks the app
 - The sync stores only `BOOK` entries (or entries without a status) as transactions; any other status (`PDNG`, `OTHR`, `HOLD`...) goes to the pending list.
   A booked entry without a booking date takes its value or transaction date; one with no date at all is pending. Before, an `OTHR` entry without a date

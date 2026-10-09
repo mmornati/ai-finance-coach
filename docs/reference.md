@@ -1,6 +1,6 @@
 # AI finance coach: reference manual
 
-> The newcomer's introduction, the install paths and the quick start are in the [README](../README.md). This is the full reference of
+> The newcomer's introduction, the install paths and the quick start are in the [README](https://github.com/mmornati/ai-finance-coach/blob/main/README.md). This is the full reference of
 > every command and setting, kept from the development of epics E0 to E12 and extended for E13 (packaging). Commands are shown as
 > `uv run coach ...` (from a source checkout); with an installed package, drop `uv run`.
 
@@ -671,4 +671,4 @@ uv run coach dev hygiene --ci     # no local file (CI): the real-data rule is sk
 uv run coach dev release-check    # licence, version, build, hygiene, docs, docker, CI, tests: exit 1 until everything holds
 ```
 
-See [docs/release.md](release.md) for the checklist, and [CONTRIBUTING.md](../CONTRIBUTING.md) for the development workflow.
+See [docs/release.md](release.md) for the checklist, and [CONTRIBUTING.md](https://github.com/mmornati/ai-finance-coach/blob/main/CONTRIBUTING.md) for the development workflow.
