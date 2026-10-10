@@ -5,7 +5,7 @@ import { NavLink, Outlet, useLocation } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Activity, Baby, Building2, LogOut, Brain, Scale, Users, CalendarDays, ClipboardCheck, Gauge, Target, ListChecks, Landmark, LayoutDashboard, Lightbulb, ListOrdered, MessageCircle, Monitor, Moon, MoreHorizontal, Bell, PiggyBank, Plug, Receipt, RefreshCw, Repeat, Sun, SlidersHorizontal, Wallet } from "lucide-react";
 import { Badge, Button, Dialog, Dot, Field, IconButton, Select, Skeleton } from "./ui";
-import { useConnections, useFilters, useGet, useHealth, useAlertSummary, useInsights, useProposals, useQuestions, useWrite } from "@/api/hooks";
+import { useConnections, useFilters, useGet, useHealth, useAlertSummary, useInsights, useProposals, useQuestions, useSession, useWrite } from "@/api/hooks";
 import { usePrefs, useScope, useToast } from "@/lib/app";
 import { api } from "@/lib/api";
 import { LANGUAGES, isLanguageCode } from "@/i18n/languages";
@@ -267,11 +267,21 @@ function Header() {
         </span>
         <LanguageSelect className="hidden !min-h-8 !w-auto !py-0 text-[13px] sm:block" />
         <ThemeToggle />
-        <IconButton label={t("header.signOut")} onClick={() => void api.logout().finally(() => window.location.assign("/"))}>
-          <LogOut className="size-[18px]" />
-        </IconButton>
+        <SignOutButton label={t("header.signOut")} />
       </div>
     </header>
+  );
+}
+
+/** Sign out: the cookie is revoked on the server; behind an SSO proxy (E16) the proxy's own sign-out follows, or the session would
+ *  simply reopen on the next request. */
+export function SignOutButton({ label }: { label: string }) {
+  const session = useSession();
+  const after = session.data?.auth?.sso_sign_out || "/";
+  return (
+    <IconButton label={label} onClick={() => void api.logout().finally(() => window.location.assign(after))}>
+      <LogOut className="size-[18px]" />
+    </IconButton>
   );
 }
 

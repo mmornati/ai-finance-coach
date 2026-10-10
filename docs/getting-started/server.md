@@ -65,6 +65,12 @@ Use Tailscale or a VPN in front of the loopback port. Never open the app to the 
 3. Restart (`docker compose up -d`) and open the new login link. It now starts with `https://<first allowed host>/login#t=...`, and
    sessions use `Secure` cookies.
 
+Tired of the link? Two opt-in ways in, both documented in [Remote access](../configuration/remote.md): **passkeys** (`[ui] passkeys = true`:
+enrol the phone once from a session, then Face ID or Touch ID opens it) and, when the server already runs a reverse proxy with
+**authentik** forward-auth, **SSO** (`[ui] sso = "authentik"`: the app verifies authentik's signed token and opens the mapped login by
+itself). In Docker, `sso_jwks_url` is authentik's container address (`http://authentik:9000/...`), which the coach container must reach:
+put it on the proxy's network in a `docker-compose.override.yml`, without publishing any other port.
+
 All three settings are required together: `allow_remote` alone is refused, so a typo cannot expose the app over plain HTTP.
 
 ## The daily job

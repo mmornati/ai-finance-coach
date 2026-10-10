@@ -96,7 +96,13 @@
     "intro": "For your safety this page never signs you in by itself. When you start the app, <code>coach ui</code> prints a one-time login link in the terminal: open that link in this browser.",
     "lost": "Lost it, or already used? Print a fresh one:",
     "docker": "In Docker: <code>docker compose exec coach coach ui --login-link</code>",
-    "reload": "I opened the link: reload"
+    "reload": "I opened the link: reload",
+    "passkeyHeading": "Sign in with a passkey",
+    "passkeyIntro": "This browser or device holds a passkey for the app: Face ID, Touch ID, Windows Hello or a security key opens your session.",
+    "passkey": "Use my passkey",
+    "passkeyCancelled": "The passkey prompt was cancelled or did not finish.",
+    "ssoTitle": "Signed in through your identity provider",
+    "ssoHint": "This app sits behind an identity provider: a session opens by itself once you are signed in there. The link below is the fallback."
   },
   "ui": {
     "close": "Close",
@@ -675,5 +681,22 @@
     "title": "This page does not exist",
     "back": "Back to the dashboard",
     "body": "Check the address, or use the menu."
+  },
+  "passkeys": {
+    "title": "Passkeys",
+    "subtitle": "A passkey lets this device sign in with Face ID, Touch ID, Windows Hello or a security key, without a login link. Each passkey belongs to this login and to the host name you are using now.",
+    "empty": "No passkey on this login yet.",
+    "label": "Name of the passkey",
+    "labelPlaceholder": "my phone",
+    "add": "Add a passkey for this device",
+    "added": "Passkey added.",
+    "remove": "Remove the passkey {{label}}",
+    "removeShort": "Remove",
+    "removed": "Passkey removed.",
+    "created": "added {{date}}",
+    "lastUsed": "last used {{date}}",
+    "never": "never used",
+    "synced": "synced",
+    "unsupported": "This browser cannot make passkeys here (it needs https, or localhost)."
   }
 }

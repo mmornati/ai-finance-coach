@@ -93,6 +93,18 @@ def _hosts(v):
     return tuple(x.strip().lower() for x in v)
 
 
+def _sso_users(v):
+    """[ui.sso_users]: identity -> "owner" or a login id (`coach users add`)."""
+    if not isinstance(v, dict):
+        raise ConfigError(f"ui.sso_users must be a table of identity = login, got {v!r}")
+    out = {}
+    for k, login in v.items():
+        if not isinstance(k, str) or not k.strip() or not isinstance(login, str) or not re.fullmatch(r"owner|[a-z0-9][a-z0-9_-]{0,30}", login):
+            raise ConfigError(f"ui.sso_users: {k!r} must map to \"owner\" or a login id (lowercase letters, digits, '-' or '_'), got {login!r}")
+        out[k.strip()] = login
+    return out
+
+
 def find_root(start: Path | None = None) -> Path:
     """Project root: $COACH_HOME, else nearest parent holding config.toml/pyproject.toml, else the
     checkout containing this package."""
@@ -172,6 +184,12 @@ class Config:
     ui_remote_tls_ack: bool = False      # [ui] remote_tls_ack: required with allow_remote: "an HTTPS proxy (tailscale serve) fronts this"
     ui_open_browser: bool = True         # [ui] open_browser: `coach ui` opens the page in the default browser
     ui_container_bind: bool = False      # [ui] container_bind: written by the container image's `coach init` ONLY; with a real container, allows 0.0.0.0 (E13 MJ-1)
+    ui_passkeys: bool = False            # [ui] passkeys (E16): a passkey (Face ID, Touch ID, a security key) can open a session; enrolled from a session
+    ui_sso: str = "none"                 # [ui] sso (E16): "authentik" = an identity-aware proxy signs every person in; the app verifies its signed token
+    ui_sso_jwks_url: str = ""            # [ui] sso_jwks_url: the provider's JWKS URL, as the app reaches it (never taken from a header)
+    ui_sso_issuer: str = ""              # [ui] sso_issuer: the token's expected `iss` ("" = not checked; the signature always is)
+    ui_sso_audience: str = ""            # [ui] sso_audience: the token's expected `aud` (the provider's client id; "" = not checked)
+    ui_sso_users: dict = field(default_factory=dict)   # [ui.sso_users]: identity (username, e-mail or subject) -> "owner" or a `coach users` login id
     coach_backend: str = "claude-code"   # [coach] backend: claude-code | anthropic-api | ollama | openai-compatible (the LLM coach, not the classifier)
     coach_model: str | None = None       # [coach] model; None = the backend's default (see coach_model_effective)
     coach_max_tool_calls: int = 12       # [coach] max_tool_calls per question (digests get twice as many)
@@ -358,6 +376,12 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         ui_session_hours=_typed("ui.session_hours", pick("ui.session_hours", "ui", 12), int),
         ui_key_rotation_days=_typed("ui.key_rotation_days", pick("ui.key_rotation_days", "ui", 30), int),
         ui_remote_tls_ack=_typed("ui.remote_tls_ack", pick("ui.remote_tls_ack", "ui", False), bool),
+        ui_passkeys=_typed("ui.passkeys", pick("ui.passkeys", "ui", False), bool),
+        ui_sso=_typed("ui.sso", pick("ui.sso", "ui", "none"), str),
+        ui_sso_jwks_url=_typed("ui.sso_jwks_url", pick("ui.sso_jwks_url", "ui", ""), str),
+        ui_sso_issuer=_typed("ui.sso_issuer", pick("ui.sso_issuer", "ui", ""), str),
+        ui_sso_audience=_typed("ui.sso_audience", pick("ui.sso_audience", "ui", ""), str),
+        ui_sso_users=_sso_users(pick("ui.sso_users", "ui", {})),
         coach_backend=_typed("coach.backend", pick("coach.backend", "coach", "claude-code"), str),
         coach_model=_opt_str("coach.model", pick("coach.model", "coach", None)),
         coach_max_tool_calls=_typed("coach.max_tool_calls", pick("coach.max_tool_calls", "coach", 12), int),
@@ -427,6 +451,17 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         raise ConfigError(f"ui.port must be between 1 and 65535, got {cfg.ui_port}")
     if not 1 <= cfg.ui_session_hours <= 24 * 30 or cfg.ui_key_rotation_days < 1:
         raise ConfigError("ui.session_hours must be between 1 and 720 and ui.key_rotation_days >= 1")
+    if cfg.ui_sso not in ("none", "authentik"):
+        raise ConfigError(f'ui.sso must be "none" or "authentik", got {cfg.ui_sso!r}')
+    if cfg.ui_sso != "none":
+        if not (cfg.ui_allow_remote and cfg.ui_remote_tls_ack and cfg.ui_allowed_hosts):
+            raise ConfigError("ui.sso needs ui.allow_remote = true, ui.remote_tls_ack = true and ui.allowed_hosts: the proxy that signs people in "
+                              "is a remote, HTTPS front; the app verifies its signed token, never a plain header")
+        if not re.fullmatch(r"https?://[^\s/]+/\S*", cfg.ui_sso_jwks_url or ""):
+            raise ConfigError("ui.sso needs ui.sso_jwks_url: the provider's JWKS URL as this app reaches it "
+                              '(authentik: "http://authentik:9000/application/o/<application slug>/jwks/")')
+        if not cfg.ui_sso_users:
+            raise ConfigError("ui.sso needs a [ui.sso_users] table: identity = \"owner\" (or a `coach users` login id) for every person allowed in")
     if cfg.sync_daily_limit < 1 or cfg.backup_retention < 1:
         raise ConfigError("sync.daily_limit and backup.retention must be >= 1")
     if cfg.memory_stale_months < 1 or cfg.memory_asset_stale_months < 1:
@@ -525,6 +560,12 @@ def effective(cfg: Config) -> list[tuple[str, str, str]]:
         ("ui.session_hours", str(cfg.ui_session_hours), s.get("ui.session_hours", "")),
         ("ui.key_rotation_days", str(cfg.ui_key_rotation_days), s.get("ui.key_rotation_days", "")),
         ("ui.remote_tls_ack", str(cfg.ui_remote_tls_ack).lower(), s.get("ui.remote_tls_ack", "")),
+        ("ui.passkeys", str(cfg.ui_passkeys).lower(), s.get("ui.passkeys", "")),
+        ("ui.sso", cfg.ui_sso, s.get("ui.sso", "")),
+        ("ui.sso_jwks_url", cfg.ui_sso_jwks_url or "(none)", s.get("ui.sso_jwks_url", "")),
+        ("ui.sso_issuer", cfg.ui_sso_issuer or "(not checked)", s.get("ui.sso_issuer", "")),
+        ("ui.sso_audience", cfg.ui_sso_audience or "(not checked)", s.get("ui.sso_audience", "")),
+        ("ui.sso_users", f"{len(cfg.ui_sso_users)} mapped" if cfg.ui_sso_users else "(none)", s.get("ui.sso_users", "")),
     ]
     from coach.analytics.settings import AnalyticsSettings
     eff = AnalyticsSettings.from_dict(cfg.analytics)

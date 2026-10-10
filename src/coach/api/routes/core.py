@@ -61,14 +61,16 @@ def session(request: Request, state: AppState = Depends(get_state)):
     sec = request.app.state.security
     cfg = state.cfg
     user = getattr(request.state, "user", None)
+    sso = request.app.state.sso
+    auth = {"passkeys": cfg.ui_passkeys, "sso": sso is not None, "sso_sign_out": sso.sign_out if sso else None}
     if user is not None and user.is_child:                  # a child gets the session and nothing about the setup (coach, banks, history)
         return SessionInfo(csrf_token=sec.csrf_token(request.state.cookie), version=__version__, user=user.to_dict(),
                            today=state.clock().isoformat(), allow_remote=False, coach={"configured": False, "backend": "", "message": ""},
-                           sync_daily_limit=0, enable_banking_configured=False, memory_history=False)
+                           sync_daily_limit=0, enable_banking_configured=False, memory_history=False, auth=auth)
     from coach.api.coachjobs import availability
     coach_ok, coach_msg = availability(cfg)
     return SessionInfo(csrf_token=sec.csrf_token(request.state.cookie), version=__version__,
-                       user=user.to_dict() if user is not None else None,
+                       user=user.to_dict() if user is not None else None, auth=auth,
                        today=state.clock().isoformat(), allow_remote=cfg.ui_allow_remote,
                        coach={"configured": coach_ok, "backend": cfg.coach_backend,
                               "message": coach_msg or f"The coach answers through {cfg.coach_backend}."},

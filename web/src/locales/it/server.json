@@ -343,7 +343,16 @@
     "migration_pending": "Il database va aggiornato: esegui `coach db migrate` nel terminale.",
     "alerts_disabled": "Gli avvisi sono disattivati ([alerts] enabled = false in config.toml).",
     "coach_busy": "Il coach sta già rispondendo a una domanda: aspetta che finisca.",
-    "internal_error": "Errore imprevisto: guarda il terminale in cui gira `coach ui`."
+    "internal_error": "Errore imprevisto: guarda il terminale in cui gira `coach ui`.",
+    "sso_missing": "Nessuna sessione e nessuna identità firmata dal proxy: apri l'app attraverso di esso, oppure usa un link di accesso monouso.",
+    "sso_unmapped": "Il tuo provider di identità ti ha fatto accedere, ma quell'identità non corrisponde a nessun accesso di questa app. Aggiungila alla tabella [ui.sso_users] della configurazione, come \"owner\" o come id di accesso:",
+    "sso_rejected": "Il token del provider di identità è stato rifiutato. Esci dal provider e rientra, oppure usa un link di accesso monouso.",
+    "passkeys_disabled": "Le passkey non sono attive su questo server ([ui] passkeys = true).",
+    "passkey_rejected": "Questa passkey non è stata accettata qui: riprova, oppure apri un link di accesso monouso.",
+    "passkey_host": "Una passkey ha bisogno di un nome host: apri l'app come http://localhost:PORT su questa macchina.",
+    "passkey_challenge": "Questa richiesta di passkey è scaduta: ricomincia.",
+    "passkey_invalid": "La risposta del browser non è stata verificata.",
+    "passkey_limit": "Questo accesso ha già dieci passkey: rimuovine una prima."
   },
   "explain": {
     "entity": "l'esercente canonico «{{merchant}}» ha la categoria predefinita {{default_category}}",

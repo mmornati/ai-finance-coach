@@ -265,4 +265,4 @@ def test_db_migrate_command_on_an_encrypted_db_takes_its_safety_copy_with_the_ke
     cmd_db_migrate(Namespace(insecure=False, create=False), cfg)
     assert list(cfg.db_path.parent.glob("*.pre-migrate-*.bak"))
     c = dbm.connect(cfg)
-    assert [v for v, _, _ in dbm.status(c)["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+    assert [v for v, _, _ in dbm.status(c)["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]

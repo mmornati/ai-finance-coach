@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from apihelpers import CALLS, HOST, PORT, TODAY, Ctx, api, ctx, login, make_client, static_dir, world  # noqa: F401
 from coach.api import security as sec
-from coach.api.app import create_app
+from coach.api.app import PUBLIC_PATHS, create_app
 from coach.api.server import check_bind, login_url
 from coach.cli import main
 from coach.config import ConfigError, load_config
@@ -315,6 +315,8 @@ def test_a_rejected_mutation_changes_nothing_on_every_endpoint(ctx):
     before = world_fingerprint(ctx)
     anon = TestClient(ctx.app, base_url=HOST)
     for method, path in routes:
+        if (method, path) in PUBLIC_PATHS:            # E16: the calls that CREATE a session have their own refusal tests (test_api_passkeys)
+            continue
         url = path.replace("{kind}", "members").replace("{item_id}", "zed").replace("{qid}", "q-001").replace("{uid}", "fo") \
             .replace("{pid}", "p-20260101-abcdef").replace("{budget_id}", "x").replace("{annotation_id}", "x") \
             .replace("{anomaly_id}", "x").replace("{change_id}", "x").replace("{insight_id}", "x") \

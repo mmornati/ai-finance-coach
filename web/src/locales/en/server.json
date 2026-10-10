@@ -315,7 +315,16 @@
     "migration_pending": "The database needs an update: run `coach db migrate` in your terminal.",
     "alerts_disabled": "Alerts are turned off ([alerts] enabled = false in config.toml).",
     "coach_busy": "The coach is already answering a question: wait for it to finish.",
-    "internal_error": "Unexpected error: see the terminal running `coach ui`."
+    "internal_error": "Unexpected error: see the terminal running `coach ui`.",
+    "sso_missing": "No session and no signed identity from the proxy: open the app through it, or use a one-time login link.",
+    "sso_unmapped": "Your identity provider signed you in, but that identity is mapped to no login of this app. Add it to the [ui.sso_users] table of the configuration as \"owner\" or a login id:",
+    "sso_rejected": "The identity provider's token was refused. Sign out of the provider and in again, or use a one-time login link.",
+    "passkeys_disabled": "Passkeys are not enabled on this server ([ui] passkeys = true).",
+    "passkey_rejected": "This passkey was not accepted here: try again, or open a one-time login link.",
+    "passkey_host": "A passkey needs a host name: open the app as http://localhost:PORT on this machine.",
+    "passkey_challenge": "This passkey request expired: start again.",
+    "passkey_invalid": "The browser's answer could not be verified.",
+    "passkey_limit": "This login already has ten passkeys: remove one first."
   },
   "explain": {
     "entity": "canonical merchant '{{merchant}}' has the default category {{default_category}}",

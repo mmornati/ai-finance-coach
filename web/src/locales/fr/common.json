@@ -96,7 +96,13 @@
     "intro": "Pour votre sécurité, cette page ne vous connecte jamais d'elle-même. Au démarrage de l'application, <code>coach ui</code> affiche dans le terminal un lien de connexion à usage unique : ouvrez ce lien dans ce navigateur.",
     "lost": "Perdu ou déjà utilisé ? Affichez-en un nouveau :",
     "docker": "Avec Docker : <code>docker compose exec coach coach ui --login-link</code>",
-    "reload": "J'ai ouvert le lien : recharger"
+    "reload": "J'ai ouvert le lien : recharger",
+    "passkeyHeading": "Se connecter avec une clé d'accès",
+    "passkeyIntro": "Ce navigateur ou cet appareil détient une clé d'accès (passkey) pour l'application : Face ID, Touch ID, Windows Hello ou une clé de sécurité ouvre votre session.",
+    "passkey": "Utiliser ma clé d'accès",
+    "passkeyCancelled": "La demande de clé d'accès a été annulée ou n'a pas abouti.",
+    "ssoTitle": "Connecté via votre fournisseur d'identité",
+    "ssoHint": "Cette application est derrière un fournisseur d'identité : une session s'ouvre d'elle-même une fois que vous y êtes connecté. Le lien ci-dessous reste la solution de secours."
   },
   "ui": {
     "close": "Fermer",
@@ -683,5 +689,22 @@
     "title": "Cette page n'existe pas",
     "back": "Retour au tableau de bord",
     "body": "Vérifiez l'adresse, ou utilisez le menu."
+  },
+  "passkeys": {
+    "title": "Clés d'accès",
+    "subtitle": "Une clé d'accès (passkey) permet à cet appareil de se connecter avec Face ID, Touch ID, Windows Hello ou une clé de sécurité, sans lien de connexion. Chaque clé appartient à cette connexion et au nom d'hôte que vous utilisez maintenant.",
+    "empty": "Aucune clé d'accès sur cette connexion pour le moment.",
+    "label": "Nom de la clé d'accès",
+    "labelPlaceholder": "mon téléphone",
+    "add": "Ajouter une clé d'accès pour cet appareil",
+    "added": "Clé d'accès ajoutée.",
+    "remove": "Supprimer la clé d'accès {{label}}",
+    "removeShort": "Supprimer",
+    "removed": "Clé d'accès supprimée.",
+    "created": "ajoutée le {{date}}",
+    "lastUsed": "dernière utilisation le {{date}}",
+    "never": "jamais utilisée",
+    "synced": "synchronisée",
+    "unsupported": "Ce navigateur ne peut pas créer de clé d'accès ici (il faut https, ou localhost)."
   }
 }

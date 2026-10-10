@@ -35,6 +35,7 @@ class SessionInfo(BaseModel):
     enable_banking_configured: bool
     memory_history: bool
     user: Optional[dict] = None             # E14-8: who this session is (id, role, member_id, prefs)
+    auth: dict = {}                         # E16: the ways into a session: {"passkeys": bool, "sso": bool, "sso_sign_out": str | None}
 
 
 class Page(BaseModel):

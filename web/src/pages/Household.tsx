@@ -5,6 +5,7 @@ import type { ParseKeys } from "i18next";
 import { Plus, Trash2, UserRound } from "lucide-react";
 import { Async, Badge, Button, Card, Dialog, DiffView, Disclosure, EmptyState, Field, Input, Notice, PageHeader, Select, Skeleton } from "@/components/ui";
 import { CopyCommand } from "@/components/CopyCommand";
+import { PasskeysCard } from "@/components/Passkeys";
 import { useDryRun, useGet, useHousehold, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { useUser } from "@/lib/app";
@@ -32,6 +33,7 @@ export default function Household() {
             <Accounts d={d} />
             <Rules d={d} />
             <Logins d={d} />
+            <PasskeysCard />
             <Preferences />
             <Audit />
           </div>

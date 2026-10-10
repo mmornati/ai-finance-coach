@@ -11,10 +11,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response
 
 from coach import __version__
-from coach.api import errors, jobs as jobs_mod, security as sec
+from coach.api import errors, jobs as jobs_mod, passkeys as passkeys_mod, security as sec, sso as sso_mod
 from coach.api.coachjobs import CoachJobs
-from coach.api.routes import (alerts, analytics, coach, connections, core, household, loans, me, memory, onboarding, optimizer, plans, quality,
-                              rental, review, setup, subs, transactions, wealth)
+from coach.api.routes import (alerts, analytics, coach, connections, core, household, loans, me, memory, onboarding, optimizer, passkeys, plans,
+                              quality, rental, review, setup, subs, transactions, wealth)
 from coach.api.state import CURRENT_ACTOR, AppState
 from coach.household import users as users_mod
 from coach.config import Config
@@ -25,13 +25,19 @@ STATIC_DIR = Path(__file__).parent / "static"
 ASSET_EXT = {"js", "css", "png", "svg", "ico", "webmanifest", "json", "map", "txt", "woff", "woff2", "jpg", "jpeg", "webp", "xml"}
 EXCHANGE_PATH = "/api/v1/session/exchange"
 API_PREFIX = "/api/v1"
+# The calls that need no session: they CREATE one (the one-time link, a passkey assertion) or say how one can start. Nothing else.
+PUBLIC_PATHS = frozenset({
+    ("POST", EXCHANGE_PATH), ("GET", f"{API_PREFIX}/session/methods"),
+    ("POST", f"{API_PREFIX}/session/passkey/options"), ("POST", f"{API_PREFIX}/session/passkey/verify")})
 # E14-8: what a CHILD login may call. Everything else is denied (403), whatever its method and whether or not the endpoint exists:
 # deny by default, so a new endpoint is closed to a child until someone adds it here on purpose. The data of /me/* is the child's own,
-# taken from the login (never from a parameter of the request).
+# taken from the login (never from a parameter of the request). E16: a child enrols and removes its OWN passkeys.
 CHILD_ALLOWED = frozenset({
     ("GET", f"{API_PREFIX}/session"), ("POST", f"{API_PREFIX}/session/logout"), ("GET", f"{API_PREFIX}/meta/taxonomy"),
     ("GET", f"{API_PREFIX}/me"), ("GET", f"{API_PREFIX}/me/summary"), ("GET", f"{API_PREFIX}/me/transactions"),
-    ("GET", f"{API_PREFIX}/me/preferences"), ("PUT", f"{API_PREFIX}/me/preferences")})
+    ("GET", f"{API_PREFIX}/me/preferences"), ("PUT", f"{API_PREFIX}/me/preferences"),
+    ("GET", f"{API_PREFIX}/session/passkeys"), ("POST", f"{API_PREFIX}/session/passkeys/options"), ("POST", f"{API_PREFIX}/session/passkeys"),
+    ("POST", f"{API_PREFIX}/session/passkeys/delete")})
 
 
 def child_allowed(method: str, path: str) -> bool:
@@ -64,6 +70,9 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
         session_hours=cfg.ui_session_hours, secure_cookie=cfg.ui_allow_remote, data_dir=cfg.data_dir)
     static = static_dir or STATIC_DIR
     app.state.static = static
+    # E16: the other ways into a session. Both off by default; the one-time link always works.
+    app.state.sso = sso_mod.SsoVerifier(cfg) if cfg.ui_sso != "none" else None
+    app.state.challenges = passkeys_mod.Challenges()
     errors.install(app)
 
     @app.middleware("http")
@@ -86,11 +95,49 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
                 if user is None or not user.active:
                     sid = None                                       # deleted or disabled: the cookie is worthless
                     user = None
+        new_cookie = None
+        if sid is None and is_api and app.state.sso is not None and (method, path) not in PUBLIC_PATHS:
+            # E16: the proxy already signed this person in; its SIGNED token (never a plain header) names the login. The ordinary cookie
+            # is issued on this very response, so the rest of the session model (CSRF, limits, child scope, audit) is unchanged.
+            got = _sso_login(request)
+            if isinstance(got, Response):
+                return got
+            user, new_cookie = got
+            cookie = new_cookie
+            sid = security.parse_cookie(cookie)
         token_actor = CURRENT_ACTOR.set(user.id if user and user.id != users_mod.LEGACY_ID else None)
         try:
-            return await _guarded(request, call_next, path, method, is_api, cookie, sid, user)
+            resp = await _guarded(request, call_next, path, method, is_api, cookie, sid, user)
+            if new_cookie is not None and resp.status_code < 500:
+                set_session_cookie(app, resp, new_cookie)
+            return resp
         finally:
             CURRENT_ACTOR.reset(token_actor)
+
+    def _sso_login(request: Request):
+        """(user, cookie) for a valid, mapped proxy token; a 401 response otherwise. The site check of `_guarded` applies after."""
+        verifier = app.state.sso
+        token = request.headers.get(verifier.header)
+        if not token:
+            return errors.respond(401, "sso_missing", f"no valid session and no {verifier.provider} token on the request: is the app reached "
+                                                     "through the proxy? (the one-time login link still works)")
+        if request.headers.get("sec-fetch-site") not in (None, "same-origin", "none"):
+            return errors.respond(403, "forbidden", "cross-site request refused")
+        login, who, reason = verifier.identity(token)
+        if login is None:
+            if reason == "unmapped":
+                return errors.respond(401, "sso_unmapped", f"signed in to {verifier.provider} as {who!r}, which is mapped to no login of this app: "
+                                                           "add it to [ui.sso_users] (\"owner\", or a `coach users` login id)", {"identity": who})
+            return errors.respond(401, "sso_rejected", f"the {verifier.provider} token was refused ({reason}): sign out of the proxy and in again, "
+                                                       "or open a one-time login link", {"reason": reason})
+        if login == sso_mod.OWNER:
+            return users_mod.LEGACY, security.new_cookie()
+        with state.read() as ucon:
+            u = users_mod.get(ucon, login)
+        if u is None or not u.active:
+            return errors.respond(401, "sso_rejected", f"[ui.sso_users] maps this identity to the login {login!r}, which does not exist or is "
+                                                       "disabled (`coach users list`)", {"reason": "login"})
+        return u, security.new_cookie(user=login)
 
     async def _guarded(request, call_next, path, method, is_api, cookie, sid, user):
         if is_api:
@@ -100,7 +147,7 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
             ctype = request.headers.get("content-type", "")
             has_body = request.headers.get("content-length", "0") not in ("0", "") or "transfer-encoding" in request.headers
             bad_type = (ctype and not ctype.lower().startswith("application/json")) or (has_body and not ctype)
-            if method == "POST" and path == EXCHANGE_PATH:           # the one call that needs no session: it creates it
+            if (method, path) in PUBLIC_PATHS:                       # the calls that need no session: they create one, or say how
                 if not security.origin_allowed(request.headers.get("origin")):
                     return errors.respond(403, "forbidden", "origin not allowed")
                 if bad_type:
@@ -137,8 +184,8 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
                 pass
         return resp
 
-    for r in (core, analytics, alerts, plans, subs, optimizer, wealth, loans, rental, transactions, review, memory, onboarding, connections, coach,
-              quality, setup, household, me):
+    for r in (core, passkeys, analytics, alerts, plans, subs, optimizer, wealth, loans, rental, transactions, review, memory, onboarding, connections,
+              coach, quality, setup, household, me):
         app.include_router(r.router, prefix="/api/v1")
 
     @app.get("/api/docs", include_in_schema=False)

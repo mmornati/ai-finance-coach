@@ -18,6 +18,8 @@ no secret value is ever printed). `coach schedule run` runs it weekly as a warn-
 | bank consents (sessions) | Enable Banking, ids in the database | read access to the accounts, up to 90 days / the bank's limit |
 | API keys / tokens | Keychain: `anthropic_api_key`, `ntfy_token`, `smtp_password`, `telegram_bot_token` | spend money, send messages as you |
 | web app session key and login tokens | `data/ui-session.key`, `ui-login.json`, `ui-revoked.json`, `ui-state.json` | whoever holds a valid cookie sees all the data and can drive the app; a cookie of a CHILD login (E14-8) only reaches that child's own data (`/me/*`: the guard denies every other endpoint), and its role is read from the database on every request |
+| passkeys (E16) | `ui_passkeys` table of the database: PUBLIC keys only, with their login and host name | nothing by itself (the private key stays on the device); a stolen or cloned device is the risk: remove its passkey in the web app |
+| the SSO mapping (E16) | `[ui.sso_users]` in `config.toml`, and the proxy's own accounts | whoever controls a mapped identity-provider account opens that login; the token is verified against the provider's keys fetched from `[ui] sso_jwks_url` |
 | backups and exports | `backups/`, `data/exports/` | the whole data set in one file (encrypted with `backup_key`) |
 | the integrity of memory | `memory/*.yaml` | what the coach believes about the household; a poisoned memory corrupts every later answer |
 
@@ -166,6 +168,14 @@ keyring"`; `uv run coach ...` itself is not blocked.
 12. **Per-person logins (E14-8) are as private as the link and the device.** A child login's server-side scope is deny-by-default and tested over every route, but the session is a
     cookie: whoever holds the child's browser holds that session until it expires (`[ui] session_hours`) or the login is disabled (`coach users disable`, effective on the next request).
     The owner login (a session with no user) still sees everything and is for the person at the machine. A shared joint account can only be attributed to a child through the rules you write.
+13. **A passkey (E16) is as safe as the device and its unlock.** The server checks origin, relying-party id, signature and counter, so a phishing page or a
+    cloned authenticator is refused, but a person who can unlock the device opens the login the passkey belongs to. `--rotate-session-key` does not remove
+    passkeys: remove a lost device's passkey in the web app. Enrolment happens from a session, so whoever holds a session can add a passkey for it.
+14. **SSO (E16) moves the first gate to the proxy.** The app verifies the proxy's signed token, never a plain header, against keys fetched from its own
+    configuration; what it cannot verify is that the proxy is the only way to reach it (another published port, another route without the forward-auth
+    middleware) or that the identity-provider account is well protected (MFA, passkeys there). The JWKS fetch over plain http on a container network trusts
+    that network; a TLS-terminating tunnel in front of the proxy sees the traffic in clear. `coach security audit` reports the mode; the one-time link keeps
+    working and `sso = "none"` switches the mode off.
 
 ## 7. If something leaks
 
@@ -176,3 +186,5 @@ keyring"`; `uv run coach ...` itself is not blocked.
   it, or the console).
 * An API key escaped (Anthropic, ntfy, SMTP, Telegram): revoke at the provider, `coach config set-secret <name>` with the new one.
 * The web session key or a login token escaped: `uv run coach ui --rotate-session-key`.
+* A device with a passkey is lost: remove that passkey in the web app (Household > Passkeys; a child: My money), then rotate the session key.
+* An identity-provider account used for SSO is compromised: disable it (or remove it from `[ui.sso_users]`), rotate the session key, review `audit_log`.
