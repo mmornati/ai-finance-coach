@@ -5,6 +5,29 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Security and privacy: findings of the pre-publication review of 2026-10-09
+- The classification and document-extraction `claude -p` (`classify run|compare|enrich`, `eval models`, `memory doc extract --send`) now gets the
+  same isolation as the coach runtime: no settings file, hooks off, no slash command, every built-in tool denied (`WebSearch` only for `enrich`),
+  `--restricted` when configured, and an empty temporary working directory. Before, the project's `CLAUDE.md`, the user's own `CLAUDE.md`, the
+  auto-memory and any hook of the current directory could be added to a classification prompt (regression test in `test_llm_backends.py`).
+- `coverage` (the first call of every coach run) sent the real bank names, even in coarse mode. The redactor now maps a `bank` field to its kind
+  (`regional bank`, `online bank`) in coarse mode and strips the region in standard mode, like the memory context already did.
+- The classification payload no longer carries the known towns (cut from the descriptor, the raw example and the kNN hints, as `enrich` already
+  did) nor the exact average amount per merchant: it is rounded to an order of magnitude (1-2-5 series). `docs/privacy.md` now lists every field.
+- Web app: a stray `?dry_run=true` on an endpoint that has no dry run no longer skips the audit row nor opens the lax preview budget; the
+  middleware checks that the matched endpoint really takes `dry_run` (`DRY_RUN_TABLE`). Remote mode sends `Strict-Transport-Security`. A missing
+  secret is reported by name only (never the path of the secrets folder).
+- `.dockerignore` mirrors `.gitignore` for every personal file pattern; the image carries OCI source / licence labels; the Claude Code permission
+  template denies `Write` on `memory/` and `coach-home/` and reading the Docker secrets folder.
+
+### Documentation
+- `docs/enable-banking.md`: who Enable Banking is (a Finnish FSA-registered AISP), what it sees and keeps, its free personal-use terms, what was
+  not found (no published certification), and the exact read-only calls this app makes, with dated sources.
+- README: a "personal open-source project, no warranty, not a regulated service" paragraph under the disclaimer. `docs/privacy.md`: an
+  "Other people's data" section for the other adults, the children and the counterparties. `docs/security.md`: the key location and the 180-day
+  consent corrected, log rotation, the `[coach] claude_env` caveat.
+- `LICENSE.choose.md` (the decision aid, which still said "not licensed yet") is removed: the licence is MIT, in `LICENSE`.
+
 ### Fixed: "Ask the coach" went blank after a question in recent browsers
 - Recent Chromium returns a Promise from `scrollIntoView`; the page's auto-scroll effect returned it to React, which called it as a cleanup function and
   unmounted the whole app on the next answer. The effect now has a block body (regression test in `Coach.test.tsx`).

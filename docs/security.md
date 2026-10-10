@@ -14,8 +14,8 @@ no secret value is ever printed). `coach schedule run` runs it weekly as a warn-
 | the database | `data/finance.db` (SQLCipher) | every transaction, balance, IBAN, merchant, insight |
 | the household memory | `memory/` (+ `.history.git`, `.proposals`, documents) | names, loans, contracts, contract numbers, contact details |
 | `db_key`, `backup_key`, `proposal_key` | macOS Keychain (service `ai-finance-coach`) or environment | decrypt the database / backups; seal memory proposals |
-| Enable Banking private key | a `.pem` file outside the repo (default `~/.config/ai-finance-coach/`) | with the app id it can create bank sessions and read account data for as long as a consent lives |
-| bank consents (sessions) | Enable Banking, ids in the database | read access to the accounts, up to 90 days / the bank's limit |
+| Enable Banking private key | a `.pem` file, 0600, under the coach home (`enablebanking/eb-private-key.pem`; in Docker `coach-home/`, outside the repository: keep it there, the audit warns when it sits inside a checkout) | with the app id it can create bank sessions and read account data for as long as a consent lives |
+| bank consents (sessions) | Enable Banking, ids in the database | read access to the accounts, up to 180 days (`coach connect --days`) / the bank's limit; see [enable-banking.md](enable-banking.md) |
 | API keys / tokens | Keychain: `anthropic_api_key`, `ntfy_token`, `smtp_password`, `telegram_bot_token` | spend money, send messages as you |
 | web app session key and login tokens | `data/ui-session.key`, `ui-login.json`, `ui-revoked.json`, `ui-state.json` | whoever holds a valid cookie sees all the data and can drive the app; a cookie of a CHILD login (E14-8) only reaches that child's own data (`/me/*`: the guard denies every other endpoint), and its role is read from the database on every request |
 | backups and exports | `backups/`, `data/exports/` | the whole data set in one file (encrypted with `backup_key`) |
@@ -148,9 +148,11 @@ keyring"`; `uv run coach ...` itself is not blocked.
    environment, which holds none unless you add them.
 4. **Redaction is heuristic.** It removes IBANs, e-mails, phones, long numbers and household names and withholds person-like merchants, but a
    merchant title can still carry a town or a small business name, and a stranger's name that looks like a brand can pass. `[privacy] model_detail =
-   "coarse"` (default) generalises more; `local_only` removes the exposure.
+   "coarse"` (default) generalises more (bank names become their kind, towns are cut, amounts sent for classification are rounded to an order of
+   magnitude); `"standard"` sends brand and bank names and free-text notes with name / regex scrubbing only; `local_only` removes the exposure.
 5. **A provider sees what it is sent** (and Anthropic's `claude -p` may itself send telemetry according to its own settings): this application
-   cannot audit the `claude` binary. The egress journal records what the coach handed to it.
+   cannot audit the `claude` binary. The egress journal records what the coach handed to it, under the host `api.anthropic.com`: if you list
+   `ANTHROPIC_BASE_URL` or a proxy variable in `[coach] claude_env`, the traffic goes where YOU pointed it and the journal still says Anthropic.
 6. **The egress gate with no activated policy** loads `config.toml` (or `$COACH_CONFIG`) and applies it; if that is impossible every outbound
    call is refused. **The egress gate is cooperative inside the process**: it stops the application's own call sites (and the coverage test keeps them registered),
    it does not stop another program on the machine, nor a person editing `config.toml`. It cannot enforce the interactive skills' web search (a
@@ -161,7 +163,7 @@ keyring"`; `uv run coach ...` itself is not blocked.
 8. **Unlinking is not shredding** (`coach wipe`, `restore --force`): FileVault and deleting the keys are the real erase.
 9. **`tests` and the repo scan use heuristics**: the secret scan finds known key shapes and high-entropy assignments; it is not a full secret scanner,
    and it does not look at git history (there is no git in this working copy; run a scanner such as gitleaks before publishing a repository).
-10. **Logs** under `data/logs/` can name a bank or account label in warnings; they are owner-only but not rotated.
+10. **Logs** under `data/logs/` can name a bank or account label in warnings; they are owner-only, rotated by size and age (`coach logs`).
 11. **The web build** (`src/coach/api/static/`) is public code; it holds no secret (the audit scans `web/` sources; build output is skipped).
 12. **Per-person logins (E14-8) are as private as the link and the device.** A child login's server-side scope is deny-by-default and tested over every route, but the session is a
     cookie: whoever holds the child's browser holds that session until it expires (`[ui] session_hours`) or the login is disabled (`coach users disable`, effective on the next request).

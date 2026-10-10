@@ -165,6 +165,11 @@ claude -p --model <model> --output-format stream-json --verbose --include-partia
 `coach coach digest --weekly --dry-run` prints exactly this command, the MCP config, the environment names, the prompts, the MCP
 instructions and every tool definition (the same functions build the real run).
 
+The classification and document-extraction calls (`classify run|compare|enrich`, `eval models`, `memory doc extract --send`) run the same
+`claude -p` with the same `--setting-sources ""`, `--settings disableAllHooks`, `--strict-mcp-config`, `--disable-slash-commands`, `--tools ""`
+(`WebSearch` only for `enrich`), `--disallowedTools` and `--restricted`, from an empty temporary directory
+(`coach.classify.backends.claude_classify_command`); they use `--output-format json` and do not verify an init event.
+
 **What the isolation does and does not do** (an earlier version of this page overstated it):
 
 * `claude` starts in an EMPTY temporary directory created outside the repository (`mkdtemp`, 0700, removed afterwards): the
