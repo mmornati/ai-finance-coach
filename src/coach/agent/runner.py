@@ -45,7 +45,7 @@ ALLOWED_EXTRA_TOOLS = {"ListMcpResourcesTool", "ReadMcpResourceTool"}        # c
 FORWARD_ENV = ("COACH_HOME", "COACH_DB", "COACH_MEMORY_DIR", "COACH_DATA_DIR", "COACH_CONFIG_DIR", "COACH_CONFIG",
                "COACH_TAXONOMY_FILE", "COACH_RULES_FILE", "COACH_SECRETS_BACKEND", "COACH_SECRETS_DIR", "COACH_SECRETS_ALLOW_READABLE",
                "COACH_IN_CONTAINER", "PYTHONPATH", "PATH", "HOME", "LANG", "LC_ALL")
-DENIED_BUILTINS = "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,WebSearch,WebFetch,Task,NotebookEdit,TodoWrite"
+from coach.claude_cli import DENIED_BUILTINS, ISOLATION_ARGS  # noqa: E402  (shared with the classification backend)
 Emit = Callable[[str, dict], None]
 
 
@@ -170,9 +170,9 @@ def claude_command(cfg, spec: P.PromptSpec, mcp_path: Path, model: str, max_call
     allowed = ",".join(MCP_PREFIX + n for n in (spec.tools or TOOL_NAMES))
     cmd = ["claude", "-p", "--model", model, "--output-format", "stream-json", "--verbose", "--include-partial-messages",
            "--no-session-persistence", "--strict-mcp-config", "--mcp-config", str(mcp_path),
-           "--setting-sources", "", "--settings", '{"disableAllHooks":true}',
+           *ISOLATION_ARGS,
            "--tools", "", "--allowedTools", allowed, "--disallowedTools", DENIED_BUILTINS,
-           "--permission-mode", "dontAsk", "--disable-slash-commands",
+           "--permission-mode", "dontAsk",
            "--system-prompt", P.system_prompt(max_calls)]
     budget = float(getattr(cfg, "coach_max_budget_usd", 0) or 0) * spec.tool_factor
     if budget > 0:

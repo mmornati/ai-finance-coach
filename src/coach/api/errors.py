@@ -86,9 +86,15 @@ def install(app: FastAPI) -> None:
             return respond(400 if not isinstance(e, ConnectError) else 409, "rejected", str(e))
 
     @app.exception_handler(SecretNotFound)
+    async def _secret(_: Request, e: SecretNotFound):
+        # names the missing secret only: never a value, and never the path of the secrets folder (that is in str(e), for the terminal)
+        name = getattr(e, "name", None)
+        return respond(409, "not_configured", f"the secret '{name}' is not configured: `coach config set-secret {name}`" if name
+                       else "a secret is not configured: `coach security audit` lists them")
+
     @app.exception_handler(SecretBackendError)
-    async def _secret(_: Request, e):
-        return respond(409, "not_configured", str(e))                 # names the missing secret, never a value
+    async def _secret_backend(_: Request, e):
+        return respond(409, "not_configured", "the secret store cannot be read (unlock or allow the Keychain, or check the secrets folder)")
 
     @app.exception_handler(Exception)
     async def _any(_: Request, e: Exception):

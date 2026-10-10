@@ -169,7 +169,7 @@ def test_the_logs_command_with_no_log(cfg, capsys):
 # ---------------------------------------------------------------- the scheduler writes them
 
 def fake_claude(captured):
-    def run(cmd, input=None, capture_output=None, text=None, timeout=None, env=None):
+    def run(cmd, input=None, capture_output=None, text=None, timeout=None, env=None, cwd=None):
         captured.append((cmd, input))
         items = json.loads(input.strip().splitlines()[-1])
         results = [{"id": it["id"], "merchant": it["key"].title(), "category": "food.groceries", "confidence": 0.9, "recurring_hint": False} for it in items]

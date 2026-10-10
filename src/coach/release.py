@@ -2,7 +2,7 @@
 
 Checks (each ``ok`` / ``fail`` / ``skip``; the exit code is 1 when any fails):
 
-* a LICENSE file exists and no ``TODO(license)`` marker is left in a publishable file (the licence is the OWNER's decision: see LICENSE.choose.md)
+* a LICENSE file exists and no ``TODO(license)`` marker is left in a publishable file (the licence is the OWNER's decision)
 * the version: pyproject == ``coach.__version__`` == the top section of CHANGELOG.md, which carries a date
 * the web app is built (``src/coach/api/static``) and not older than its sources
 * hygiene: no personal data in any publishable file or in the sdist list (``coach.hygiene``): the structural rules (keys, home paths, IBANs, e-mails) and the
@@ -32,7 +32,7 @@ LICENSE_MARKER = "TODO" + "(license)"          # built in two pieces so that thi
 REPO_MARKER = "TODO" + "(repo-url)"
 CONTACT_MARKER = "TODO" + "(contact)"          # the reporting address of SECURITY.md / CODE_OF_CONDUCT.md: the owner's to give
 MARKERS = (LICENSE_MARKER, CONTACT_MARKER, REPO_MARKER)
-MARKER_EXEMPT = frozenset({"LICENSE.choose.md", "docs/release.md", "src/coach/release.py"})
+MARKER_EXEMPT = frozenset({"docs/release.md", "src/coach/release.py"})
 REQUIRED_DOCS = ("README.md", "CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md", "CHANGELOG.md",
                  "docs/architecture.md", "docs/release.md", "docs/docker.md", "docs/claude-settings.example.json")
 REQUIRED_TEMPLATES = ("src/coach/templates/memory/README.md", "src/coach/templates/memory/household.yaml",
@@ -63,7 +63,7 @@ def check_license(root: Path) -> list[Check]:
     if found:
         return [Check("license.file", "ok", "LICENSE file", ", ".join(found))]
     return [Check("license.file", "fail", "LICENSE file",
-                  "no LICENSE file: the licence is the owner's decision (MIT or AGPL-3.0, see LICENSE.choose.md); save the chosen text as LICENSE")]
+                  "no LICENSE file: the licence is the owner's decision; save the chosen text (MIT, see README) as LICENSE")]
 
 
 def check_license_markers(root: Path, files: list[Path]) -> Check:

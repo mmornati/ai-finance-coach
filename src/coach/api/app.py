@@ -4,11 +4,13 @@ from __future__ import annotations
 import html
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response
+from starlette.routing import compile_path
 
 from coach import __version__
 from coach.api import errors, jobs as jobs_mod, security as sec
@@ -36,6 +38,31 @@ CHILD_ALLOWED = frozenset({
 
 def child_allowed(method: str, path: str) -> bool:
     return (method.upper(), path.rstrip("/") or "/") in CHILD_ALLOWED
+
+
+ROUTERS = (core, analytics, alerts, plans, subs, optimizer, wealth, loans, rental, transactions, review, memory, onboarding, connections, coach,
+           quality, setup, household, me)
+
+
+def dry_run_table(routers=ROUTERS) -> list[tuple[frozenset, re.Pattern]]:
+    """(methods, path regex) of every endpoint that takes a `dry_run` query parameter, i.e. that really previews. FastAPI ignores an
+    unknown query parameter, so the middleware must not trust `?dry_run=true` on its own (a plain write would skip the audit row and
+    get the lax preview budget)."""
+    out = []
+    for r in routers:
+        for route in r.router.routes:
+            dep = getattr(route, "dependant", None)
+            if dep is not None and any(p.name == "dry_run" for p in dep.query_params):
+                rx, _fmt, _conv = compile_path(API_PREFIX + route.path)
+                out.append((frozenset(route.methods or ()), rx))
+    return out
+
+
+def declares_dry_run(table, method: str, path: str) -> bool:
+    return any(method in methods and rx.match(path) for methods, rx in table)
+
+
+DRY_RUN_TABLE = dry_run_table()
 
 
 def set_session_cookie(app: FastAPI, resp: Response, value: str) -> None:
@@ -93,6 +120,7 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
             CURRENT_ACTOR.reset(token_actor)
 
     async def _guarded(request, call_next, path, method, is_api, cookie, sid, user):
+        preview = False                                              # a real dry run of the matched endpoint (see below)
         if is_api:
             site = request.headers.get("sec-fetch-site")
             if site not in (None, "same-origin", "none"):
@@ -118,7 +146,10 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
                         return errors.respond(403, "csrf", "missing or wrong CSRF token (reload the page)")
                     if bad_type:
                         return errors.respond(415, "unsupported_media_type", "send application/json")
-                    bucket = security.preview_bucket if request.query_params.get("dry_run") == "true" else security.write_bucket
+                    # a preview only when the MATCHED endpoint really has a dry run: a stray `?dry_run=true` on a plain write must
+                    # neither open the lax bucket nor skip the audit row below
+                    preview = request.query_params.get("dry_run") == "true" and declares_dry_run(DRY_RUN_TABLE, method, path)
+                    bucket = security.preview_bucket if preview else security.write_bucket
                     if not bucket.take(sid):
                         r = errors.respond(429, "rate_limited", "too many changes in a short time: wait a moment")
                         r.headers["Retry-After"] = "5"
@@ -128,8 +159,9 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
         request.state.user = user
         resp = await call_next(request)
         sec.apply_headers(resp, no_store=is_api, csp=sec.DOCS_CSP if path == "/api/docs" else None)
-        if (is_api and sid is not None and user is not None and method in sec.MUTATING
-                and request.query_params.get("dry_run") != "true"):
+        if security.secure_cookie:                                   # remote mode (behind TLS): never a plain-http first hop again
+            resp.headers["Strict-Transport-Security"] = "max-age=31536000"
+        if is_api and sid is not None and user is not None and method in sec.MUTATING and not preview:
             try:                                                     # E14-8: who changed what (never a payload)
                 with state.write(quiet=True) as acon:
                     users_mod.audit(acon, user.id, method, path, resp.status_code)
@@ -137,9 +169,8 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
                 pass
         return resp
 
-    for r in (core, analytics, alerts, plans, subs, optimizer, wealth, loans, rental, transactions, review, memory, onboarding, connections, coach,
-              quality, setup, household, me):
-        app.include_router(r.router, prefix="/api/v1")
+    for r in ROUTERS:
+        app.include_router(r.router, prefix=API_PREFIX)
 
     @app.get("/api/docs", include_in_schema=False)
     def docs() -> HTMLResponse:

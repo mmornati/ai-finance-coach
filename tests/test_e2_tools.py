@@ -208,6 +208,17 @@ def run_ns(**kw):
     return Namespace(**base)
 
 
+def test_the_prompt_items_lose_their_town_and_exact_amount(con):
+    from coach.classify.candidates import known_places
+    from coach.classify.llm import merchant_items
+    for i, m in enumerate(("BOULANGERIE PAUL ROQUEMONT", "GARAGE DUPUIS ROQUEMONT", "OPTIQUE LUX ROQUEMONT")):
+        tx(con, f"p{i}", m, amount=-37.0 - i)
+    places = known_places(con)
+    assert ("roquemont",) in places or ("ROQUEMONT",) in places or any("roquemont" in " ".join(p).lower() for p in places)
+    items = merchant_items(con, ["BOULANGERIE PAUL ROQUEMONT"], places=places)
+    assert "ROQUEMONT" not in json.dumps(items).upper() and items[0]["avg_amount"] == 50       # 37 -> the 1-2-5 series
+
+
 def test_cmd_run_labels_near_duplicates_without_llm_and_passes_examples(cfg, con, monkeypatch):
     from coach.classify import backends
     seen = []

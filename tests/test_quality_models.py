@@ -237,7 +237,7 @@ def test_the_real_claude_backend_goes_through_the_egress_journal(cfg, con, monke
     egress.activate(cfg, insecure=True)
     captured = []
 
-    def fake_run(cmd, input=None, capture_output=None, text=None, timeout=None, env=None):
+    def fake_run(cmd, input=None, capture_output=None, text=None, timeout=None, env=None, cwd=None):
         captured.append(cmd)
         items = json.loads(input.split("Items (direction=out means money spent; avg_amount in EUR):\n", 1)[1])
         res = [{"id": i["id"], "merchant": "x", "category": ANSWERS.get(i["key"], "other.uncategorized"), "confidence": 0.9, "recurring_hint": False} for i in items]
