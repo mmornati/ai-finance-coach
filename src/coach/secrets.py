@@ -204,7 +204,7 @@ def get_secret(name: str, required: bool = True, env=None) -> str | None:
     raise SecretNotFound(
         f"Secret '{name}' not found. Provide it either as the environment variable {var} or in the "
         f"macOS Keychain (service '{SERVICE}'): `uv run coach config set-secret {name}` "
-        f"(add --generate to create a random one).")
+        f"(add --generate to create a random one).", name)
 
 
 def set_secret(name: str, value: str) -> None:

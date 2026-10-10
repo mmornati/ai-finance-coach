@@ -249,6 +249,16 @@ class Redactor:
     def owner_of(self, o):
         return self.owner.get(o, self.text(o)) if isinstance(o, str) else o
 
+    def bank(self, name: str) -> str:
+        """A bank (`coverage`, account lists) is where the money is: in coarse mode only its KIND reaches the model (`regional bank`,
+        `online bank`, like the memory context), in standard mode the brand without its region (`Caisse d'Epargne Normandie` -> `Caisse d'Epargne`)."""
+        if not name or name == "?":
+            return name
+        if self.detail == "coarse":
+            from coach.memory.context import generic_bank
+            return generic_bank(name)
+        return self.text(strip_regions(name))
+
     # -- the walk
     def walk(self, obj, key: Optional[str] = None):
         if isinstance(obj, dict):
@@ -268,6 +278,8 @@ class Redactor:
                     out[k] = [x if not isinstance(x, str) or x.startswith(KEEP_IDS) else self.tx(x) for x in v]
                 elif k in ("label", "account_label") and isinstance(v, str):
                     out[k] = self.label.get(v, self.text(v))
+                elif k == "bank" and isinstance(v, str):
+                    out[k] = self.bank(v)
                 elif k == "accounts" and isinstance(v, list) and v and all(isinstance(x, str) for x in v):
                     out[k] = [self.label.get(x, self.account.get(x, self.text(x))) for x in v]
                 else:

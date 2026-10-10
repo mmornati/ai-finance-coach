@@ -100,7 +100,7 @@ def plan(con, cfg, specs: list[str], sample: int = 0, seed: int = 7, batch: int 
     holdout = frozenset(gm["keys"])
     for spec in specs:
         backend, model = parse_spec(spec, cfg)
-        jobs = prepare_jobs(con, gm["keys"], model, batch, None, 0, names, cfg.llm_allowlist, holdout)
+        jobs = prepare_jobs(con, gm["keys"], model, batch, None, 0, names, cfg.llm_allowlist, holdout, places=known_places(con, cfg.memory_dir))
         for _, j in jobs:
             j["purpose"] = "eval"
         chars = sum(len(j["static"]) + len(j["dynamic"]) for _, j in jobs)
@@ -206,7 +206,8 @@ def run(con, cfg, specs: list[str], *, sample: int = 100, seed: int = 7, batch: 
         cost = 0.0
         try:
             _, cost = label_keys(con, p["keys"], m["model"], batch, workers, backend=backend, index=None, knn_k=0, names=names,
-                                 on_batch=collect, allow=cfg.llm_allowlist, purpose="eval", exclude_examples=holdout)
+                                 on_batch=collect, allow=cfg.llm_allowlist, purpose="eval", exclude_examples=holdout,
+                                 places=known_places(con, cfg.memory_dir))
         except Exception as e:                                                      # noqa: BLE001  (LabelRunError: some batches failed)
             failed = [type(e).__name__]
             cost = getattr(e, "cost", 0.0) or 0.0

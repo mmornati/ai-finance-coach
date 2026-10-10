@@ -178,10 +178,15 @@ PROVIDER_BY_KIND = {"regulated_savings": "bank", "savings_account": "bank", "lif
                     "crypto": "crypto platform", "real_estate_rental": "property manager"}
 
 
+GENERIC_BANKS = ("bank", "regional bank", "online bank")
+
+
 def generic_bank(name: str) -> str:
     """A bank by its KIND for a model in coarse mode: no brand, no region (`Caisse d'Epargne Normandie` -> `regional bank`)."""
     from coach.analytics.regions import strip_regions
     low = (name or "").lower()
+    if low in GENERIC_BANKS:                        # already generalised (idempotent: the redactor may walk a context twice)
+        return low
     if any(o in low for o in ONLINE_BANKS):
         return "online bank"
     return "regional bank" if strip_regions(name or "") != (name or "") else "bank"

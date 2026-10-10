@@ -168,6 +168,7 @@ nav:
       - Alerts: alerts.md
       - Privacy: privacy.md
       - Security: security.md
+      - Enable Banking: enable-banking.md
       - Quality: quality.md
       - Docker: docker.md
       - Languages: i18n.md

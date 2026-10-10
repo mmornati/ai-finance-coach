@@ -9,6 +9,10 @@ It is built for one household in France or Italy, runs on macOS or Linux (or in 
 
 > **Not financial advice.** The coach explains your own spending and saving habits. It does not recommend investments, loans or insurers, and
 > gives no tax or legal advice. Estimates (a mortgage renegotiation, a cancellation date) are labelled as estimates.
+>
+> **A personal open-source project.** It is maintained by one person who is not a financial, tax or legal professional (FR: AMF / CIF; IT: Consob),
+> it has not been audited by a third party, it is not a regulated service and it comes with no warranty ([MIT](LICENSE)). You run it on your own
+> machine, with your own bank data, at your own risk; read [docs/security.md](docs/security.md) before you trust it with a bank.
 
 ## Why you can trust it with bank data
 
@@ -159,6 +163,7 @@ Permission rules mitigate; they do not prevent. The residual risks are listed ho
 | [docs/docker.md](docs/docker.md) | Docker, secrets files, daily job in a container |
 | [docs/architecture.md](docs/architecture.md) | Modules, data flows, trust boundaries |
 | [docs/privacy.md](docs/privacy.md), [docs/security.md](docs/security.md) | Data flows, threat model, permission rules |
+| [docs/enable-banking.md](docs/enable-banking.md) | The bank aggregator: regulation, what it sees, what this app calls |
 | [docs/coach.md](docs/coach.md), [docs/skills.md](docs/skills.md) | The coach runtime and its skills |
 | [docs/memory.md](docs/memory.md), [docs/analytics.md](docs/analytics.md), [docs/subscriptions.md](docs/subscriptions.md), [docs/loans.md](docs/loans.md), [docs/alerts.md](docs/alerts.md), [docs/household.md](docs/household.md), [docs/ui.md](docs/ui.md), [docs/quality.md](docs/quality.md) | The parts |
 | [docs/i18n.md](docs/i18n.md) | Translations of the web app: adding a string or a language |
@@ -170,6 +175,7 @@ Permission rules mitigate; they do not prevent. The residual risks are listed ho
 
 * One household, France and Italy (rules tables, taxonomy, bank description parsers). Other countries need parsers and rules: see CONTRIBUTING.
 * Enable Banking's restricted mode covers *your own* accounts; each bank consent lasts at most 180 days and is renewed with `coach reconnect`.
+  Who they are, what they see and keep, and exactly which read-only calls this app makes: [docs/enable-banking.md](docs/enable-banking.md).
 * The `claude-code` backend uses your personal Claude subscription through `claude -p` and is meant for low-frequency personal use; use the API or
   Ollama for automation or sharing.
 * LLM labels and answers can be wrong; they carry an "AI-generated" label, and every figure is checked against the tools' results.
@@ -177,5 +183,4 @@ Permission rules mitigate; they do not prevent. The residual risks are listed ho
 
 ## License
 
-[MIT](LICENSE), chosen on 2026-10-06 (the comparison that informed the decision is kept in [LICENSE.choose.md](LICENSE.choose.md)).
-Contributions are accepted under the same licence.
+[MIT](LICENSE). Contributions are accepted under the same licence.

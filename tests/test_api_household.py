@@ -364,6 +364,10 @@ def test_the_audit_records_who_changed_what_and_the_memory_history_the_login(own
     assert {"ui:papa", "ui"} <= by_source
     assert not any("limit" in json.dumps(r) for r in a["requests"])                 # never a payload
     assert owner.get("/household/audit", actor="papa").json()["requests"] == mine
+    # a stray `?dry_run=true` on an endpoint that has NO dry run is a real write: it is audited like any other
+    papa.client.post(api("/proposals/no-such-proposal/reject"), params={"dry_run": "true"}, json={}, headers={"X-CSRF-Token": papa.csrf})
+    after = [r for r in owner.get("/household/audit", limit=50).json()["requests"] if r["actor"] == "papa"]
+    assert [r["path"] for r in after if "reject" in r["path"]] == ["/api/v1/proposals/no-such-proposal/reject"]
     assert owner.get("/household/users").json()["users"][0]["id"] == "mia-kid" or owner.get("/household/users").json()["users"]
 
 

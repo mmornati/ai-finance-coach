@@ -25,6 +25,15 @@ config/rules.yaml
 *.db
 *.enc
 *.bak
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+ui-*.json
+setup-state.json
+coach-export-*
+hygiene-terms*
+docker-compose.override.yml
 .claude
 docs
 tests

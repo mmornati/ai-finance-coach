@@ -27,7 +27,7 @@ def test_the_package_metadata_is_complete():
 def test_the_licence_is_unset_until_the_owner_decides_and_the_marker_says_so():
     text = (ROOT / "pyproject.toml").read_text()
     if "license" not in PROJECT:
-        assert "TODO" + "(license)" in text and "LICENSE.choose.md" in text          # unset on purpose, with the pointer
+        assert "TODO" + "(license)" in text                                          # unset on purpose, with the marker
     else:
         assert PROJECT["license"] and "TODO" + "(license)" not in text
 
@@ -128,7 +128,7 @@ def test_the_permission_rules_template_covers_every_category_of_docs_security_an
 
 def test_the_documentation_set_exists_and_links_resolve():
     import re
-    docs = ["README.md", "CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md", "CHANGELOG.md", "LICENSE.choose.md", "docs/architecture.md", "docs/release.md",
+    docs = ["README.md", "CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md", "CHANGELOG.md", "docs/enable-banking.md", "docs/architecture.md", "docs/release.md",
             "docs/docker.md", "docs/reference.md"]
     for d in docs:
         text = (ROOT / d).read_text()
@@ -146,7 +146,7 @@ def test_the_readme_promises_what_exists():
     p = build_parser()
     for argv in (["init"], ["doctor"], ["setup"], ["setup", "enablebanking"], ["schedule", "loop"], ["dev", "release-check"], ["dev", "hygiene"]):
         assert p.parse_args(argv).fn
-    for needle in ("docs/claude-settings.example.json", "docs/architecture.md", "docs/docker.md", "LICENSE.choose.md", "not financial advice", "Screenshots"):
+    for needle in ("docs/claude-settings.example.json", "docs/architecture.md", "docs/docker.md", "docs/enable-banking.md", "not financial advice", "Screenshots"):
         assert needle.lower() in r.lower(), needle
 
 

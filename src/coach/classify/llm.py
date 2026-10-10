@@ -19,6 +19,7 @@ from coach.db import now_iso
 LABEL_HEAD = """You label merchants from a European (France/Italy) household's bank statements.
 Bank descriptors are truncated (~25 chars), upper-cased and usually end with the city.
 Payment-processor prefixes (Mol*=Mollie, SUMUP, SQ, NYX, Sunday, PAYPAL, ZTL...) precede the real merchant.
+Descriptors reach you without their town, and avg_amount is an order of magnitude (1-2-5 series), not an exact figure.
 For each item return: a clean human merchant name (brand, no city), the single best category id
 from the list, a confidence 0..1 (use < 0.6 when you are guessing from a vague name), and
 recurring_hint=true if this merchant is typically a subscription / recurring bill.
@@ -117,20 +118,40 @@ def llm_label(items: list[dict], model: str, examples: list[tuple[str, str, str]
     return data["results"], usage.cost_usd
 
 
-def merchant_items(con, keys: list[str], index=None, k: int = 5) -> list[dict]:
+def coarse_amount(x: float) -> float:
+    """An amount as an order of magnitude on the 1-2-5 series (12.40 -> 10, 37 -> 50, 843 -> 1000): enough to tell a coffee from a rent,
+    never the exact figure of a direct debit (an exact rent, nursery or loan instalment is a quasi-identifier)."""
+    import math
+    x = abs(float(x or 0))
+    if x < 0.5:
+        return 0
+    e = 10 ** math.floor(math.log10(x))
+    steps = [1 * e, 2 * e, 5 * e, 10 * e]
+    best = min(steps, key=lambda s: abs(math.log(s) - math.log(x)))
+    return int(best) if best >= 1 else round(best, 2)
+
+
+def merchant_items(con, keys: list[str], index=None, k: int = 5, places=None) -> list[dict]:
+    """The prompt items of a batch: the descriptor and its raw example WITHOUT the known towns (`places`, see
+    :func:`coach.classify.candidates.known_places`), a count, a direction, a rounded amount, the payment types, the kNN hints."""
+    from coach.classify.candidates import strip_places
     items = []
+
+    def bare(s):
+        return (strip_places(s, places) or s) if (places and s) else s
+
     for i, key in enumerate(keys):
         n, avg, ex, types, fx = con.execute(f"""
             SELECT COUNT(*), ROUND(AVG(t.amount),2), MAX(e.merchant_raw), GROUP_CONCAT(DISTINCT e.tx_type),
                    GROUP_CONCAT(DISTINCT e.fx_currency)
             FROM tx_enriched e JOIN transactions t USING(tx_key)
             WHERE e.merchant_key=? AND {needs_llm_sql()}""", (key,)).fetchone()
-        it = {"id": i, "key": key, "raw_example": ex, "n": n,
-              "direction": "in" if (avg or 0) > 0 else "out", "avg_amount": abs(avg or 0), "types": types}
+        it = {"id": i, "key": bare(key), "raw_example": bare(ex), "n": n,
+              "direction": "in" if (avg or 0) > 0 else "out", "avg_amount": coarse_amount(avg), "types": types}
         if fx:
             it["foreign_currency"] = fx
         if index is not None and set((types or '').split(',')) <= knn_mod.MERCHANT_TYPES:
-            sim = [{"key": mk, "name": name, "category": cat} for _, mk, name, cat in index.neighbours(key, k)]
+            sim = [{"key": bare(mk), "name": name, "category": cat} for _, mk, name, cat in index.neighbours(key, k)]
             if sim:
                 it["similar"] = sim
         items.append(it)
@@ -155,14 +176,18 @@ class LabelRunError(RuntimeError):
         self.failed, self.results, self.cost = failed, results, cost
 
 
-def prepare_jobs(con, keys, model, batch, index=None, knn_k=5, names=frozenset(), allow=(), exclude_examples=frozenset()):
+def prepare_jobs(con, keys, model, batch, index=None, knn_k=5, names=frozenset(), allow=(), exclude_examples=frozenset(), places=None):
     """[(batch keys, job kwargs)]: the exact (redacted) requests that would be sent. `exclude_examples` (E12-3): merchant keys that must not
-    appear as a user example (the gold merchants of a shadow evaluation: the model must not be shown the answer)."""
+    appear as a user example (the gold merchants of a shadow evaluation: the model must not be shown the answer). `places`: the known
+    towns, cut from every descriptor (`None` = look them up)."""
+    if places is None:
+        from coach.classify.candidates import known_places
+        places = known_places(con)
     examples = [e for e in user_examples(con, allow=allow) if e[0] not in exclude_examples]
     out = []
     for i in range(0, len(keys), batch):
         b = keys[i:i + batch]
-        items = [redact_item(it, names) for it in merchant_items(con, b, index, knn_k)]
+        items = [redact_item(it, names) for it in merchant_items(con, b, index, knn_k, places)]
         ex = [(redact(k, names), redact(n, names), c) for k, n, c in examples]
         static, dynamic = label_prompt(items, ex)
         out.append((b, dict(static=static, dynamic=dynamic, schema=label_schema(), model=model, purpose="label",
@@ -396,7 +421,8 @@ def collect_pending_batches(con, backend, handlers=None) -> int:
 
 
 def label_keys(con, keys, model, batch, workers, backend: LLMBackend | None = None, index=None,
-               knn_k: int = 5, names=frozenset(), on_batch=None, allow=(), purpose: str = "label", exclude_examples=frozenset()):
+               knn_k: int = 5, names=frozenset(), on_batch=None, allow=(), purpose: str = "label", exclude_examples=frozenset(),
+               places=None):
     """Label `keys` in batches of `batch` merchants. Returns ([(key, result)], total cost).
 
     Each finished batch is validated, its usage logged in `llm_usage` (also when the answer was unusable),
@@ -409,7 +435,7 @@ def label_keys(con, keys, model, batch, workers, backend: LLMBackend | None = No
     from concurrent.futures import as_completed
     import uuid
     backend = backend or ClaudeCodeBackend()
-    prepared = prepare_jobs(con, keys, model, batch, index, knn_k, names, allow, exclude_examples)
+    prepared = prepare_jobs(con, keys, model, batch, index, knn_k, names, allow, exclude_examples, places)
     for _, j in prepared:
         j["purpose"] = purpose
     cost, results, failed = 0.0, [], []

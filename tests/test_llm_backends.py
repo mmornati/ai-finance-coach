@@ -1,5 +1,6 @@
 """E2-6: pluggable LLM backends (all mocked: no network, no subprocess), usage log, redaction, person guard."""
 import json
+from pathlib import Path
 import os
 from argparse import Namespace
 from types import SimpleNamespace
@@ -115,10 +116,16 @@ def seed(con, names):
 
 # ---------------------------------------------------------------- the three backends
 
+def test_the_prompt_items_carry_no_town_and_only_an_order_of_magnitude():
+    from coach.classify.llm import coarse_amount
+    assert [coarse_amount(x) for x in (0, 0.3, 0.8, 1.2, 3.4, 12.4, 37, 149, 843, 1250, 4800)] == [0, 0, 1, 1, 5, 10, 50, 200, 1000, 1000, 5000]
+    assert coarse_amount(-37) == 50                                     # the sign is in `direction`, not here
+
+
 def test_claude_code_backend_command_prompt_and_usage(monkeypatch):
     seen = {}
 
-    def fake_run(cmd, input, capture_output, text, timeout, env):
+    def fake_run(cmd, input, capture_output, text, timeout, env, cwd=None):
         seen.update(cmd=cmd, prompt=input, env=env)
         return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps(
             {"structured_output": results_json(1), "total_cost_usd": 0.0123,
@@ -141,6 +148,35 @@ def test_claude_code_error_is_raised(monkeypatch):
         ClaudeCodeBackend().complete("s", "d", LABEL_SCHEMA, "sonnet")
 
 
+def test_the_classification_claude_p_is_isolated_like_the_coach_runtime(monkeypatch, cfg, tmp_path):
+    """No settings file, no hook, no built-in tool, an empty working directory outside the project: the classify `claude -p` must never
+    pick up a CLAUDE.md, a memory file or a hook of the current directory (the scheduled job runs from the project root)."""
+    from coach.classify.backends import claude_classify_command
+    from coach.claude_cli import DENIED_BUILTINS
+    seen = {}
+
+    def fake_run(cmd, input, capture_output, text, timeout, env, cwd=None):
+        seen.update(cmd=cmd, cwd=cwd)
+        return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({"structured_output": results_json(1)}))
+    monkeypatch.setattr("coach.classify.backends.subprocess.run", fake_run)
+    monkeypatch.chdir(tmp_path)
+    ClaudeCodeBackend(cfg).complete("s", "d", LABEL_SCHEMA, "haiku")
+    cmd = seen["cmd"]
+    assert cmd[cmd.index("--setting-sources") + 1] == "" and json.loads(cmd[cmd.index("--settings") + 1]) == {"disableAllHooks": True}
+    assert "--disable-slash-commands" in cmd and "--strict-mcp-config" in cmd and cmd[cmd.index("--tools") + 1] == ""
+    denied = set(cmd[cmd.index("--disallowedTools") + 1].split(","))
+    assert {"Bash", "Read", "Write", "Edit", "WebSearch", "WebFetch", "Task"} <= denied and "--restricted" not in cmd
+    run_dir = Path(seen["cwd"])
+    assert run_dir != tmp_path and not str(run_dir).startswith(str(tmp_path)) and not run_dir.exists()   # temp dir, removed afterwards
+    # the web-search variant (classify enrich) allows WebSearch and nothing else; --restricted follows the configuration
+    cfg.coach_claude_restricted = True
+    cmd, timeout = claude_classify_command(cfg, "haiku", LABEL_SCHEMA, web_search=True)
+    denied = set(cmd[cmd.index("--disallowedTools") + 1].split(","))
+    assert cmd[cmd.index("--tools") + 1] == "WebSearch" and cmd[cmd.index("--allowedTools") + 1] == "WebSearch"
+    assert "WebSearch" not in denied and {"WebFetch", "Bash", "Read"} <= denied and "--restricted" in cmd and timeout == 900
+    assert set(DENIED_BUILTINS.split(",")) - {"WebSearch"} == denied
+
+
 @pytest.mark.parametrize("with_cfg", [True, False])
 def test_claude_code_backend_gets_the_minimal_environment_never_a_secret(monkeypatch, cfg, with_cfg):
     from coach import egress
@@ -154,7 +190,7 @@ def test_claude_code_backend_gets_the_minimal_environment_never_a_secret(monkeyp
         egress.activate(cfg, insecure=True)
     seen = {}
 
-    def fake_run(cmd, input, capture_output, text, timeout, env):
+    def fake_run(cmd, input, capture_output, text, timeout, env, cwd=None):
         seen["env"] = env
         return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({"structured_output": results_json(1)}))
     monkeypatch.setattr("coach.classify.backends.subprocess.run", fake_run)
@@ -464,7 +500,7 @@ def test_openai_secret_is_not_read_from_the_generic_openai_variable():
 def test_claude_code_backend_logs_in_with_the_oauth_token_secret_when_set(monkeypatch):
     seen = []
 
-    def fake_run(cmd, input, capture_output, text, timeout, env):
+    def fake_run(cmd, input, capture_output, text, timeout, env, cwd=None):
         seen.append(env)
         return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({"structured_output": results_json(1), "usage": {}}))
     monkeypatch.setattr("coach.classify.backends.subprocess.run", fake_run)

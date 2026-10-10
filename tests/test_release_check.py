@@ -29,7 +29,7 @@ class Tools:
 def make_project(tmp_path):
     """A copy of the real project's release-relevant files, with the owner's decisions made (licence, contact, URL)."""
     p = tmp_path / "proj"
-    for rel in ("pyproject.toml", "README.md", "CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md", "CHANGELOG.md", "LICENSE.choose.md", ".gitignore",
+    for rel in ("pyproject.toml", "README.md", "CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md", "CHANGELOG.md", ".gitignore",
                 "Dockerfile", "docker-compose.yml", ".dockerignore", ".github/workflows/ci.yml", "docs/architecture.md", "docs/release.md", "docs/docker.md",
                 "docs/claude-settings.example.json", "src/coach/templates/memory/README.md", "src/coach/templates/memory/household.yaml",
                 "src/coach/templates/memory/liabilities/_template.yaml", "src/coach/templates/memory/contracts/_template.yaml"):
@@ -85,9 +85,7 @@ def test_it_fails_when_the_licence_is_missing(tmp_path):
     p = make_project(tmp_path)
     (p / "LICENSE").unlink()
     c = run(p)
-    assert failed(c) == ["license.file"] and "LICENSE.choose.md" in c["license.file"].detail
-    (p / "LICENSE.choose.md").unlink()                                      # the decision aid is optional once decided
-    assert failed(run(p)) == ["license.file"]
+    assert failed(c) == ["license.file"] and "LICENSE" in c["license.file"].detail
 
 
 def test_a_tiny_or_wrongly_named_licence_file_does_not_count(tmp_path):
@@ -95,7 +93,7 @@ def test_a_tiny_or_wrongly_named_licence_file_does_not_count(tmp_path):
     (p / "LICENSE").write_text("MIT")
     assert failed(run(p)) == ["license.file"]
     (p / "LICENSE").unlink()
-    (p / "LICENSE.choose.md").write_text("x" * 500)                            # this is the explainer, not a licence
+    (p / "LICENSE.notes.md").write_text("x" * 500)                             # an explainer is not a licence
     assert failed(run(p)) == ["license.file"]
     (p / "COPYING").write_text("GNU AFFERO GENERAL PUBLIC LICENSE " * 10)
     assert failed(run(p)) == []
@@ -111,8 +109,7 @@ def test_an_owner_placeholder_left_in_a_publishable_file_fails(tmp_path, marker,
 
 def test_the_marker_in_a_git_ignored_or_exempt_file_is_not_a_blocker(tmp_path):
     p = make_project(tmp_path)
-    (p / "LICENSE.choose.md").write_text(f"mentions {R.LICENSE_MARKER} on purpose\n")
-    (p / "docs" / "release.md").write_text(f"{R.CONTACT_MARKER}\n")
+    (p / "docs" / "release.md").write_text(f"{R.LICENSE_MARKER} {R.CONTACT_MARKER}\n")
     (p / "tests").mkdir()
     (p / "tests" / "t.py").write_text(f"# {R.LICENSE_MARKER}\n")
     assert failed(run(p)) == []
@@ -314,7 +311,7 @@ def test_the_real_checkout_is_blocked_while_the_licence_is_undecided():
     if any(p.name.lower() in R.LICENSE_NAMES for p in ROOT.iterdir() if p.is_file()):
         pytest.skip("a LICENSE exists: the owner has decided")
     checks = {c.id: c for c in R.release_checks(ROOT, tests=False, web=False, ci=True)}
-    assert checks["license.file"].status == "fail" and "LICENSE.choose.md" in checks["license.file"].detail
+    assert checks["license.file"].status == "fail" and "LICENSE" in checks["license.file"].detail
     assert checks["license.todo"].status == "fail" and R.LICENSE_MARKER in checks["license.todo"].detail
     with pytest.raises(SystemExit) as e:
         R.cmd_release_check(Namespace(root=None, skip_tests=True, skip_web=True, json=False), None)
