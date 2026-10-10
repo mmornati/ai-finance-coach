@@ -115,8 +115,9 @@ def cmd_run(a, cfg):
     if a.limit:
         keys = keys[: a.limit]
     names = household_names(con)[0]
+    places = known_places(con, cfg.memory_dir)         # the towns cut from every descriptor before it is sent
     if dry:
-        jobs = prepare_jobs(con, keys, model, a.batch, index, cfg.knn_examples, names, allow)
+        jobs = prepare_jobs(con, keys, model, a.batch, index, cfg.knn_examples, names, allow, places=places)
         print(f"DRY RUN: {len(keys)} merchants in {len(jobs)} request(s); nothing is sent, nothing is written.")
         print(json.dumps(dry_run_payload(jobs), ensure_ascii=False, indent=2))
         return 0
@@ -125,7 +126,7 @@ def cmd_run(a, cfg):
         return labelled_knn
     try:
         results, cost = label_keys(con, keys, model, a.batch, a.workers, backend=backend, index=index,
-                                   knn_k=cfg.knn_examples, names=names, on_batch=store, allow=allow)
+                                   knn_k=cfg.knn_examples, names=names, on_batch=store, allow=allow, places=places)
     except (backends.BatchPending, backends.BatchUnresolved) as e:
         print(f"{e}")
         return labelled_knn
@@ -355,7 +356,7 @@ def cmd_compare(a, cfg):
     if todo:
         try:
             _, cost = label_keys(con, todo, model, a.batch, a.workers, backend=backend, names=names,
-                                 on_batch=store_eval, purpose="compare")
+                                 on_batch=store_eval, purpose="compare", places=known_places(con, cfg.memory_dir))
         except (backends.BatchPending, backends.BatchUnresolved) as e:
             print(f"{e}")
             return

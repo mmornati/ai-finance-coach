@@ -357,6 +357,13 @@ def test_previews_have_their_own_larger_budget(ctx):
     assert codes == [200] * 35
 
 
+def test_a_stray_dry_run_flag_on_a_plain_write_does_not_open_the_preview_budget(ctx):
+    from coach.api.app import DRY_RUN_TABLE, declares_dry_run
+    assert declares_dry_run(DRY_RUN_TABLE, "POST", "/api/v1/budgets") and not declares_dry_run(DRY_RUN_TABLE, "POST", "/api/v1/proposals/x/reject")
+    codes = [ctx.post("/proposals/no-such-proposal/reject", {}, dry_run=True).status_code for _ in range(35)]
+    assert 429 in codes and 200 not in codes                      # the write bucket (30 burst) applies, whatever the query string says
+
+
 # ====================================================================== headers on every response
 
 def assert_hardened(r, api_path=True):

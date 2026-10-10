@@ -18,14 +18,16 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 
 import requests
 
 from coach import egress
-from coach.claude_cli import claude_env
+from coach.claude_cli import DENIED_BUILTINS, ISOLATION_ARGS, claude_env
 
 BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible")
 ALIASES = {"haiku": "claude-haiku-4-5", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
@@ -156,6 +158,24 @@ class LLMBackend:
 
 # ---------------------------------------------------------------- claude -p
 
+def claude_classify_command(cfg, model: str, schema: dict, web_search: bool) -> tuple[list[str], int]:
+    """The `claude -p` of a classification / extraction call, with the SAME isolation as the coach runtime (`docs/coach.md`): no
+    settings file, no hook, no slash command, no built-in tool (WebSearch only for `classify enrich`), `--restricted` when configured.
+    Returns (argv, timeout)."""
+    denied = DENIED_BUILTINS
+    if web_search:
+        denied = ",".join(t for t in DENIED_BUILTINS.split(",") if t != "WebSearch")
+        tools = ["--tools", "WebSearch", "--allowedTools", "WebSearch"]
+    else:
+        tools = ["--tools", ""]
+    cmd = ["claude", "-p", "--model", model, "--output-format", "json", "--no-session-persistence", "--strict-mcp-config",
+           *ISOLATION_ARGS, *tools, "--disallowedTools", denied, "--permission-mode", "dontAsk",
+           "--json-schema", json.dumps(schema)]
+    if getattr(cfg, "coach_claude_restricted", False):
+        cmd.append("--restricted")
+    return cmd, 900 if web_search else 600
+
+
 class ClaudeCodeBackend(LLMBackend):
     name = "claude-code"
     supports_web_search = True
@@ -169,20 +189,17 @@ class ClaudeCodeBackend(LLMBackend):
         egress.allow("llm.claude-code", {"purpose": journal_purpose(purpose), "bytes": len(prompt.encode("utf-8")),
                                          "web_search": bool(web_search)}, cfg=self.cfg)
         t0 = time.monotonic()
-        if web_search:
-            cmd = ["claude", "-p", "--model", model, "--output-format", "json", "--no-session-persistence",
-                   "--tools", "WebSearch", "--allowedTools", "WebSearch", "--strict-mcp-config",
-                   "--disable-slash-commands", "--json-schema", json.dumps(schema)]
-            timeout = 900
-        else:
-            cmd = ["claude", "-p", "--model", model, "--output-format", "json", "--no-session-persistence",
-                   "--tools", "", "--strict-mcp-config", "--disable-slash-commands",
-                   "--json-schema", json.dumps(schema)]
-            timeout = 600
-        # the same minimal environment as the coach runtime: never COACH_DB_KEY, COACH_BACKUP_KEY, ANTHROPIC_API_KEY ... (no cfg:
-        # the activated or loaded configuration the egress gate above used, for its [coach] claude_env extras)
-        env = claude_env(egress.policy_of(self.cfg).cfg)
-        out = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=timeout, env=env)
+        cfg = egress.policy_of(self.cfg).cfg          # the activated or loaded configuration the egress gate above used
+        cmd, timeout = claude_classify_command(cfg, model, schema, web_search)
+        # the same minimal environment as the coach runtime: never COACH_DB_KEY, COACH_BACKUP_KEY, ANTHROPIC_API_KEY ...
+        env = claude_env(cfg)
+        # ... and the same isolation: an EMPTY temporary directory outside the repository, so no CLAUDE.md, .claude/ or memory file
+        # of the current directory is added to the prompt (the scheduled job runs from the project root)
+        run_dir = tempfile.mkdtemp(prefix="coach-classify-")
+        try:
+            out = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=timeout, env=env, cwd=run_dir)
+        finally:
+            shutil.rmtree(run_dir, ignore_errors=True)
         res = json.loads(out.stdout) if out.stdout.strip().startswith("{") else {}
         if out.returncode != 0 or res.get("is_error"):
             diag = safe_diagnostic(out.stderr, prompt)

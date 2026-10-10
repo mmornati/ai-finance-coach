@@ -14,6 +14,10 @@ import os
 SECRET_ENV = ("ANTHROPIC_API_KEY", "COACH_DB_KEY", "COACH_BACKUP_KEY", "COACH_PROPOSAL_KEY", "ANTHROPIC_AUTH_TOKEN")
 ENV_ALLOW = ("PATH", "HOME", "USER", "LOGNAME", "LANG", "TMPDIR", "TERM", "SHELL", "__CF_USER_TEXT_ENCODING",
              "DISABLE_AUTOUPDATER", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC")
+# the built-in tools no `claude -p` of this project may use (the coach runtime and the classification backend alike)
+DENIED_BUILTINS = "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,WebSearch,WebFetch,Task,NotebookEdit,TodoWrite"
+# the settings isolation every `claude -p` of this project gets: no user / project / local settings file, no hook
+ISOLATION_ARGS = ("--setting-sources", "", "--settings", '{"disableAllHooks":true}', "--disable-slash-commands")
 
 
 def claude_env(cfg) -> dict:

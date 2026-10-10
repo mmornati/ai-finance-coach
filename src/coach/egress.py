@@ -62,7 +62,8 @@ INVENTORY: tuple[Flow, ...] = (
          purposes=("sync", "connect", "consent", "revoke"), host="api.enablebanking.com", mode="none"),
     Flow("llm.claude-code", "LLM through the `claude` CLI (Claude Code, personal subscription)",
          "Anthropic (the `claude -p` process talks to it)",
-         "classify run/compare and `eval models`: redacted merchant descriptors + category list + a few labelled examples; classify enrich: the same, plus "
+         "classify run/compare and `eval models`: redacted merchant descriptors without the known towns, payment counts and types, amounts rounded to an "
+         "order of magnitude, nearest labelled merchants as hints, the category list and a few labelled examples; classify enrich: the same, plus "
          "the model searches the web with the merchant descriptor; coach ask/digest/skills: the question, and the REDACTED, pseudonymised "
          "results of the finance tools (computed figures, `h_` refs, merchant titles generalised); memory doc extract: a redacted document text",
          "item-redact: IBANs, e-mails, phones, long digits, ids, titled people and household name tokens removed; person-like merchants "
@@ -198,6 +199,7 @@ EXEMPT_FUNCTIONS: dict[tuple[str, str], str] = {
     ("api/server.py", "cmd_ui"): "uvicorn on loopback + opens the user's browser",
     ("api/coachjobs.py", "availability"): "shutil.which('claude') only; the run goes through agent/runner.py",
     ("agent/runner.py", "claude_command"): "builds the argv of `claude -p`; run_claude_code gates the run",
+    ("classify/backends.py", "claude_classify_command"): "builds the argv of the classification `claude -p`; ClaudeCodeBackend.complete gates the run",
     ("agent/runner.py", "_kill"): "terminates the child process of an already gated run",
     ("security.py", "default_lsof"): "read-only `lsof -nP -iTCP -sTCP:LISTEN` on this machine",
 }

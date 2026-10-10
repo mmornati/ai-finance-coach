@@ -34,7 +34,7 @@ written (migration pending, database locked) waits in memory and is retried; a j
 | Kind | Destination | Data sent | Redaction | Opt-in | Disable |
 |---|---|---|---|---|---|
 | `enable_banking` | `api.enablebanking.com` | app id + a JWT signed with your private key (the key never leaves), consent / session ids, account ids, date ranges. Bank data comes BACK; nothing from your database goes out | none needed (no household data) | `coach connect`, `coach sync`, the scheduled job | `[privacy] offline = true`; do not connect; `coach wipe` can revoke the sessions |
-| `llm.claude-code` | Anthropic, through the `claude` CLI (your subscription) | `classify run` / `compare`: redacted merchant descriptors + the category list + a few labelled examples. `classify enrich`: the same, and the model searches the web with the descriptor. `coach ask` / digests / skills: the question and the REDACTED, pseudonymised results of the finance tools. `memory doc extract --send`: a redacted document text | `item-redact` (IBAN, e-mail, phone, long digit runs, ids, titled people, household name tokens), person-like merchants never sent, finance tools pseudonymise accounts and people and generalise merchants, documents redacted | running those commands; the scheduled job runs `classify run` (digests are opt-in) | `local_only = true` + backend `ollama` |
+| `llm.claude-code` | Anthropic, through the `claude` CLI (your subscription) | `classify run` / `compare` / `eval models`: per merchant the redacted descriptor and one raw bank example, both without the known towns, the number of payments, the direction, the average amount rounded to an order of magnitude (1-2-5 series), the payment types, up to five nearest already-labelled merchants (key, name, category); plus the category list and a few of your own labels as examples (`classify run --dry-run` prints the exact request). `classify enrich`: the same, and the model searches the web with the descriptor. `coach ask` / digests / skills: the question and the REDACTED, pseudonymised results of the finance tools. `memory doc extract --send`: a redacted document text | `item-redact` (IBAN, e-mail, phone, long digit runs, ids, titled people, household name tokens), person-like merchants never sent, finance tools pseudonymise accounts and people and generalise merchants, documents redacted | running those commands; the scheduled job runs `classify run` (digests are opt-in) | `local_only = true` + backend `ollama` |
 | `llm.anthropic-api` | `api.anthropic.com` | as above (no web search) | as above | `[llm]` / `[coach] backend = "anthropic-api"` + the `anthropic_api_key` secret | `local_only = true`; another backend |
 | `llm.ollama` | `[llm] ollama_url` (default `localhost`) | as above (no web search) | as above | `backend = "ollama"` | another backend; a non-loopback URL needs `ollama_allow_remote` and is refused in local mode |
 | `alerts.ntfy` | your ntfy server | an alert title and one short line (`minimal`: no merchant, account, bank or name; the `kid_budget` kind of E14-6 is never sent, not even as a count) | alert guard (`alerts/messages.py`) | `[alerts.ntfy] enabled = true` (off by default) | `enabled = false`; `local_only` |
@@ -111,12 +111,27 @@ Reduced quality is expected: small local models classify and explain less well t
 | compliance flags (`compliance_events`: codes + 100-character snippets of flagged answers) | database | indefinite |
 | encrypted backups | `backups/` | the newest `[backup] retention` (14) |
 | pre-migration safety copies | next to the database (`*.pre-migrate-*.bak`, encrypted with the same key) | the newest 2 |
-| logs, coach init log, web session key and tokens, TLS key | `data/` | logs grow without rotation; the session key is replaced every `[ui] key_rotation_days` (30) |
+| logs, coach init log, web session key and tokens, TLS key | `data/` | logs are rotated by size and age (`coach logs`); the session key is replaced every `[ui] key_rotation_days` (30) |
 | exports | `data/exports/` (or where you put them) | until you delete them |
 | secrets | macOS Keychain (service `ai-finance-coach`) | until you delete them (`coach wipe` asks separately) |
 
 At the providers: what `claude -p` / the Anthropic API / Enable Banking keep is governed by their terms, not by this application. The coach sends
-redacted data only (section 2), and prefers not to send at all (`local_only`).
+redacted data only (section 2), and prefers not to send at all (`local_only`). What Enable Banking is and keeps: [enable-banking.md](enable-banking.md).
+
+### Other people's data
+
+The database holds the money of a whole household, and the descriptions of its transactions name third parties (the person who paid you, the
+shop, the school). The owner of the installation is the one who decides to run it and is responsible for the others:
+
+* **The other adults and the children** of the household who get a login (E14) see their own view of the data; a child's scope is enforced on the
+  server. Tell them, in plain words, that their transactions are stored here, that redacted and pseudonymised results of the analytics (figures,
+  dates, categories, hashed references, never their name) reach the model backend you chose (Anthropic, OpenRouter, Eden AI, a local Ollama), and
+  which privacy mode you run. Nothing in this app does that for you.
+* **Counterparties** (people who transferred money to or from the household) are not sent to a model: person-like merchants are withheld from
+  classification, the finance tools generalise them, and alerts never carry a name. Their names remain in the local database and in your memory
+  files, which is where they would be in any bank statement.
+* The household exemption of the GDPR covers purely personal use. If you run the app for someone outside your household, you become a data
+  controller for them: the exemption no longer applies, and you owe them the information above in writing.
 
 ## 5. Export (`coach export`)
 

@@ -66,6 +66,9 @@ RUN apt-get update \
     && useradd --system --uid 10001 --gid 10001 --no-create-home --home-dir /tmp --shell /usr/sbin/nologin coach \
     && mkdir -p /data /memory /config \
     && chown 10001:10001 /data /memory /config
+LABEL org.opencontainers.image.source="https://github.com/mmornati/ai-finance-coach" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.description="AI finance coach: a private, self-hosted coach for a household's money"
 COPY --from=build /opt/venv /opt/venv
 # empty unless built with WITH_CLAUDE_CODE=1; on a Linux host the host's own native `claude` binary can be bind-mounted here instead
 COPY --from=claude-cli /out /opt/claude

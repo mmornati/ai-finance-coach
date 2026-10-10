@@ -85,6 +85,10 @@ def test_no_tool_output_leaks_a_name_employer_school_town_label_uid_or_key(sessi
             assert key not in low, (name, key)
         assert G.PrivacyGuard(session.data()[2], session.con, session.cfg).violations(json.loads(r.text)) == [], name
     assert "account-main-1" in outs["coverage"].text and "kid-1" in outs["cashflow"].text
+    # a bank is where the money is: in coarse mode (the default) only its KIND reaches the model, on the very first call of a run
+    cov = payload(outs["coverage"])
+    banks = {a.get("bank") for a in (cov if isinstance(cov, list) else cov.get("accounts") or cov.get("result") or [])}
+    assert "fortuneo" not in outs["coverage"].text.lower() and banks and banks <= {"bank", "regional bank", "online bank", None, "?"}, banks
 
 
 def test_memory_context_and_questions_are_coarse_by_default(session):

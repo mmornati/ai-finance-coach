@@ -6,7 +6,7 @@
 
 | Decision | Where |
 |---|---|
-| The licence: **MIT** (the comparison is kept in [LICENSE.choose.md](https://github.com/mmornati/ai-finance-coach/blob/main/LICENSE.choose.md)) | `LICENSE`, `license` in `pyproject.toml`, the README |
+| The licence: **MIT** (decided on 2026-10-06) | `LICENSE`, `license` in `pyproject.toml`, the README |
 | The reporting address: GitHub's private vulnerability reporting of the repository | `SECURITY.md`, `CODE_OF_CONDUCT.md` |
 | The public repository: `https://github.com/mmornati/ai-finance-coach` | `pyproject.toml` `[project.urls]`, the README clone line |
 | The git history starts at the public release (the earlier, unversioned life of the project is not published) | `git init` on 2026-10-06 |

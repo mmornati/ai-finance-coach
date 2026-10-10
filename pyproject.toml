@@ -81,7 +81,7 @@ artifacts = ["src/coach/api/static/**"]
 include = [
     "/src", "/tests", "/web/src", "/web/public", "/web/index.html", "/web/package.json", "/web/pnpm-lock.yaml", "/web/tsconfig.json",
     "/web/vite.config.ts", "/config.example.toml", "/config/import_profiles", "/docs", "/evals", "/Dockerfile", "/docker", "/docker-compose.yml",
-    "/README.md", "/CHANGELOG.md", "/CONTRIBUTING.md", "/SECURITY.md", "/CODE_OF_CONDUCT.md", "/LICENSE*", "/uv.lock", "/.python-version",
+    "/README.md", "/CHANGELOG.md", "/CONTRIBUTING.md", "/SECURITY.md", "/CODE_OF_CONDUCT.md", "/LICENSE", "/uv.lock", "/.python-version",
 ]
 exclude = ["/docs/research", "/evals"]          # the market research and the evaluation data are not part of what a user installs
 artifacts = ["src/coach/api/static/**"]
