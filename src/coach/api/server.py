@@ -106,14 +106,15 @@ def cmd_ui(a, cfg: Config) -> None:
         print(f"WARNING: listening on {host}: reach it only over HTTPS through Tailscale or a VPN, never the internet.",
               file=sys.stderr)
     url = login_url(cfg, port, host, a.dev, sec.LoginTokens(cfg.data_dir).issue())
-    in_container = container_bind_active(cfg, host)
+    in_container = container_marker()
     print(f"coach web app on port {port}  (Ctrl-C to stop)" + ("  [dev mode: API only, run `pnpm dev` in web/]" if a.dev else ""))
-    if in_container:
+    if container_bind_active(cfg, host):
         print(f"WARNING: container mode, listening on {host}. The port MUST be published on the host's 127.0.0.1 ONLY "
               "(docker run -p 127.0.0.1:8765:8765, or the shipped docker-compose.yml). A port published on 0.0.0.0 exposes your bank data to the network.",
               file=sys.stderr)
     if in_container and not sys.stdout.isatty():
         # `docker logs` is readable by anyone who can reach the Docker socket, and the link in it is a login: not printed there.
+        # Whatever the bind mode (the loopback container of docker-compose.yml, or allow_remote behind a proxy): a container is a container.
         dest = write_login_link(cfg, url)
         print(f"\nThe one-time login link was NOT printed (container logs are not private). It is in {dest} (mode 0600, replaced at each start); "
               "get a fresh one with: docker compose exec coach coach ui --login-link\n")

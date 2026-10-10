@@ -219,6 +219,20 @@ def test_in_container_mode_it_warns_loudly_and_keeps_the_login_link_out_of_the_l
     assert "/login#t=" in out2
 
 
+def test_behind_a_proxy_in_a_container_the_login_link_stays_out_of_the_logs_too(tmp_path, monkeypatch, cfg):
+    """allow_remote (the Tailscale / authentik recipes) is not the loopback container mode, but a container is a container: no TTY,
+    no link in `docker logs` (issue #37)."""
+    cfg.ui_container_bind = False
+    cfg.ui_allow_remote, cfg.ui_remote_tls_ack, cfg.ui_allowed_hosts = True, True, ("coach.example.test",)
+    out, err = _run_ui(monkeypatch, tmp_path / "s", cfg, tty=False)
+    assert "/login#t=" not in out and "NOT printed" in out
+    link = cfg.data_dir / "login-link.txt"
+    assert stat.S_IMODE(link.stat().st_mode) == 0o600 and link.read_text().startswith("https://coach.example.test/login#t=")
+    assert "published" not in err                                                          # that warning is the loopback container mode's
+    out2, _ = _run_ui(monkeypatch, tmp_path / "s2", cfg, tty=True)                        # a terminal is private: the link is printed
+    assert "https://coach.example.test/login#t=" in out2
+
+
 def test_without_the_container_mode_nothing_changes(tmp_path, monkeypatch, cfg):
     cfg.ui_container_bind = False
     from coach.config import ConfigError
