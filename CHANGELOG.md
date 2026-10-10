@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed: the login link no longer lands in the container log behind a proxy (#37)
+- In a container without a terminal, `coach ui` writes the one-time login link to the private `login-link.txt` instead of printing it. That only
+  happened in the loopback container mode: with `[ui] allow_remote = true` (the Tailscale and authentik recipes) every start printed a valid link
+  into `docker compose logs`. The file is now used whenever the process runs in a container with no TTY, whatever the bind mode; the
+  "publish the port on 127.0.0.1 only" warning stays specific to the loopback container mode.
+
 ### Added: sign in with a passkey, or through your SSO proxy (E16)
 - The one-time login link was the only way into a session: fine on the machine, heavy on a phone away from home (a shell on the server for every
   new session). Two opt-in ways in, both off by default, the link still works next to them and remains the enrolment and recovery path.
