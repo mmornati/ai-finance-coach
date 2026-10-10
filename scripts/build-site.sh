@@ -8,5 +8,5 @@ rm -rf site
 mkdocs build --strict -d site/docs
 cp -R website/. site/
 # the landing page shows the docs' screenshots and film: they are published once, under /docs/assets/
-test -f site/docs/assets/video/film.mp4
+test -f site/docs/assets/video/film.en.mp4 && test -f site/docs/assets/video/film.fr.mp4
 echo "site/ ready: $(du -sh site | cut -f1)"

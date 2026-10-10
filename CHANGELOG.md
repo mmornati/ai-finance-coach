@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed: the landing page has a real light theme, and the film a voice-over
+- The hero, the redaction card, the stats and the privacy section follow the theme (they stayed dark, and "The model sees" turned the card
+  white with unreadable text: its state class clashed with the model cards' `.model`). The theme button shows the theme it switches to.
+- The film is narrated in English and French (`film.en.mp4`, `film.fr.mp4`, with WebVTT subtitles); the page picks the visitor's language
+  and has a switch. `scripts/demo/make_film.py` renders it with Kokoro, an open-weight speech model run locally (or `--tts edge`).
+
 ### Security and privacy: findings of the pre-publication review of 2026-10-09
 - The classification and document-extraction `claude -p` (`classify run|compare|enrich`, `eval models`, `memory doc extract --send`) now gets the
   same isolation as the coach runtime: no settings file, hooks off, no slash command, every built-in tool denied (`WebSearch` only for `enrich`),

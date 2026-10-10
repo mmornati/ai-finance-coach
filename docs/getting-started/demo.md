@@ -129,6 +129,24 @@ uv run --with playwright --with pillow python scripts/demo/shoot.py /tmp/coach-d
 
 `--only dashboard,coach` limits it to some pages. Like the other demo scripts, it only works against a demo home.
 
+### The narrated film
+
+`scripts/demo/make_film.py` turns the screencasts into the film of the home page, once per language (`film.en.mp4`, `film.fr.mp4`,
+with WebVTT subtitles and a poster). Title cards are rendered by headless Chromium. The voice-over comes from
+[Kokoro](https://github.com/thewh1teagle/kokoro-onnx), an open-weight neural speech model (Apache-2.0) that runs on your machine:
+no account, no key, and the narration never leaves the computer. Each scene lasts as long as its picture or its narration, and the
+voice is normalised to -16 LUFS.
+
+```bash
+brew install espeak-ng           # the phoneme library Kokoro needs (Debian / Ubuntu: apt install espeak-ng)
+# download kokoro-v1.0.onnx and voices-v1.0.bin (model-files-v1.0 release of kokoro-onnx) into ~/kokoro
+uv run --with playwright --with pillow --with kokoro-onnx --with phonemizer-fork --with soundfile \
+    python scripts/demo/make_film.py --kokoro-dir ~/kokoro --lang en,fr
+```
+
+The narration and the title cards of each language are at the top of the script. `--tts edge` uses Microsoft Edge's online voices
+instead (through the open-source `edge-tts` client), when that service accepts the client.
+
 ## See also
 
 - [Install](install.md) and [Quickstart](quickstart.md): the real thing, on your own data
