@@ -18,7 +18,7 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
   ordinary cookie is issued on that response. A plain identity header is never trusted. Refusals say why (`sso_missing`, `sso_unmapped` with the name to
   map, `sso_rejected` with a one-word reason); "Sign out" also ends the proxy's session. Requires `allow_remote`, `remote_tls_ack` and `allowed_hosts`.
 - `coach security audit`: `ui_sso` and `ui_passkeys` checks; `coach config show` lists the new keys (identities are counted, never printed).
-- Docs: [Remote access](docs/configuration/remote.md) (both recipes, Traefik labels), the security model in `docs/ui.md`, the threat model and the
+- Docs: `docs/configuration/remote.md` (both recipes, Traefik labels), the security model in `docs/ui.md`, the threat model and the
   residual risks in `docs/security.md`, the egress inventory in `docs/privacy.md`.
 
 ### Changed: the landing page has a real light theme, and the film a voice-over

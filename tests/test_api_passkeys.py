@@ -115,11 +115,11 @@ def add_login(app, login: str, role: str = "adult", member=None, disabled=None):
 # ====================================================================== enrol, then sign in
 
 def test_methods_tell_the_login_page_what_is_possible(app, world, tmp_path):
-    c = TestClient(app, base_url=HOST)
+    c = RecClient(app, base_url=HOST)                       # recorded: the coverage guard wants a successful call to every endpoint
     assert c.get(api("/session/methods")).json() == {"passkeys": True, "sso": False, "sso_sign_out": None}
     assert "set-cookie" not in c.get(api("/session/methods")).headers
     off = create_app(pk_cfg(world, enabled=False), insecure=True, port=PORT, static_dir=static_dir(tmp_path), inline_jobs=True)
-    assert TestClient(off, base_url=HOST).get(api("/session/methods")).json()["passkeys"] is False
+    assert RecClient(off, base_url=HOST).get(api("/session/methods")).json()["passkeys"] is False
 
 
 def test_a_passkey_enrolled_in_a_session_opens_the_owner_session_later(app):
