@@ -227,6 +227,7 @@ class Security:
         self.write_bucket = Bucket(capacity=30, rate=2.0)       # writes per session
         self.preview_bucket = Bucket(capacity=40, rate=8.0)     # dry-run previews (debounced typing) per session
         self.exchange_bucket = Bucket(capacity=8, rate=8 / 300)  # login attempts, whoever sends them
+        self.passkey_bucket = Bucket(capacity=10, rate=10 / 300)  # passkey assertions (E16), whoever sends them
 
     def _mac(self, label: str, value: str) -> str:
         return hmac.new(self.secret, f"{label}:{value}".encode(), hashlib.sha256).hexdigest()

@@ -133,6 +133,14 @@ INVENTORY: tuple[Flow, ...] = (
          "[privacy] model_detail)", "you start `claude` in this repository with the project's .mcp.json approved",
          "do not approve the server in `/mcp`; [privacy] local_only = true makes `coach mcp serve` refuse to start",
          local_only="refused", offline="refused", purposes=("stdio-session",), host="(MCP client)", mode="analytics-pseudonym"),
+    Flow("ui.sso", "Web app sign-in through an identity-aware proxy (E16): the provider's public keys",
+         "the JWKS URL of [ui] sso_jwks_url (your own authentik, usually on the same machine)",
+         "nothing of the household: an HTTP GET of the provider's PUBLIC signing keys, at most once an hour and once a minute on an unknown key id; "
+         "the person's token comes IN with the request and is verified locally",
+         "n/a: the request carries no household data and no token",
+         "[ui] sso = \"authentik\" (OFF by default) with sso_jwks_url and a [ui.sso_users] table",
+         "[ui] sso = \"none\"; [privacy] offline = true refuses it (the one-time login link still works)",
+         local_only="allowed", offline="refused", purposes=("jwks",), host="(identity provider)", mode="none"),
     Flow("skill.web_search", "Web search by the interactive skills find-cheaper / mortgage-check (Claude Code WebSearch)",
          "the search engine behind Claude Code's WebSearch tool",
          "generic, non-personal queries written by the skill (a service type, a country, a rate): never a name, address, account or "
@@ -164,6 +172,7 @@ CALL_SITES: dict[str, tuple[tuple[str, ...], str]] = {
     "ingest/auth.py": ((), "opens the user's browser at the bank's consent page; the callback is a local server"),
     "ingest/callback.py": ((), "local HTTPS callback server (listens on loopback; no outbound call)"),
     "api/server.py": ((), "web app: uvicorn on loopback; opens the user's browser"),
+    "api/sso.py": (("ui.sso",), "web app SSO: fetches the identity provider's public keys (JWKS) to verify the proxy's signed token"),
     "api/coachjobs.py": ((), "checks that the `claude` binary exists (shutil.which); the run goes through agent/runner.py"),
     "security.py": ((), "audit: read-only `lsof` listing of listening sockets (this machine)"),
     "setup/doctor.py": ((), "`coach doctor`: shutil.which('claude') only (is the CLI installed?); nothing is run"),

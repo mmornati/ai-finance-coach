@@ -10,7 +10,7 @@ from argparse import Namespace
 import pytest
 
 from apihelpers import HOST, PORT, Ctx, RecClient, api, make_client, static_dir
-from coach.api.app import CHILD_ALLOWED, EXCHANGE_PATH, create_app
+from coach.api.app import CHILD_ALLOWED, EXCHANGE_PATH, PUBLIC_PATHS, create_app
 from coach.api import security as sec
 from coach.household import people as people_mod, users as users_mod
 from coach.memory.store import MemoryStore
@@ -267,10 +267,15 @@ def test_a_child_is_denied_every_endpoint_that_is_not_explicitly_allowed(hh, mia
     allowed = {(m, p) for m, p in CHILD_ALLOWED}
     assert allowed == {("GET", "/api/v1/session"), ("POST", "/api/v1/session/logout"), ("GET", "/api/v1/meta/taxonomy"), ("GET", "/api/v1/me"),
                        ("GET", "/api/v1/me/summary"), ("GET", "/api/v1/me/transactions"), ("GET", "/api/v1/me/preferences"),
-                       ("PUT", "/api/v1/me/preferences")}
+                       ("PUT", "/api/v1/me/preferences"),
+                       # E16: a child's OWN passkeys (the login id comes from the session, never from the request)
+                       ("GET", "/api/v1/session/passkeys"), ("POST", "/api/v1/session/passkeys/options"), ("POST", "/api/v1/session/passkeys"),
+                       ("POST", "/api/v1/session/passkeys/delete")}
+    assert {("POST", EXCHANGE_PATH), ("GET", "/api/v1/session/methods"), ("POST", "/api/v1/session/passkey/options"),
+            ("POST", "/api/v1/session/passkey/verify")} == set(PUBLIC_PATHS)                # the calls that need no session: they create one
     denied = 0
     for method, path in routes:
-        if (method, path) in allowed or path == EXCHANGE_PATH:
+        if (method, path) in allowed or (method, path) in PUBLIC_PATHS:
             continue
         r = mia.client.request(method, path, json={} if method != "GET" else None, headers={"X-CSRF-Token": mia.csrf})
         assert r.status_code == 403 and r.json()["error"]["code"] == "forbidden_scope", (method, path, r.status_code, r.text[:120])

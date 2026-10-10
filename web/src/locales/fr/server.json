@@ -343,7 +343,16 @@
     "migration_pending": "La base de données doit être mise à jour : lancez `coach db migrate` dans votre terminal.",
     "alerts_disabled": "Les alertes sont désactivées ([alerts] enabled = false dans config.toml).",
     "coach_busy": "Le coach répond déjà à une question : attendez qu'il ait terminé.",
-    "internal_error": "Erreur inattendue : consultez le terminal où tourne `coach ui`."
+    "internal_error": "Erreur inattendue : consultez le terminal où tourne `coach ui`.",
+    "sso_missing": "Pas de session et pas d'identité signée par le proxy : ouvrez l'application à travers lui, ou utilisez un lien de connexion à usage unique.",
+    "sso_unmapped": "Votre fournisseur d'identité vous a connecté, mais cette identité ne correspond à aucune connexion de l'application. Ajoutez-la à la table [ui.sso_users] de la configuration, comme \"owner\" ou comme identifiant de connexion :",
+    "sso_rejected": "Le jeton du fournisseur d'identité a été refusé. Déconnectez-vous du fournisseur puis reconnectez-vous, ou utilisez un lien de connexion à usage unique.",
+    "passkeys_disabled": "Les clés d'accès ne sont pas activées sur ce serveur ([ui] passkeys = true).",
+    "passkey_rejected": "Cette clé d'accès n'a pas été acceptée ici : réessayez, ou ouvrez un lien de connexion à usage unique.",
+    "passkey_host": "Une clé d'accès a besoin d'un nom d'hôte : ouvrez l'application en http://localhost:PORT sur cette machine.",
+    "passkey_challenge": "Cette demande de clé d'accès a expiré : recommencez.",
+    "passkey_invalid": "La réponse du navigateur n'a pas pu être vérifiée.",
+    "passkey_limit": "Cette connexion a déjà dix clés d'accès : supprimez-en une d'abord."
   },
   "explain": {
     "entity": "le commerçant canonique « {{merchant}} » a la catégorie par défaut {{default_category}}",

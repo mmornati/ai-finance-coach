@@ -41,6 +41,7 @@ dependencies = [
     "mcp>=1.2",
     "jsonschema>=4",
     "defusedxml>=0.7.1",
+    "webauthn>=2.5",
 ]
 
 [project.urls]

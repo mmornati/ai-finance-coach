@@ -66,6 +66,26 @@ export function resetExchangeForTests() {
   exchanging = null;
 }
 
+/** The few calls that need no session (E16): what the login page may offer, and a passkey sign-in. No CSRF token (there is no
+ *  session yet), no 401 event (the page IS the login page). */
+export async function publicGet<T>(path: string): Promise<T> {
+  const res = await fetch(`/api/v1${path}`, { credentials: "same-origin" });
+  if (!res.ok) throw await toError(res);
+  return (await res.json()) as T;
+}
+
+export async function publicPost<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`/api/v1${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await toError(res);
+  csrf = null;                                   // a sign-in may have produced a new cookie
+  return (await res.json()) as T;
+}
+
 export interface RequestOpts {
   params?: Record<string, unknown>;
   body?: unknown;

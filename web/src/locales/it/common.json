@@ -96,7 +96,13 @@
     "intro": "Per la tua sicurezza questa pagina non ti fa mai accedere da sola. All'avvio dell'app, <code>coach ui</code> stampa nel terminale un link di accesso monouso: apri quel link in questo browser.",
     "lost": "Perso o già usato? Stampane uno nuovo:",
     "docker": "Con Docker: <code>docker compose exec coach coach ui --login-link</code>",
-    "reload": "Ho aperto il link: ricarica"
+    "reload": "Ho aperto il link: ricarica",
+    "passkeyHeading": "Accedi con una passkey",
+    "passkeyIntro": "Questo browser o dispositivo ha una passkey per l'app: Face ID, Touch ID, Windows Hello o una chiave di sicurezza apre la tua sessione.",
+    "passkey": "Usa la mia passkey",
+    "passkeyCancelled": "La richiesta della passkey è stata annullata o non è andata a buon fine.",
+    "ssoTitle": "Accesso tramite il tuo provider di identità",
+    "ssoHint": "Questa app è dietro un provider di identità: una sessione si apre da sola una volta che hai effettuato l'accesso lì. Il link qui sotto resta la soluzione di riserva."
   },
   "ui": {
     "close": "Chiudi",
@@ -683,5 +689,22 @@
     "title": "Questa pagina non esiste",
     "back": "Torna alla panoramica",
     "body": "Controlla l'indirizzo, oppure usa il menu."
+  },
+  "passkeys": {
+    "title": "Passkey",
+    "subtitle": "Una passkey permette a questo dispositivo di accedere con Face ID, Touch ID, Windows Hello o una chiave di sicurezza, senza link di accesso. Ogni passkey appartiene a questo accesso e al nome host che stai usando ora.",
+    "empty": "Nessuna passkey su questo accesso per ora.",
+    "label": "Nome della passkey",
+    "labelPlaceholder": "il mio telefono",
+    "add": "Aggiungi una passkey per questo dispositivo",
+    "added": "Passkey aggiunta.",
+    "remove": "Rimuovi la passkey {{label}}",
+    "removeShort": "Rimuovi",
+    "removed": "Passkey rimossa.",
+    "created": "aggiunta il {{date}}",
+    "lastUsed": "ultimo uso il {{date}}",
+    "never": "mai usata",
+    "synced": "sincronizzata",
+    "unsupported": "Questo browser non può creare passkey qui (serve https, oppure localhost)."
   }
 }

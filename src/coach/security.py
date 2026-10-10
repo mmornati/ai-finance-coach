@@ -549,6 +549,19 @@ def audit(cfg, *, scan_root: Optional[Path] = None, lsof: Optional[LsofRunner] =
             probs.append("allow_remote without allowed_hosts")
         add(Check("exposure", "ui_bind", CRIT if probs else WARN, "remote access to the web app is enabled" + (": " + "; ".join(probs) if probs else
                   " (TLS acknowledged): keep it behind Tailscale / a VPN, never the open internet")))
+    # E16: the ways into a session besides the one-time link (both off by default)
+    if cfg.ui_sso != "none":
+        jwks_plain = cfg.ui_sso_jwks_url.lower().startswith("http://")
+        add(Check("exposure", "ui_sso", WARN if jwks_plain else INFO,
+                  f"web app sign-in through {cfg.ui_sso}: {len(cfg.ui_sso_users)} identity(ies) mapped, token checked against {cfg.ui_sso_jwks_url}"
+                  + ("; issuer not checked" if not cfg.ui_sso_issuer else "") + ("; audience not checked" if not cfg.ui_sso_audience else ""),
+                  "the JWKS URL is plain http: fine on a private container network, never across the open internet" if jwks_plain else
+                  "the app must be reachable ONLY through that proxy (no other published port, no other route)"))
+    else:
+        add(Check("exposure", "ui_sso", OK, "no identity proxy: a session starts from the one-time login link" + (" or a passkey" if cfg.ui_passkeys else "")))
+    if cfg.ui_passkeys:
+        add(Check("exposure", "ui_passkeys", INFO, "passkeys are enabled: a session can start from a passkey enrolled in an earlier session",
+                  "review the enrolled passkeys in the web app (Household > Passkeys, or My money for a child); a lost device: remove its passkey there"))
     run = (lsof or default_lsof)()
     if run is None:
         add(Check("exposure", "listening_sockets", SKIP, "could not list listening sockets (lsof unavailable)"))

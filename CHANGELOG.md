@@ -5,6 +5,22 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: sign in with a passkey, or through your SSO proxy (E16)
+- The one-time login link was the only way into a session: fine on the machine, heavy on a phone away from home (a shell on the server for every
+  new session). Two opt-in ways in, both off by default, the link still works next to them and remains the enrolment and recovery path.
+- **Passkeys** (`[ui] passkeys = true`, migration 0024 `ui_passkeys`): enrolled from a session (Household > Passkeys; a child: My money), a passkey
+  (Face ID, Touch ID, Windows Hello, a security key) opens exactly the login it was made for, on the host name it was made on. The server
+  (`py_webauthn`) checks origin, relying-party id, signature and counter; challenges are single-use and short-lived; sign-in attempts are rate
+  limited; a loopback address is refused as relying party (use `localhost`). Ten passkeys per login, removable one by one; a child manages its own.
+- **SSO through an identity-aware proxy** (`[ui] sso = "authentik"` with `sso_jwks_url`, optional `sso_issuer` / `sso_audience`, and a
+  `[ui.sso_users]` table): an API call without a session but with authentik's `X-authentik-jwt` is verified against the provider's JWKS fetched from
+  the CONFIGURED URL (egress kind `ui.sso`, cached), mapped by `preferred_username` / `email` / `sub` to `"owner"` or a `coach users` login, and the
+  ordinary cookie is issued on that response. A plain identity header is never trusted. Refusals say why (`sso_missing`, `sso_unmapped` with the name to
+  map, `sso_rejected` with a one-word reason); "Sign out" also ends the proxy's session. Requires `allow_remote`, `remote_tls_ack` and `allowed_hosts`.
+- `coach security audit`: `ui_sso` and `ui_passkeys` checks; `coach config show` lists the new keys (identities are counted, never printed).
+- Docs: `docs/configuration/remote.md` (both recipes, Traefik labels), the security model in `docs/ui.md`, the threat model and the
+  residual risks in `docs/security.md`, the egress inventory in `docs/privacy.md`.
+
 ### Changed: the landing page has a real light theme, and the film a voice-over
 - The hero, the redaction card, the stats and the privacy section follow the theme (they stayed dark, and "The model sees" turned the card
   white with unreadable text: its state class clashed with the model cards' `.model`). The theme button shows the theme it switches to.

@@ -12,7 +12,14 @@ export interface SessionInfo {
   enable_banking_configured: boolean;
   memory_history: boolean;
   user?: UserInfo | null;
+  /** E16: the ways into a session besides the one-time link. */
+  auth?: { passkeys: boolean; sso: boolean; sso_sign_out: string | null };
 }
+
+/** What the login page may offer (no session needed). */
+export interface SessionMethods { passkeys: boolean; sso: boolean; sso_sign_out: string | null }
+export interface PasskeyInfo { id: string; label: string; rp_id: string; created_at: string; last_used_at: string | null; backed_up: boolean }
+export interface PasskeyList { enabled: boolean; passkeys: PasskeyInfo[] }
 
 export interface AccountMeta { uid: string; label: string; bank: string | null; owner: string | null; purpose: string | null }
 export interface EventMeta { id: string; title: string | null; start: string | null; end: string | null; budget: Money | null; status: string | null; note: string | null; source: string }

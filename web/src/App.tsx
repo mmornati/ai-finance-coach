@@ -49,14 +49,19 @@ function AuthGate({ children }: { children: (user: SessionInfo["user"]) => React
   const { t } = useTranslation();
   const [state, setState] = useState<"checking" | "in" | "out" | "down">("checking");
   const [user, setUser] = useState<SessionInfo["user"]>(null);
+  const [reason, setReason] = useState<ApiError | null>(null);     // E16: why there is no session (an SSO identity not mapped, for one)
   const check = () =>
     api
       .get<SessionInfo>("/session")
       .then((s) => {
         setUser(s?.user ?? null);
+        setReason(null);
         setState("in");
       })
-      .catch((e: unknown) => setState(e instanceof ApiError && e.status === 401 ? "out" : "down"));
+      .catch((e: unknown) => {
+        setReason(e instanceof ApiError ? e : null);
+        setState(e instanceof ApiError && e.status === 401 ? "out" : "down");
+      });
   useEffect(() => {
     void check();
     const lost = () => setState("out");
@@ -64,7 +69,7 @@ function AuthGate({ children }: { children: (user: SessionInfo["user"]) => React
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, lost);
   }, []);
   if (state === "checking") return <div className="grid min-h-dvh place-items-center"><Spinner label={t("app.starting")} /></div>;
-  if (state === "out") return <Login onDone={() => { queryClient.clear(); void check(); }} />;
+  if (state === "out") return <Login reason={reason} onDone={() => { queryClient.clear(); void check(); }} />;
   if (state === "down")
     return (
       <div className="grid min-h-dvh place-items-center p-6 text-center text-sm text-muted">

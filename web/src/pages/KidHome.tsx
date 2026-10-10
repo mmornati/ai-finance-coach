@@ -1,10 +1,11 @@
 import { Trans, useTranslation } from "react-i18next";
 import type { ParseKeys } from "i18next";
-import { LogOut, PiggyBank } from "lucide-react";
-import { Async, Badge, Card, EmptyState, IconButton, Money, Notice, ProgressBar, Skeleton, Stat } from "@/components/ui";
+import { PiggyBank } from "lucide-react";
+import { Async, Badge, Card, EmptyState, Money, Notice, ProgressBar, Skeleton, Stat } from "@/components/ui";
 import { ShareBar, Sparkline } from "@/components/charts";
+import { SignOutButton } from "@/components/Layout";
+import { PasskeysCard } from "@/components/Passkeys";
 import { useMeSummary, useMeTransactions } from "@/api/hooks";
-import { api } from "@/lib/api";
 import { catLabel, fmtDate, fmtMoney, fmtMonth, parseMoney } from "@/lib/format";
 import type { KidBudgetStatus } from "@/api/types";
 
@@ -24,9 +25,7 @@ export default function KidHome() {
           <img src="/favicon.svg" alt="" className="size-7 rounded-md" />
           <h1 className="text-lg font-semibold tracking-tight">{t("kidHome.title")}</h1>
         </div>
-        <IconButton label={t("kidHome.signOut")} onClick={() => void api.logout().finally(() => window.location.assign("/"))}>
-          <LogOut className="size-[18px]" />
-        </IconButton>
+        <SignOutButton label={t("kidHome.signOut")} />
       </header>
       <Async q={q} skeleton={<Skeleton className="h-72 w-full" />}>
         {(d) => {
@@ -122,6 +121,9 @@ export default function KidHome() {
             </Card>
           )}
         </Async>
+      </div>
+      <div className="mt-4">
+        <PasskeysCard />
       </div>
     </div>
   );

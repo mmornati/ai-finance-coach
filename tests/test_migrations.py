@@ -27,7 +27,7 @@ def test_migrations_on_empty_db_create_everything(cfg):
     con = dbm.connect(cfg, insecure=True, create=True)
     assert set(PROTO_TABLES) <= set(dbm.user_tables(con))
     st = dbm.status(con)
-    assert [v for v, _, _ in st["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] and st["pending"] == []
+    assert [v for v, _, _ in st["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24] and st["pending"] == []
 
 
 def test_migrations_idempotent_and_lossless_on_prototype_db(cfg):
@@ -43,7 +43,7 @@ def test_migrations_idempotent_and_lossless_on_prototype_db(cfg):
         con = dbm.connect(cfg, insecure=True)
         assert dbm.apply_migrations(con) == []
         assert con.execute("SELECT applied_at FROM schema_migrations WHERE version=1").fetchone() == first_stamp
-        assert con.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 23
+        assert con.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 24
         con.close()
     assert dump(cfg.db_path) == before
 
