@@ -78,12 +78,19 @@ class SsoVerifier:
         """``(login id, identity, reason)``. The login id is None when the token is refused; `reason` says why in one word and the
         identity (the token's own user name) is returned ONLY for a valid token that maps to no login, so that the person sees on the
         login page which name to map. Nothing of the token is logged."""
+        got = self._identity(token)
+        if got[0] is None:                           # every refusal leaves one line: the reason, never the token nor a name
+            log.warning("sso: token refused (%s)", got[2])
+        return got
+
+    def _identity(self, token: str) -> tuple[Optional[str], Optional[str], str]:
         if not token or len(token) > MAX_TOKEN:
             return None, None, "invalid"
         try:
             header = jwt.get_unverified_header(token)
             alg, kid = header.get("alg"), header.get("kid")
             if alg not in ALGORITHMS or not isinstance(kid, str) or not kid:
+                log.warning("sso: the token is signed with %r: the provider needs a signing key (certificate) so that its keys are published", alg)
                 return None, None, "algorithm"
             key = self._key(kid)
             claims = jwt.decode(token, key.key, algorithms=[alg], issuer=self.issuer, audience=self.audience, leeway=30,
@@ -104,7 +111,8 @@ class SsoVerifier:
         except (egress.EgressDenied, requests.RequestException, OSError, ValueError) as e:
             log.warning("sso: could not load the provider's keys: %s", type(e).__name__)
             return None, None, "jwks"
-        except (jwt.PyJWTError, KeyError, TypeError):
+        except (jwt.PyJWTError, KeyError, TypeError) as e:
+            log.warning("sso: %s", type(e).__name__)
             return None, None, "invalid"
         names = [claims.get(c) for c in ("preferred_username", "email", "sub")]
         names = [n for n in names if isinstance(n, str) and n]

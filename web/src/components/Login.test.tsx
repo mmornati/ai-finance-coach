@@ -91,4 +91,12 @@ describe("login screen", () => {
     expect(screen.getByText("uv run coach ui --login-link")).toBeInTheDocument();
     expect(posts()).toHaveLength(0);
   });
+
+  it("behind an SSO proxy a refused token shows its one-word reason (E16)", async () => {
+    methods = { passkeys: false, sso: true, sso_sign_out: "/outpost.goauthentik.io/sign_out" };
+    const reason = new ApiError(401, "sso_rejected", "the authentik token was refused (algorithm)", { reason: "algorithm" });
+    render(<Login onDone={() => undefined} reason={reason} />);
+    expect(await screen.findByText(/signed in through your identity provider/i)).toBeInTheDocument();
+    expect(screen.getByText("algorithm")).toBeInTheDocument();
+  });
 });

@@ -31,7 +31,9 @@ export function Login({ onDone, reason }: { onDone: () => void; reason?: ApiErro
       .catch((e: unknown) => setPasskey({ busy: false, error: e instanceof ApiError ? errorText(e) : t("login.passkeyCancelled") }));
   };
   const sso = reason && reason.code.startsWith("sso_") ? reason : null;
-  const identity = sso && typeof (sso.details as { identity?: unknown } | null)?.identity === "string" ? String((sso.details as { identity: string }).identity) : "";
+  // the server's detail: the unmapped identity (to add to the mapping), or the one-word reason of a refusal (to look up in the docs / logs)
+  const ssoDetails = (sso?.details ?? null) as { identity?: unknown; reason?: unknown } | null;
+  const identity = typeof ssoDetails?.identity === "string" ? ssoDetails.identity : typeof ssoDetails?.reason === "string" ? ssoDetails.reason : "";
 
   useEffect(() => {
     if (!token) return;
