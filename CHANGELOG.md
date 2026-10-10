@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed: the landing page has a real light theme, and the film a voice-over
+- The hero, the redaction card, the stats and the privacy section follow the theme (they stayed dark, and "The model sees" turned the card
+  white with unreadable text: its state class clashed with the model cards' `.model`). The theme button shows the theme it switches to.
+- The film is narrated in English and French (`film.en.mp4`, `film.fr.mp4`, with WebVTT subtitles); the page picks the visitor's language
+  and has a switch. `scripts/demo/make_film.py` renders it with Kokoro, an open-weight speech model run locally (or `--tts edge`).
+
 ### Fixed: "Ask the coach" went blank after a question in recent browsers
 - Recent Chromium returns a Promise from `scrollIntoView`; the page's auto-scroll effect returned it to React, which called it as a cleanup function and
   unmounted the whole app on the next answer. The effect now has a block body (regression test in `Coach.test.tsx`).
