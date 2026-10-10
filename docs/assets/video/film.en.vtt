@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.350 --> 00:00:06.366
+This is AI Finance Coach: a private coach for your household's money, running on your own machine.
+
+2
+00:00:07.466 --> 00:00:08.959
+First, the big picture.
+
+3
+00:00:10.059 --> 00:00:17.743
+Your bank accounts sync through Europe's open-banking rules, and every payment is sorted by your rules and by what you taught it.
+
+4
+00:00:17.743 --> 00:00:23.104
+The dashboard shows a usual month, your cash flow, a ninety-day forecast and your budgets.
+
+5
+00:00:23.104 --> 00:00:28.107
+Subscriptions, loans, net worth and the kids' pocket money each have their own page.
+
+6
+00:00:34.426 --> 00:00:36.069
+Then, ask in plain words.
+
+7
+00:00:37.169 --> 00:00:39.911
+The coach never reads your raw transactions.
+
+8
+00:00:39.911 --> 00:00:47.451
+It calls read-only tools that compute the figures on redacted data, and every claim links back to the payments behind it.
+
+9
+00:00:53.502 --> 00:00:55.123
+Every label is explained.
+
+10
+00:00:56.223 --> 00:01:00.566
+Open any payment to see why it has its category and who it belongs to.
+
+11
+00:01:00.566 --> 00:01:02.986
+Change it, and you see a preview first.
+
+12
+00:01:07.790 --> 00:01:09.795
+Keep your subscriptions under control.
+
+13
+00:01:10.895 --> 00:01:18.409
+Price rises, overlapping services, notice periods and contracts, with cheaper offers that are dated and sourced.
+
+14
+00:01:18.409 --> 00:01:20.623
+The savings are computed by code.
+
+15
+00:01:26.028 --> 00:01:30.835
+Your data stays yours: nothing leaves your machine without a typed yes.
+
+16
+00:01:30.835 --> 00:01:33.002
+AI Finance Coach is open source.
+
+17
+00:01:33.002 --> 00:01:34.220
+Find it on GitHub.
