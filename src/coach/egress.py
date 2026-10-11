@@ -69,7 +69,8 @@ INVENTORY: tuple[Flow, ...] = (
          "item-redact: IBANs, e-mails, phones, long digits, ids, titled people and household name tokens removed; person-like merchants "
          "never sent (coach.classify.candidates); finance tools pseudonymise accounts / people (coach.analytics.privacy); documents "
          "redacted (coach.memory.docredact)",
-         "`classify run|compare|enrich`, `coach coach ask|digest`, the web app's coach, the scheduled job (classify; digests are opt-in), "
+         "`classify run|compare|enrich`, the web app's review queue (one merchant's AI suggestion, on a click), `coach coach ask|digest`, "
+         "the web app's coach, the scheduled job (classify; digests are opt-in), "
          "`memory doc extract --send`",
          "[privacy] local_only = true and llm.backend / coach.backend = \"ollama\"; or do not run those commands",
          local_only="refused", offline="refused",

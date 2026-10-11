@@ -258,7 +258,75 @@ def enrich_candidates(con, keys: list[str], allow: tuple = (), memory_dir=None) 
     return ok, held
 
 
+# words that START a town name ('LA HULPE', 'SAN VITO LO CAPO', 'SAINT OMER') and words BETWEEN the two parts of one ('CHALON SUR SAONE',
+# 'WEIL AM RHEIN', 'FRAYSSINET LE GELAT'): a card descriptor ends with the town of the shop, truncated by the bank
+TOWN_STARTS = {"LA", "LE", "LES", "L", "SAINT", "SAINTE", "ST", "STE", "SAN", "SANTA", "SANT", "SANKT", "LO"}
+TOWN_JOINS = {"SUR", "SOUS", "LEZ", "LES", "LE", "LA", "EN", "AUX", "DE", "DU", "DES", "D", "AM", "IM", "AN", "DI", "DEL", "DELLA", "SUL",
+              "SULLA", "UPON", "ON"}
+
+
+def strip_trailing_town(text: str) -> str:
+    """The descriptor without an UNKNOWN town at its end, recognised by its shape (E2-7): '<shop> LA HULPE' -> '<shop>', '<shop> CHALON SUR SA'
+    -> '<shop>', '<shop> FRAYSSINET LE' (a truncated 'Frayssinet-le-Gelat') -> '<shop>'. Only for the web search: it may cut a word of a shop's
+    name ('CAFE LA PLAGE' -> 'CAFE'), which costs a less precise search, never a place in the query. At least one word always stays."""
+    toks = _tokens(text)
+    n = len(toks)
+    for i in range(max(1, n - 3), n - 1):               # a link word with one or two words after it
+        before = toks[i - 1]
+        if toks[i] in TOWN_STARTS and before not in CONNECTORS:
+            return " ".join(toks[:i])
+        if toks[i] in TOWN_JOINS and i >= 2 and toks[i - 2] not in CONNECTORS and before not in CONNECTORS:
+            return " ".join(toks[:i - 1])
+    if n >= 3 and toks[-1] in TOWN_JOINS | TOWN_STARTS and toks[-2] not in CONNECTORS:
+        return " ".join(toks[:-2])                      # a town cut right after its link word
+    return " ".join(toks)
+
+
+# legal forms that name the country of a company, and currencies that name the country of a payment: a hint for the web search, so a
+# Belgian 'SPRL X' is not looked for in France (E2-7)
+LEGAL_FORM_COUNTRY = {
+    "SPRL": "Belgium", "BVBA": "Belgium", "ASBL": "Belgium", "SCRL": "Belgium", "VZW": "Belgium",
+    "SARL": "France", "SAS": "France", "SASU": "France", "EURL": "France", "SCI": "France", "SELARL": "France",
+    "SPA": "Italy", "SNC": "France or Italy", "SRL": "Italy or Belgium",
+    "GMBH": "Germany or Austria", "AG": "Germany or Switzerland", "BV": "the Netherlands or Belgium", "NV": "Belgium or the Netherlands",
+    "LTD": "the United Kingdom", "PLC": "the United Kingdom", "LLC": "the United States", "INC": "the United States",
+    "SL": "Spain", "SA": None, "OY": "Finland", "AB": "Sweden", "SP": None,
+}
+CURRENCY_COUNTRY = {"GBP": "the United Kingdom", "USD": "the United States", "CHF": "Switzerland", "PLN": "Poland", "CZK": "Czechia",
+                    "HUF": "Hungary", "SEK": "Sweden", "DKK": "Denmark", "NOK": "Norway", "CAD": "Canada", "AUD": "Australia",
+                    "JPY": "Japan", "MAD": "Morocco", "TND": "Tunisia", "TRY": "Turkey", "RON": "Romania", "BGN": "Bulgaria"}
+
+
+def country_hint(key: str, fx_currencies: str | None = None) -> str | None:
+    """The country to search a merchant in, when the descriptor says it (a legal form) or the payment did (a foreign currency); None
+    otherwise (the prompt then lets the model try the household's countries)."""
+    for c in (fx_currencies or "").split(","):
+        if CURRENCY_COUNTRY.get(c.strip().upper()):
+            return CURRENCY_COUNTRY[c.strip().upper()]
+    for t in _tokens(key):
+        if LEGAL_FORM_COUNTRY.get(t):
+            return LEGAL_FORM_COUNTRY[t]
+    return None
+
+
+def search_places(con, memory_dir=None) -> list[tuple]:
+    """The towns cut from a web-search descriptor: the known places, and every last word shared by TWO merchant keys (stricter than the
+    three of :func:`known_places`, which also feeds the classifier: a search query is the riskier place for a town)."""
+    return known_places(con, memory_dir, min_keys=2)
+
+
 def search_descriptor(key: str, places: list[tuple]) -> str:
-    """What goes into a web-search request for a merchant key: the descriptor with its town removed (the prompt says to search it with
-    'France')."""
-    return strip_places(key, places) or key
+    """What goes into a web-search request for a merchant key: the descriptor without its town, the known ones (`places`) first, then
+    one recognised by its shape (:func:`strip_trailing_town`)."""
+    bare = strip_places(key, places) or key
+    return strip_trailing_town(bare) or bare
+
+
+def search_item(con, i: int, key: str, places: list[tuple]) -> dict:
+    """One item of a web-search request: the town-less descriptor, and the country to search it in when known."""
+    fx = con.execute("SELECT GROUP_CONCAT(DISTINCT fx_currency) FROM tx_enriched WHERE merchant_key=?", (key,)).fetchone()[0]
+    item = {"id": i, "descriptor": search_descriptor(key, places)}
+    hint = country_hint(key, fx)
+    if hint:
+        item["country_hint"] = hint
+    return item

@@ -76,7 +76,9 @@ small local models.
 ## Web enrichment: `web_enrich`
 
 `coach classify enrich` is the one path where a model searches the web with something derived from your transactions. It is off unless you
-set `web_enrich = true`, it only searches **shops** (never anything that could be a person), strips towns and redacts every descriptor.
+set `web_enrich = true`, it only searches **shops** (never anything that could be a person), strips towns and redacts every descriptor. The
+**Ask AI** button of the web app's review queue uses the same path for one merchant when it is on (and the classifier without the web when
+it is off).
 
 ```bash
 uv run coach classify enrich --dry-run    # the exact request; works even when enrichment is off; sends nothing

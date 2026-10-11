@@ -86,6 +86,25 @@
     "keep": "Mantieni {{category}}",
     "confirmed": "Etichetta confermata",
     "saved": "Categoria salvata",
-    "knn": "Questa etichetta è stata dedotta da un esercente simile: scegli tu la categoria."
+    "knn": "Questa etichetta è stata dedotta da un esercente simile: scegli tu la categoria.",
+    "ai": {
+      "ask": "Chiedi all'IA",
+      "running": "In corso…",
+      "hintWeb": "Un'IA cerca questo esercente sul web (solo il nome, senza la città) e propone una categoria. Nulla cambia finché non accetti.",
+      "hintLabel": "Un'IA propone una categoria dal nome dell'esercente (senza ricerca web). Nulla cambia finché non accetti.",
+      "searchingWeb": "Ricerca di questo esercente sul web… può richiedere un minuto.",
+      "asking": "L'IA sta valutando…",
+      "proposal": "Propone <b>{{category}}</b> (sicura al {{pct}}) per {{merchant}}",
+      "viaWeb": "trovato con una ricerca web",
+      "viaLabel": "senza ricerca web",
+      "accept": "Usa {{category}}",
+      "error": {
+        "person_like": "Questo esercente potrebbe essere una persona: non viene mai inviato a un'IA. Scegli tu la categoria.",
+        "backend_unavailable": "L'IA non è disponibile con le impostazioni attuali.",
+        "unusable_answer": "La risposta dell'IA non è utilizzabile: riprova.",
+        "busy": "Diversi suggerimenti sono già in corso: attendi che uno finisca.",
+        "decided_by_rule": "Una regola di classificazione decide già questo esercente."
+      }
+    }
   }
 }

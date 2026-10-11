@@ -105,10 +105,18 @@ and press **Set**.
 
 A label guessed from a similar merchant asks you to pick the category yourself rather than confirm it blindly.
 
+**Ask AI** on a row asks a model for that one merchant and shows its proposal under the row: a category, how sure it is and, when it searched
+the web, a short note on what it found, marked *AI-generated*. **Nothing changes** until you press **Use <category>**, which sets it as your
+own label (or pick another category and press **Set**). With `[privacy] web_enrich = true` and the `claude-code` backend the model searches
+the web, exactly like `coach classify enrich` for one shop (it can take a minute); otherwise it answers from the name only, like
+`coach classify run`. A merchant that may be a person never has the button, and the call is counted on the Usage page.
+
 !!! question "You do not know what a merchant is?"
     `coach classify enrich` lets the AI model **search the web** for the shops it could not label. It is **off** until you set
     `[privacy] web_enrich = true` yourself, and it only ever searches **shops**: anything that could be a person is withheld, towns are
-    stripped and every descriptor is redacted. The search provider learns a shop name, never your amounts, dates, accounts or names.
+    stripped (the known ones, and a town recognised by its shape at the end, such as `LA X` or `X SUR Y`) and every descriptor is redacted.
+    When the descriptor names a country (a legal form such as `SPRL` or `GMBH`, or a payment in a foreign currency) the search uses it;
+    otherwise the model searches the name alone first. The search provider learns a shop name, never your amounts, dates, accounts or names.
     Run `coach classify enrich --dry-run` first: it prints the exact request and sends nothing. See
     [Privacy settings](../configuration/privacy.md#web-enrichment-web_enrich).
 

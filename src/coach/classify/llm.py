@@ -518,8 +518,10 @@ def web_request(items: list[dict], names=frozenset()) -> tuple[str, str, dict]:
     """(static, dynamic, schema) of one web-enrichment request, items REDACTED. Used by the real call and by `enrich --dry-run`."""
     items = [redact_item(i, names) for i in items]
     static = f"""Identify these merchants from a French/Italian household's bank statement.
-Descriptors are truncated and the town has been removed. For each one, run a web search with the name
-and the word France (e.g. "QUINCAILLERIE ZORBAX France"), find what kind of business it is, then pick the best category.
+Descriptors are truncated and the town has been removed. For each one, run a web search with the name and,
+when the item has a `country_hint`, that country (e.g. "ZORBAX SPRL Belgium"); without a hint, search the name
+alone first and add France, Italy or a neighbouring country (Belgium, Switzerland, Germany, Spain) only if the
+results are ambiguous. Find what kind of business it is, then pick the best category.
 Classify by what the merchant sells, also for refunds. Give confidence ≥0.8 only when a search
 result clearly identifies the business; put a short source/evidence note in `evidence`.
 
