@@ -80,6 +80,25 @@
     "keep": "Keep {{category}}",
     "confirmed": "Label confirmed",
     "saved": "Category saved",
-    "knn": "This label was guessed from a similar merchant: please pick the category yourself."
+    "knn": "This label was guessed from a similar merchant: please pick the category yourself.",
+    "ai": {
+      "ask": "Ask AI",
+      "running": "Asking…",
+      "hintWeb": "An AI searches the web for this merchant (its name only, without the town) and proposes a category. Nothing is changed until you accept.",
+      "hintLabel": "An AI proposes a category from the merchant's name (no web search). Nothing is changed until you accept.",
+      "searchingWeb": "Searching the web for this merchant… this can take a minute.",
+      "asking": "Asking the AI…",
+      "proposal": "Suggests <b>{{category}}</b> ({{pct}} sure) for {{merchant}}",
+      "viaWeb": "found with a web search",
+      "viaLabel": "without web search",
+      "accept": "Use {{category}}",
+      "error": {
+        "person_like": "This merchant may be a person: it is never sent to an AI. Choose its category yourself.",
+        "backend_unavailable": "The AI is not available with the current settings.",
+        "unusable_answer": "The AI's answer could not be used: try again.",
+        "busy": "Several suggestions are already running: wait for one to finish.",
+        "decided_by_rule": "A classification rule already decides this merchant."
+      }
+    }
   }
 }

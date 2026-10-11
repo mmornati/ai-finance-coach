@@ -86,6 +86,25 @@
     "keep": "Garder {{category}}",
     "confirmed": "Libellé confirmé",
     "saved": "Catégorie enregistrée",
-    "knn": "Ce libellé a été déduit d'un commerçant similaire : choisissez vous-même la catégorie."
+    "knn": "Ce libellé a été déduit d'un commerçant similaire : choisissez vous-même la catégorie.",
+    "ai": {
+      "ask": "Demander à l'IA",
+      "running": "En cours…",
+      "hintWeb": "Une IA cherche ce commerçant sur le web (son nom seul, sans la ville) et propose une catégorie. Rien ne change tant que vous n'acceptez pas.",
+      "hintLabel": "Une IA propose une catégorie à partir du nom du commerçant (sans recherche web). Rien ne change tant que vous n'acceptez pas.",
+      "searchingWeb": "Recherche de ce commerçant sur le web… cela peut prendre une minute.",
+      "asking": "L'IA réfléchit…",
+      "proposal": "Propose <b>{{category}}</b> (sûr à {{pct}}) pour {{merchant}}",
+      "viaWeb": "trouvé par une recherche web",
+      "viaLabel": "sans recherche web",
+      "accept": "Utiliser {{category}}",
+      "error": {
+        "person_like": "Ce commerçant est peut-être une personne : il n'est jamais envoyé à une IA. Choisissez vous-même sa catégorie.",
+        "backend_unavailable": "L'IA n'est pas disponible avec les réglages actuels.",
+        "unusable_answer": "La réponse de l'IA est inutilisable : réessayez.",
+        "busy": "Plusieurs suggestions sont déjà en cours : attendez que l'une se termine.",
+        "decided_by_rule": "Une règle de classement décide déjà de ce commerçant."
+      }
+    }
   }
 }

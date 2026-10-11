@@ -10,7 +10,7 @@ from coach.classify import corrections, knn as knn_mod
 from coach.classify import backends, rules as rules_mod
 from coach.classify.backends import default_model, get_backend
 from coach import egress
-from coach.classify.candidates import USER_ENTITY_KEYS_SQL, enrich_candidates, household_names, known_places, search_descriptor, llm_candidates, memory_decided_keys
+from coach.classify.candidates import USER_ENTITY_KEYS_SQL, enrich_candidates, household_names, known_places, search_item, search_places, llm_candidates, memory_decided_keys
 from coach.classify.llm import LabelRunError, abandon_unrecorded, claim_legacy_batches, collect_pending_batches, dry_run_payload, label_keys, prepare_jobs, web_label, web_request
 from coach.classify.normalize import normalize_all
 from coach.classify.rules import CATEGORIES, needs_llm_sql, rule_category
@@ -170,17 +170,17 @@ def cmd_enrich(a, cfg):
         GROUP BY 1 ORDER BY ABS(SUM(t.amount)) DESC LIMIT ?""", (a.max_conf, a.limit))]
     keys = [k for k in keys if not rule_category(k)]
     keys, held = enrich_candidates(con, keys, cfg.llm_allowlist, cfg.memory_dir)
-    places = known_places(con, cfg.memory_dir)
+    places = search_places(con, cfg.memory_dir)
     if held:
         print(f"{len(held)} merchant(s) NOT searched because they may be people (a name never goes into a web search)")
     names = household_names(con)[0]
     from coach.classify.candidates import prompt_leaks
     _static, _, _ = web_request([], names)
-    leaks = prompt_leaks(_static, places, names)
+    leaks = prompt_leaks(_static, known_places(con, cfg.memory_dir), names)
     if leaks:                                   # an instruction or example that names the household's own people / towns: never sent
         sys.exit(f"error: the web-search prompt contains household names or places ({len(leaks)}): refusing to send it")
     if dry:
-        items = [{"id": i, "descriptor": search_descriptor(k, places)} for i, k in enumerate(keys[:a.batch])]
+        items = [search_item(con, i, k, places) for i, k in enumerate(keys[:a.batch])]
         static, dynamic, _ = web_request(items, names)
         print(f"DRY RUN: {len(keys)} merchants would be web-searched in {-(-len(keys) // a.batch) if keys else 0} request(s); "
               f"enrichment is currently {'ALLOWED' if ok else 'DISABLED: ' + why}. Nothing is sent. First request:")
@@ -192,10 +192,10 @@ def cmd_enrich(a, cfg):
     model = a.model or default_model(cfg, backend)
     print(f"web-enriching {len(keys)} merchants with {model}")
     batches = [keys[i:i + a.batch] for i in range(0, len(keys), a.batch)]
+    searches = {tuple(b): [search_item(con, i, k, places) for i, k in enumerate(b)] for b in batches}   # read here: the workers have no connection
 
     def work(b):
-        items = [{"id": i, "descriptor": search_descriptor(k, places)} for i, k in enumerate(b)]
-        return b, web_label(items, model, backend, names)
+        return b, web_label(searches[tuple(b)], model, backend, names)
 
     cost, improved = 0.0, 0
     with ThreadPoolExecutor(a.workers) as ex:

@@ -15,6 +15,7 @@ from starlette.routing import compile_path
 from coach import __version__
 from coach.api import errors, jobs as jobs_mod, passkeys as passkeys_mod, security as sec, sso as sso_mod
 from coach.api.coachjobs import CoachJobs
+from coach.api.suggestjobs import SuggestJobs
 from coach.api.routes import (alerts, analytics, coach, connections, core, household, loans, me, memory, onboarding, optimizer, passkeys, plans,
                               quality, rental, review, setup, subs, transactions, wealth)
 from coach.api.state import CURRENT_ACTOR, AppState
@@ -89,6 +90,7 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
     state = AppState(cfg, insecure=insecure, con=con)
     state.jobs = jobs_mod.Jobs(state, inline=inline_jobs)
     state.coach_jobs = CoachJobs(state)
+    state.suggest_jobs = SuggestJobs(state, inline=inline_jobs)
     app.state.coach = state
     if warm:
         state.start_warmer()                                         # the first page after a sync or an edit is served warm

@@ -57,3 +57,41 @@ def correct(req: CorrectBody, state: AppState = Depends(get_state)):
     with state.write() as con:
         rows = corrections.correct_merchant(con, req.key, req.category, exact=True)
     return {"key": req.key, "category": req.category, "merchants": [k for k, _ in rows]}
+
+
+@router.get("/review/ai", summary="Whether the AI suggestion of the review queue is available, with web search or without")
+def ai_status(state: AppState = Depends(get_state)):
+    from coach.classify.suggest import label_status, web_status
+    out = {}
+    for name, fn in (("web", web_status), ("label", label_status)):
+        ok, code, why = fn(state.cfg)
+        out[name] = {"allowed": ok, "code": code, "why": why}
+    return out
+
+
+class SuggestBody(BaseModel):
+    key: str
+    max_conf: float = Field(0.7, ge=0, le=1, description="the threshold of the queue being viewed")
+
+
+@router.post("/review/suggest", summary="Ask an AI for the category of one merchant of the queue (a proposal: nothing is stored)")
+def suggest_start(req: SuggestBody, state: AppState = Depends(get_state)):
+    from coach.api.suggestjobs import SuggestBusy
+    row = next((r for r in queue(state, req.max_conf) if r["key"] == req.key), None)
+    if row is None:
+        raise ApiError(404, "not_in_queue", "this merchant is not in the review queue (already decided by you, a rule or memory)")
+    if row["reason"] == "held_back_person_like":
+        raise ApiError(409, "person_like", "this merchant may be a person: it is never sent to an AI; choose its category yourself")
+    try:
+        job = state.suggest_jobs.start(req.key)
+    except SuggestBusy as e:
+        raise ApiError(409, "busy", str(e))
+    return job.to_dict()
+
+
+@router.get("/review/suggest/{job_id}", summary="The state of an AI suggestion, and the proposal when it is done")
+def suggest_get(job_id: str, state: AppState = Depends(get_state)):
+    job = state.suggest_jobs.get(job_id)
+    if job is None:
+        raise ApiError(404, "not_found", "no such suggestion (the server may have restarted): ask again")
+    return job.to_dict()

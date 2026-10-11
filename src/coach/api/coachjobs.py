@@ -66,9 +66,10 @@ class CoachJob:
                 "ai_generated": True, "compliance": self.compliance}
 
 
-def availability(cfg) -> tuple[bool, str]:
-    """(usable, message) of the configured backend, without calling anything."""
-    b = cfg.coach_backend
+def availability(cfg, backend: Optional[str] = None, model: Optional[str] = None, section: str = "coach") -> tuple[bool, str]:
+    """(usable, message) of the configured backend, without calling anything. `backend` / `model` / `section`: another backend than the
+    coach's (the classifier's `[llm]` one, for the AI suggestion of the review queue)."""
+    b = backend or cfg.coach_backend
     from coach import egress
     host = egress.host_of(getattr(cfg, "llm_ollama_url", "")) if b == "ollama" else (
         egress.host_of(getattr(cfg, "llm_openai_base_url", "")) if b == "openai-compatible" else "")
@@ -77,7 +78,7 @@ def availability(cfg) -> tuple[bool, str]:
         return False, why
     if b == "claude-code":
         if shutil.which("claude") is None:
-            return False, "The `claude` command is not installed or not in PATH: install Claude Code, or set [coach] backend in config.toml."
+            return False, f"The `claude` command is not installed or not in PATH: install Claude Code, or set [{section}] backend in config.toml."
         return True, ""
     if b == "anthropic-api":
         from coach import secrets as sec
@@ -85,7 +86,7 @@ def availability(cfg) -> tuple[bool, str]:
             ok = bool(sec.lookup("anthropic_api_key")[0])
         except Exception:                                                      # noqa: BLE001
             ok = False
-        return (True, "") if ok else (False, "No Anthropic API key: run `uv run coach config set-secret anthropic_api_key`, or choose another [coach] backend.")
+        return (True, "") if ok else (False, f"No Anthropic API key: run `uv run coach config set-secret anthropic_api_key`, or choose another [{section}] backend.")
     if b == "openai-compatible":
         from coach import secrets as sec
         try:
@@ -93,8 +94,8 @@ def availability(cfg) -> tuple[bool, str]:
         except Exception:                                                      # noqa: BLE001
             ok = False
         if not ok:
-            return False, "No API key for the OpenAI-compatible provider: run `uv run coach config set-secret openai_api_key`, or choose another [coach] backend."
-        if not cfg.coach_model_effective:
+            return False, f"No API key for the OpenAI-compatible provider: run `uv run coach config set-secret openai_api_key`, or choose another [{section}] backend."
+        if not (model if backend else cfg.coach_model_effective):
             return False, "No model for the OpenAI-compatible provider: set [coach] model or [llm] openai_model in config.toml."
     return True, ""
 
