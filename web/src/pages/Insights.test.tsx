@@ -52,6 +52,15 @@ describe("insights feed: from the coach", () => {
     }
   });
 
+  it("a kind filter hides the coach's write-ups, which have no kind", async () => {
+    renderApp(<Insights />);
+    expect(await screen.findByText("Weekly digest 2026-10-04")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /^Unusual/ }));
+    expect(screen.queryByText("Weekly digest 2026-10-04")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /^All/ }));
+    expect(screen.getByText("Weekly digest 2026-10-04")).toBeInTheDocument();
+  });
+
   it("with nothing from the coach it says how to get insights", async () => {
     (fetch as unknown as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => new Response(JSON.stringify(url.endsWith("/insights") ? { as_of: "2026-10-04", cards: [], hidden: 0, counts: {}, coach: { configured: true, items: [], hidden: 0, message: "Nothing written by the coach yet: ask a question." } } : { csrf_token: "t" }), { status: 200, headers: { "Content-Type": "application/json" } }));
     renderApp(<Insights />);

@@ -5,6 +5,13 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed: the Insights page renders the coach's Markdown, and its filter shows what it filters
+- The coach's write-ups (the weekly summary) showed raw `#` / `##` headings and `*italic*` markers: the web renderer only knew paragraphs,
+  `- ` lists and `**bold**`. It now reads the text line by line: headings, bullet and numbered lists (also right under a heading, without a
+  blank line), `*italic*`, `**bold**` and `` `code` `` (never `_italic_`: category keys hold underscores), still as React nodes, never HTML.
+- Choosing a kind on Insights only filtered the cards below the coach's write-ups, which stayed on top, so the tabs seemed to do nothing. The
+  coach's write-ups have no kind: they now show under "All" only.
+
 ### Fixed: SSO works with an authentik proxy provider (E16)
 - authentik signs the `X-authentik-jwt` of a PROXY provider with HS256 and the provider's client secret, always: it clears a proxy provider's
   signing key on every save, so its JWKS is empty and every token was refused (`algorithm`), leaving the login-link page. New

@@ -68,7 +68,8 @@ export default function Insights() {
           return (
             <div className="grid gap-4">
               <Segmented label={t("type")} value={filter} onChange={setFilter} options={[{ value: "all", label: t("filterAll", { n: d.cards.length }) }, ...KINDS.map((k) => ({ value: k, label: t("filterKind", { kind: t(`kind.${k}`), n: d.counts[k] ?? 0 }) }))]} />
-              {d.coach.items.length === 0 ? (
+              {/* the coach's own write-ups have no kind: they belong to "all" only, or a kind filter would seem to do nothing under them */}
+              {filter !== "all" ? null : d.coach.items.length === 0 ? (
                 <Card className="border-dashed" title={t("coach.title")} subtitle={t("coach.subtitle")}>
                   <div className="flex items-start gap-3 text-[13px] text-muted"><Sparkles className="mt-0.5 size-4 shrink-0 text-faint" aria-hidden />{d.coach.message}</div>
                 </Card>
