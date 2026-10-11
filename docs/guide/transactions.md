@@ -75,7 +75,9 @@ this person?** lists the account owner, every attribution rule and the history.
 
 ### Change the category
 
-Choose the **New category**, then where it applies:
+Choose the **New category**, then where it applies. The picker is a search box: type part of a category, of its group or of its
+description ("insur", "cinema", "sante": case and accents do not matter) to narrow the list, then pick with the mouse or with the arrows and
+Enter. With an empty box it lists every category by group. The same picker is used on Review, Gold set, Budgets and the category filter.
 
 | Option | Effect |
 |---|---|
@@ -86,6 +88,31 @@ Choose the **New category**, then where it applies:
 Before anything is written, the panel shows a **preview**: "**3** transactions will change to **Groceries** (total €...)", how many already
 are, and what would still win (an override, a transfer link). The preview runs the real classifier on the change, so it cannot disagree
 with the result. Press **Apply** to write it.
+
+A memory annotation made here applies to **the merchant** or to **this transaction only**. To narrow it further, use the terminal (below).
+
+### One merchant, several things
+
+One bank label sometimes covers payments that belong in different categories: an insurer that takes the home, the car and the health
+policy, an energy supplier with two contracts, a shop that sells both groceries and clothing. A merchant label cannot tell them apart, a
+memory annotation can, because its `match` combines the merchant with the **amount** and the **bank text**:
+
+```bash
+# the payments of about 50 a month at this insurer are the home policy (amounts are signed: money out is negative)
+uv run coach memory annotate --id insurer-home --merchant-key '^INSURER' --amount-min -52 --amount-max -48 \
+  --category housing.home_insurance --dry-run
+# better when the bank text carries the contract or direct-debit mandate reference: it survives the yearly price change
+uv run coach memory annotate --id insurer-car --merchant-key '^INSURER' --description 'CONTRACT-REF' \
+  --category transport.car_insurance --dry-run
+```
+
+- `--dry-run` lists the transactions each annotation would catch: check that every payment of the merchant lands in exactly one of them.
+  The first matching annotation wins; **Memory > Annotations** shows how many transactions each one matched and decided.
+- An amount band has to follow the price: premiums usually change once a year. A reference in the description does not.
+- Two payments with the same amount and the same text cannot be told apart: keep them in one category, or split each transaction.
+- For [Subscriptions](subscriptions.md), a contract file per policy separates them the same way (`merchant_match` plus an `amount_match`
+  band); `coach subs draft-contracts` adds the band itself when several series share one label.
+- **Split** is something else: it divides ONE transaction over several categories (`coach split`).
 
 ### Tags, event and note
 
@@ -112,6 +139,7 @@ button to remove it.
 uv run coach explain "STREAMBOX"                          # the decision chain of one transaction
 uv run coach classify correct "<merchant_key>" food.groceries --name "Fresh Market"
 uv run coach memory annotate --merchant-key '<regex>' --tags one_off --note "why" --dry-run
+uv run coach memory annotate --merchant-key '<regex>' --amount-min -52 --amount-max -48 --category group.leaf --dry-run
 uv run coach split --help                                 # split a transaction over categories
 ```
 

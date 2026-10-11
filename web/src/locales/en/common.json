@@ -121,7 +121,10 @@
   },
   "picker": {
     "any": "Any category",
-    "allIn": "All {{group}}"
+    "allIn": "All {{group}}",
+    "search": "Search a category",
+    "noMatch": "No category matches",
+    "listLabel": "Categories"
   },
   "copy": {
     "aria": "Copy command: {{command}}",

@@ -5,6 +5,14 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed: the category picker is searchable
+- Choosing a category meant scrolling a native list of about a hundred entries. The picker is now a search box (ARIA 1.2 combobox): typing
+  narrows the list on the category, its group, its id and its description, ignoring case and accents ("sante", "insur"); arrows, Enter and
+  Escape work, and an empty box still lists every category by group. Used by the transaction panel, Review, Gold set, Budgets and the
+  category filter.
+- Docs: the user guides now say how to tell apart several payments to one merchant (memory annotations on the amount or the bank text,
+  `docs/guide/transactions.md`) and point to the opt-in web lookup of unknown shops (`classify enrich`, `docs/guide/categories.md`).
+
 ### Fixed: the Insights page renders the coach's Markdown, and its filter shows what it filters
 - The coach's write-ups (the weekly summary) showed raw `#` / `##` headings and `*italic*` markers: the web renderer only knew paragraphs,
   `- ` lists and `**bold**`. It now reads the text line by line: headings, bullet and numbered lists (also right under a heading, without a

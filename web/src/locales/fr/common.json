@@ -121,7 +121,10 @@
   },
   "picker": {
     "any": "Toutes les catégories",
-    "allIn": "Tout : {{group}}"
+    "allIn": "Tout : {{group}}",
+    "search": "Chercher une catégorie",
+    "noMatch": "Aucune catégorie ne correspond",
+    "listLabel": "Catégories"
   },
   "copy": {
     "aria": "Copier la commande : {{command}}",

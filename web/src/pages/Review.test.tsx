@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderApp } from "@/test/utils";
+import { pickCategory, renderApp } from "@/test/utils";
 import Review from "./Review";
 import { resetCsrfForTests } from "@/lib/api";
 
@@ -51,8 +51,7 @@ describe("review queue page", () => {
     const card = (await screen.findByText("Sc Brandelis")).closest("section")!;
     const set = within(card).getByRole("button", { name: "Set" });
     expect(set).toBeDisabled();
-    await within(card).findByRole("option", { name: "Restaurants" });
-    await userEvent.selectOptions(within(card).getByRole("combobox"), "food.restaurants");
+    await pickCategory(within(card).getByRole("combobox"), "Restaurants");
     expect(set).toBeEnabled();
     await userEvent.click(set);
     await waitFor(() => expect(calls.some((c) => c.url === "/api/v1/review/correct")).toBe(true));
