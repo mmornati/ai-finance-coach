@@ -76,6 +76,21 @@ def same_transaction(stored: tuple, booking_date: str | None, amount: float, des
         return False
 
 
+def parked_row(con, uid: str, ref: str | None, booking_date: str | None, amount: float,
+               description: str | None) -> tuple | None:
+    """(tx_key, booking_date, amount, description) of the row a bank entry was stored under after its reference
+    conflicted with another row (a content key), when it is the same transaction. Its reference key can be free again
+    later (the other row was removed, e.g. by migration 0023): without this the entry would be stored a second time."""
+    if not ref:
+        return None
+    for row in con.execute("SELECT tx_key, booking_date, amount, description FROM transactions "
+                           "WHERE account_uid=? AND entry_reference=? AND tx_key LIKE ?", (uid, ref, f"{uid}:cfp:%")):
+        if (not materially_differs(row[1:], (booking_date, amount, description))
+                or same_transaction(row[1:], booking_date, amount, description)):
+            return row
+    return None
+
+
 class Keyer:
     """Assigns tx_keys during one sync run. A bank reference that is only the booking date + the position in the
     day (Fortuneo "2025-12-11T00:00:00-3", H1) is not an identity: such a transaction is keyed by its content plus
@@ -180,6 +195,11 @@ def sync_account(con, client, uid: str, full: bool, force: bool, daily_limit: in
                 key = keyer.key(tx)
                 stored = con.execute("SELECT booking_date, amount, description FROM transactions WHERE tx_key=?",
                                      (key,)).fetchone()
+                if stored is None and key.startswith(f"{uid}:ref:"):
+                    parked = parked_row(con, uid, tx.get("entry_reference"), tx.get("booking_date"), amount,
+                                        _description(tx))
+                    if parked:                                   # already stored under a content key: that row
+                        key, stored = parked[0], parked[1:]
                 dup_in_run = key in seen_keys                    # the same reference twice in ONE response
                 this = content_key(tx.get("booking_date") or "", amount, _description(tx))
                 if dup_in_run and first_content.get(key) == this:

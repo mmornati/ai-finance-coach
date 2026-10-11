@@ -103,12 +103,15 @@ def rekey_tables(con, old: str, new: str) -> None:
     con.execute("UPDATE transfer_rejections SET in_tx_key=? WHERE in_tx_key=?", (new, old))
 
 
-def replace_tx_key(con, old: str, new: str) -> None:
-    """An import row was superseded by the API version of the same transaction: carry the user's data over."""
-    con.execute("INSERT OR REPLACE INTO tx_key_remap VALUES (?,?,'import superseded by bank feed',datetime('now'))",
-                (old, new))
+def replace_tx_key(con, old: str, new: str, reason: str = "import superseded by bank feed") -> None:
+    """Row `old` is the same transaction as the kept row `new` (an import superseded by the API version, or a second
+    copy of a bank entry): carry the user's data over (the kept row's own data wins) and drop `old`."""
+    con.execute("INSERT OR REPLACE INTO tx_key_remap VALUES (?,?,?,datetime('now'))", (old, new, reason))
     con.execute("UPDATE tx_splits SET tx_key=? WHERE tx_key=?", (new, old))
     con.execute("UPDATE OR IGNORE tx_overrides SET tx_key=? WHERE tx_key=?", (new, old))
+    if con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='tx_person'").fetchone():
+        con.execute("UPDATE OR IGNORE tx_person SET tx_key=? WHERE tx_key=?", (new, old))
+        con.execute("DELETE FROM tx_person WHERE tx_key=?", (old,))
     _move_gold(con, old, new)
     con.execute("UPDATE transfer_links SET out_tx_key=? WHERE out_tx_key=?", (new, old))
     con.execute("UPDATE transfer_links SET in_tx_key=? WHERE in_tx_key=?", (new, old))

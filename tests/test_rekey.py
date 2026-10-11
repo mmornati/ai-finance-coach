@@ -109,6 +109,51 @@ def test_conflicting_reference_keeps_both_transactions(con):
     assert con.execute("SELECT COUNT(*) FROM transactions").fetchone()[0] == 2
 
 
+def test_an_entry_parked_under_a_content_key_is_not_stored_again_when_its_reference_key_frees_up(con):
+    """A booked entry conflicted with an older row holding its reference (stored under a content key); that older row
+    then left `transactions` (migration 0023). The next sync must find the parked row, not store the entry twice."""
+    d = "2026-10-08"
+    run(con, eb_tx("SEPA-REF-1", d, -9.0, "PRLV OLD ENTRY"))
+    run(con, eb_tx("SEPA-REF-1", d, -538.0, "PRLV SCHOOL FEES"))
+    parked = con.execute("SELECT tx_key FROM transactions WHERE amount=-538").fetchone()[0]
+    assert parked.startswith("acc1:cfp:")
+    con.execute("INSERT INTO tx_overrides VALUES (?,?,?)", (parked, "kids.school", "mine"))
+    con.execute("DELETE FROM transactions WHERE tx_key='acc1:ref:SEPA-REF-1'")
+    con.commit()
+    res = run(con, eb_tx("SEPA-REF-1", d, -538.0, "PRLV SCHOOL FEES"))
+    assert res["new"] == 0 and res["conflicts"] == []
+    assert [r[0] for r in con.execute("SELECT tx_key FROM transactions")] == [parked]
+    # an enriched text of the same entry refreshes the parked row instead of adding one
+    res = run(con, eb_tx("SEPA-REF-1", d, -538.0, "PRLV SCHOOL FEES OCTOBER"))
+    assert res["new"] == 0 and res["refreshed"] == [parked]
+    # a genuinely different transaction under the free reference key is still stored
+    res = run(con, eb_tx("SEPA-REF-1", "2026-11-08", -538.0, "PRLV SCHOOL FEES NOVEMBER"))
+    assert res["new"] == 1
+
+
+def test_migration_0025_merges_a_parked_copy_into_the_reference_row(cfg, tmp_path):
+    d = tmp_path / "mig"
+    d.mkdir()
+    for f in dbm.MIGRATIONS_DIR.iterdir():
+        if f.is_file() and not f.name.startswith("0025"):
+            shutil.copy(f, d / f.name)
+    c = connect(cfg, insecure=True, create=True, migrate=False)
+    dbm.apply_migrations(c, d, safety_copy=False)
+    ins = ("INSERT INTO transactions(tx_key, account_uid, entry_reference, booking_date, amount, currency, description, raw) "
+           "VALUES (?,?,?,?,?,?,?,'{}')")
+    c.execute(ins, ("a:cfp:1", "a", "R1", "2026-10-08", -538.0, "EUR", "PRLV SCHOOL"))   # parked copy
+    c.execute(ins, ("a:ref:R1", "a", "R1", "2026-10-08", -538.0, "EUR", "PRLV  school"))  # same entry, reference key
+    c.execute(ins, ("a:cfp:2", "a", "R2", "2026-10-08", -77.0, "EUR", "OTHER"))           # a real conflict: kept
+    c.execute(ins, ("a:ref:R2", "a", "R2", "2026-10-08", -10.0, "EUR", "FIRST"))
+    c.execute(ins, ("a:cfp:3", "a", "2026-10-08T00:00:00-1", "2026-10-08", -5.0, "EUR", "POS"))   # position ref: H1
+    c.execute("INSERT INTO tx_overrides VALUES ('a:cfp:1', 'kids.school', 'mine')")
+    c.commit()
+    dbm.apply_migrations(c, safety_copy=False)
+    assert sorted(r[0] for r in c.execute("SELECT tx_key FROM transactions")) == ["a:cfp:2", "a:cfp:3", "a:ref:R1", "a:ref:R2"]
+    assert c.execute("SELECT tx_key, category FROM tx_overrides").fetchall() == [("a:ref:R1", "kids.school")]
+    assert c.execute("SELECT old_key, new_key FROM tx_key_remap").fetchall() == [("a:cfp:1", "a:ref:R1")]
+
+
 def test_same_content_with_same_stable_reference_is_a_plain_update(con):
     d = "2026-03-02"
     run(con, eb_tx("R9", d, -10.0, "CARTE 01/03 ALPHA PARIS"))
@@ -265,4 +310,4 @@ def test_db_migrate_command_on_an_encrypted_db_takes_its_safety_copy_with_the_ke
     cmd_db_migrate(Namespace(insecure=False, create=False), cfg)
     assert list(cfg.db_path.parent.glob("*.pre-migrate-*.bak"))
     c = dbm.connect(cfg)
-    assert [v for v, _, _ in dbm.status(c)["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+    assert [v for v, _, _ in dbm.status(c)["applied"]] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
