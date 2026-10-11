@@ -551,9 +551,11 @@ def audit(cfg, *, scan_root: Optional[Path] = None, lsof: Optional[LsofRunner] =
                   " (TLS acknowledged): keep it behind Tailscale / a VPN, never the open internet")))
     # E16: the ways into a session besides the one-time link (both off by default)
     if cfg.ui_sso != "none":
-        jwks_plain = cfg.ui_sso_jwks_url.lower().startswith("http://")
+        by_secret = cfg.ui_sso_signing == "client_secret"
+        jwks_plain = not by_secret and cfg.ui_sso_jwks_url.lower().startswith("http://")
+        against = "the provider's client secret (HS256, secret sso_client_secret)" if by_secret else cfg.ui_sso_jwks_url
         add(Check("exposure", "ui_sso", WARN if jwks_plain else INFO,
-                  f"web app sign-in through {cfg.ui_sso}: {len(cfg.ui_sso_users)} identity(ies) mapped, token checked against {cfg.ui_sso_jwks_url}"
+                  f"web app sign-in through {cfg.ui_sso}: {len(cfg.ui_sso_users)} identity(ies) mapped, token checked against {against}"
                   + ("; issuer not checked" if not cfg.ui_sso_issuer else "") + ("; audience not checked" if not cfg.ui_sso_audience else ""),
                   "the JWKS URL is plain http: fine on a private container network, never across the open internet" if jwks_plain else
                   "the app must be reachable ONLY through that proxy (no other published port, no other route)"))

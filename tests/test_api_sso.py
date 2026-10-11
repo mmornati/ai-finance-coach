@@ -255,3 +255,100 @@ def test_sso_settings_are_listed_without_the_identities(world):
     rows = {k: v for k, v, _ in effective(cfg)}
     assert rows["ui.sso"] == "authentik" and rows["ui.sso_users"] == "2 mapped" and "marco" not in str(rows)
     assert rows["ui.sso_jwks_url"] == JWKS_URL and rows["ui.sso_issuer"] == ISS
+
+
+# ====================================================================== an authentik PROXY provider: HS256 with its client secret
+
+SECRET = "s" * 64
+SECRET_SECTION = SECTION.replace(f'sso_jwks_url = "{JWKS_URL}"', 'sso_signing = "client_secret"')
+
+
+def hs_token(secret: str = SECRET, alg: str = "HS256", **over) -> str:
+    now = int(time.time())
+    claims = {"iss": ISS, "aud": AUD, "exp": now + 300, "iat": now, "sub": "uid-1", "preferred_username": "marco"}
+    claims.update(over)
+    return jwt.encode(claims, secret, algorithm=alg)
+
+
+def secret_app(world, tmp_path, monkeypatch, secret: str | None = SECRET, cfg=None):
+    if secret is None:
+        monkeypatch.delenv("COACH_SSO_CLIENT_SECRET", raising=False)
+        monkeypatch.setenv("COACH_SECRETS_BACKEND", "file")
+        monkeypatch.setenv("COACH_SECRETS_DIR", str(tmp_path / "no-secrets"))
+    else:
+        monkeypatch.setenv("COACH_SSO_CLIENT_SECRET", secret)
+    cfg = cfg or sso_cfg(world, section=SECRET_SECTION)
+    app = create_app(cfg, insecure=True, port=PORT, static_dir=static_dir(tmp_path), inline_jobs=True)
+
+    def no_fetch():
+        raise AssertionError("client_secret mode never fetches keys")
+    app.state.sso._fetch = no_fetch
+    return app
+
+
+def test_a_token_signed_with_the_client_secret_opens_the_session(world, tmp_path, monkeypatch):
+    app = secret_app(world, tmp_path, monkeypatch)
+    c = TestClient(app, base_url=HOST)
+    r = c.get(api("/session"), headers={"X-authentik-jwt": hs_token()})
+    assert r.status_code == 200, r.text
+    assert r.json()["user"]["id"] == "owner" and f"coach_session_{PORT}=" in r.headers["set-cookie"]
+
+
+@pytest.mark.parametrize("case, reason", [
+    ("other_secret", "invalid"), ("hs512", "algorithm"), ("rs256", "algorithm"), ("none", "algorithm"), ("expired", "expired"),
+    ("issuer", "issuer"), ("audience", "audience"),
+])
+def test_client_secret_mode_accepts_hs256_with_that_secret_only(world, tmp_path, monkeypatch, keys, case, reason):
+    priv, _ = keys
+    app = secret_app(world, tmp_path, monkeypatch)
+    t = {
+        "other_secret": lambda: hs_token(secret="x" * 64),
+        "hs512": lambda: hs_token(alg="HS512"),
+        "rs256": lambda: token(priv),
+        "none": lambda: jwt.encode({"preferred_username": "marco", "exp": int(time.time()) + 300}, None, algorithm="none"),
+        "expired": lambda: hs_token(exp=int(time.time()) - 100),
+        "issuer": lambda: hs_token(iss="https://evil.example.test/application/o/coach/"),
+        "audience": lambda: hs_token(aud="other-client"),
+    }[case]()
+    r = TestClient(app, base_url=HOST).get(api("/session"), headers={"X-authentik-jwt": t})
+    assert r.status_code == 401 and r.json()["error"]["details"] == {"reason": reason} and "set-cookie" not in r.headers, r.text
+
+
+def test_jwks_mode_refuses_an_hs256_token_signed_with_a_public_key(world, tmp_path, keys):
+    """Algorithm confusion: an HS256 token whose 'secret' is the provider's PUBLIC key never passes the jwks mode."""
+    from cryptography.hazmat.primitives import serialization
+    priv, _ = keys
+    pem = priv.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
+    app = build(sso_cfg(world), tmp_path, Fetch(priv))
+    claims = {"iss": ISS, "aud": AUD, "exp": int(time.time()) + 300, "preferred_username": "marco"}
+    import base64
+    import hashlib
+    import hmac
+    import json
+
+    def b64(b):
+        return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+    head = b64(json.dumps({"alg": "HS256", "typ": "JWT", "kid": "k1"}).encode()) + "." + b64(json.dumps(claims).encode())
+    t = head + "." + b64(hmac.new(pem, head.encode(), hashlib.sha256).digest())
+    r = TestClient(app, base_url=HOST).get(api("/session"), headers={"X-authentik-jwt": t})
+    assert r.status_code == 401 and r.json()["error"]["details"] == {"reason": "algorithm"}
+
+
+def test_client_secret_mode_needs_the_secret(world, tmp_path, monkeypatch):
+    from coach.secrets import SecretNotFound
+    cfg = sso_cfg(world, section=SECRET_SECTION)
+    with pytest.raises(SecretNotFound, match="sso_client_secret"):
+        secret_app(world, tmp_path, monkeypatch, secret=None, cfg=cfg)
+    with pytest.raises(ConfigError, match="32 characters"):
+        secret_app(world, tmp_path, monkeypatch, secret="short", cfg=cfg)
+
+
+def test_client_secret_mode_needs_no_jwks_url_and_is_listed(world):
+    from coach.config import effective
+    base = world.config_path.read_text()
+    cfg = sso_cfg(world, section=SECRET_SECTION)
+    rows = {k: v for k, v, _ in effective(cfg)}
+    assert rows["ui.sso_signing"] == "client_secret" and rows["ui.sso_jwks_url"] == "(none)"
+    world.config_path.write_text(base)
+    with pytest.raises(ConfigError, match="sso_signing must be"):
+        sso_cfg(world, section=SECTION.replace('sso = "authentik"', 'sso = "authentik"\nsso_signing = "hs256"'))

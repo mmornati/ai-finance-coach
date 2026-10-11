@@ -186,6 +186,8 @@ class Config:
     ui_container_bind: bool = False      # [ui] container_bind: written by the container image's `coach init` ONLY; with a real container, allows 0.0.0.0 (E13 MJ-1)
     ui_passkeys: bool = False            # [ui] passkeys (E16): a passkey (Face ID, Touch ID, a security key) can open a session; enrolled from a session
     ui_sso: str = "none"                 # [ui] sso (E16): "authentik" = an identity-aware proxy signs every person in; the app verifies its signed token
+    ui_sso_signing: str = "jwks"         # [ui] sso_signing: "jwks" = an asymmetric key published at sso_jwks_url; "client_secret" = HS256 with the provider's
+                                         # client secret (secret sso_client_secret): what authentik's PROXY providers do, they never have a signing key
     ui_sso_jwks_url: str = ""            # [ui] sso_jwks_url: the provider's JWKS URL, as the app reaches it (never taken from a header)
     ui_sso_issuer: str = ""              # [ui] sso_issuer: the token's expected `iss` ("" = not checked; the signature always is)
     ui_sso_audience: str = ""            # [ui] sso_audience: the token's expected `aud` (the provider's client id; "" = not checked)
@@ -378,6 +380,7 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         ui_remote_tls_ack=_typed("ui.remote_tls_ack", pick("ui.remote_tls_ack", "ui", False), bool),
         ui_passkeys=_typed("ui.passkeys", pick("ui.passkeys", "ui", False), bool),
         ui_sso=_typed("ui.sso", pick("ui.sso", "ui", "none"), str),
+        ui_sso_signing=_typed("ui.sso_signing", pick("ui.sso_signing", "ui", "jwks"), str),
         ui_sso_jwks_url=_typed("ui.sso_jwks_url", pick("ui.sso_jwks_url", "ui", ""), str),
         ui_sso_issuer=_typed("ui.sso_issuer", pick("ui.sso_issuer", "ui", ""), str),
         ui_sso_audience=_typed("ui.sso_audience", pick("ui.sso_audience", "ui", ""), str),
@@ -457,7 +460,9 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         if not (cfg.ui_allow_remote and cfg.ui_remote_tls_ack and cfg.ui_allowed_hosts):
             raise ConfigError("ui.sso needs ui.allow_remote = true, ui.remote_tls_ack = true and ui.allowed_hosts: the proxy that signs people in "
                               "is a remote, HTTPS front; the app verifies its signed token, never a plain header")
-        if not re.fullmatch(r"https?://[^\s/]+/\S*", cfg.ui_sso_jwks_url or ""):
+        if cfg.ui_sso_signing not in ("jwks", "client_secret"):
+            raise ConfigError(f'ui.sso_signing must be "jwks" or "client_secret", got {cfg.ui_sso_signing!r}')
+        if cfg.ui_sso_signing == "jwks" and not re.fullmatch(r"https?://[^\s/]+/\S*", cfg.ui_sso_jwks_url or ""):
             raise ConfigError("ui.sso needs ui.sso_jwks_url: the provider's JWKS URL as this app reaches it "
                               '(authentik: "http://authentik:9000/application/o/<application slug>/jwks/")')
         if not cfg.ui_sso_users:
@@ -562,6 +567,7 @@ def effective(cfg: Config) -> list[tuple[str, str, str]]:
         ("ui.remote_tls_ack", str(cfg.ui_remote_tls_ack).lower(), s.get("ui.remote_tls_ack", "")),
         ("ui.passkeys", str(cfg.ui_passkeys).lower(), s.get("ui.passkeys", "")),
         ("ui.sso", cfg.ui_sso, s.get("ui.sso", "")),
+        ("ui.sso_signing", cfg.ui_sso_signing, s.get("ui.sso_signing", "")),
         ("ui.sso_jwks_url", cfg.ui_sso_jwks_url or "(none)", s.get("ui.sso_jwks_url", "")),
         ("ui.sso_issuer", cfg.ui_sso_issuer or "(not checked)", s.get("ui.sso_issuer", "")),
         ("ui.sso_audience", cfg.ui_sso_audience or "(not checked)", s.get("ui.sso_audience", "")),

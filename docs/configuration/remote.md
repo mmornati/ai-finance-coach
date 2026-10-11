@@ -109,8 +109,7 @@ container on the proxy network, a process on the host) could send one.
 ```mermaid
 flowchart LR
   P[Your phone] -- HTTPS --> R[reverse proxy<br/>+ authentik forward-auth]
-  R -- "X-authentik-jwt" --> A[coach ui]
-  A -. "JWKS (public keys), cached" .-> K[authentik]
+  R -- "X-authentik-jwt (HS256)" --> A[coach ui]
 ```
 
 ```toml
@@ -119,7 +118,7 @@ allow_remote = true
 remote_tls_ack = true                          # the proxy terminates TLS
 allowed_hosts = ["coach.example.net"]          # the public host name
 sso = "authentik"
-sso_jwks_url = "http://authentik:9000/application/o/<application slug>/jwks/"   # as the APP reaches authentik (container name)
+sso_signing = "client_secret"                  # an authentik PROXY provider signs with its client secret (see below)
 sso_issuer = "https://authentik.example.net/application/o/<application slug>/"  # the token's `iss`; "" = not checked
 sso_audience = "<client id of the proxy provider>"                              # the token's `aud`; "" = not checked
 
@@ -128,9 +127,29 @@ sso_audience = "<client id of the proxy provider>"                              
 "anna@example.net" = "anna"    # -> a `coach users` login (adult or child, with its scope)
 ```
 
-How it works: a request with no session cookie but with `X-authentik-jwt` (the token authentik's outpost adds) is checked against the
-provider's public keys (JWKS), fetched from **your** `sso_jwks_url` (never the URL a header suggests), cached an hour and refreshed at
-most once a minute when a token names an unknown key. Expiry is always checked; issuer and audience when set. The token's
+**The signing key.** authentik signs the `X-authentik-jwt` of a **proxy** provider with HS256 and that provider's **client secret**, and
+nothing else: it clears a proxy provider's signing key on every save (the *Certificate* field of its advanced settings is the outpost's TLS
+certificate, not a signing key), so its JWKS stays empty. Copy the client secret from the provider's page (Applications > Providers >
+your proxy provider > Edit: *Client Secret*) into the secret `sso_client_secret`:
+
+```bash
+uv run coach config set-secret sso_client_secret          # or, in Docker, a secret file mounted as /run/secrets/sso_client_secret
+```
+
+In Docker, add it to the `coach` service in `docker-compose.override.yml`, next to the other secrets
+(`secrets: [db_key, backup_key, sso_client_secret]` and `secrets: { sso_client_secret: { file: ./secrets/sso_client_secret } }`, mode 0600).
+With `sso_signing = "client_secret"` the app accepts HS256 only (no other algorithm can be played against that key), fetches nothing, and
+refuses to start when the secret is missing or shorter than 32 characters. Whoever holds the client secret (authentik's database, the
+coach's secrets) can forge a token: keep it with the other secrets, and rotate it in authentik (then here) if it leaks.
+
+An identity provider that publishes **asymmetric** keys instead (an authentik OAuth2/OpenID provider with a signing key, or another
+product) uses `sso_signing = "jwks"` (the default) with
+`sso_jwks_url = "http://authentik:9000/application/o/<application slug>/jwks/"`, the URL as the APP reaches the provider: the token is
+then checked against those public keys (RS / ES / PS only), fetched from **your** URL (never the URL a header suggests), cached an hour
+and refreshed at most once a minute when a token names an unknown key.
+
+How it works: a request with no session cookie but with `X-authentik-jwt` (the token authentik's outpost adds) has its signature checked
+as above. Expiry is always checked; issuer and audience when set. The token's
 `preferred_username`, `email` or `sub` is looked up in `[ui.sso_users]`; the mapped login must exist and be enabled; the ordinary
 session cookie is then issued on that same response. CSRF, rate limits, the child scope and the audit log are unchanged. A page load
 never gets a cookie, only an API call does.
@@ -150,7 +169,7 @@ authentik's forwardAuth must list `X-authentik-jwt` and `X-authentik-meta-jwks` 
 template does).
 
 When the identity is not mapped, the login page says which name authentik sent, so you can add it. When the token is refused (expired,
-wrong issuer or audience, unknown key), the page says why in one word and `coach ui` logs the reason, never the token. **Sign out** revokes
+wrong issuer or audience, unknown key, an `algorithm` that does not match `sso_signing`), the page says why in one word and `coach ui` logs the reason, never the token. **Sign out** revokes
 the app's cookie and then goes to authentik's sign-out, or the session would reopen on the next request. `coach security audit` reports
 the mode (a plain-http JWKS URL is a warning: fine on a private container network, never across the internet).
 

@@ -32,8 +32,10 @@ SECRETS: dict[str, str] = {
     "ntfy_token": "COACH_NTFY_TOKEN",          # optional: access token of a protected ntfy topic ([alerts.ntfy])
     "smtp_password": "COACH_SMTP_PASSWORD",    # needed only when [alerts.email] is enabled
     "telegram_bot_token": "COACH_TELEGRAM_BOT_TOKEN",   # needed only when [alerts.telegram] is enabled
+    "sso_client_secret": "COACH_SSO_CLIENT_SECRET",     # needed only with [ui] sso_signing = "client_secret": the proxy provider's client secret
 }
-OPTIONAL = {"anthropic_api_key", "openai_api_key", "claude_code_oauth_token", "proposal_key", "ntfy_token", "smtp_password", "telegram_bot_token"}
+OPTIONAL = {"anthropic_api_key", "openai_api_key", "claude_code_oauth_token", "proposal_key", "ntfy_token", "smtp_password", "telegram_bot_token",
+            "sso_client_secret"}
 
 
 BACKENDS = ("keychain", "file")

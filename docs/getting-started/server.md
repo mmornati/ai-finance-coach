@@ -68,8 +68,9 @@ Use Tailscale or a VPN in front of the loopback port. Never open the app to the 
 Tired of the link? Two opt-in ways in, both documented in [Remote access](../configuration/remote.md): **passkeys** (`[ui] passkeys = true`:
 enrol the phone once from a session, then Face ID or Touch ID opens it) and, when the server already runs a reverse proxy with
 **authentik** forward-auth, **SSO** (`[ui] sso = "authentik"`: the app verifies authentik's signed token and opens the mapped login by
-itself). In Docker, `sso_jwks_url` is authentik's container address (`http://authentik:9000/...`), which the coach container must reach:
-put it on the proxy's network in a `docker-compose.override.yml`, without publishing any other port.
+itself). An authentik **proxy** provider signs its token with its client secret (it has no signing key): set `sso_signing = "client_secret"` and
+store that secret as `sso_client_secret` (a Docker secret file). Put the coach container on the proxy's network in a
+`docker-compose.override.yml`, without publishing any other port.
 
 All three settings are required together: `allow_remote` alone is refused, so a typo cannot expose the app over plain HTTP.
 

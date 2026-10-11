@@ -5,6 +5,13 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed: SSO works with an authentik proxy provider (E16)
+- authentik signs the `X-authentik-jwt` of a PROXY provider with HS256 and the provider's client secret, always: it clears a proxy provider's
+  signing key on every save, so its JWKS is empty and every token was refused (`algorithm`), leaving the login-link page. New
+  `[ui] sso_signing = "client_secret"`: the token is verified with the secret `sso_client_secret` (`COACH_SSO_CLIENT_SECRET`, or a Docker secret
+  file), HS256 only, no fetch; the app refuses to start without it. `sso_signing = "jwks"` (the default) keeps the RS / ES / PS keys of
+  `sso_jwks_url`, and its refusal of an HS token now says which setting to use. Docs: the authentik recipe in `docs/configuration/remote.md`.
+
 ### Fixed: the login link no longer lands in the container log behind a proxy (#37)
 - In a container without a terminal, `coach ui` writes the one-time login link to the private `login-link.txt` instead of printing it. That only
   happened in the loopback container mode: with `[ui] allow_remote = true` (the Tailscale and authentik recipes) every start printed a valid link

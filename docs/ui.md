@@ -150,10 +150,11 @@ The app shows your whole financial life. It is local by default and defended in 
     backwards, a credential of another host or a disabled login, is rate limited (10 assertions, then one every 30 s) and only then issues the
     ordinary cookie for that login. A loopback ADDRESS cannot be a relying party (`400 passkey_host`: use `localhost`). Ten passkeys per login;
     removal is `POST /session/passkeys/delete` on one's own passkeys only. A child login manages its own passkeys (`CHILD_ALLOWED`).
-14. **An identity-aware proxy (E16, opt-in: `[ui] sso = "authentik"`, needs `allow_remote`, `remote_tls_ack`, `allowed_hosts`, `sso_jwks_url` and a
-    `[ui.sso_users]` table).** An API call with no valid cookie but with the proxy's signed token (`X-authentik-jwt`) is verified in `coach.api.sso`:
+14. **An identity-aware proxy (E16, opt-in: `[ui] sso = "authentik"`, needs `allow_remote`, `remote_tls_ack`, `allowed_hosts`, `sso_jwks_url` (or
+    `sso_signing = "client_secret"` and the secret `sso_client_secret`) and a `[ui.sso_users]` table).** An API call with no valid cookie but with the proxy's signed token (`X-authentik-jwt`) is verified in `coach.api.sso`:
     signature against the provider's JWKS fetched from the CONFIGURED URL (through the egress gate, kind `ui.sso`, cached an hour, refreshed at most
-    once a minute on an unknown key id), `exp` always, `iss` / `aud` when configured, algorithms RS*/ES*/PS* only. `preferred_username`, `email` or
+    once a minute on an unknown key id), `exp` always, `iss` / `aud` when configured, algorithms RS*/ES*/PS* only; with `sso_signing = "client_secret"` (authentik PROXY providers, which never have a
+    signing key) HS256 only, against the provider's client secret, and no fetch at all. `preferred_username`, `email` or
     `sub` must map to `"owner"` or an enabled login; the cookie is issued on that response (`Set-Cookie`), and the request goes on as that session
     (CSRF with the new cookie's token, child scope, audit). Refusals: `401 sso_missing` (no token), `sso_unmapped` (valid token, unknown name:
     the name is returned to the person, nothing is logged), `sso_rejected` with a one-word `reason` (`expired`, `issuer`, `audience`, `invalid`,
@@ -363,6 +364,7 @@ key_rotation_days = 30    # the session secret is replaced when older than this
 open_browser = true       # `coach ui` opens your browser on the one-time login link
 passkeys = false          # E16: true = a passkey enrolled from a session can open one (Face ID, Touch ID, a security key)
 sso = "none"              # E16: "authentik" = the proxy's signed token opens a session (with allow_remote + remote_tls_ack + allowed_hosts)
+sso_signing = "jwks"      # "jwks" = RS/ES/PS keys published at sso_jwks_url; "client_secret" = HS256 with the secret sso_client_secret (authentik proxy providers)
 sso_jwks_url = ""         # the provider's JWKS URL as the app reaches it, e.g. "http://authentik:9000/application/o/<slug>/jwks/"
 sso_issuer = ""           # the token's expected `iss` ("" = not checked; the signature always is)
 sso_audience = ""         # the token's expected `aud`, the proxy provider's client id ("" = not checked)

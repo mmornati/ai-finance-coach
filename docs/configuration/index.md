@@ -58,6 +58,7 @@ secret is set and where it comes from.
 | `openai_api_key` | `COACH_OPENAI_API_KEY` | the `openai-compatible` backend (deliberately not `OPENAI_API_KEY`) |
 | `claude_code_oauth_token` | `CLAUDE_CODE_OAUTH_TOKEN` | the `claude-code` backend in a container |
 | `ntfy_token`, `smtp_password`, `telegram_bot_token` | `COACH_NTFY_TOKEN`, `COACH_SMTP_PASSWORD`, `COACH_TELEGRAM_BOT_TOKEN` | alert channels |
+| `sso_client_secret` | `COACH_SSO_CLIENT_SECRET` | web app SSO through an authentik **proxy** provider (`[ui] sso_signing = "client_secret"`) |
 
 !!! warning "Keep a copy of `db_key` and `backup_key`"
     Save both in your password manager. Losing `db_key` makes the database unrecoverable; losing `backup_key` makes the backups unreadable.

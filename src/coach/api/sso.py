@@ -1,10 +1,17 @@
 """Sign-in through an identity-aware reverse proxy (E16): authentik forward-auth.
 
 With ``[ui] sso = "authentik"`` every request has already passed the proxy's own login before it reaches this app, and the proxy's
-outpost adds ``X-authentik-jwt``: the signed OIDC token of the person. The app verifies that signature ITSELF against the provider's
-JWKS, fetched from the URL of its OWN configuration (``[ui] sso_jwks_url``: never the URL a header suggests), checks the expiry, the
+outpost adds ``X-authentik-jwt``: the signed OIDC token of the person. The app verifies that signature ITSELF, checks the expiry, the
 issuer and the audience when configured, maps ``preferred_username`` / ``email`` / ``sub`` to a login of this app (``[ui.sso_users]``)
-and only then issues the ordinary session cookie. Nothing else in the session model changes: CSRF, rate limits, the child scope and the
+and only then issues the ordinary session cookie.
+
+Two ways to verify the signature (``[ui] sso_signing``):
+
+* ``"jwks"``: an asymmetric key (RS / ES / PS) published at the provider's JWKS, fetched from the URL of the app's OWN configuration
+  (``[ui] sso_jwks_url``: never the URL a header suggests).
+* ``"client_secret"``: HS256 with the provider's client secret (the secret ``sso_client_secret``, never in ``config.toml``). authentik's PROXY
+  providers sign this way and only this way: authentik clears their signing key on every save, so their JWKS is empty. Only HS256 is then
+  accepted, so that no other algorithm can be played against that key. Nothing else in the session model changes: CSRF, rate limits, the child scope and the
 audit log apply as before, and the one-time login link keeps working (the fallback when the proxy is down).
 
 A plain ``X-authentik-username`` header is NEVER trusted: anything that can reach the app's port (another container on the proxy's
@@ -21,7 +28,8 @@ from urllib.parse import urlparse
 import jwt
 import requests
 
-from coach import egress
+from coach import egress, secrets
+from coach.config import ConfigError
 
 log = logging.getLogger("coach.api.sso")
 
@@ -31,6 +39,7 @@ OWNER = "owner"                     # the mapping value of the person at the mac
 KEYS_TTL = 3600                     # seconds the provider's keys are kept
 REFETCH_MIN = 60                    # an unknown key id triggers a new fetch at most this often
 MAX_TOKEN = 8192
+MIN_SECRET = 32                     # characters of a client secret (authentik generates 128)
 
 
 class SsoVerifier:
@@ -46,6 +55,13 @@ class SsoVerifier:
         self.issuer = cfg.ui_sso_issuer or None
         self.audience = cfg.ui_sso_audience or None
         self.users = {str(k): str(v) for k, v in dict(cfg.ui_sso_users).items()}
+        self.signing = cfg.ui_sso_signing
+        self._secret: Optional[str] = None
+        if self.signing == "client_secret":
+            self._secret = secrets.get_secret("sso_client_secret")
+            if len(self._secret) < MIN_SECRET:
+                raise ConfigError(f"the secret sso_client_secret is shorter than {MIN_SECRET} characters: it must be the provider's client secret "
+                                  "(authentik: the proxy provider's page, Client Secret)")
         self._fetch = fetch or self._default_fetch
         self._keys: Optional[jwt.PyJWKSet] = None
         self._fetched = 0.0
@@ -89,11 +105,19 @@ class SsoVerifier:
         try:
             header = jwt.get_unverified_header(token)
             alg, kid = header.get("alg"), header.get("kid")
-            if alg not in ALGORITHMS or not isinstance(kid, str) or not kid:
-                log.warning("sso: the token is signed with %r: the provider needs a signing key (certificate) so that its keys are published", alg)
-                return None, None, "algorithm"
-            key = self._key(kid)
-            claims = jwt.decode(token, key.key, algorithms=[alg], issuer=self.issuer, audience=self.audience, leeway=30,
+            if self._secret is not None:
+                if alg != "HS256":
+                    log.warning("sso: the token is signed with %r, [ui] sso_signing = \"client_secret\" accepts HS256 only", alg)
+                    return None, None, "algorithm"
+                key = self._secret
+            else:
+                if alg not in ALGORITHMS or not isinstance(kid, str) or not kid:
+                    log.warning("sso: the token is signed with %r, [ui] sso_signing = \"jwks\" accepts RS / ES / PS only%s", alg,
+                                ": an authentik proxy provider signs with its client secret, set [ui] sso_signing = \"client_secret\""
+                                if isinstance(alg, str) and alg.startswith("HS") else "")
+                    return None, None, "algorithm"
+                key = self._key(kid).key
+            claims = jwt.decode(token, key, algorithms=[alg], issuer=self.issuer, audience=self.audience, leeway=30,
                                 options={"require": ["exp"], "verify_iss": self.issuer is not None, "verify_aud": self.audience is not None})
         except jwt.ExpiredSignatureError:
             return None, None, "expired"
