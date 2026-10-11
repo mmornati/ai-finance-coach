@@ -15,7 +15,8 @@ result is walked and rewritten before it is returned:
   ``income.salary`` becomes ``[employer]``, the payee of ``kids.school`` (or a declared school) ``[school]``, a merchant
   the classifier's person guard considers a person, or a small unknown business with no organisation word (1-3
   capitalised words, few payments, not a subscription / housing / insurance / tax / debt line) becomes
-  ``[merchant:<category>]-<hash>``, and a trailing town (declared in ``places`` or a suffix shared by several merchants) is
+  ``[merchant:<category>]-<hash>`` (in both modes, so does a 2-3 word title with no organisation word in a line paid to
+  one person - doctor, childcare, hair / beauty, lessons, courses, vet - however often it is paid), and a trailing town (declared in ``places`` or a suffix shared by several merchants) is
   cut from merchant titles. ``standard`` keeps merchant titles except what the person guard flags. In both modes a given
   name masked inside a person-like run masks the WHOLE run (``VELLARD NATHALIE`` -> ``[person]``).
 * the message of an anomaly is REBUILT from its structured fields after redaction, never filtered after the fact.
@@ -60,6 +61,9 @@ BRAND_MIN_TX = 5                      # a merchant paid this often is treated as
 OPEN_CATS = ("subscriptions.", "insurance.", "taxes.", "debt.", "fees.", "transport.car_loan", "housing.mortgage", "housing.rent",
              "housing.energy", "housing.water", "housing.property_charges", "housing.home_insurance",
              "housing.rental_property_loan")      # lines that are contracts / utilities: kept by name even if rarely paid
+# lines mostly paid to ONE person (a doctor, a nanny, a hairdresser, a teacher, a vet): a 2-3 word title with no organisation
+# word is that person's name however often it is paid (a family doctor seen monthly is still a person, not a brand)
+PRACTITIONER_CATS = ("health.doctors", "kids.childcare", "personal_care.", "leisure.hobbies", "education.courses", "pets.")
 MARKERS = re.compile(r"^(\[(person|family|holder|NAME|name)\]|adult-\d+|kid-\d+|child-\d+)[,.;:]?$")
 
 
@@ -205,7 +209,9 @@ class Redactor:
                 small = (self.detail == "coarse" and not org and 1 <= len(toks) <= 3 and n < BRAND_MIN_TX
                          and not cat.startswith(OPEN_CATS) and all(w[0].isalpha() for w in toks))
                 guard = person and not org or (person and self.detail == "coarse" and n < BRAND_MIN_TX and not cat.startswith(OPEN_CATS))
-                if guard or small:
+                practitioner = (not org and 2 <= len(toks) <= 3 and cat.startswith(PRACTITIONER_CATS)
+                                and all(w[0].isalpha() for w in toks))
+                if guard or small or practitioner:
                     rep = f"[merchant:{cat}]-{stable_hash(name)[2:8]}"
             if rep == name and self.detail == "coarse":
                 words = name.split()

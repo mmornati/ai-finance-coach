@@ -758,6 +758,27 @@ def test_coarse_mode_masks_people_sole_traders_employer_school_and_towns(private
     assert any(v.startswith("[merchant:") for k, v in reg.red.entity_map.items() if "DUVERGER" in k.upper())
 
 
+@pytest.mark.parametrize("detail", ["coarse", "standard"])
+def test_a_practitioner_paid_often_is_still_a_person(private_world2, cfg, detail):
+    """A family doctor seen monthly: a surname + a given name the list does not know, far more payments than a sole
+    trader. It must not reach the model by name; a practice with an organisation word keeps its title."""
+    from coach.analytics import api
+    con = private_world2
+    for i in range(9):
+        d0 = add_months(D("2026-01-21"), i).isoformat()
+        add_tx(con, "fo", f"doc{i}", d0, -30.0, "VASSEUR ONDINE", "card")
+        add_tx(con, "fo", f"lab{i}", d0, -12.0, "LABORATOIRE BIOMEDIK", "card")
+    for key in ("VASSEUR ONDINE", "LABORATOIRE BIOMEDIK"):
+        con.execute("INSERT OR REPLACE INTO merchants VALUES (?,?,?,1,0,'user','x','t')", (key, key.title(), "health.doctors"))
+    con.commit()
+    cfg.privacy_model_detail = detail
+    reg = api.redacted_registry(con, cfg, D("2026-10-04"))
+    for name, body in _all_outputs(reg).items():
+        assert "vasseur" not in body.lower() and "ondine" not in body.lower(), name
+    assert any(v.startswith("[merchant:health.doctors]") for k, v in reg.red.entity_map.items() if "VASSEUR" in k.upper())
+    assert not any("BIOMEDIK" in k.upper() for k in reg.red.entity_map)
+
+
 def test_partial_person_names_are_masked_as_one_run(private_world2, cfg):
     from coach.analytics.privacy import collapse_person_runs
     assert collapse_person_runs("2 payments of 65.00 EUR to VELLARD [person] close together") == \
