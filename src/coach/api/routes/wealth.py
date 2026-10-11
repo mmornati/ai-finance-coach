@@ -37,7 +37,7 @@ def asset_dict(a, today: dt.date, months: int) -> dict:
             "contribution_monthly": _m(a.contribution_monthly), "description": a.description,
             "purchase_price": _m(a.purchase_price), "purchase_date": _date(a.purchase_date), "scheme": a.scheme,
             "bank": a.bank, "rent_monthly": _m(a.rent_monthly), "notes": a.notes, "count": a.count,
-            "bank_match": a.bank_match}
+            "bank_match": a.bank_match, "employer": a.employer, "opened": _date(a.opened)}
 
 
 LIABILITY_FIELDS = (("monthly_payment", "monthly payment"), ("outstanding", "outstanding capital"),

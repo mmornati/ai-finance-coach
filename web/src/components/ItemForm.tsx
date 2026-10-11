@@ -1,19 +1,21 @@
 import { useMemo, useState } from "react";
+import { PenLine, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { Button, Dialog, DiffView, Field, Input, Notice, Select, Spinner, Textarea } from "./ui";
-import { useDryRun, useFilters, useWrite } from "@/api/hooks";
+import { useDryRun, useFilters, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { parseMoney } from "@/lib/format";
 import type { EditResult } from "@/api/types";
 import { useServerText } from "@/i18n/server";
 
 export type Kind = "liabilities" | "contracts" | "assets" | "members" | "events";
-type FT = "text" | "number" | "date" | "select" | "bool" | "textarea" | "list" | "int" | "account";
+type FT = "text" | "number" | "date" | "select" | "bool" | "textarea" | "list" | "int" | "account" | "member";
 interface Spec { key: string; label: string; type: FT; options?: [string, string][]; hint?: string; wide?: boolean; when?: (vals: Record<string, string>) => boolean }
 
 const isLease = (v: Record<string, string>) => v.kind === "loa" || v.kind === "lld";
 const notLease = (v: Record<string, string>) => !isLease(v);
+const holdsEmployer = (v: Record<string, string>) => v.kind === "employee_savings_plan" || v.kind === "pension";
 const isVariable = (v: Record<string, string>) => v["rate.type"] === "variable" || v["rate.type"] === "mixed";
 
 const LIAB_KINDS = ["mortgage", "car_loan", "loa", "lld", "consumer_loan", "bnpl"] as const;
@@ -28,7 +30,7 @@ function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
     { key: "kind", label: t("itemForm.field.kind"), type: "select", options: LIAB_KINDS.map((k): [string, string] => [k, t(`itemForm.option.liabilityKind.${k}`)]) },
     { key: "lender", label: t("itemForm.field.lender"), type: "text" },
     { key: "asset", label: t("itemForm.field.asset"), type: "text" },
-    { key: "holder", label: t("itemForm.field.borrower"), type: "text", hint: t("itemForm.field.borrowerHint") },
+    { key: "holder", label: t("itemForm.field.borrower"), type: "member", hint: t("itemForm.field.borrowerHint") },
     { key: "start_date", label: t("itemForm.field.startDate"), type: "date" },
     { key: "first_payment_date", label: t("itemForm.field.firstPaymentDate"), type: "date", hint: t("itemForm.field.firstPaymentDateHint"), when: notLease },
     { key: "end_date", label: t("itemForm.field.endDate"), type: "date" },
@@ -70,7 +72,7 @@ function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
     { key: "billing.period", label: t("itemForm.field.billed"), type: "select", options: [["monthly", t("itemForm.option.billingPeriod.monthly")], ["bimonthly", t("itemForm.option.billingPeriod.bimonthly")], ["quarterly", t("itemForm.option.billingPeriod.quarterly")], ["yearly", t("itemForm.option.billingPeriod.yearly")]] },
     { key: "commitment_end", label: t("itemForm.field.commitmentEnd"), type: "date" },
     { key: "notice_period_days", label: t("itemForm.field.noticeDays"), type: "int" },
-    { key: "holder", label: t("itemForm.field.holder"), type: "text", hint: t("itemForm.field.holderContractHint") },
+    { key: "holder", label: t("itemForm.field.holder"), type: "member", hint: t("itemForm.field.holderContractHint") },
     { key: "contract_number", label: t("itemForm.field.contractNumber"), type: "text", hint: t("itemForm.field.contractNumberHint") },
     { key: "usage.frequency", label: t("itemForm.field.usageFrequency"), type: "select", options: [["daily", t("itemForm.option.usageFrequency.daily")], ["weekly", t("itemForm.option.usageFrequency.weekly")], ["monthly", t("itemForm.option.usageFrequency.monthly")], ["rarely", t("itemForm.option.usageFrequency.rarely")], ["never", t("itemForm.option.usageFrequency.never")], ["unknown", t("itemForm.option.usageFrequency.unknown")]] },
     { key: "usage.last_used", label: t("itemForm.field.lastUsed"), type: "date" },
@@ -80,14 +82,16 @@ function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
   ],
   assets: [
     { key: "kind", label: t("itemForm.field.kind"), type: "select", options: ASSET_KINDS.map((k): [string, string] => [k, t(`itemForm.option.assetKind.${k}`)]) },
+    { key: "description", label: t("itemForm.field.displayName"), type: "text", hint: t("itemForm.field.displayNameHint") },
     { key: "provider", label: t("itemForm.field.provider"), type: "text" },
-    { key: "holder", label: t("itemForm.field.holder"), type: "text" },
+    { key: "holder", label: t("itemForm.field.holder"), type: "member", hint: t("itemForm.field.holderAssetHint") },
+    { key: "employer", label: t("itemForm.field.employer"), type: "text", when: holdsEmployer },
+    { key: "opened", label: t("itemForm.field.opened"), type: "date" },
     { key: "@value", label: t("itemForm.field.currentValue"), type: "number" },
     { key: "as_of", label: t("itemForm.field.valueAsOf"), type: "date" },
     { key: "liquidity", label: t("itemForm.field.liquidity"), type: "select", options: [["immediate", t("itemForm.option.liquidity.immediate")], ["short", t("itemForm.option.liquidity.short")], ["locked", t("itemForm.option.liquidity.locked")]] },
     { key: "connected", label: t("itemForm.field.connected"), type: "bool", wide: true },
     { key: "contribution_monthly", label: t("itemForm.field.contribution"), type: "number" },
-    { key: "description", label: t("itemForm.field.descriptionField"), type: "text" },
     { key: "notes", label: t("itemForm.field.notes"), type: "textarea", wide: true },
   ],
   members: [
@@ -105,6 +109,15 @@ function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
     { key: "note", label: t("itemForm.field.note"), type: "textarea", wide: true },
   ],
   };
+}
+
+const ID_RE = /^[a-z0-9][a-z0-9_-]*$/;
+
+/** `holders` (a list, or joint / both / all) as the one value of the holder picker. */
+function oneHolder(h: unknown): string {
+  if (Array.isArray(h)) return h.filter(Boolean).length > 1 ? "joint" : String(h.find(Boolean) ?? "");
+  const s = String(h);
+  return ["joint", "both", "all"].includes(s.toLowerCase()) ? "joint" : s;
 }
 
 function flatten(o: Record<string, any>, prefix = ""): Record<string, any> {
@@ -156,6 +169,7 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
     const f = flatten(initial ?? {});
     if (kind === "assets" && initial) f["@value"] = initial.value;
     if (kind === "contracts" && f.keep !== undefined) f.keep = f.keep;
+    if (initial?.holders && !initial.holder) f.holder = oneHolder(initial.holders);
     return f;
   }, [initial, kind]);
   const [id, setId] = useState(initialId ?? "");
@@ -173,18 +187,24 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
     }
     return nest(out);
   }, [vals, specs, isNew, base, valueField]);
-  const idOk = /^[a-z0-9][a-z0-9_-]*$/.test(id);
+  // the form edits ONE holder: a `holders` list it replaced is removed in the same change
+  const unset = useMemo(() => (initial?.holders != null && "holder" in fields ? ["holders"] : []), [initial, fields]);
+  const body = unset.length ? { fields, unset } : { fields };
+  const idOk = ID_RE.test(id);
   const has = Object.keys(fields).length > 0;
   const enabled = idOk && has;
   const path = `/memory/${kind}/${id}`;
-  const pv = useDryRun<EditResult>(path, { fields }, enabled, "put");
+  const pv = useDryRun<EditResult>(path, body, enabled, "put");
   const { tServerList } = useServerText();
-  const save = useWrite(() => api.put<EditResult>(path, { fields }, { dry_run: false }), { success: t("itemForm.saved"), onSuccess: onClose });
+  const save = useWrite(() => api.put<EditResult>(path, body, { dry_run: false }), { success: t("itemForm.saved"), onSuccess: onClose });
+  const people = usePeople();
+  const [sub, setSub] = useState<"rename" | "delete" | null>(null);
+  const canManage = kind === "assets" && !isNew;
   const missingKind = kind === "liabilities" && isNew && !vals.kind;
 
   return (
     <Dialog open onClose={onClose} size="lg" title={isNew ? t(`itemForm.new.${kind}`) : t(`itemForm.edit.${kind}`, { id: initialId })} description={t("itemForm.description")}
-      footer={<><Button variant="ghost" onClick={onClose}>{t("itemForm.cancel")}</Button><Button variant="primary" busy={save.isPending} disabled={!enabled || !pv.data || !!pv.error || pv.loading || missingKind} onClick={() => save.mutate(undefined as never)}>{t("itemForm.save")}</Button></>}>
+      footer={<>{canManage && <div className="mr-auto flex gap-2"><Button size="sm" variant="ghost" onClick={() => setSub("rename")}><PenLine className="size-3.5" aria-hidden /> {t("itemForm.rename.button")}</Button><Button size="sm" variant="ghost" onClick={() => setSub("delete")}><Trash2 className="size-3.5" aria-hidden /> {t("itemForm.remove.button")}</Button></div>}<Button variant="ghost" onClick={onClose}>{t("itemForm.cancel")}</Button><Button variant="primary" busy={save.isPending} disabled={!enabled || !pv.data || !!pv.error || pv.loading || missingKind} onClick={() => save.mutate(undefined as never)}>{t("itemForm.save")}</Button></>}>
       <div className="grid gap-4 sm:grid-cols-2">
         {isNew && <Field label={t("itemForm.id")} hint={t("itemForm.idHint")} error={id && !idOk ? t("itemForm.idError") : undefined}>{(i) => <Input id={i} value={id} onChange={(e) => setId(e.target.value.toLowerCase())} placeholder={kind === "members" ? "anna" : "home-loan"} />}</Field>}
         {specs.filter((s) => !s.when || s.when(vals)).map((s) => (
@@ -194,6 +214,10 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
               const set = (x: string) => setVals((c) => ({ ...c, [s.key]: x }));
               if (s.type === "select") return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">{t("itemForm.none")}</option>{s.options!.map(([a, b]) => <option key={a} value={a}>{b}</option>)}</Select>;
               if (s.type === "account") return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">{t("itemForm.none")}</option>{filters.data?.accounts.map((a) => <option key={a.uid} value={a.uid}>{a.label}</option>)}</Select>;
+              if (s.type === "member") {
+                const known = v === "" || v === "joint" || people.members.some((m) => m.id === v);
+                return <Select id={i} value={v} onChange={(e) => set(e.target.value)}><option value="">{t("itemForm.none")}</option>{people.members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}<option value="joint">{t("itemForm.option.joint")}</option>{!known && <option value={v}>{t("itemForm.option.notMember", { id: v })}</option>}</Select>;
+              }
               if (s.type === "bool") return <label className="flex min-h-10 items-center gap-2 text-sm"><input id={i} type="checkbox" checked={v === "true"} onChange={(e) => set(e.target.checked ? "true" : "false")} /> {s.label}</label>;
               if (s.type === "textarea") return <Textarea id={i} value={v} onChange={(e) => set(e.target.value)} />;
               return <Input id={i} type={s.type === "date" ? "date" : "text"} inputMode={s.type === "number" || s.type === "int" ? "decimal" : undefined} value={v} onChange={(e) => set(e.target.value)} />;
@@ -206,6 +230,52 @@ export function ItemDialog({ kind, id: initialId, initial, onClose }: { kind: Ki
         {pv.loading && <Spinner label={t("itemForm.validating")} />}
         {pv.error && <Notice tone="neg" title={t("itemForm.notValid")}>{pv.error}</Notice>}
         {pv.data && <>{tServerList(pv.data.warnings, pv.data.warnings_msg).map((w, i) => <Notice key={i} tone="warn">{w}</Notice>)}<DiffView diff={pv.data.diff} empty={t("itemForm.nothingChanges")} /></>}
+      </div>
+      {sub === "rename" && <AssetRenameDialog id={initialId!} onClose={() => setSub(null)} onDone={onClose} />}
+      {sub === "delete" && <AssetDeleteDialog id={initialId!} onClose={() => setSub(null)} onDone={onClose} />}
+    </Dialog>
+  );
+}
+
+interface RenameResult extends EditResult { references: { type: "liability" | "goal"; id: string }[] }
+
+/** A new id for an asset: the loans and goals that point to it follow in the same recorded change (previewed first). */
+function AssetRenameDialog({ id, onClose, onDone }: { id: string; onClose: () => void; onDone: () => void }) {
+  const { t } = useTranslation();
+  const [newId, setNewId] = useState(id);
+  const ok = ID_RE.test(newId) && newId !== id;
+  const path = `/memory/assets/${id}/rename`;
+  const pv = useDryRun<RenameResult>(path, { new_id: newId }, ok);
+  const save = useWrite(() => api.post<RenameResult>(path, { new_id: newId }, { dry_run: false }), { success: t("itemForm.rename.done"), onSuccess: onDone });
+  const refs = pv.data?.references ?? [];
+  return (
+    <Dialog open onClose={onClose} title={t("itemForm.rename.title", { id })} description={t("itemForm.rename.description")}
+      footer={<><Button variant="ghost" onClick={onClose}>{t("itemForm.cancel")}</Button><Button variant="primary" busy={save.isPending} disabled={!ok || !pv.data || pv.loading} onClick={() => save.mutate(undefined as never)}>{t("itemForm.rename.confirm")}</Button></>}>
+      <Field label={t("itemForm.rename.newId")} hint={t("itemForm.rename.newIdHint")} error={newId && !ID_RE.test(newId) ? t("itemForm.idError") : undefined}>
+        {(i) => <Input id={i} value={newId} onChange={(e) => setNewId(e.target.value.toLowerCase())} autoFocus />}
+      </Field>
+      <div className="mt-4 grid gap-2">
+        {pv.loading && <Spinner label={t("itemForm.validating")} />}
+        {pv.error && <Notice tone="neg" title={t("itemForm.notValid")}>{pv.error}</Notice>}
+        {pv.data && <>{refs.length > 0 && <Notice tone="info">{t("itemForm.rename.follows", { list: refs.map((r) => t(`itemForm.rename.ref.${r.type}`, { id: r.id })).join(", ") })}</Notice>}<DiffView diff={pv.data.diff} empty={t("itemForm.nothingChanges")} /></>}
+      </div>
+    </Dialog>
+  );
+}
+
+/** Remove an asset: refused by the server while a loan or a goal still points to it; the history keeps it (revertable). */
+function AssetDeleteDialog({ id, onClose, onDone }: { id: string; onClose: () => void; onDone: () => void }) {
+  const { t } = useTranslation();
+  const path = `/memory/assets/${id}/delete`;
+  const pv = useDryRun<EditResult>(path, {}, true);
+  const del = useWrite(() => api.post<EditResult>(path, {}, { dry_run: false }), { success: t("itemForm.remove.done"), onSuccess: onDone });
+  return (
+    <Dialog open onClose={onClose} title={t("itemForm.remove.title", { id })} description={t("itemForm.remove.description")}
+      footer={<><Button variant="ghost" onClick={onClose}>{t("itemForm.remove.keep")}</Button><Button variant="danger" busy={del.isPending} disabled={!pv.data || pv.loading} onClick={() => del.mutate(undefined as never)}>{t("itemForm.remove.confirm")}</Button></>}>
+      <div className="grid gap-2">
+        {pv.loading && <Spinner label={t("itemForm.validating")} />}
+        {pv.error && <Notice tone="neg" title={t("itemForm.remove.blocked")}>{pv.error}</Notice>}
+        {pv.data && <DiffView diff={pv.data.diff} empty={t("itemForm.nothingChanges")} />}
       </div>
     </Dialog>
   );

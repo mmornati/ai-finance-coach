@@ -261,7 +261,7 @@
       "lender": "Lender",
       "asset": "Financed asset",
       "borrower": "Borrower",
-      "borrowerHint": "Household member id, or joint (for the net worth by person)",
+      "borrowerHint": "Who owes it, for the net worth by person",
       "firstPaymentDate": "First instalment on",
       "firstPaymentDateHint": "Blank = one month after the start",
       "termMonths": "Number of instalments (months)",
@@ -303,7 +303,7 @@
       "billed": "Billed",
       "commitmentEnd": "Commitment ends",
       "noticeDays": "Notice (days)",
-      "holderContractHint": "Household member id, or joint: who signs cancellation letters",
+      "holderContractHint": "Who signs cancellation letters",
       "contractNumber": "Contract number",
       "contractNumberHint": "Printed on cancellation letters; stays on this machine",
       "usageFrequency": "How often you use it",
@@ -315,7 +315,6 @@
       "liquidity": "Liquidity",
       "connected": "Synced from a bank (counted through its balance)",
       "contribution": "Monthly contribution (EUR)",
-      "descriptionField": "Description",
       "name": "Name",
       "nameHint": "Stays on this machine",
       "role": "Role",
@@ -327,7 +326,12 @@
       "end": "End",
       "budget": "Budget (EUR)",
       "status": "Status",
-      "note": "Note"
+      "note": "Note",
+      "holderAssetHint": "Whose it is, for the net worth by person. One asset each when a plan is split between two people",
+      "displayName": "Name shown",
+      "displayNameHint": "Shown in the lists instead of the id",
+      "employer": "Employer",
+      "opened": "Opened on"
     },
     "option": {
       "liabilityKind": {
@@ -411,7 +415,32 @@
         "planned": "Planned",
         "ongoing": "Ongoing",
         "done": "Done"
-      }
+      },
+      "joint": "Joint",
+      "notMember": "{{id}} (not a household member)"
+    },
+    "rename": {
+      "button": "Rename",
+      "title": "Rename asset: {{id}}",
+      "description": "Changes the id here and in the loans and goals that point to it, as one change in the history.",
+      "newId": "New id",
+      "newIdHint": "Lowercase letters, digits, - or _",
+      "follows": "Also updated: {{list}}",
+      "ref": {
+        "liability": "loan {{id}}",
+        "goal": "goal {{id}}"
+      },
+      "confirm": "Rename",
+      "done": "Asset renamed"
+    },
+    "remove": {
+      "button": "Delete",
+      "title": "Delete asset: {{id}}",
+      "description": "Removes it from the memory. The change is recorded in the history and can be reverted (coach memory revert).",
+      "blocked": "Cannot delete",
+      "keep": "Keep it",
+      "confirm": "Delete",
+      "done": "Asset deleted"
     }
   },
   "tx": {

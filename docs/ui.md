@@ -321,6 +321,8 @@ view would be wrong. A child login is always narrowed to its own member. Write e
 | `GET` | `/api/v1/memory/history` | The change history of the memory (read-only) |
 | `GET` | `/api/v1/memory/history/{change_id}/diff` | The patch of one recorded change, with the terminal command that would revert it |
 | `PUT` | `/api/v1/memory/{kind}/{item_id}` | Create or update a liability, contract, asset, member or event (`dry_run`) |
+| `POST` | `/api/v1/memory/assets/{asset_id}/rename` | New id of an asset; the loans and goals that point to it follow, one recorded change (`dry_run`) |
+| `POST` | `/api/v1/memory/assets/{asset_id}/delete` | Remove an asset, refused while a loan or a goal points to it (`dry_run`) |
 | `GET` | `/api/v1/questions` | Open questions the coach asks (the inbox) |
 | `POST` | `/api/v1/questions/{qid}/answer` | Record the answer (changing memory is a separate, previewed step) |
 | `POST` | `/api/v1/questions/{qid}/dismiss` | Dismiss a question (it is not asked again) |

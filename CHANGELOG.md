@@ -5,6 +5,15 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: rename, delete and a holder picker in the asset form
+- An asset can be **renamed** (a new id) from its form: the loans and goals whose `asset` points to it are updated in the same recorded
+  change, previewed first. A rental property is not renamed (its id is the `property-<id>` tag of its transactions).
+- An asset can be **deleted** from its form, after a preview; refused while a loan or a goal still points to it.
+- **Holder** (assets, loans, contracts) is picked among the household members or Joint instead of typed, so a typo no longer becomes an
+  owner nobody is. A `holders` list is replaced by the one holder chosen. A value that is not a member stays visible.
+- The asset form shows **Name shown** (the `description`, displayed instead of the id) first, and adds **Employer** (employee savings plan,
+  pension) and **Opened on**.
+
 ### Changed: the category picker is searchable
 - Choosing a category meant scrolling a native list of about a hundred entries. The picker is now a search box (ARIA 1.2 combobox): typing
   narrows the list on the category, its group, its id and its description, ignoring case and accents ("sante", "insur"); arrows, Enter and

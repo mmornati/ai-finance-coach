@@ -262,7 +262,7 @@
       "lender": "Finanziatore",
       "asset": "Bene finanziato",
       "borrower": "Mutuatario",
-      "borrowerHint": "Identificativo del membro della famiglia, o joint (per il patrimonio per persona)",
+      "borrowerHint": "Chi lo deve, per il patrimonio per persona",
       "firstPaymentDate": "Prima rata il",
       "firstPaymentDateHint": "Vuoto = un mese dopo l'inizio",
       "termMonths": "Numero di rate (mesi)",
@@ -304,7 +304,7 @@
       "billed": "Fatturazione",
       "commitmentEnd": "Fine dell'impegno",
       "noticeDays": "Preavviso (giorni)",
-      "holderContractHint": "Identificativo del membro della famiglia, o joint: chi firma le lettere di disdetta",
+      "holderContractHint": "Chi firma le lettere di disdetta",
       "contractNumber": "Numero di contratto",
       "contractNumberHint": "Stampato sulle lettere di disdetta; resta su questo computer",
       "usageFrequency": "Quanto spesso lo usi",
@@ -316,7 +316,6 @@
       "liquidity": "Liquidità",
       "connected": "Sincronizzato da una banca (conteggiato tramite il suo saldo)",
       "contribution": "Versamento mensile (EUR)",
-      "descriptionField": "Descrizione",
       "name": "Nome",
       "nameHint": "Resta su questo computer",
       "role": "Ruolo",
@@ -328,7 +327,12 @@
       "end": "Fine",
       "budget": "Budget (EUR)",
       "status": "Stato",
-      "note": "Nota"
+      "note": "Nota",
+      "holderAssetHint": "Di chi è, per il patrimonio per persona. Un bene per persona quando un piano è diviso tra due persone",
+      "displayName": "Nome mostrato",
+      "displayNameHint": "Mostrato negli elenchi al posto dell'identificativo",
+      "employer": "Datore di lavoro",
+      "opened": "Aperto il"
     },
     "option": {
       "liabilityKind": {
@@ -412,7 +416,32 @@
         "planned": "Pianificato",
         "ongoing": "In corso",
         "done": "Concluso"
-      }
+      },
+      "joint": "Comune",
+      "notMember": "{{id}} (non è un membro della famiglia)"
+    },
+    "rename": {
+      "button": "Rinomina",
+      "title": "Rinomina il bene: {{id}}",
+      "description": "Cambia l'identificativo qui e nei prestiti e negli obiettivi che vi rimandano, con una sola modifica nella cronologia.",
+      "newId": "Nuovo identificativo",
+      "newIdHint": "Lettere minuscole, cifre, - o _",
+      "follows": "Aggiornati anche: {{list}}",
+      "ref": {
+        "liability": "prestito {{id}}",
+        "goal": "obiettivo {{id}}"
+      },
+      "confirm": "Rinomina",
+      "done": "Bene rinominato"
+    },
+    "remove": {
+      "button": "Elimina",
+      "title": "Elimina il bene: {{id}}",
+      "description": "Lo toglie dalla memoria. La modifica è registrata nella cronologia e si può annullare (coach memory revert).",
+      "blocked": "Impossibile eliminare",
+      "keep": "Tienilo",
+      "confirm": "Elimina",
+      "done": "Bene eliminato"
     }
   },
   "tx": {

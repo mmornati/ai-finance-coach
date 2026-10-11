@@ -16,7 +16,7 @@ from coach.api.deps import get_snapshot, get_state
 from coach.api.errors import ApiError
 from coach.api.routes._write import edit_out, run_edit, to_dates
 from coach.api.state import AppState, ui_source, Snapshot
-from coach.memory import check as check_mod, proposals as prop_mod, questions as q_mod
+from coach.memory import assetops, check as check_mod, proposals as prop_mod, questions as q_mod
 from coach.memory.edit import jsonable
 from coach.memory.history import HistoryError
 
@@ -175,6 +175,32 @@ def upsert(kind: Kind, item_id: str, req: ItemRequest, dry_run: bool = False, st
         raise ApiError(422, "nothing_to_change", "no field was given")
     return run_edit(state, rel, ops, action=f"upsert-{kind[:-1] if kind.endswith('s') else kind}", reason=req.reason,
                     detail=item_id, dry_run=dry_run, replace_inline_comments=True, extra={"id": item_id, "file": rel})
+
+
+class RenameRequest(BaseModel):
+    new_id: str = Field(min_length=1, max_length=80)
+    reason: Optional[str] = Field(None, max_length=300)
+
+
+def _asset_or_404(state: AppState, asset_id: str) -> None:
+    if asset_id not in {a.id for a in state.store.assets()}:
+        raise ApiError(404, "not_found", f"no asset {asset_id!r}")
+
+
+@router.post("/memory/assets/{asset_id}/rename",
+             summary="Change the id of an asset and of the loans and goals that point to it, as one change (dry_run=true: preview)")
+def rename_asset(asset_id: str, req: RenameRequest, dry_run: bool = False, state: AppState = Depends(get_state)):
+    _asset_or_404(state, asset_id)
+    res, refs = assetops.rename(state.store, asset_id, req.new_id, source=ui_source(), reason=req.reason, dry_run=dry_run)
+    return edit_out(state, res, dry_run, {"id": req.new_id, "old_id": asset_id, "references": refs})
+
+
+@router.post("/memory/assets/{asset_id}/delete",
+             summary="Remove an asset (refused while a loan or a goal points to it; dry_run=true: preview)")
+def delete_asset(asset_id: str, dry_run: bool = False, state: AppState = Depends(get_state)):
+    _asset_or_404(state, asset_id)
+    res = assetops.delete(state.store, asset_id, source=ui_source(), dry_run=dry_run)
+    return edit_out(state, res, dry_run, {"id": asset_id})
 
 
 # ---------------------------------------------------------------- proposals

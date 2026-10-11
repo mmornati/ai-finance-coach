@@ -262,7 +262,7 @@
       "lender": "Prêteur",
       "asset": "Bien financé",
       "borrower": "Emprunteur",
-      "borrowerHint": "Identifiant du membre du foyer, ou joint (pour le patrimoine par personne)",
+      "borrowerHint": "Qui le doit, pour le patrimoine par personne",
       "firstPaymentDate": "Première échéance le",
       "firstPaymentDateHint": "Vide = un mois après le début",
       "termMonths": "Nombre d'échéances (mois)",
@@ -304,7 +304,7 @@
       "billed": "Facturation",
       "commitmentEnd": "Fin de l'engagement",
       "noticeDays": "Préavis (jours)",
-      "holderContractHint": "Identifiant du membre du foyer, ou joint : qui signe les lettres de résiliation",
+      "holderContractHint": "Qui signe les lettres de résiliation",
       "contractNumber": "Numéro de contrat",
       "contractNumberHint": "Imprimé sur les lettres de résiliation ; reste sur cet ordinateur",
       "usageFrequency": "Fréquence d'utilisation",
@@ -316,7 +316,6 @@
       "liquidity": "Liquidité",
       "connected": "Synchronisé depuis une banque (compté via son solde)",
       "contribution": "Versement mensuel (EUR)",
-      "descriptionField": "Description",
       "name": "Nom",
       "nameHint": "Reste sur cet ordinateur",
       "role": "Rôle",
@@ -328,7 +327,12 @@
       "end": "Fin",
       "budget": "Budget (EUR)",
       "status": "Statut",
-      "note": "Note"
+      "note": "Note",
+      "holderAssetHint": "À qui il appartient, pour le patrimoine par personne. Un actif par personne quand un plan est partagé entre deux personnes",
+      "displayName": "Nom affiché",
+      "displayNameHint": "Affiché dans les listes à la place de l'identifiant",
+      "employer": "Employeur",
+      "opened": "Ouvert le"
     },
     "option": {
       "liabilityKind": {
@@ -412,7 +416,32 @@
         "planned": "Prévu",
         "ongoing": "En cours",
         "done": "Terminé"
-      }
+      },
+      "joint": "Commun",
+      "notMember": "{{id}} (pas un membre du foyer)"
+    },
+    "rename": {
+      "button": "Renommer",
+      "title": "Renommer l'actif : {{id}}",
+      "description": "Change l'identifiant ici et dans les prêts et objectifs qui y renvoient, en une seule modification de l'historique.",
+      "newId": "Nouvel identifiant",
+      "newIdHint": "Lettres minuscules, chiffres, - ou _",
+      "follows": "Également mis à jour : {{list}}",
+      "ref": {
+        "liability": "prêt {{id}}",
+        "goal": "objectif {{id}}"
+      },
+      "confirm": "Renommer",
+      "done": "Actif renommé"
+    },
+    "remove": {
+      "button": "Supprimer",
+      "title": "Supprimer l'actif : {{id}}",
+      "description": "Le retire de la mémoire. La modification est consignée dans l'historique et peut être annulée (coach memory revert).",
+      "blocked": "Suppression impossible",
+      "keep": "Le garder",
+      "confirm": "Supprimer",
+      "done": "Actif supprimé"
     }
   },
   "tx": {

@@ -120,6 +120,12 @@ The house, an employee savings plan, a life-insurance contract, the leased car, 
 value. A **refresh** badge marks a value that is getting old; **value unknown** marks one you never gave (and that is therefore not
 counted). **Asset** adds one.
 
+The pencil opens the asset's form. **Name shown** is what the lists display instead of the id. **Holder** is picked among the household
+members (or **Joint**) and decides the **By person** split: a plan the two of you hold separately is two assets, one per holder, each with
+its own value. The form also has **Rename** (a new id; the loans and goals that point to the asset follow, in one change of the history)
+and **Delete** (refused while a loan or a goal still points to the asset). Both show the change before writing it, and the history can
+revert it. A rental property is not renamed: its id is also the `property-<id>` tag of its transactions.
+
 ## From the terminal
 
 ```bash
