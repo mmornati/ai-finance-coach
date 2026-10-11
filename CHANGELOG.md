@@ -5,6 +5,13 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed: the two category queues (merchants to review, transactions to label) share one row layout
+- Each page built its rows on its own: the picker and buttons sat on the right of a short row and dropped below a long one, so the cards of
+  one list did not line up. Both now use `DecisionRow`: name and badge, one line of facts, then the picker (same width) and its buttons on
+  their own line. The transaction queue's source badge moved next to the description, like the reason badge of the merchant queue.
+- The merchant queue shows one primary button, like the transaction queue: "Keep <category>" while the picker shows the current label
+  (never for a label guessed from a similar merchant), "Set" once another category is picked.
+
 ### Fixed: the Insights page renders the coach's Markdown, and its filter shows what it filters
 - The coach's write-ups (the weekly summary) showed raw `#` / `##` headings and `*italic*` markers: the web renderer only knew paragraphs,
   `- ` lists and `**bold**`. It now reads the text line by line: headings, bullet and numbered lists (also right under a heading, without a

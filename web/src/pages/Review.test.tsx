@@ -58,4 +58,15 @@ describe("review queue page", () => {
     await waitFor(() => expect(calls.some((c) => c.url === "/api/v1/review/correct")).toBe(true));
     expect(JSON.parse(calls.find((c) => c.url === "/api/v1/review/correct")!.init!.body as string)).toEqual({ key: "SC BRANDELIS", category: "food.restaurants" });
   });
+
+  it("picking another category turns Keep into Set, like the gold queue", async () => {
+    renderApp(<Review />);
+    const card = (await screen.findByText("Fresh Market")).closest("section")!;
+    await within(card).findByRole("option", { name: "Restaurants" });
+    await userEvent.selectOptions(within(card).getByRole("combobox"), "food.restaurants");
+    expect(within(card).queryByRole("button", { name: /keep/i })).not.toBeInTheDocument();
+    await userEvent.click(within(card).getByRole("button", { name: "Set" }));
+    await waitFor(() => expect(calls.some((c) => c.url === "/api/v1/review/correct")).toBe(true));
+    expect(calls.some((c) => c.url === "/api/v1/review/confirm")).toBe(false);
+  });
 });

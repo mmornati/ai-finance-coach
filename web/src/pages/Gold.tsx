@@ -4,6 +4,7 @@ import type { ParseKeys } from "i18next";
 import { Check, Target } from "lucide-react";
 import { Async, Badge, Button, Card, EmptyState, Money, Notice, PageHeader, Segmented, Skeleton, Stat } from "@/components/ui";
 import { CategoryPicker } from "@/components/CategoryPicker";
+import { DecisionRow } from "@/components/DecisionRow";
 import { useGet, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { catLabel, fmtDate, fmtPct } from "@/lib/format";
@@ -83,23 +84,19 @@ function Row({ i }: { i: GoldItem }) {
   const hasLabel = i.category !== "other.uncategorized";
   return (
     <li>
-      <Card>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="truncate text-[15px] font-semibold" title={i.description}>{i.description || i.merchant || i.merchant_key}</p>
-            <p className="mt-1 text-[13px] text-muted">
-              {fmtDate(i.date, "dayMonth")} · <Money v={i.amount} colored /> · {i.account}
-              {hasLabel ? <Trans t={t} i18nKey="gold.row.currently" values={{ category: catLabel(i.category) }} components={{ b: <b className="text-text" /> }} /> : t("gold.row.noLabel")}
-              {" "}<Badge title={t("gold.row.sourceTitle")}>{SOURCE[i.source] ? t(SOURCE[i.source]) : i.source}{i.confidence !== null ? ` ${fmtPct(i.confidence, 0)}` : ""}</Badge>
-            </p>
-          </div>
-          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-            <div className="min-w-48 flex-1"><CategoryPicker value={cat} onChange={setCat} allowEmpty emptyLabel={t("gold.row.choose")} /></div>
-            <Button variant="primary" disabled={!cat} busy={label.isPending} onClick={() => label.mutate(cat)}><Check className="size-4" aria-hidden /> {hasLabel && cat === i.category ? t("gold.row.itIs", { category: catLabel(i.category) }) : t("gold.row.set")}</Button>
-            <Button variant="ghost" onClick={() => setSkipped(true)}>{t("gold.row.skip")}</Button>
-          </div>
-        </div>
-      </Card>
+      <DecisionRow
+        title={<p className="truncate text-[15px] font-semibold" title={i.description}>{i.description || i.merchant || i.merchant_key}</p>}
+        badge={<Badge title={t("gold.row.sourceTitle")}>{SOURCE[i.source] ? t(SOURCE[i.source]) : i.source}{i.confidence !== null ? ` ${fmtPct(i.confidence, 0)}` : ""}</Badge>}
+        meta={<>
+          {fmtDate(i.date, "dayMonth")} · <Money v={i.amount} colored /> · {i.account}
+          {hasLabel ? <Trans t={t} i18nKey="gold.row.currently" values={{ category: catLabel(i.category) }} components={{ b: <b className="text-text" /> }} /> : t("gold.row.noLabel")}
+        </>}
+        picker={<CategoryPicker value={cat} onChange={setCat} allowEmpty emptyLabel={t("gold.row.choose")} />}
+        actions={<>
+          <Button variant="primary" disabled={!cat} busy={label.isPending} onClick={() => label.mutate(cat)}><Check className="size-4" aria-hidden /> {hasLabel && cat === i.category ? t("gold.row.itIs", { category: catLabel(i.category) }) : t("gold.row.set")}</Button>
+          <Button variant="ghost" onClick={() => setSkipped(true)}>{t("gold.row.skip")}</Button>
+        </>}
+      />
     </li>
   );
 }

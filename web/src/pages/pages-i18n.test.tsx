@@ -42,7 +42,7 @@ describe("translated pages", () => {
     renderApp(<Review />);
     expect(await screen.findByRole("heading", { name: "Esercenti da rivedere" })).toBeInTheDocument();
     expect(await screen.findByText(/2 esercenti in coda/)).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Applica" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /^(Applica|Mantieni )/ })).toHaveLength(2);
   });
 
   it("translates the page-not-found message", async () => {
