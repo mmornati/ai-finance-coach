@@ -49,7 +49,13 @@ reviews: keep `.gitignore` and this list consistent. Ignored on purpose: `memory
    only knows the terms of the local file; it cannot know a situation that is in no term (the number of children, an employer you never declared).
 7. Build: `uv build` (the wheel must contain the web app: `unzip -l dist/*.whl | grep api/static`, and `coach/templates/`). Install it in a clean environment
    (`uv tool install ./dist/*.whl`; `coach init`, `coach doctor`) before uploading.
-8. Tag, publish (`uv publish`, with a token that only you hold), and publish the image if you want one.
+8. Tag: merge the bump of step 2 in a pull request (main takes pull requests only), wait for CI to go green on main, then Actions > **Tag a release** >
+   Run workflow on `main`, ticking the box that says step 5 printed READY on that commit. `tag.yml` checks that `pyproject.toml`, `coach.__version__` and the
+   first dated changelog section agree, that the tag does not exist yet and that CI passed on the commit, pushes `v<version>`, and calls `release.yml`, which
+   builds the web app, the wheel and the sdist, runs `release-check --ci` on them, and creates the GitHub release with the changelog section as notes (then the
+   merged pull requests, sorted by `.github/release.yml`) and both archives attached. A version like `0.3.0rc1` gives a pre-release. A tag pushed by hand
+   (`git push origin v0.3.0`) runs `release.yml` alone.
+9. Publish, if you want to: `uv publish` (with a token that only you hold) and the image. No workflow does it.
 
 ## After a release
 

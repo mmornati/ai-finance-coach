@@ -1,0 +1,18 @@
+# Categories of the release notes GitHub generates (`gh release create --generate-notes`, see workflows/release.yml), appended under the
+# tag's CHANGELOG.md section. A pull request goes in the FIRST category whose label it carries; without a label it lands in "Other changes".
+changelog:
+  exclude:
+    labels: [skip-changelog, duplicate, invalid, wontfix]
+  categories:
+    - title: New features
+      labels: [enhancement]
+    - title: Fixes
+      labels: [bug]
+    - title: Accessibility
+      labels: [accessibility]
+    - title: Documentation
+      labels: [documentation]
+    - title: Dependencies
+      labels: [dependencies, github_actions, docker]
+    - title: Other changes
+      labels: ["*"]

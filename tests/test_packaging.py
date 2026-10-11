@@ -100,6 +100,23 @@ def test_the_ci_workflow_runs_every_gate_and_the_release_check_is_not_allowed_to
     assert jobs["release-check"]["needs"] == ["python", "web"] and wf["permissions"] == {"contents": "read"}
 
 
+def test_the_tag_and_release_workflows_gate_on_the_version_and_publish_nowhere_else():
+    import re
+    tag = yaml.safe_load((ROOT / ".github" / "workflows" / "tag.yml").read_text())
+    rel = yaml.safe_load((ROOT / ".github" / "workflows" / "release.yml").read_text())
+    runs = lambda wf, j: " ".join(s.get("run", "") for s in wf["jobs"][j]["steps"])           # noqa: E731
+    assert tag[True]["workflow_dispatch"]["inputs"]["local_release_check"]["required"] is True   # yaml reads `on:` as True
+    assert tag["jobs"]["tag"]["if"] == "github.ref == 'refs/heads/main'" and "git push origin HEAD" not in runs(tag, "tag")
+    assert "check-runs" in runs(tag, "tag") and tag["jobs"]["release"]["uses"] == "./.github/workflows/release.yml"
+    assert set(rel[True]) == {"push", "workflow_call"} and rel["permissions"] == {"contents": "read"}
+    for needle in ("pnpm build", "uv build", "coach dev release-check", "CHANGELOG.md", "gh release create"):
+        assert needle in runs(rel, "release"), needle
+    assert "uv publish" not in runs(rel, "release") and "docker push" not in runs(rel, "release")
+    for wf in ("tag.yml", "release.yml"):                                                          # pinned like ci.yml: Dependabot bumps the SHA
+        for uses in re.findall(r"uses: (\S+)", (ROOT / ".github" / "workflows" / wf).read_text()):
+            assert uses.startswith("./") or re.search(r"@[0-9a-f]{40}$", uses), uses
+
+
 def test_the_ruff_policy_is_correctness_only_and_matches_what_ci_runs():
     lint = PYPROJECT["tool"]["ruff"]["lint"]
     assert set(lint["select"]) == {"E9", "F63", "F7", "F82", "F811"} and lint["per-file-ignores"] == {"tests/*": ["F811"]}

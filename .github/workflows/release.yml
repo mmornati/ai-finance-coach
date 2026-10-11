@@ -1,0 +1,91 @@
+name: Release
+
+# Builds the wheel and the sdist of a tag (with the web app inside) and creates the GitHub release of the same name, with both attached.
+# Notes: the tag's section of CHANGELOG.md, then the pull requests merged since the previous tag (`--generate-notes`, sorted by
+# .github/release.yml) and the "Full Changelog" compare link.
+#
+# Nothing is published anywhere else: `uv publish` (PyPI) and a container image stay the owner's own steps (docs/release.md, step 8).
+# Two entry points: a tag pushed by hand, or the call from tag.yml (a tag pushed with the GITHUB_TOKEN does not trigger `push: tags`).
+on:
+  push:
+    tags: ["v*"]
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: The tag matches the package version
+        run: |
+          set -euo pipefail
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Tag $TAG does not match the version of pyproject.toml ($version)"
+            exit 1
+          fi
+
+      - name: Build the web app
+        working-directory: web
+        run: pnpm install --frozen-lockfile && pnpm build
+
+      - name: Build the wheel and the sdist
+        run: |
+          set -euo pipefail
+          uv build
+          unzip -l dist/*.whl | grep -q 'coach/api/static/index.html' || { echo "::error::the wheel has no web app"; exit 1; }
+          unzip -l dist/*.whl | grep -q 'coach/templates/'            || { echo "::error::the wheel has no templates"; exit 1; }
+
+      # With dist/ present the scan also reads the archives. --ci: the real-data rule needs the owner's local term file (tag.yml asks for it).
+      - name: Release check
+        run: |
+          uv sync
+          uv run coach dev release-check --ci --skip-tests --skip-web
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "The release $TAG already exists: nothing to do."
+            exit 0
+          fi
+          version="${TAG#v}"
+          # The tag's section of the changelog, without its own heading (the release title says it).
+          awk -v head="## [$version] - " 'index($0, head) == 1 { on = 1; next } on && /^## / { exit } on' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/notes.md"; then
+            echo "::error::CHANGELOG.md has no section for $version"
+            exit 1
+          fi
+
+          args=(--title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --generate-notes --verify-tag)
+          # PEP 440 pre-release (0.3.0rc1, 0.3.0b2): never "Latest".
+          case "$version" in *a*|*b*|*rc*) args+=(--prerelease) ;; esac
+
+          gh release create "$TAG" "${args[@]}" dist/*
+          echo "### Release [$TAG]($(gh release view "$TAG" --json url -q .url)) published" >> "$GITHUB_STEP_SUMMARY"
