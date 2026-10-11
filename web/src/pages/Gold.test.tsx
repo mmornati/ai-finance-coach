@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderApp } from "@/test/utils";
+import { pickCategory, renderApp } from "@/test/utils";
 import Gold from "./Gold";
 import { resetCsrfForTests } from "@/lib/api";
 
@@ -61,8 +61,7 @@ describe("gold set page", () => {
     const row = (await screen.findByText(/VOMIRA ENERGIE/)).closest("section")!;
     const set = within(row).getByRole("button", { name: "Set" });
     expect(set).toBeDisabled();
-    await within(row).findByRole("option", { name: "Electricity and gas" });
-    await userEvent.selectOptions(within(row).getByRole("combobox"), "housing.energy");
+    await pickCategory(within(row).getByRole("combobox"), "Electricity and gas");
     expect(set).toBeEnabled();
     await userEvent.click(within(row).getByRole("button", { name: "Skip" }));
     expect(screen.queryByText(/VOMIRA ENERGIE/)).not.toBeInTheDocument();

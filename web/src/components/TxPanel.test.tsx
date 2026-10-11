@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderApp } from "@/test/utils";
+import { pickCategory, renderApp } from "@/test/utils";
 import { TxPanel } from "./TxPanel";
 import { resetCsrfForTests } from "@/lib/api";
 import { setLanguage } from "@/i18n";
@@ -38,7 +38,7 @@ async function open() {
   const onClose = vi.fn();
   renderApp(<TxPanel txKey="a:ref:1" onClose={onClose} />);
   await screen.findByText("CARTE WHATNOT");
-  await userEvent.selectOptions(await screen.findByLabelText("New category"), "pets.pets");
+  await pickCategory(await screen.findByLabelText("New category"), "Pets");
   return onClose;
 }
 const previews = () => calls.filter((c) => c.url.startsWith("/api/v1/transactions/category") && c.url.includes("dry_run=true"));
@@ -107,7 +107,7 @@ describe("the why in the reader's language (i18n 4d)", () => {
     expect(screen.getByText("future step")).toBeInTheDocument();                     // unknown code: the English the server sent
     expect(screen.getByText("a sentence of a newer server")).toBeInTheDocument();
     expect(screen.getByText(/merchant_key \/\^PIN\/ ne correspond pas à « WHATNOT »/)).toBeInTheDocument();
-    await userEvent.selectOptions(await screen.findByLabelText("Nouvelle catégorie"), "pets.pets");
+    await pickCategory(await screen.findByLabelText("Nouvelle catégorie"), "Animaux");
     expect(await screen.findByText("1 transaction garde sa catégorie à cause d'une correction propre à la transaction")).toBeInTheDocument();
   });
 });

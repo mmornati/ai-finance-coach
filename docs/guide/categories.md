@@ -96,13 +96,24 @@ fix the figures that matter most. Each row shows why it is there:
 | **Not labelled yet** | the merchant has no label |
 | **May be a person (never sent to an AI)** | it looks like a person, so only you can say what it is |
 
-For each merchant, either **Keep** the current category (it becomes your own label) or pick another one and press **Set**.
+For each merchant, either **Keep** the current category (it becomes your own label) or pick another one (type to search the categories)
+and press **Set**.
 
 !!! tip "You teach it once"
     Confirming or correcting a merchant teaches the app for **every transaction with that merchant**, past and future. Your labels
     override rules and AI labels, and serve as examples for the AI on the merchants it still has to label.
 
 A label guessed from a similar merchant asks you to pick the category yourself rather than confirm it blindly.
+
+!!! question "You do not know what a merchant is?"
+    `coach classify enrich` lets the AI model **search the web** for the shops it could not label. It is **off** until you set
+    `[privacy] web_enrich = true` yourself, and it only ever searches **shops**: anything that could be a person is withheld, towns are
+    stripped and every descriptor is redacted. The search provider learns a shop name, never your amounts, dates, accounts or names.
+    Run `coach classify enrich --dry-run` first: it prints the exact request and sends nothing. See
+    [Privacy settings](../configuration/privacy.md#web-enrichment-web_enrich).
+
+One merchant that covers several things (an insurer with a home, a car and a health policy) is split with memory annotations on the amount
+or the bank text: see [One merchant, several things](transactions.md#one-merchant-several-things).
 
 ## The taxonomy
 
@@ -118,6 +129,7 @@ The AI may only answer with ids of this taxonomy. You can add or rename a leaf w
 uv run coach classify review --max-conf 0.7 --limit 30   # the review queue, by money at stake
 uv run coach classify correct "<merchant_key>" food.groceries --name "Fresh Market"
 uv run coach classify run --dry-run                       # the exact redacted requests, nothing sent
+uv run coach classify enrich --dry-run                    # the web search for unknown shops (opt-in: web_enrich), nothing sent
 uv run coach classify report                              # coverage and monthly spending
 uv run coach explain "ACME GROCERS"                       # why one transaction has its category
 uv run coach taxonomy list

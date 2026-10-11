@@ -62,6 +62,8 @@ To try it on realistic data without touching the real database or memory: `uv ru
 | My money (child login) | E14-6, E14-8 | what a child login gets INSTEAD of the app: their own balance, spending, limits with a gentle message, pocket money, top-ups (the source only as "a parent" / "family" / "someone else") and latest payments. No navigation, no other page |
 | Connections `/connections` | E5-14 | consents with days left, health, accounts (label, owner, purpose, exclusion), sync now (daily limits, calls left), connect / reconnect, internal transfers |
 
+Every category choice (transaction panel, Review, Gold set, Budgets, the category filter) uses one searchable picker (`CategoryPicker`, an ARIA 1.2 combobox): the query matches the category label, its group, its id and its description, case- and accent-insensitive; arrows, Enter and Escape work, and an empty query lists every category by group.
+
 UX (E5-15): mobile-first layouts (bottom tab bar, bottom sheets), dark / light following the system with a toggle, French
 (`fr-FR`, default) or English (`en-GB`) number and date formatting in EUR, keyboard access and visible focus, native
 `<dialog>` for focus trapping, a "Table" alternative to every chart, PWA manifest and an offline shell. All UI strings
