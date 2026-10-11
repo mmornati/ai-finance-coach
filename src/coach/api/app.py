@@ -78,7 +78,7 @@ def set_session_cookie(app: FastAPI, resp: Response, value: str) -> None:
 
 
 def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = None, dev: bool = False, con=None,
-               inline_jobs: bool = False, static_dir: Optional[Path] = None) -> FastAPI:
+               inline_jobs: bool = False, static_dir: Optional[Path] = None, warm: bool = False) -> FastAPI:
     port = port or cfg.ui_port
     app = FastAPI(title="AI finance coach", version=__version__, docs_url=None, redoc_url=None,
                   openapi_url="/api/openapi.json",
@@ -90,6 +90,8 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
     state.jobs = jobs_mod.Jobs(state, inline=inline_jobs)
     state.coach_jobs = CoachJobs(state)
     app.state.coach = state
+    if warm:
+        state.start_warmer()                                         # the first page after a sync or an edit is served warm
     app.state.dev = dev
     extra = cfg.ui_allowed_hosts if cfg.ui_allow_remote else ()
     app.state.security = security = sec.Security(

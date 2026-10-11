@@ -98,7 +98,7 @@ def cmd_ui(a, cfg: Config) -> None:
 
     check_bind(cfg, host)
     sys.stdout.reconfigure(line_buffering=True)          # the login link must appear at once, even when piped to a log
-    app = create_app(cfg, insecure=a.insecure, port=port, dev=a.dev)
+    app = create_app(cfg, insecure=a.insecure, port=port, dev=a.dev, warm=True)
     if not a.dev and not (app.state.static / "index.html").exists():
         print(f"warning: the web app is not built ({app.state.static}/index.html is missing): run `pnpm install && pnpm build` "
               "in web/ (or `coach ui --dev` with the Vite dev server). The API still works.", file=sys.stderr)

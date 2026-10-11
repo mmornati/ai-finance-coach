@@ -4,7 +4,9 @@ shapes of the real files). Two details are customised so that this holds: ``None
 writes nothing) and flow mappings keep the ``{ a: b }`` spacing the memory files use."""
 from __future__ import annotations
 
+import copy
 import datetime as _dt
+import functools
 import io
 import os
 import re
@@ -65,6 +67,17 @@ def loads(text: str):
         mark = getattr(e, "problem_mark", None)
         where = f" (line {mark.line + 1})" if mark is not None else ""
         raise YamlError(f"invalid YAML{where}: {getattr(e, 'problem', None) or str(e).splitlines()[0]}") from e
+
+
+@functools.lru_cache(maxsize=256)
+def _plain_of(text: str):
+    return to_plain(loads(text))
+
+
+def loads_plain(text: str):
+    """``to_plain(loads(text))``, cached by the text itself (so never stale): the round-trip parser is slow (tens of ms per file) and the
+    web app reads the same memory files for every dataset and memory check. Each call returns its own copy, safe to change."""
+    return copy.deepcopy(_plain_of(text))
 
 
 def dumps(doc) -> str:

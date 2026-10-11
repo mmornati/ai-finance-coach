@@ -366,3 +366,26 @@ def test_a_symlinked_memory_file_keeps_its_link(store, mem, tmp_path):
 def test_history_and_backup_dirs_are_private(store, mem):
     store.set_value("savings-book", "balance", 1)
     assert stat.S_IMODE((mem / ".history.git").stat().st_mode) == 0o700
+
+
+# ---------------------------------------------------------------- parse cache (web app performance)
+
+def test_loads_plain_parses_a_text_once_and_returns_independent_copies(monkeypatch):
+    from coach.memory import yamlio
+    yamlio._plain_of.cache_clear()
+    calls = []
+    real = yamlio.loads
+    monkeypatch.setattr(yamlio, "loads", lambda t: calls.append(t) or real(t))
+    text = "assets:\n  - id: a\n    kind: house\n"
+    a = yamlio.loads_plain(text)
+    a["assets"][0]["kind"] = "changed"
+    b = yamlio.loads_plain(text)
+    assert b == {"assets": [{"id": "a", "kind": "house"}]} and len(calls) == 1
+    assert yamlio.loads_plain(text + "# edited\n") == b and len(calls) == 2      # another text: parsed again, never stale
+
+
+def test_loads_plain_never_caches_invalid_yaml():
+    from coach.memory import yamlio
+    for _ in range(2):
+        with pytest.raises(yamlio.YamlError):
+            yamlio.loads_plain("a: [1, 2\n")

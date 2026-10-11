@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import logging
 import os
 import threading
 from contextlib import contextmanager
@@ -18,6 +19,8 @@ from coach import db as db_mod
 from coach.analytics import api as analytics_api
 from coach.config import Config
 from coach.memory.store import MemoryStore
+
+log = logging.getLogger("coach.api")
 
 UI_SOURCE = "ui"
 # E14-8: the login that makes the current web request ("" / None = the owner login); set by the guard middleware. A memory write made from
@@ -150,6 +153,8 @@ class AppState:
         self.jobs = None            # set by the app factory (coach.api.jobs.Jobs)
         self.coach_jobs = None      # set by the app factory (coach.api.coachjobs.CoachJobs)
         self.clock = dt.date.today  # tests pin the date
+        self._warmer: threading.Thread | None = None
+        self._warm_wake = threading.Event()
 
 
     # ------------------------------------------------------------ database
@@ -206,8 +211,36 @@ class AppState:
         return db_mod.connect(self.cfg, insecure=self.insecure, migrate=False)
 
     def touch(self) -> None:
-        """Something was written (database or memory): the next request rebuilds the snapshot."""
+        """Something was written (database or memory): the next request rebuilds the snapshot (or the warmer, when it runs, does it first)."""
         self.version += 1
+        self._warm_wake.set()
+
+    # ------------------------------------------------------------ warm-up
+    def warm(self) -> None:
+        """Build what the first page load needs (the dataset, the recurring series, the memory check behind /health) for the current data.
+        Every step is cached per snapshot: on unchanged data this is a few file stats."""
+        snap = self.snapshot()
+        snap.recurring()
+        self.memory_check()
+
+    def start_warmer(self, interval: float = 30.0) -> None:
+        """Keep the snapshot warm in a background thread: at start, after each write of the web app, and within `interval` seconds of a
+        change made elsewhere (a sync by the scheduler, a memory file edited by hand, a new day). Without it, the first request after any
+        change pays the whole rebuild (seconds on a real household). Started by `coach ui` only: the tests stay deterministic."""
+        if self._warmer is not None:
+            return
+
+        def loop():
+            while True:
+                self._warm_wake.clear()
+                try:
+                    self.warm()
+                except Exception as e:                         # noqa: BLE001 - a request will rebuild (and report) it anyway
+                    log.warning("background warm-up failed: %s", type(e).__name__)
+                self._warm_wake.wait(interval)
+
+        self._warmer = threading.Thread(target=loop, name="coach-warmer", daemon=True)
+        self._warmer.start()
 
     # ------------------------------------------------------------ snapshot
     def _stat(self, p: Path):

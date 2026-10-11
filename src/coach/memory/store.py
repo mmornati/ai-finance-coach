@@ -303,16 +303,15 @@ class MemoryStore:
     def load_plain(self, rel: str) -> dict:
         if not self.exists(rel):
             return {}
-        data = yamlio.to_plain(self.load_doc(rel))
+        data = yamlio.loads_plain(self.read_text(rel))
         return data if isinstance(data, dict) else {}
 
     def validate_text(self, rel: str, text: str) -> tuple[Optional[BaseModel], list[Issue]]:
         model_cls, _ = self.schema_for(rel)
         try:
-            doc = yamlio.loads(text)
+            data = yamlio.loads_plain(text)
         except yamlio.YamlError as e:
             return None, [yaml_syntax_issue(rel, e)]
-        data = yamlio.to_plain(doc)
         if data is None:
             data = {}
         if not isinstance(data, dict):
@@ -320,6 +319,7 @@ class MemoryStore:
         try:
             return model_cls.model_validate(data), []
         except ValidationError as e:
+            doc = yamlio.loads(text)                                # the line numbers need the round-trip document (error path only)
             issues = []
             for err in e.errors(include_url=False):
                 msg = err["msg"].removeprefix("Value error, ")
