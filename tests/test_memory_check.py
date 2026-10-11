@@ -244,6 +244,20 @@ def test_open_question_about_a_fact_that_is_now_known(world):
     assert i and "asset now has a value" in i[0].message
 
 
+def test_merchant_questions_share_one_categorisation_pass(world, cfg, monkeypatch):
+    """Every open merchant question asks whether memory decides the merchant: that full pass over the transactions runs ONCE per check."""
+    con, store = world
+    from coach.classify import candidates
+    from coach.memory import questions as Q
+    for key in ("STREAMBOX", "SUNPOWER ENERGIE", "HOMEBANK ECH PRET"):
+        Q.add(store, f"What is {key}?", key=f"merchant:{key}")
+    calls = []
+    real = candidates.memory_decided_keys
+    monkeypatch.setattr(candidates, "memory_decided_keys", lambda *a, **k: calls.append(1) or real(*a, **k))
+    run_check(store, con, cfg=cfg)
+    assert len(calls) == 1
+
+
 def test_questions_markdown_out_of_date_is_a_warning(world, cfg):
     con, store = world
     from coach.memory import questions as Q

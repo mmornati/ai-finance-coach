@@ -376,8 +376,9 @@ def run_check(store: MemoryStore, con=None, *, stale_months: int = 6, asset_stal
                 count=nopurpose, command="coach accounts set"))
 
     # ---- 7. open questions whose subject has been resolved since
+    shared: dict = {}                                                # one categorisation pass for all the merchant questions
     for q in store.questions():
-        why = qgen.resolved_reason(q, store, con, cfg)
+        why = qgen.resolved_reason(q, store, con, cfg, cache=shared)
         if why:
             add("info", "question_resolved", "open-questions.yaml", server_msg(
                 "memoryCheck.questionResolved", f"{q.id} is still open but looks resolved ({why}): answer or dismiss it", id=q.id, reason=why),

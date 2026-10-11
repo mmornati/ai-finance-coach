@@ -55,22 +55,29 @@ class Snapshot:
     ds: Any
     token: tuple
     memo: dict = field(default_factory=dict)
-    lock: threading.RLock = field(default_factory=threading.RLock)
+    lock: threading.Lock = field(default_factory=threading.Lock)        # guards `memo` and `locks` only, never held while computing
+    locks: dict = field(default_factory=dict)
 
     def once(self, key, fn: Callable):
-        """Compute an expensive analytics result once per snapshot (thread-safe)."""
+        """Compute an expensive analytics result once per snapshot (thread-safe). Each key has its own lock: a slow result (the memory
+        check takes seconds) never holds up the other keys, while two requests for the SAME key still compute it once. `fn` may call
+        `once` for other keys (the keys depend on each other as a tree, so the per-key locks cannot deadlock)."""
         with self.lock:
-            if key not in self.memo:
-                self.memo[key] = fn()
-            return self.memo[key]
+            if key in self.memo:
+                return self.memo[key]
+            key_lock = self.locks.setdefault(key, threading.RLock())
+        with key_lock:
+            with self.lock:
+                if key in self.memo:                                   # computed by another request while this one waited
+                    return self.memo[key]
+            value = fn()
+            with self.lock:
+                self.memo[key] = value
+            return value
 
     def view(self, member: str) -> "Snapshot":
         """The same snapshot seen as one member (E14-4): the dataset's member view with its own memo, built once per snapshot."""
-        with self.lock:
-            key = ("view", member)
-            if key not in self.memo:
-                self.memo[key] = Snapshot(self.ds.member_view(member), (*self.token, member))
-            return self.memo[key]
+        return self.once(("view", member), lambda: Snapshot(self.ds.member_view(member), (*self.token, member)))
 
     def recurring(self):
         from coach.analytics import recurring

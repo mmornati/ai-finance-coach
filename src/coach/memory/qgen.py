@@ -448,8 +448,10 @@ def generate(store: MemoryStore, con, cfg, today: Optional[dt.date] = None, *, m
 
 # ---------------------------------------------------------------- is a question already answered by the data?
 
-def resolved_reason(q: schemas.Question, store: MemoryStore, con=None, cfg=None) -> Optional[str]:
-    """For an OPEN question: why it looks already resolved by facts now present in memory (None if not)."""
+def resolved_reason(q: schemas.Question, store: MemoryStore, con=None, cfg=None, cache: Optional[dict] = None) -> Optional[str]:
+    """For an OPEN question: why it looks already resolved by facts now present in memory (None if not).
+    `cache`: a dict shared by the calls of one pass over the questions, so that the costly lookups (the merchant keys decided by memory, a
+    full categorisation of every transaction) run once per pass instead of once per question."""
     if q.status != "open":
         return None
     key = q.key or ""
@@ -485,7 +487,13 @@ def resolved_reason(q: schemas.Question, store: MemoryStore, con=None, cfg=None)
             return "the merchant now has your own label"
         if cfg is not None:
             from coach.classify.candidates import memory_decided_keys
-            if rest in memory_decided_keys(con, store.root):
+            if cache is None:
+                decided = memory_decided_keys(con, store.root)
+            else:
+                if "memory_decided_keys" not in cache:
+                    cache["memory_decided_keys"] = memory_decided_keys(con, store.root)
+                decided = cache["memory_decided_keys"]
+            if rest in decided:
                 return "every transaction of this merchant is now decided by a memory annotation"
     elif kind == "acct" and con is not None:
         row = con.execute("SELECT owner, purpose FROM accounts WHERE uid=?", (rest,)).fetchone()
