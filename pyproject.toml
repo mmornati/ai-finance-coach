@@ -28,20 +28,20 @@ dependencies = [
     "python-dotenv>=1.0",
     "pyyaml>=6",
     "keyring>=25",
-    "cryptography>=43",
+    "cryptography>=50",
     # SQLCipher binding shipped as a self-contained wheel (no brew / system libs needed).
     # sqlcipher3-binary has no macOS wheels; sqlcipher3-wheels has cp311-cp314 on macOS arm64.
     "sqlcipher3-wheels>=0.5.5",
-    "anthropic>=1.11.0",
-    "pydantic>=2.13.5",
+    "anthropic>=1.13.0",
+    "pydantic>=2.14.1",
     "ruamel-yaml>=0.19.1",
-    "pypdf>=6.19.0",
-    "fastapi>=0.142.2",
-    "uvicorn>=0.30",
-    "mcp>=1.2",
+    "pypdf>=6.20.1",
+    "fastapi>=0.143.0",
+    "uvicorn>=0.54",
+    "mcp>=2.3",
     "jsonschema>=4",
     "defusedxml>=0.7.1",
-    "webauthn>=2.5",
+    "webauthn>=3.0",
 ]
 
 [project.urls]
@@ -58,7 +58,7 @@ dev = [
     "httpx>=0.28.1",
     "pytest>=8",
     "pytest-xdist>=3.8.0",
-    "ruff>=0.16.10",
+    "ruff>=0.17.0",
 ]
 
 [build-system]

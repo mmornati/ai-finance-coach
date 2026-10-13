@@ -5,6 +5,14 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Security: dependency upgrades and tighter version floors
+- **pypdf 6.20.1**: limits the decoding work per stream and refuses cyclic page trees (contract PDFs are user-supplied).
+- anthropic 1.13.0, pydantic 2.14.1, fastapi 0.143.0 (OpenTelemetry auto-setup is now opt-in; the coach does not use it), ruff 0.17.0;
+  web: vite 8.3.4, lucide-react 1.55.0, react-query, i18next, react-i18next and @types/node patches.
+- The minimum versions in `pyproject.toml` are the tested ones (`mcp>=2.3`, `webauthn>=3.0`, `cryptography>=50`, `uvicorn>=0.54`, ...), so
+  a `pip install` of the wheel can no longer resolve an older, untested major.
+- pnpm is pinned once, in `web/package.json` (`packageManager`): CI, the release workflow and the Docker image (corepack) use the same version.
+
 ### Added: rename, delete and a holder picker in the asset form
 - An asset can be **renamed** (a new id) from its form: the loans and goals whose `asset` points to it are updated in the same recorded
   change, previewed first. A rental property is not renamed (its id is the `property-<id>` tag of its transactions).
