@@ -21,7 +21,7 @@ COPY web/ ./
 # vite.config.ts writes the build to ../src/coach/api/static, that is /build/src/coach/api/static
 RUN pnpm build
 
-FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803a5c4247979ac7655f4d641 AS build
+FROM python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83 AS build
 ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 UV_LINK_MODE=copy
 RUN pip install uv==0.12.19
 WORKDIR /src
@@ -58,7 +58,7 @@ RUN mkdir -p /out/bin \
          tar xzf "$tgz" && install -m 0755 package/claude /out/bin/claude; \
        fi
 
-FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803a5c4247979ac7655f4d641 AS runtime
+FROM python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83 AS runtime
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/* \
