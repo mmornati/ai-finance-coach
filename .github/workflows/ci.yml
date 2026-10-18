@@ -113,12 +113,20 @@ jobs:
         run: docker build --build-arg WITH_CLAUDE_CODE=1 --tag coach-ci-claude .
       - name: The CLI runs
         run: |
-          docker run --rm coach-ci --version
+          docker run --rm --entrypoint coach coach-ci --version
           docker run --rm --entrypoint claude coach-ci-claude --version
       - name: First start creates the home and the web app turns healthy
+        # As docs/docker.md "First start": throwaway random keys (mode 0600, mounted read-only on /run/secrets) and empty volumes, all in the
+        # runner's temp folder, and the container runs as the runner's uid like COACH_UID in docker-compose.yml.
         run: |
           set -eu
-          docker run --detach --name coach-ci coach-ci
+          home="$RUNNER_TEMP/coach-home"
+          mkdir -p "$home/secrets" "$home/data" "$home/memory" "$home/config" && chmod 700 "$home/secrets"
+          for k in db_key backup_key proposal_key; do
+            (umask 077; head -c 32 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n' > "$home/secrets/$k")
+          done
+          docker run --detach --name coach-ci --user "$(id -u):$(id -g)" \
+            -v "$home/secrets:/run/secrets:ro" -v "$home/data:/data" -v "$home/memory:/memory" -v "$home/config:/config" coach-ci
           for _ in $(seq 1 60); do
             status=$(docker inspect --format '{{.State.Health.Status}}' coach-ci)
             [ "$status" = healthy ] && exit 0
