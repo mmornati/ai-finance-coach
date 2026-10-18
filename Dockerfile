@@ -23,14 +23,14 @@ RUN pnpm build
 
 FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803a5c4247979ac7655f4d641 AS build
 ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 UV_LINK_MODE=copy
-RUN pip install uv==0.12.19
+RUN pip install uv==0.13.0
 WORKDIR /src
 COPY pyproject.toml uv.lock README.md config.example.toml ./
 COPY config/import_profiles config/import_profiles
 COPY src/ src/
 COPY --from=web /build/src/coach/api/static src/coach/api/static
 RUN uv export --frozen --no-dev --no-emit-project --no-hashes -o /tmp/requirements.txt \
-    && uv venv /opt/venv \
+    && uv venv --python /usr/local/bin/python /opt/venv \
     && uv pip install --python /opt/venv/bin/python -r /tmp/requirements.txt
 RUN uv build --wheel --out-dir /dist \
     && uv pip install --python /opt/venv/bin/python --no-deps /dist/*.whl
@@ -39,9 +39,9 @@ RUN uv build --wheel --out-dir /dist \
 # version set the three values (npm view @anthropic-ai/claude-code-linux-x64@<version> dist.integrity, and the same for -linux-arm64).
 FROM node:24-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS claude-cli
 ARG WITH_CLAUDE_CODE=0
-ARG CLAUDE_CODE_VERSION=2.1.285
-ARG CLAUDE_CODE_INTEGRITY_X64=sha512-6qNST8qKemr+rD9zvUEwEq0UtWt0E5Js8bkbjh13/LM62FiGWcN6IqiJPxybJ2FNd+I3liXq6JYNv/vrGnmAow==
-ARG CLAUDE_CODE_INTEGRITY_ARM64=sha512-vAvIr+MVnm5IrSq8KoJrZkoG3BFpLvVEqfrx15w7hWW+gcSYHPvN33lfkzXvs5L8MYXxNW0Ae86MLiCH+x4ldQ==
+ARG CLAUDE_CODE_VERSION=2.1.296
+ARG CLAUDE_CODE_INTEGRITY_X64=sha512-+m01urgelnI+VJxPaKPEK0wixgq42uZ8PeCaUk5tX/8YoDBvSmC/REVQG2jQfJAr8dxunpjJ600FvLrcj1WWTw==
+ARG CLAUDE_CODE_INTEGRITY_ARM64=sha512-Q6Qh6qFmwuBG9rQFiDR6bY3XkFnwTN9AAPrnnDgBvr9sbg1Ql5wrf0lfoCDiV369EUHOzxI4i5OdHW9Vf2/oeA==
 ARG TARGETARCH
 WORKDIR /pkg
 RUN mkdir -p /out/bin \
