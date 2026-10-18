@@ -911,6 +911,19 @@ def test_r2_d7_merging_entities_keeps_the_category_the_user_set(con):
     assert len(warnings) == 1 and "health.doctors" in warnings[0] and "health.pharmacy" in warnings[0]
 
 
+def test_review_queue_leaves_out_excluded_accounts(cfg, con):
+    tx(con, "m1", "SHOP Y", -80.0, uid="fo")
+    tx(con, "c1", "SHOP Y CB", -80.0, uid="ce")
+    tx(con, "c2", "SHOP Y", -80.0, uid="ce")
+    label(con, "SHOP Y", "shopping.other", "llm", 0.4)
+    label(con, "SHOP Y CB", "shopping.other", "llm", 0.4)
+    con.execute("UPDATE accounts SET exclude=1 WHERE uid='ce'")
+    con.commit()
+    rows = {r["key"]: r for r in cc.review_rows(con, cfg)}
+    assert "SHOP Y CB" not in rows                               # only on the excluded account
+    assert rows["SHOP Y"]["n"] == 1 and rows["SHOP Y"]["at_stake"] == 80.0
+
+
 def test_r2_d8_keys_under_a_user_category_entity_are_not_reviewed_or_acceptable(cfg, con):
     tx(con, "x1", "CAFE X", -50.0)
     label(con, "CAFE X", "food.restaurants", "llm", 0.4, "Cafe Exy")

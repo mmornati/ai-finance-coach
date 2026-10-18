@@ -223,7 +223,9 @@ def cmd_enrich(a, cfg):
 def review_rows(con, cfg, max_conf: float = 0.7, limit: int = 40) -> list[dict]:
     """The review queue, ordered by money at stake (sum of absolute amounts), across all banks: LLM labels below
     `max_conf`, merchants labelled 'other.uncategorized', merchants not labelled yet, and merchants held back from
-    the LLM because they may be people. Merchants decided by the user, a rule or a memory annotation are left out."""
+    the LLM because they may be people. Merchants decided by the user, a rule or a memory annotation are left out, and
+    so are the payments of accounts excluded from analytics (a card account mirroring the main one would list each
+    purchase twice)."""
     cands, withheld = llm_candidates(con, include_ruled=False, allow=cfg.llm_allowlist, memory_dir=cfg.memory_dir)
     held = {w["key"] for w in withheld}
     in_memory = memory_decided_keys(con, cfg)
@@ -234,7 +236,7 @@ def review_rows(con, cfg, max_conf: float = 0.7, limit: int = 40) -> list[dict]:
                GROUP_CONCAT(DISTINCT e.tx_type)
         FROM tx_enriched e JOIN transactions t USING(tx_key) LEFT JOIN merchants m ON m.merchant_key=e.merchant_key
         LEFT JOIN accounts a ON a.uid=t.account_uid
-        WHERE e.merchant_key <> '' AND {needs_llm_sql()}
+        WHERE e.merchant_key <> '' AND {needs_llm_sql()} AND COALESCE(a.exclude, 0) = 0
           AND (m.merchant_key IS NULL OR m.category='other.uncategorized'
                OR (m.source LIKE 'llm%' AND m.confidence < ?))
           AND (m.source IS NULL OR m.source <> 'user')
