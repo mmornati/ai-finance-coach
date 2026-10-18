@@ -118,7 +118,7 @@ def test_the_marker_in_a_git_ignored_or_exempt_file_is_not_a_blocker(tmp_path):
 def test_version_checks(tmp_path):
     p = make_project(tmp_path)
     log = (p / "CHANGELOG.md").read_text()
-    (p / "CHANGELOG.md").write_text(log.replace(f"## [{__version__}] - 2026-10-06", f"## [{__version__}]"))
+    (p / "CHANGELOG.md").write_text(re.sub(rf"^## \[{re.escape(__version__)}\] - \S+$", f"## [{__version__}]", log, count=1, flags=re.M))
     assert failed(run(p)) == ["version"] and "date" in run(p)["version"].detail
     (p / "CHANGELOG.md").write_text(log.replace(f"## [{__version__}]", "## [9.9.9]"))
     assert failed(run(p)) == ["version"] and "9.9.9" in run(p)["version"].detail

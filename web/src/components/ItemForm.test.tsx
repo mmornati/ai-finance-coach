@@ -99,29 +99,29 @@ describe("memory item form", () => {
   });
 
   it("keeps a holder that is not a member visible instead of hiding it", () => {
-    renderApp(<ItemDialog kind="assets" id="car" initial={{ id: "car", kind: "vehicle", holder: "Marco" }} onClose={() => undefined} />);
+    renderApp(<ItemDialog kind="assets" id="car" initial={{ id: "car", kind: "vehicle", holder: "Quillon" }} onClose={() => undefined} />);
     const holder = screen.getByLabelText("Holder") as HTMLSelectElement;
-    expect(holder.value).toBe("Marco");
-    expect(screen.getByRole("option", { name: "Marco (not a household member)" })).toBeInTheDocument();
+    expect(holder.value).toBe("Quillon");
+    expect(screen.getByRole("option", { name: "Quillon (not a household member)" })).toBeInTheDocument();
     expect(screen.queryByLabelText("Employer")).not.toBeInTheDocument();
   });
 
   it("renames an asset after a preview that names the loans and goals that follow", async () => {
     const onClose = vi.fn();
-    renderApp(<ItemDialog kind="assets" id="decathlon-pee" initial={{ id: "decathlon-pee", kind: "employee_savings_plan" }} onClose={onClose} />);
+    renderApp(<ItemDialog kind="assets" id="yarrowtech-pee" initial={{ id: "yarrowtech-pee", kind: "employee_savings_plan" }} onClose={onClose} />);
     await userEvent.click(screen.getByRole("button", { name: "Rename" }));
     const input = screen.getByLabelText(/^New id/);
     await userEvent.clear(input);
     await userEvent.type(input, "pee-adult-1");
     expect(await screen.findByText("Also updated: loan home-loan", {}, { timeout: 2000 })).toBeInTheDocument();
     const preview = calls.filter((c) => c.url.includes("/rename?dry_run=true")).at(-1)!;
-    expect(preview.url).toBe("/api/v1/memory/assets/decathlon-pee/rename?dry_run=true");
+    expect(preview.url).toBe("/api/v1/memory/assets/yarrowtech-pee/rename?dry_run=true");
     expect(JSON.parse(preview.init!.body as string)).toEqual({ new_id: "pee-adult-1" });
-    const confirm = within(screen.getByRole("dialog", { name: "Rename asset: decathlon-pee" })).getByRole("button", { name: "Rename" });
+    const confirm = within(screen.getByRole("dialog", { name: "Rename asset: yarrowtech-pee" })).getByRole("button", { name: "Rename" });
     await waitFor(() => expect(confirm).toBeEnabled());
     await userEvent.click(confirm);
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-    expect(calls.filter((c) => c.init?.method === "POST" && c.url.endsWith("/rename")).map((c) => c.url)).toEqual(["/api/v1/memory/assets/decathlon-pee/rename"]);
+    expect(calls.filter((c) => c.init?.method === "POST" && c.url.endsWith("/rename")).map((c) => c.url)).toEqual(["/api/v1/memory/assets/yarrowtech-pee/rename"]);
   });
 
   it("deletes an asset after a preview, and shows why when it is still linked", async () => {

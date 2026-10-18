@@ -315,6 +315,18 @@ def test_build_terms_derives_every_category_from_the_database_and_memory(world):
     assert terms["machine"] == {"quillbox"}
 
 
+def test_the_public_repository_owner_is_not_a_machine_term(monkeypatch):
+    # A login name that is also the GitHub account of the repository would flag every repository URL, CODEOWNERS and the LICENSE.
+    import getpass
+    import platform
+    monkeypatch.setattr(getpass, "getuser", lambda: "Quorbel")
+    monkeypatch.setattr(platform, "node", lambda: "zentrabox.local")
+    owners = H.public_owners({"project": {"urls": {"Repository": "https://github.com/quorbel/thing", "Docs": "https://quorbel.example.org/x"}}})
+    assert owners == {"quorbel"}
+    assert H.machine_terms(owners) == ["zentrabox"]
+    assert H.machine_terms() == ["Quorbel", "zentrabox"]
+
+
 def test_build_terms_amounts_are_exact_recurring_and_memory_figures_but_not_round_ones(world):
     cfg, con = world
     amounts = H.build_terms(con, cfg.memory_dir)["amount"]
@@ -363,3 +375,10 @@ def test_the_built_terms_find_the_household_in_a_text_but_not_a_stranger(world, 
     idx = H.TermIndex(H.load_terms(dest))
     assert idx.find("Dear Quillon Zorbax, from Yarrowtech in Quenby sur Loze") and idx.find("paid 41,37 EUR") and idx.find("loan 1 357,91")
     assert idx.find("Dear Alice Example, from Acme in Springfield, paid 12.50 EUR") == []
+
+
+def test_a_number_inside_an_identifier_is_not_an_amount():
+    idx = H.TermIndex([H.Term(1, "amount", "17.43"), H.Term(2, "amount", "61.70")])
+    for line in ("--bg: #0e1743;", 'placeholder="housing-6170"', "id_1743", "v1743b"):
+        assert idx.find(line) == [], line
+    assert [t.n for t in idx.find("paid -17.43 and 61,70 EUR")] == [1, 2]

@@ -374,7 +374,7 @@ sso_issuer = ""           # the token's expected `iss` ("" = not checked; the si
 sso_audience = ""         # the token's expected `aud`, the proxy provider's client id ("" = not checked)
 
 [ui.sso_users]            # identity (username, e-mail or subject) -> "owner" or a `coach users` login id
-# "marco" = "owner"
+# "quillon" = "owner"
 ```
 
 Remote use, step by step: `tailscale serve --bg 8765` (HTTPS in front of the loopback port), set `allow_remote = true`,

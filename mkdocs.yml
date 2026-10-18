@@ -4,7 +4,7 @@
 
 site_name: AI Finance Coach
 site_description: "A private, self-hosted coach for your household's money: bank sync, categories, budgets, subscriptions, loans and a coach that answers with your own numbers."
-site_author: Marco Mornati
+site_author: mmornati
 site_url: https://mmornati.github.io/ai-finance-coach/docs/
 
 repo_name: mmornati/ai-finance-coach

@@ -132,9 +132,10 @@ def test_the_scheme_reduction_is_the_declared_rate_on_the_declared_price_spread_
 
 
 def test_the_eligible_price_is_capped_by_the_ceiling_the_owner_declared():
-    ds = world(assets=[asset(purchase_price=350000)])
+    cap = {"start_date": "2021-03-05", "years": 9, "reduction_rate_pct": 18, "reduction_first_year": 2021, "reduction_base_cap": 280000}
+    ds = world(assets=[asset(purchase_price=350000, commitment=cap)])
     r = TX.scheme_reduction(M.properties(ds)[0], 2025)
-    assert r["base_c"] == 30000000 and r["base_capped"] is True and r["total_c"] == 5400000 and r["annual_c"] == 600000
+    assert r["base_c"] == 28000000 and r["base_capped"] is True and r["total_c"] == 5040000 and r["annual_c"] == 560000
 
 
 def test_an_extension_with_its_own_rate_adds_years_after_the_commitment():

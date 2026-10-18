@@ -374,7 +374,7 @@ def build_local_terms(cfg, path: Path, out=print) -> int:
         sys.exit(f"error: refusing to write the local term file inside the repository ({path}): point COACH_HYGIENE_TERMS outside it")
     con = connect(cfg, insecure=bool(getattr(cfg, "insecure_plaintext_db", False)), migrate=False)
     try:
-        terms = hygiene.build_terms(con, cfg.memory_dir, eb_app_id=cfg.eb_app_id, extra_machine=hygiene.machine_terms(),
+        terms = hygiene.build_terms(con, cfg.memory_dir, eb_app_id=cfg.eb_app_id, extra_machine=hygiene.machine_terms(hygiene.public_owners(load_pyproject(home_mod.CHECKOUT_ROOT))),
                                     extra_amounts=_series_amounts(con, cfg))
     finally:
         con.close()
