@@ -123,7 +123,7 @@ sso_issuer = "https://authentik.example.net/application/o/<application slug>/"  
 sso_audience = "<client id of the proxy provider>"                              # the token's `aud`; "" = not checked
 
 [ui.sso_users]
-"marco" = "owner"              # authentik username, e-mail or subject -> the owner login (everything)
+"quillon" = "owner"              # authentik username, e-mail or subject -> the owner login (everything)
 "anna@example.net" = "anna"    # -> a `coach users` login (adult or child, with its scope)
 ```
 

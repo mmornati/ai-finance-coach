@@ -59,6 +59,23 @@ _IBAN = re.compile(r"\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,4})?\b
 _NUMBER = re.compile(r"(?<![\d.,])(?:\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d+)(?:[.,]\d{1,2})?(?!\d|[.,]\d)")
 
 
+_CURRENCY_WORDS = frozenset({"eur", "euro", "euros", "usd", "chf", "gbp", "k", "keur", "c", "cts"})
+
+
+def _inside_identifier(line: str, start: int, end: int) -> bool:
+    """A number glued to a word is part of an identifier, not an amount: a colour `#0d1422`, a slug `housing-5050`, `v2`, `uid1234`.
+    A currency glued to it (`1234.56EUR`, `EUR1234.56`, `12k`) keeps it an amount, and so does a minus sign after a space (` -1234.56`)."""
+    word_before = re.search(r"[A-Za-z_]+$", line[:start])
+    word_after = re.match(r"[A-Za-z_]+", line[end:])
+    for w in (word_before, word_after):
+        if w and w.group(0).lower() not in _CURRENCY_WORDS:
+            return True
+    before = line[start - 1] if start else ""
+    if before == "#":
+        return True
+    return before == "-" and start >= 2 and line[start - 2].isalnum()
+
+
 @dataclass(frozen=True)
 class Hit:
     path: str
@@ -296,6 +313,8 @@ class TermIndex:
                     found[term.n] = term
         if self.amounts:
             for m in _NUMBER.finditer(line):
+                if _inside_identifier(line, m.start(), m.end()):
+                    continue
                 for v in written_values(m.group(0)):
                     if v in self.amounts:
                         found[self.amounts[v].n] = self.amounts[v]
@@ -500,8 +519,21 @@ def public_vocabulary() -> set[str]:
     return {w for w in words if w}
 
 
-def machine_terms() -> list[str]:
-    """The login name and the host name of this machine (they end up in paths and screenshots)."""
+def public_owners(pyproject: dict) -> set[str]:
+    """The account names in the project URLs of pyproject (`github.com/<owner>/...`): the repository owner is public by the owner's own
+    decision (docs/release.md), and it is also in CODEOWNERS, the LICENSE and the README. Folded, lower case."""
+    urls = (pyproject.get("project") or {}).get("urls") or {}
+    out = set()
+    for url in urls.values():
+        m = re.match(r"https?://(?:www\.)?(?:github\.com|gitlab\.com|codeberg\.org)/([^/\s]+)", str(url))
+        if m:
+            out.add(fold(m.group(1)))
+    return out
+
+
+def machine_terms(public: Iterable[str] = ()) -> list[str]:
+    """The login name and the host name of this machine (they end up in paths and screenshots), except a name in `public` (the repository
+    owner of :func:`public_owners`: a login name that is also the GitHub account would flag every repository URL)."""
     import getpass
     import platform
     out = []
@@ -513,7 +545,8 @@ def machine_terms() -> list[str]:
         out.append(platform.node().split(".")[0])
     except Exception:                                                              # noqa: BLE001
         pass
-    return [m for m in out if m and m.lower() not in PLACEHOLDER_USERS]
+    skip = {fold(x) for x in public}
+    return [m for m in out if m and m.lower() not in PLACEHOLDER_USERS and fold(m) not in skip]
 
 
 def write_terms(path: Path, terms: dict[str, set]) -> int:

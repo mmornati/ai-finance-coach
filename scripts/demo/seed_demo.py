@@ -235,7 +235,7 @@ def build_transactions(w: World) -> dict:
     rental_loan = annuity(165000, 1.6, 240)
     jan = dt.date(today.year, 1, 15)
     paid = lambda start: (jan.year - start.year) * 12 + jan.month - start.month             # noqa: E731
-    facts = {"mortgage_payment": round(mortgage + 31.5, 2), "mortgage_annuity": mortgage, "rental_loan_payment": rental_loan,
+    facts = {"mortgage_payment": round(mortgage + 27.5, 2), "mortgage_annuity": mortgage, "rental_loan_payment": rental_loan,
              "statement_date": jan.isoformat(),
              "mortgage_outstanding": remaining(280000, 1.35, 300, paid(dt.date(2019, 7, 1))),
              "rental_outstanding": remaining(165000, 1.6, 240, paid(dt.date(2018, 6, 1)))}
@@ -534,7 +534,7 @@ outstanding: {facts['mortgage_outstanding']}
 outstanding_as_of: {facts['statement_date']}        # the January statement
 rate: {{ type: fixed, nominal: 1.35, taeg: 1.71 }}
 monthly_payment: {facts['mortgage_payment']}
-insurance: {{ provider: AssurPret, monthly: 31.5, delegated: false }}
+insurance: {{ provider: AssurPret, monthly: 27.5, delegated: false }}
 debited_account: aur-joint
 payment_match: '^HOMEBANK'
 early_repayment_penalty: "3 % of the repaid capital, capped at 6 months of interest"

@@ -42,13 +42,13 @@ def jwks_of(priv, kid="k1") -> dict:
 
 def token(priv, kid="k1", alg="RS256", **over) -> str:
     now = int(time.time())
-    claims = {"iss": ISS, "aud": AUD, "exp": now + 300, "iat": now, "sub": "uid-1", "preferred_username": "marco", "email": "marco@example.test"}
+    claims = {"iss": ISS, "aud": AUD, "exp": now + 300, "iat": now, "sub": "uid-1", "preferred_username": "quillon", "email": "quillon@example.test"}
     claims.update(over)
     claims = {k: v for k, v in claims.items() if v is not None}
     return jwt.encode(claims, priv, algorithm=alg, headers={"kid": kid})
 
 
-def sso_cfg(world, users: str = 'marco = "owner"', section: str = SECTION, extra: str = ""):
+def sso_cfg(world, users: str = 'quillon = "owner"', section: str = SECTION, extra: str = ""):
     world.config_path.write_text(world.config_path.read_text() + section + extra + "\n[ui.sso_users]\n" + users + "\n")
     return load_config(world.config_path, env={})
 
@@ -101,7 +101,7 @@ def test_a_valid_signed_token_opens_the_owner_session_once(world, tmp_path, keys
 
 def test_the_token_can_map_to_a_person_login_and_its_role_applies(world, tmp_path, keys):
     priv, _ = keys
-    app = build(sso_cfg(world, users='marco = "owner"\n"kid@example.test" = "mia"\nnoa = "papa"'), tmp_path, Fetch(priv))
+    app = build(sso_cfg(world, users='quillon = "owner"\n"kid@example.test" = "mia"\nnoa = "papa"'), tmp_path, Fetch(priv))
     add_login(app, "papa", "adult")
     add_login(app, "mia", "child", member="mia")
     papa = TestClient(app, base_url=HOST)
@@ -112,7 +112,7 @@ def test_the_token_can_map_to_a_person_login_and_its_role_applies(world, tmp_pat
     r = kid.get(api("/session"), headers={"X-authentik-jwt": token(priv, preferred_username="kiddo", email="kid@example.test")})
     assert r.status_code == 200 and r.json()["user"]["role"] == "child"
     assert kid.get(api("/health")).status_code == 403                                   # the child scope, as for any child session
-    assert kid.get(api("/health"), headers={"X-authentik-jwt": token(priv, preferred_username="marco")}).status_code == 403   # the cookie wins
+    assert kid.get(api("/health"), headers={"X-authentik-jwt": token(priv, preferred_username="quillon")}).status_code == 403   # the cookie wins
 
 
 # ====================================================================== what is refused
@@ -123,7 +123,7 @@ def test_a_plain_header_or_no_token_never_opens_a_session(world, tmp_path, keys)
     c = TestClient(app, base_url=HOST)
     r = c.get(api("/session"))
     assert r.status_code == 401 and r.json()["error"]["code"] == "sso_missing" and "set-cookie" not in r.headers
-    r = c.get(api("/session"), headers={"X-authentik-username": "marco", "X-authentik-email": "marco@example.test"})
+    r = c.get(api("/session"), headers={"X-authentik-username": "quillon", "X-authentik-email": "quillon@example.test"})
     assert r.status_code == 401 and r.json()["error"]["code"] == "sso_missing"
     # a page load never gets a cookie, token or not
     r = c.get("/", headers={"X-authentik-jwt": token(priv)})
@@ -148,7 +148,7 @@ def test_a_bad_token_is_refused_with_its_reason_and_no_cookie(world, tmp_path, k
     elif case == "audience":
         t = token(priv, aud="other-client")
     elif case == "alg":
-        t = jwt.encode({"preferred_username": "marco", "exp": int(time.time()) + 300}, "secret", algorithm="HS256", headers={"kid": "k1"})
+        t = jwt.encode({"preferred_username": "quillon", "exp": int(time.time()) + 300}, "secret", algorithm="HS256", headers={"kid": "k1"})
     elif case == "unknown_kid":
         t = token(priv, kid="k9")
         app.state.sso.identity(token(priv))           # the keys were fetched a while ago
@@ -175,7 +175,7 @@ def test_a_valid_token_for_an_unmapped_person_says_which_name_to_map(world, tmp_
 
 def test_a_mapping_to_a_missing_or_disabled_login_is_refused(world, tmp_path, keys):
     priv, _ = keys
-    app = build(sso_cfg(world, users='marco = "ghost"\nnoa = "papa"'), tmp_path, Fetch(priv))
+    app = build(sso_cfg(world, users='quillon = "ghost"\nnoa = "papa"'), tmp_path, Fetch(priv))
     add_login(app, "papa", "adult", disabled="2026-02-01T00:00:00+00:00")
     c = TestClient(app, base_url=HOST)
     r = c.get(api("/session"), headers={"X-authentik-jwt": token(priv)})
@@ -237,12 +237,12 @@ def test_without_sso_the_header_is_ignored(world, tmp_path, keys):
 # ====================================================================== configuration
 
 @pytest.mark.parametrize("section, users, message", [
-    ('\n[ui]\nsso = "authentik"\nsso_jwks_url = "http://authentik:9000/application/o/coach/jwks/"\n', 'marco = "owner"', "allow_remote"),
-    (SECTION.replace(f'sso_jwks_url = "{JWKS_URL}"', 'sso_jwks_url = "authentik:9000"'), 'marco = "owner"', "sso_jwks_url"),
+    ('\n[ui]\nsso = "authentik"\nsso_jwks_url = "http://authentik:9000/application/o/coach/jwks/"\n', 'quillon = "owner"', "allow_remote"),
+    (SECTION.replace(f'sso_jwks_url = "{JWKS_URL}"', 'sso_jwks_url = "authentik:9000"'), 'quillon = "owner"', "sso_jwks_url"),
     (SECTION, "", "sso_users"),
-    (SECTION, 'marco = "Owner"', "login id"),
-    (SECTION, 'marco = 42', "login id"),
-    (SECTION.replace('sso = "authentik"', 'sso = "okta"'), 'marco = "owner"', "ui.sso must be"),
+    (SECTION, 'quillon = "Owner"', "login id"),
+    (SECTION, 'quillon = 42', "login id"),
+    (SECTION.replace('sso = "authentik"', 'sso = "okta"'), 'quillon = "owner"', "ui.sso must be"),
 ])
 def test_sso_configuration_is_checked(world, section, users, message):
     with pytest.raises(ConfigError, match=message):
@@ -251,9 +251,9 @@ def test_sso_configuration_is_checked(world, section, users, message):
 
 def test_sso_settings_are_listed_without_the_identities(world):
     from coach.config import effective
-    cfg = sso_cfg(world, users='marco = "owner"\nnoa = "papa"')
+    cfg = sso_cfg(world, users='quillon = "owner"\nnoa = "papa"')
     rows = {k: v for k, v, _ in effective(cfg)}
-    assert rows["ui.sso"] == "authentik" and rows["ui.sso_users"] == "2 mapped" and "marco" not in str(rows)
+    assert rows["ui.sso"] == "authentik" and rows["ui.sso_users"] == "2 mapped" and "quillon" not in str(rows)
     assert rows["ui.sso_jwks_url"] == JWKS_URL and rows["ui.sso_issuer"] == ISS
 
 
@@ -265,7 +265,7 @@ SECRET_SECTION = SECTION.replace(f'sso_jwks_url = "{JWKS_URL}"', 'sso_signing = 
 
 def hs_token(secret: str = SECRET, alg: str = "HS256", **over) -> str:
     now = int(time.time())
-    claims = {"iss": ISS, "aud": AUD, "exp": now + 300, "iat": now, "sub": "uid-1", "preferred_username": "marco"}
+    claims = {"iss": ISS, "aud": AUD, "exp": now + 300, "iat": now, "sub": "uid-1", "preferred_username": "quillon"}
     claims.update(over)
     return jwt.encode(claims, secret, algorithm=alg)
 
@@ -305,7 +305,7 @@ def test_client_secret_mode_accepts_hs256_with_that_secret_only(world, tmp_path,
         "other_secret": lambda: hs_token(secret="x" * 64),
         "hs512": lambda: hs_token(alg="HS512"),
         "rs256": lambda: token(priv),
-        "none": lambda: jwt.encode({"preferred_username": "marco", "exp": int(time.time()) + 300}, None, algorithm="none"),
+        "none": lambda: jwt.encode({"preferred_username": "quillon", "exp": int(time.time()) + 300}, None, algorithm="none"),
         "expired": lambda: hs_token(exp=int(time.time()) - 100),
         "issuer": lambda: hs_token(iss="https://evil.example.test/application/o/coach/"),
         "audience": lambda: hs_token(aud="other-client"),
@@ -320,7 +320,7 @@ def test_jwks_mode_refuses_an_hs256_token_signed_with_a_public_key(world, tmp_pa
     priv, _ = keys
     pem = priv.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
     app = build(sso_cfg(world), tmp_path, Fetch(priv))
-    claims = {"iss": ISS, "aud": AUD, "exp": int(time.time()) + 300, "preferred_username": "marco"}
+    claims = {"iss": ISS, "aud": AUD, "exp": int(time.time()) + 300, "preferred_username": "quillon"}
     import base64
     import hashlib
     import hmac
