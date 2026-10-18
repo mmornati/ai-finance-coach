@@ -24,6 +24,8 @@ config/rules.yaml
 # your agent permission file: it holds absolute paths of your machine. The shareable template is docs/claude-settings.example.json
 .claude/settings.json
 .claude/settings.local.json
+# Claude Code's git worktrees: other checkouts of this repository (the release scan skips any folder with its own .git anyway)
+.claude/worktrees/
 
 # E11-2: secrets and web-app state must never be committed, wherever a stray copy ends up
 *.key

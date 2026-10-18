@@ -40,6 +40,8 @@ ALWAYS_SKIP_DIRS = frozenset({".git", ".venv", "venv", "node_modules", "__pycach
                               "graphify-out", ".idea", ".vscode"})
 # Git never publishes a path named ".git", at any depth, folder or file: in a worktree or a submodule ".git" is a FILE ("gitdir: <absolute path>").
 GIT_NEVER_PUBLISHES = frozenset({".git"})
+# A folder below the root that holds its own ".git" is ANOTHER checkout (a git worktree such as .claude/worktrees/<name>, a nested clone or a
+# submodule): git does not publish its files as part of this repository, and they are that checkout's to scan.
 
 PLACEHOLDER_USERS = frozenset({"you", "user", "username", "name", "me", "example", "runner", "yourname", "your-name", "someone", "alice", "bob",
                                "coach", "app", "shared", "home", "x", "<you>", "<user>", "appuser", "jdoe", "maria"})
@@ -151,7 +153,7 @@ def publishable_files(root: Path) -> list[Path]:
             if p.is_symlink() or name in GIT_NEVER_PUBLISHES:
                 continue
             if p.is_dir():
-                if name in ALWAYS_SKIP_DIRS or gi.ignored(r, True):
+                if name in ALWAYS_SKIP_DIRS or gi.ignored(r, True) or (p / ".git").exists():
                     continue
                 walk(p, r)
             elif p.is_file() and not gi.ignored(r, False):
