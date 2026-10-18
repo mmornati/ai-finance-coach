@@ -91,13 +91,24 @@ def test_the_ci_workflow_runs_every_gate_and_the_release_check_is_not_allowed_to
     wf = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text())
     text = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
     jobs = wf["jobs"]
-    assert set(jobs) == {"python", "web", "release-check"}
+    assert set(jobs) == {"python", "web", "docker", "release-check"}
     runs = lambda j: " ".join(s.get("run", "") for s in jobs[j]["steps"])                    # noqa: E731
     assert "pytest" in runs("python") and "ruff check src tests" in runs("python")
     assert "pnpm typecheck" in runs("web") and "pnpm test" in runs("web") and "pnpm build" in runs("web")
     assert "coach dev release-check" in runs("release-check") and "pnpm build" in runs("release-check")
+    assert "docker build" in runs("docker") and "WITH_CLAUDE_CODE=1" in runs("docker") and "Health.Status" in runs("docker")
+    assert "docker push" not in runs("docker") and "docker login" not in runs("docker")
     assert "continue-on-error" not in text.replace("Do not mark it continue-on-error", "")
     assert jobs["release-check"]["needs"] == ["python", "web"] and wf["permissions"] == {"contents": "read"}
+
+
+def test_ci_and_release_run_the_node_major_of_the_dockerfile():
+    import re
+    majors = set(re.findall(r"^FROM node:(\d+)-", (ROOT / "Dockerfile").read_text(), re.M))
+    assert len(majors) == 1, majors                                                                 # every node stage on one major
+    for wf in ("ci.yml", "release.yml"):
+        found = re.findall(r"node-version: (\d+)", (ROOT / ".github" / "workflows" / wf).read_text())
+        assert found and set(found) == majors, (wf, found, majors)                                  # a Dependabot node bump must move CI too
 
 
 def test_the_tag_and_release_workflows_gate_on_the_version_and_publish_nowhere_else():

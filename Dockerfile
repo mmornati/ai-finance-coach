@@ -14,7 +14,8 @@
 
 FROM node:26-bookworm-slim@sha256:86f07bc9c5dce4578cf37e5a418b7bfc7f817cda25cde66e2b66e95ed86c4567 AS web
 WORKDIR /build/web
-RUN corepack enable
+# Node 25+ no longer ships corepack: install it, pinned, from npm. It then runs the pnpm of web/package.json ("packageManager").
+RUN npm install --global corepack@0.36.0 && corepack enable
 COPY web/package.json web/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY web/ ./

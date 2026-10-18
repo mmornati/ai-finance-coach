@@ -282,7 +282,7 @@ GOOD = DOCKERFILE
     (GOOD.replace("ENV PIP_NO_CACHE_DIR=1", "ENV API_TOKEN=abc123 PIP_NO_CACHE_DIR=1"), "DF005"),
     (GOOD.replace("--no-install-recommends ", ""), "DF006"),
     (GOOD.replace("RUN chmod 0755", "RUN chmod 777"), "DF006"),
-    (GOOD.replace("RUN corepack enable", "RUN curl -fsSL https://x.example/i.sh | sh"), "DF006"),
+    (GOOD.replace("RUN npm install --global corepack@0.36.0 && corepack enable", "RUN curl -fsSL https://x.example/i.sh | sh"), "DF006"),
     (GOOD.replace('CMD ["ui", "--no-browser"]', "CMD coach ui"), "DF007"),
     (GOOD.replace("WORKDIR /build/web", "WORKDIR build/web"), "DF009"),
 ])
