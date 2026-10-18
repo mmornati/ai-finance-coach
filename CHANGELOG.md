@@ -5,6 +5,16 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-18
+
+### Fixed: the release check
+- `coach dev release-check` no longer scans another checkout below the root (a git worktree such as `.claude/worktrees/<name>`, a nested
+  clone, a submodule): any folder with its own `.git` is skipped, and `.claude/worktrees/` is git-ignored.
+- `coach dev hygiene --build-terms` leaves out a login name that is the repository owner of the project URLs (public by the owner's
+  decision): it flagged every repository URL, CODEOWNERS and the LICENSE.
+- The real-data rule no longer reads a number inside an identifier as an amount (a colour `#0e1743`, a slug `housing-6170`).
+- Test fixtures and docs use invented names only.
+
 ### Changed: Python 3.14 and pnpm 11
 - Python **3.14** everywhere: `.python-version` (so `uv sync`), the CI test matrix, the docs build and the classifiers, matching the Docker
   image. `requires-python` stays `>=3.11`. Every compiled dependency in `uv.lock` (sqlcipher3-wheels, cryptography, pydantic-core, cffi, ...)
