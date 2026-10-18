@@ -12,7 +12,7 @@
 #   docker buildx imagetools inspect <tag>      (the digest is printed as "Digest:")
 # `coach dev release-check` refuses a floating tag without a digest.
 
-FROM node:24-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS web
+FROM node:26-bookworm-slim@sha256:86f07bc9c5dce4578cf37e5a418b7bfc7f817cda25cde66e2b66e95ed86c4567 AS web
 WORKDIR /build/web
 RUN corepack enable
 COPY web/package.json web/pnpm-lock.yaml ./
@@ -37,7 +37,7 @@ RUN uv build --wheel --out-dir /dist \
 
 # The Claude Code CLI (claude-code backend, docs/docker.md "Claude Code in the container"). One native binary, no Node at runtime. To move to a new
 # version set the three values (npm view @anthropic-ai/claude-code-linux-x64@<version> dist.integrity, and the same for -linux-arm64).
-FROM node:24-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS claude-cli
+FROM node:26-bookworm-slim@sha256:86f07bc9c5dce4578cf37e5a418b7bfc7f817cda25cde66e2b66e95ed86c4567 AS claude-cli
 ARG WITH_CLAUDE_CODE=0
 ARG CLAUDE_CODE_VERSION=2.1.296
 ARG CLAUDE_CODE_INTEGRITY_X64=sha512-+m01urgelnI+VJxPaKPEK0wixgq42uZ8PeCaUk5tX/8YoDBvSmC/REVQG2jQfJAr8dxunpjJ600FvLrcj1WWTw==
