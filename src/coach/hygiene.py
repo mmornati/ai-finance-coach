@@ -34,7 +34,8 @@ TERMS_HEADER = ("# LOCAL ONLY: terms that identify your household, one `category
 
 LOCK_NAMES = frozenset({"pnpm-lock.yaml", "package-lock.json", "yarn.lock", "uv.lock"})     # resolved dependency lists: a `name@version` is not an e-mail
 BINARY_SUFFIXES = frozenset({".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".pyc", ".woff", ".woff2", ".ttf", ".otf", ".zip", ".gz",
-                             ".enc", ".db", ".sqlite", ".pdf", ".lock", ".icns"})
+                             ".enc", ".db", ".sqlite", ".pdf", ".lock", ".icns", ".mp4", ".webm", ".mov", ".m4a", ".mp3", ".wav",
+                             ".ogg", ".avif"})
 # never part of a published tree, whatever .gitignore says (tool caches and dependency folders)
 ALWAYS_SKIP_DIRS = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__", ".ruff_cache", ".pytest_cache", ".mypy_cache",
                               "graphify-out", ".idea", ".vscode"})
@@ -364,6 +365,18 @@ def _readable_text(p: Path) -> Optional[str]:
         return p.read_text()
     except (UnicodeDecodeError, OSError):
         return None
+
+
+def member_text(name: str, data: bytes) -> str:
+    """The text of an archive member, by the same rule as a file of the tree: a binary suffix, a lock file or bytes that are not UTF-8 (a video,
+    an image) give "" (only the member NAME is scanned). Decoding a binary with errors ignored reads random bytes as e-mails and keys."""
+    pure = name.rsplit("/", 1)[-1]
+    if Path(pure).suffix.lower() in BINARY_SUFFIXES or pure in LOCK_NAMES:
+        return ""
+    try:
+        return data.decode("utf-8")
+    except UnicodeDecodeError:
+        return ""
 
 
 def scan(root: Path, files: list[Path] | None = None, index: Optional[TermIndex] = None) -> list[Hit]:

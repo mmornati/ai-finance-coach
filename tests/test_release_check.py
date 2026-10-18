@@ -224,6 +224,22 @@ def test_a_built_sdist_and_wheel_are_scanned_member_by_member(tmp_path):
     assert "x-1.0-py3-none-any.whl:coach/b.txt:1" in c["hygiene"].detail or "x-1.0.tar.gz:x-1.0/inner.txt:1" in c["hygiene"].detail
 
 
+def test_binary_members_of_a_built_archive_are_not_read_as_text(tmp_path):
+    # A video holds random bytes: decoded with errors ignored, some of them look like e-mail addresses (the 1.0.0 release run failed on it).
+    import tarfile
+    p = make_project(tmp_path)
+    (p / "dist").mkdir()
+    junk = b"\x00\xff\xfe" + b"qz" + b"@" + b"zx.qq" + b"\x9c\x00"
+    for name, data in (("video.mp4", junk), ("blob.bin", junk), ("note.txt", ("write to quill" + "@" + "zorbax.qq\n").encode())):
+        (tmp_path / name).write_bytes(data)
+    with tarfile.open(p / "dist" / "x-1.0.tar.gz", "w:gz") as t:
+        for name in ("video.mp4", "blob.bin", "note.txt"):
+            t.add(tmp_path / name, arcname=f"x-1.0/{name}")
+    c = run(p)
+    assert failed(c) == ["hygiene"]
+    assert "x-1.0/note.txt:1" in c["hygiene"].detail and "video.mp4" not in c["hygiene"].detail and "blob.bin" not in c["hygiene"].detail
+
+
 def test_metadata_templates_docs_gitignore_docker_and_ci_checks(tmp_path):
     p = make_project(tmp_path)
     (p / "pyproject.toml").write_text((p / "pyproject.toml").read_text().replace('keywords = [', 'x_keywords = ['))

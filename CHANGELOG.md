@@ -14,6 +14,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
   decision): it flagged every repository URL, CODEOWNERS and the LICENSE.
 - The real-data rule no longer reads a number inside an identifier as an amount (a colour `#0e1743`, a slug `housing-6170`).
 - Test fixtures and docs use invented names only.
+- The scan of a built sdist / wheel reads a member as text only when it is UTF-8 (like a file of the tree): the documentation videos no longer
+  give false e-mail hits.
 
 ### Changed: Python 3.14 and pnpm 11
 - Python **3.14** everywhere: `.python-version` (so `uv sync`), the CI test matrix, the docs build and the classifiers, matching the Docker
