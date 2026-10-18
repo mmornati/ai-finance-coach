@@ -115,6 +115,14 @@ def test_the_git_file_of_a_worktree_or_submodule_is_never_scanned(tmp_path):
     assert H.scan(root, H.publishable_files(root), None) == []
 
 
+def test_another_checkout_below_the_root_is_never_scanned(tmp_path):
+    # .claude/worktrees/<name> (Claude Code's worktrees) is a whole other checkout, with its own ignored files: not part of this repository.
+    root = tree(tmp_path, {".claude/worktrees/w1/.git": "gitdir: ../../../.git/worktrees/w1\n",
+                           ".claude/worktrees/w1/.claude/settings.json": HOME_DIR, ".claude/worktrees/w1/docs/release.md": "TODO(license)",
+                           "clone/.git/HEAD": "ref: refs/heads/main\n", "clone/a.py": "x", ".claude/skills/s.md": "x", "ok.py": "x"})
+    assert rels(root) == [".claude/skills/s.md", ".gitignore", "ok.py"]
+
+
 # ---------------------------------------------------------------- the structural rules
 
 # The trigger strings are assembled at run time: this file is itself scanned, and must not contain a real-looking secret.
