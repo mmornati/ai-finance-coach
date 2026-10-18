@@ -53,7 +53,7 @@ jobs:
           package_json_file: web/package.json   # the version comes from its "packageManager" field
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          node-version: 26          # the major of the Dockerfile's node stages (tests/test_packaging.py checks it)
           cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
@@ -81,7 +81,7 @@ jobs:
           package_json_file: web/package.json   # the version comes from its "packageManager" field
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          node-version: 26          # the major of the Dockerfile's node stages (tests/test_packaging.py checks it)
           cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
       - run: uv sync
@@ -99,3 +99,40 @@ jobs:
       # The test suites already ran in the `python` and `web` jobs this one needs: running them again here doubled the wall time.
       - name: "Release check (--ci: the real-data rule needs the owner's LOCAL term file and is reported as skipped here; the suites ran in the jobs above)"
         run: uv run coach dev release-check --ci --skip-tests --skip-web
+
+  docker:
+    name: Docker image (build and start)
+    runs-on: ubuntu-latest
+    # The static Dockerfile tests (tests/test_docker_static.py) cannot see a base-image bump that breaks a RUN step (node 26 dropped corepack):
+    # build the image for real, start it and wait for its HEALTHCHECK. Nothing is pushed; the container gets no secret and no real data.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the default image
+        run: docker build --tag coach-ci .
+      - name: Build with the Claude Code CLI (WITH_CLAUDE_CODE=1, checks the pinned integrity hash)
+        run: docker build --build-arg WITH_CLAUDE_CODE=1 --tag coach-ci-claude .
+      - name: The CLI runs
+        run: |
+          docker run --rm --entrypoint coach coach-ci --version
+          docker run --rm --entrypoint claude coach-ci-claude --version
+      - name: First start creates the home and the web app turns healthy
+        # As docs/docker.md "First start": throwaway random keys (mode 0600, mounted read-only on /run/secrets) and empty volumes, all in the
+        # runner's temp folder, and the container runs as the runner's uid like COACH_UID in docker-compose.yml.
+        run: |
+          set -eu
+          home="$RUNNER_TEMP/coach-home"
+          mkdir -p "$home/secrets" "$home/data" "$home/memory" "$home/config" && chmod 700 "$home/secrets"
+          for k in db_key backup_key proposal_key; do
+            (umask 077; head -c 32 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n' > "$home/secrets/$k")
+          done
+          docker run --detach --name coach-ci --user "$(id -u):$(id -g)" \
+            -v "$home/secrets:/run/secrets:ro" -v "$home/data:/data" -v "$home/memory:/memory" -v "$home/config:/config" coach-ci
+          for _ in $(seq 1 60); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' coach-ci)
+            [ "$status" = healthy ] && exit 0
+            [ "$(docker inspect --format '{{.State.Running}}' coach-ci)" = true ] || break
+            sleep 2
+          done
+          echo "the container did not turn healthy (last status: ${status:-none})" >&2
+          docker logs coach-ci >&2
+          exit 1

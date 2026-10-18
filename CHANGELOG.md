@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed: the Docker image builds again on Node 26
+- Node 25+ no longer bundles corepack, so the web stage failed at `corepack enable` after the Node 26 bump. The image installs a pinned
+  corepack from npm first; pnpm still comes from `web/package.json` (`packageManager`).
+- CI builds the image (default and `WITH_CLAUDE_CODE=1`), starts it and waits for its healthcheck, so a base-image bump that breaks the build
+  fails its pull request. CI and the release workflow run the same Node major as the Dockerfile (a test checks it).
+
 ### Security: dependency upgrades and tighter version floors
 - **pypdf 6.20.1**: limits the decoding work per stream and refuses cyclic page trees (contract PDFs are user-supplied).
 - anthropic 1.13.0, pydantic 2.14.1, fastapi 0.143.0 (OpenTelemetry auto-setup is now opt-in; the coach does not use it), ruff 0.17.0;
