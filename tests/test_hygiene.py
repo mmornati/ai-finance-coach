@@ -382,3 +382,5 @@ def test_a_number_inside_an_identifier_is_not_an_amount():
     for line in ("--bg: #0e1743;", 'placeholder="housing-6170"', "id_1743", "v1743b"):
         assert idx.find(line) == [], line
     assert [t.n for t in idx.find("paid -17.43 and 61,70 EUR")] == [1, 2]
+    for line in ("17.43EUR", "EUR17.43", "total=17.43eur;", "1743cts"):
+        assert [t.n for t in idx.find(line)] == [1], line

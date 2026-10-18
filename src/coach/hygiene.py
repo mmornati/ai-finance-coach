@@ -59,12 +59,19 @@ _IBAN = re.compile(r"\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,4})?\b
 _NUMBER = re.compile(r"(?<![\d.,])(?:\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d+)(?:[.,]\d{1,2})?(?!\d|[.,]\d)")
 
 
+_CURRENCY_WORDS = frozenset({"eur", "euro", "euros", "usd", "chf", "gbp", "k", "keur", "c", "cts"})
+
+
 def _inside_identifier(line: str, start: int, end: int) -> bool:
     """A number glued to a word is part of an identifier, not an amount: a colour `#0d1422`, a slug `housing-5050`, `v2`, `uid1234`.
-    A minus sign after a space is a negative amount (` -1234.56`) and is still read."""
+    A currency glued to it (`1234.56EUR`, `EUR1234.56`, `12k`) keeps it an amount, and so does a minus sign after a space (` -1234.56`)."""
+    word_before = re.search(r"[A-Za-z_]+$", line[:start])
+    word_after = re.match(r"[A-Za-z_]+", line[end:])
+    for w in (word_before, word_after):
+        if w and w.group(0).lower() not in _CURRENCY_WORDS:
+            return True
     before = line[start - 1] if start else ""
-    after = line[end] if end < len(line) else ""
-    if before.isalpha() or before in ("#", "_") or after.isalpha() or after == "_":
+    if before == "#":
         return True
     return before == "-" and start >= 2 and line[start - 2].isalnum()
 
