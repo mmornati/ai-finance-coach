@@ -147,7 +147,7 @@ class RunState:
 
 # ---------------------------------------------------------------- claude -p
 
-BUILTIN_AGENTS = {"general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide"}
+BUILTIN_AGENTS = {"general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide", "claude"}
 INIT_TIMEOUT = 45.0
 ISOLATION = ("claude starts in an EMPTY temporary directory outside the repository (no CLAUDE.md, no .claude/, no project "
              "settings), with --setting-sources \"\" (no user / project / local settings file), --settings disableAllHooks, "

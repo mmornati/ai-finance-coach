@@ -200,7 +200,7 @@ class Config:
     coach_schedule_weekly: bool = False  # [coach] schedule_weekly: `schedule run` also writes the weekly digest (opt-in)
     coach_schedule_monthly: bool = False  # [coach] schedule_monthly: ... and the monthly review (opt-in)
     coach_max_budget_usd: float = 1.0    # [coach] max_budget_usd: --max-budget-usd of `claude -p` per question (digests x their tool factor); 0 = off
-    coach_allowed_builtin_agents: tuple = ("general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide")
+    coach_allowed_builtin_agents: tuple = ("general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide", "claude")
     coach_allowed_plugins: tuple = ()        # [coach] allowed_plugins: plugin ids the claude init event may list (default none)
     coach_allow_builtin_plugins: bool = True  # [coach] allow_builtin_plugins: plugins whose id ends with "@builtin" are Claude Code's own
     coach_claude_env: tuple = ()         # [coach] claude_env: extra environment variable NAMES passed to `claude` (a proxy, a config dir ...)
@@ -394,7 +394,7 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         coach_schedule_monthly=_typed("coach.schedule_monthly", pick("coach.schedule_monthly", "coach", False), bool),
         coach_max_budget_usd=_num("coach.max_budget_usd", pick("coach.max_budget_usd", "coach", 1.0)),
         coach_allowed_builtin_agents=_agentnames(pick("coach.allowed_builtin_agents", "coach",
-                                                      ["general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide"])),
+                                                      ["general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide", "claude"])),
         coach_allowed_plugins=_agentnames(pick("coach.allowed_plugins", "coach", [])),
         coach_allow_builtin_plugins=_typed("coach.allow_builtin_plugins", pick("coach.allow_builtin_plugins", "coach", True), bool),
         coach_claude_env=_envnames(pick("coach.claude_env", "coach", [])),

@@ -155,7 +155,7 @@ timeout_seconds = 180             # per question (digests: three times); the job
 schedule_weekly = false           # opt-in: `coach schedule run` also writes the weekly digest (skipped when nothing is new)
 schedule_monthly = false          # opt-in: ... and the monthly review
 max_budget_usd = 1.0              # --max-budget-usd of `claude -p` per question (digests: x2 / x3); 0 = no cap
-allowed_builtin_agents = ["general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide"]   # agents the claude init event may list; any other aborts the run
+allowed_builtin_agents = ["general-purpose", "Explore", "Plan", "statusline-setup", "claude-code-guide", "claude"]   # agents the claude init event may list; any other aborts the run
                                   # (the observed init summary of every run is logged: <data_dir>/logs/coach-init.log)
 allowed_plugins = []              # plugin ids the init event may list (default none); any other plugin aborts the run
 allow_builtin_plugins = true      # plugins whose id ends with "@builtin" are Claude Code's own and are accepted; user-installed ones never are

@@ -177,6 +177,7 @@ CALL_SITES: dict[str, tuple[tuple[str, ...], str]] = {
     "api/coachjobs.py": ((), "checks that the `claude` binary exists (shutil.which); the run goes through agent/runner.py"),
     "security.py": ((), "audit: read-only `lsof` listing of listening sockets (this machine)"),
     "setup/doctor.py": ((), "`coach doctor`: shutil.which('claude') only (is the CLI installed?); nothing is run"),
+    "config.py": ((), "the default allow-list of Claude Code's built-in agent names holds the string \"claude\"; nothing is run"),
     "release.py": ((), "maintainer tool `coach dev release-check`: runs pytest / ruff / pnpm in the checkout (subprocess); no network, no data leaves"),
 }
 
@@ -190,6 +191,8 @@ EXEMPT_FUNCTIONS: dict[tuple[str, str], str] = {
     ("notify.py", "notify_macos"): "local macOS notification (no network)",
     ("schedule.py", "_path_env"): "shutil.which('claude') only",
     ("setup/doctor.py", "check_claude_cli"): "shutil.which('claude') only",
+    ("config.py", "Config"): "default value naming the built-in `claude` agent; no process is spawned",
+    ("config.py", "load_config"): "default value naming the built-in `claude` agent; no process is spawned",
     ("release.py", "default_runner"): "local test / lint tools of the maintainer's checkout; no network, no data leaves",
     ("schedule.py", "install"): "launchctl on this machine",
     ("schedule.py", "uninstall"): "launchctl on this machine",

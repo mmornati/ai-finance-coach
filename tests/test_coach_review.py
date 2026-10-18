@@ -203,7 +203,7 @@ def go(cfg, **kw):
 
 
 def test_init_event_with_a_plugin_skill_hook_agent_or_foreign_mcp_server_fails_closed():
-    base = {"tools": ["mcp__finance__coverage"], "mcp_servers": [{"name": "finance"}], "plugins": [], "skills": [], "agents": ["general-purpose"]}
+    base = {"tools": ["mcp__finance__coverage"], "mcp_servers": [{"name": "finance"}], "plugins": [], "skills": [], "agents": ["general-purpose", "claude"]}
     assert init_problems(base) == []
     for extra, word in (({"plugins": [{"name": "p"}]}, "plugins"), ({"skills": ["s"]}, "skills"), ({"hooks": {"PreToolUse": []}}, "hooks"),
                         ({"agents": ["evil-agent"]}, "agents"), ({"mcp_servers": [{"name": "finance"}, {"name": "other"}]}, "MCP servers"),
