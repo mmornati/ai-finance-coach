@@ -19,7 +19,7 @@ def test_the_package_metadata_is_complete():
     assert PROJECT["scripts"] == {"coach": "coach.cli:main"}
     assert len(PROJECT["description"]) > 40 and len(PROJECT["keywords"]) >= 5
     cl = PROJECT["classifiers"]
-    assert "Programming Language :: Python :: 3.13" in cl and any(c.startswith("Topic :: Office/Business :: Financial") for c in cl)
+    assert "Programming Language :: Python :: 3.14" in cl and any(c.startswith("Topic :: Office/Business :: Financial") for c in cl)
     assert not any(c.startswith("License ::") for c in cl) or "license" in PROJECT                  # a licence classifier only once the licence is decided
     assert PYPROJECT["build-system"]["build-backend"] == "hatchling.build"
 

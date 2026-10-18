@@ -7,7 +7,7 @@ By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md). Security 
 
 ## Development setup
 
-You need [uv](https://docs.astral.sh/uv/) (it installs the right Python, 3.11 to 3.13) and, for the web app, Node 22 with
+You need [uv](https://docs.astral.sh/uv/) (it installs the right Python, 3.11 to 3.14) and, for the web app, Node 22 or newer (CI uses 26) with
 [pnpm](https://pnpm.io/).
 
 ```bash

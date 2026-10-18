@@ -184,11 +184,12 @@ socket, the port published as `127.0.0.1:8765:8765` only.
 ## Pinning the base images
 
 The four `FROM` lines carry a `PIN-DIGEST` comment: before you publish an image, replace each tag by `tag@sha256:<digest>`
-(`docker buildx imagetools inspect python:3.13-slim-bookworm`). `coach dev release-check` accepts a digest or the comment, and refuses a floating
+(`docker buildx imagetools inspect python:3.14-slim-bookworm`). `coach dev release-check` accepts a digest or the comment, and refuses a floating
 tag without one.
 
 ## Known gaps
 
-* Not built or run by the project's checks; the `sqlcipher3-wheels` Linux wheels for the chosen Python are assumed, not verified here.
+* Not built or run by the project's own tests (CI builds and starts it). `uv.lock` holds cp314 wheels of `sqlcipher3-wheels` and the other compiled
+  dependencies for linux amd64 and arm64, so the build installs no source distribution.
 * The wizard's Enable Banking and bank steps work in a container through the copy-paste flow described above, which is less smooth than on a laptop.
 * No image is published; build it yourself.

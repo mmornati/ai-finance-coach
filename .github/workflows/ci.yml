@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.13"]          # the version the suite is run on; add "3.11" / "3.12" here once someone has run them (pyproject says >=3.11)
+        python: ["3.14"]          # the version the suite is run on (the Docker image's); add "3.11" to "3.13" here once someone has run them (pyproject says >=3.11)
         shard: [1, 2, 3]          # the suite is split round robin over 3 jobs (`--shard K/3`, tests/conftest.py); change the 3 in the steps too
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -91,7 +91,7 @@ jobs:
         working-directory: web
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          pattern: api-calls-3.13-*
+          pattern: api-calls-3.14-*
           path: ${{ runner.temp }}/api-calls
           merge-multiple: true
       - name: API endpoint coverage (the union of the pytest shards)

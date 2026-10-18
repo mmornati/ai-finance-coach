@@ -5,6 +5,14 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed: Python 3.14 and pnpm 11
+- Python **3.14** everywhere: `.python-version` (so `uv sync`), the CI test matrix, the docs build and the classifiers, matching the Docker
+  image. `requires-python` stays `>=3.11`. Every compiled dependency in `uv.lock` (sqlcipher3-wheels, cryptography, pydantic-core, cffi, ...)
+  has cp314 wheels for macOS arm64 and linux amd64 / arm64. The base images stay on Debian bookworm.
+- pnpm **11.28.6** (`packageManager` in `web/package.json`). Same lockfile format; no dependency runs a build script, so no `allowBuilds`
+  is needed. The pnpm 11 supply-chain defaults are kept: a release must be a day old (`minimumReleaseAge`) and sub-dependencies cannot
+  come from git or a URL (`blockExoticSubdeps`).
+
 ### Fixed: the Docker image builds again on Node 26
 - Node 25+ no longer bundles corepack, so the web stage failed at `corepack enable` after the Node 26 bump. The image installs a pinned
   corepack from npm first; pnpm still comes from `web/package.json` (`packageManager`).

@@ -54,7 +54,7 @@ same steps read-only.
 The manual way:
 
 ```
-uv sync                                  # Python 3.13 (see .python-version), all wheels, no brew needed
+uv sync                                  # Python 3.14 (see .python-version), all wheels, no brew needed
 cp config.example.toml config.toml       # then edit; or migrate the old prototype .env (below)
 uv run coach config set-secret db_key --generate      # SQLCipher key -> macOS Keychain
 uv run coach config set-secret backup_key --generate  # backup key    -> macOS Keychain
