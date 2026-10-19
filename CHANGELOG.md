@@ -5,6 +5,14 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-18
+
+The `v1.0.0` tag exists, but its release job failed and published nothing: 1.0.1 is the first published release.
+
+### Fixed: the release job
+- The scan of a built sdist / wheel reads a member as text only when it is UTF-8 (like a file of the tree): the documentation videos
+  (`docs/assets/video/*.mp4`) no longer give false e-mail hits, which stopped the 1.0.0 release job.
+
 ## [1.0.0] - 2026-10-18
 
 ### Fixed: the release check

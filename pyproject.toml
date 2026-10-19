@@ -1,6 +1,6 @@
 [project]
 name = "ai-finance-coach"
-version = "1.0.0"
+version = "1.0.1"
 description = "Private, self-hosted personal finance coach: PSD2 bank sync (Enable Banking), local classification, deterministic analytics, encrypted storage, an LLM coach that never sees raw bank data."
 readme = "README.md"
 requires-python = ">=3.11"

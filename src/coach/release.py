@@ -157,13 +157,12 @@ def scan_dist(root: Path, index) -> list[hygiene.Hit]:
             if arc.suffix == ".whl":
                 with zipfile.ZipFile(arc) as z:
                     for n in z.namelist():
-                        pairs.append((f"{arc.name}:{n}", z.read(n).decode("utf-8", "ignore") if not n.lower().endswith(tuple(hygiene.BINARY_SUFFIXES)) else ""))
+                        pairs.append((f"{arc.name}:{n}", hygiene.member_text(n, z.read(n))))
             elif arc.name.endswith(".tar.gz"):
                 with tarfile.open(arc) as t:
                     for m in t.getmembers():
                         if m.isfile():
-                            data = t.extractfile(m).read().decode("utf-8", "ignore") if not m.name.lower().endswith(tuple(hygiene.BINARY_SUFFIXES)) else ""
-                            pairs.append((f"{arc.name}:{m.name}", data))
+                            pairs.append((f"{arc.name}:{m.name}", hygiene.member_text(m.name, t.extractfile(m).read())))
         except (OSError, tarfile.TarError, zipfile.BadZipFile):
             continue
         hits += hygiene.scan_names(pairs, index)
