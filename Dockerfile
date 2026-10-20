@@ -12,7 +12,7 @@
 #   docker buildx imagetools inspect <tag>      (the digest is printed as "Digest:")
 # `coach dev release-check` refuses a floating tag without a digest.
 
-FROM node:26-bookworm-slim@sha256:86f07bc9c5dce4578cf37e5a418b7bfc7f817cda25cde66e2b66e95ed86c4567 AS web
+FROM node:26-bookworm-slim@sha256:298992629d69bbd5b2b03ad57094d8e4fcb3a8eeb7c4e25d29de656519568913 AS web
 WORKDIR /build/web
 # Node 25+ no longer ships corepack: install it, pinned, from npm. It then runs the pnpm of web/package.json ("packageManager").
 RUN npm install --global corepack@0.36.0 && corepack enable
@@ -38,7 +38,7 @@ RUN uv build --wheel --out-dir /dist \
 
 # The Claude Code CLI (claude-code backend, docs/docker.md "Claude Code in the container"). One native binary, no Node at runtime. To move to a new
 # version set the three values (npm view @anthropic-ai/claude-code-linux-x64@<version> dist.integrity, and the same for -linux-arm64).
-FROM node:26-bookworm-slim@sha256:86f07bc9c5dce4578cf37e5a418b7bfc7f817cda25cde66e2b66e95ed86c4567 AS claude-cli
+FROM node:26-bookworm-slim@sha256:298992629d69bbd5b2b03ad57094d8e4fcb3a8eeb7c4e25d29de656519568913 AS claude-cli
 ARG WITH_CLAUDE_CODE=0
 ARG CLAUDE_CODE_VERSION=2.1.296
 ARG CLAUDE_CODE_INTEGRITY_X64=sha512-+m01urgelnI+VJxPaKPEK0wixgq42uZ8PeCaUk5tX/8YoDBvSmC/REVQG2jQfJAr8dxunpjJ600FvLrcj1WWTw==
