@@ -23,3 +23,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # The python base image stays on its minor (3.14): sqlcipher3-wheels (uv.lock) has no build for a newer Python yet, so a 3.15 image
+      # fails to build. Digest and patch bumps still come; move the minor by hand once the wheel supports it (and the CI matrix with it).
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

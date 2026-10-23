@@ -96,8 +96,15 @@ def test_the_ci_workflow_runs_every_gate_and_the_release_check_is_not_allowed_to
     assert "pytest" in runs("python") and "ruff check src tests" in runs("python")
     assert "pnpm typecheck" in runs("web") and "pnpm test" in runs("web") and "pnpm build" in runs("web")
     assert "coach dev release-check" in runs("release-check") and "pnpm build" in runs("release-check")
-    assert "docker build" in runs("docker") and "WITH_CLAUDE_CODE=1" in runs("docker") and "Health.Status" in runs("docker")
+    # both images are built with docker/build-push-action (layers in the GitHub Actions cache), loaded into the runner's docker, never pushed
+    builds = [s["with"] for s in jobs["docker"]["steps"] if s.get("uses", "").startswith("docker/build-push-action@")]
+    assert len(builds) == 2 and all(b["push"] is False and b["load"] is True for b in builds)
+    assert [b.get("build-args") for b in builds] == [None, "WITH_CLAUDE_CODE=1"]
+    assert "Health.Status" in runs("docker") and "schedule loop" in runs("docker") and " doctor" in runs("docker")
+    for flag in ("--read-only", "--tmpfs /tmp", "--cap-drop ALL", "no-new-privileges", "--user"):               # docker-compose.yml's hardening
+        assert flag in runs("docker"), flag
     assert "docker push" not in runs("docker") and "docker login" not in runs("docker")
+    assert not any(s.get("uses", "").startswith("docker/login-action") for s in jobs["docker"]["steps"])
     assert "continue-on-error" not in text.replace("Do not mark it continue-on-error", "")
     assert jobs["release-check"]["needs"] == ["python", "web"] and wf["permissions"] == {"contents": "read"}
 
