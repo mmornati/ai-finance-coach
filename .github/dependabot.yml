@@ -23,3 +23,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # sqlcipher3-wheels has no cp315 wheel yet (0.5.7 stops at cp314) and its sdist needs a compiler and Conan:
+      # move the base image to 3.15 by hand once a release ships cp315 wheels (patch and digest updates still come).
+      - dependency-name: "python"
+        versions: [">=3.15"]
