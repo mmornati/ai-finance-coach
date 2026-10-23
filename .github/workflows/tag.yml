@@ -82,7 +82,8 @@ jobs:
           runs=$(gh api "repos/$GH_REPO/commits/$sha/check-runs?per_page=100" --jq '.check_runs[] | "\(.name)\t\(.status)\t\(.conclusion)"')
           missing=0
           for name in "pytest and lint (Python 3.14, shard 1/3)" "pytest and lint (Python 3.14, shard 2/3)" \
-                      "pytest and lint (Python 3.14, shard 3/3)" "vitest, type check and build" "release-check"; do
+                      "pytest and lint (Python 3.14, shard 3/3)" "vitest, type check and build" "release-check" \
+                      "Docker image (build and start)"; do
             if ! grep -qxF "$name"$'\tcompleted\tsuccess' <<< "$runs"; then
               echo "::error::CI check \"$name\" is not completed and green on $sha (still running? wait for it and run again)"
               missing=1

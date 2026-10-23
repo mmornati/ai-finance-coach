@@ -104,35 +104,98 @@ jobs:
     name: Docker image (build and start)
     runs-on: ubuntu-latest
     # The static Dockerfile tests (tests/test_docker_static.py) cannot see a base-image bump that breaks a RUN step (node 26 dropped corepack):
-    # build the image for real, start it and wait for its HEALTHCHECK. Nothing is pushed; the container gets no secret and no real data.
+    # build both images for real (the default one and the WITH_CLAUDE_CODE=1 one the owner's server builds), start them with the hardening of
+    # docker-compose.yml and wait for their HEALTHCHECK, then smoke `doctor` and the scheduler's `schedule loop`. Nothing is pushed (push: false,
+    # load: true: the images only go to the runner's docker); the containers get throwaway secrets and no real data. The layers are cached in the
+    # GitHub Actions cache (one scope per image), so an unchanged Dockerfile stage is not rebuilt.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Build the default image
-        run: docker build --tag coach-ci .
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: false
+          load: true
+          tags: coach-ci
+          cache-from: |
+            type=gha,scope=coach-default
+            type=gha,scope=coach-claude
+          cache-to: type=gha,scope=coach-default,mode=max
       - name: Build with the Claude Code CLI (WITH_CLAUDE_CODE=1, checks the pinned integrity hash)
-        run: docker build --build-arg WITH_CLAUDE_CODE=1 --tag coach-ci-claude .
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: false
+          load: true
+          tags: coach-ci-claude
+          build-args: WITH_CLAUDE_CODE=1
+          cache-from: |
+            type=gha,scope=coach-claude
+            type=gha,scope=coach-default
+          cache-to: type=gha,scope=coach-claude,mode=max
       - name: The CLI runs
         run: |
           docker run --rm --entrypoint coach coach-ci --version
           docker run --rm --entrypoint claude coach-ci-claude --version
-      - name: First start creates the home and the web app turns healthy
+      - name: First start creates the home and the web app turns healthy (both images, hardened like docker-compose.yml)
         # As docs/docker.md "First start": throwaway random keys (mode 0600, mounted read-only on /run/secrets) and empty volumes, all in the
-        # runner's temp folder, and the container runs as the runner's uid like COACH_UID in docker-compose.yml.
+        # runner's temp folder. The flags are the ones of docker-compose.yml's x-coach block: read-only root, tmpfs /tmp, no capability, no new
+        # privileges, an init as PID 1, and the runner's (non-root) uid like COACH_UID. The -claude image also gets a dummy
+        # claude_code_oauth_token (random, it logs in nowhere: nothing here calls a model) so that `doctor` below sees a complete set-up.
         run: |
           set -eu
-          home="$RUNNER_TEMP/coach-home"
-          mkdir -p "$home/secrets" "$home/data" "$home/memory" "$home/config" && chmod 700 "$home/secrets"
-          for k in db_key backup_key proposal_key; do
-            (umask 077; head -c 32 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n' > "$home/secrets/$k")
+          [ "$(id -u)" != 0 ] || { echo "the runner runs as root: the non-root check would prove nothing" >&2; exit 1; }
+          start() {  # start <name> <image>
+            home="$RUNNER_TEMP/$1-home"
+            mkdir -p "$home/secrets" "$home/data" "$home/memory" "$home/config" && chmod 700 "$home/secrets"
+            for k in db_key backup_key proposal_key claude_code_oauth_token; do
+              (umask 077; head -c 32 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n' > "$home/secrets/$k")
+            done
+            docker run --detach --name "$1" --init --user "$(id -u):$(id -g)" \
+              --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true \
+              -v "$home/secrets:/run/secrets:ro" -v "$home/data:/data" -v "$home/memory:/memory" -v "$home/config:/config" "$2"
+          }
+          wait_healthy() {  # wait_healthy <name>
+            for _ in $(seq 1 60); do
+              status=$(docker inspect --format '{{.State.Health.Status}}' "$1")
+              [ "$status" = healthy ] && { echo "$1: healthy"; return 0; }
+              [ "$(docker inspect --format '{{.State.Running}}' "$1")" = true ] || break
+              sleep 2
+            done
+            echo "$1 did not turn healthy (last status: ${status:-none})" >&2
+            docker logs "$1" >&2
+            return 1
+          }
+          start coach-ci coach-ci
+          start coach-ci-claude coach-ci-claude
+          wait_healthy coach-ci
+          wait_healthy coach-ci-claude
+          [ "$(docker exec coach-ci-claude id -u)" = "$(id -u)" ]
+      - name: "Smoke: doctor and the scheduler (schedule loop) on the -claude image, hardened"
+        # The owner's server runs this image with `schedule loop` next to the web app. doctor must find no failure (sqlcipher, secrets as files,
+        # the database the first start created, the claude CLI and its token secret). The loop must stay up and announce its next run; it only
+        # sleeps until the [schedule] time, so no sync is attempted (and the runner has no Enable Banking key anyway).
+        run: |
+          set -eu
+          home="$RUNNER_TEMP/coach-ci-claude-home"
+          hardened="--init --user $(id -u):$(id -g) --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true"
+          vols="-v $home/secrets:/run/secrets:ro -v $home/data:/data -v $home/memory:/memory -v $home/config:/config"
+          # The first start writes the container defaults (anthropic-api backends, src/coach/setup/init.py); the -claude image is run with the
+          # claude-code backends, so switch this throwaway configuration to them: doctor then checks the CLI and its token secret for real.
+          sed -i 's/^backend = "anthropic-api"/backend = "claude-code"/' "$home/config/config.toml"
+          [ "$(grep -c '^backend = "claude-code"' "$home/config/config.toml")" = 2 ] || { echo "config.toml: expected two claude-code backends" >&2; exit 1; }
+          # doctor exits 1 on any FAIL (warnings such as the unconfigured Enable Banking do not fail it)
+          # shellcheck disable=SC2086
+          docker run --rm $hardened $vols coach-ci-claude doctor
+          # shellcheck disable=SC2086
+          docker run --detach --name coach-ci-scheduler --no-healthcheck $hardened $vols coach-ci-claude schedule loop
+          for _ in $(seq 1 30); do
+            docker logs coach-ci-scheduler 2>&1 | grep -q '^schedule loop: next run at ' && break
+            sleep 1
           done
-          docker run --detach --name coach-ci --user "$(id -u):$(id -g)" \
-            -v "$home/secrets:/run/secrets:ro" -v "$home/data:/data" -v "$home/memory:/memory" -v "$home/config:/config" coach-ci
-          for _ in $(seq 1 60); do
-            status=$(docker inspect --format '{{.State.Health.Status}}' coach-ci)
-            [ "$status" = healthy ] && exit 0
-            [ "$(docker inspect --format '{{.State.Running}}' coach-ci)" = true ] || break
-            sleep 2
-          done
-          echo "the container did not turn healthy (last status: ${status:-none})" >&2
-          docker logs coach-ci >&2
-          exit 1
+          sleep 5
+          docker logs coach-ci-scheduler
+          [ "$(docker inspect --format '{{.State.Running}}' coach-ci-scheduler)" = true ] || { echo "the scheduler exited" >&2; exit 1; }
+          docker logs coach-ci-scheduler 2>&1 | grep -q '^schedule loop: next run at ' || { echo "the scheduler did not announce its next run" >&2; exit 1; }
+          docker stop --time 10 coach-ci-scheduler
