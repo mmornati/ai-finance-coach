@@ -181,6 +181,11 @@ jobs:
           home="$RUNNER_TEMP/coach-ci-claude-home"
           hardened="--init --user $(id -u):$(id -g) --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true"
           vols="-v $home/secrets:/run/secrets:ro -v $home/data:/data -v $home/memory:/memory -v $home/config:/config"
+          # The first start writes the container defaults (anthropic-api backends, src/coach/setup/init.py); the -claude image is run with the
+          # claude-code backends, so switch this throwaway configuration to them: doctor then checks the CLI and its token secret for real.
+          sed -i 's/^backend = "anthropic-api"/backend = "claude-code"/' "$home/config/config.toml"
+          [ "$(grep -c '^backend = "claude-code"' "$home/config/config.toml")" = 2 ] || { echo "config.toml: expected two claude-code backends" >&2; exit 1; }
+          # doctor exits 1 on any FAIL (warnings such as the unconfigured Enable Banking do not fail it)
           # shellcheck disable=SC2086
           docker run --rm $hardened $vols coach-ci-claude doctor
           # shellcheck disable=SC2086
