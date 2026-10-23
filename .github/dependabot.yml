@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7               # a version must be a week old before it is proposed (a fresh release can be malicious or broken)
     groups:
       python-minor-and-patch:
         update-types: ["minor", "patch"]
@@ -12,6 +14,8 @@ updates:
     directory: "/web"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7               # a version must be a week old before it is proposed (a fresh release can be malicious or broken)
     groups:
       web-minor-and-patch:
         update-types: ["minor", "patch"]
@@ -19,10 +23,14 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7               # a version must be a week old before it is proposed (a fresh release can be malicious or broken)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7               # a version must be a week old before it is proposed (a fresh release can be malicious or broken)
     ignore:
       # The python base image stays on its minor (3.14): sqlcipher3-wheels (uv.lock) has no build for a newer Python yet, so a 3.15 image
       # fails to build. Digest and patch bumps still come; move the minor by hand once the wheel supports it (and the CI matrix with it).
