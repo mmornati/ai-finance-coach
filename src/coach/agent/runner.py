@@ -7,7 +7,7 @@ Backends (``[coach] backend``):
                     file, our system prompt; a fresh empty working directory so no project file or setting is read. The MCP
                     server is a child process of claude (stdio): ``python -m coach mcp serve``.
 * ``anthropic-api`` the SDK's tool-use loop in this process over the SAME :class:`~coach.mcp.tools.ToolSession`, with prompt
-                    caching (system prompt + tool definitions) and the base url pinned.
+                    caching (tool definitions + system prompt, and the conversation so far) and the base url pinned.
 * ``ollama``        a tool-calling loop against the local server; refuses clearly when the model has no tool support.
 * ``openai-compatible`` the OpenAI ``/chat/completions`` tool-calling loop against ``[llm] openai_base_url`` (OpenRouter, Eden AI, vLLM ...),
                     same tool session; refuses clearly when the model has no tool support.
@@ -491,7 +491,10 @@ def run_anthropic(cfg, spec, user: str, st: RunState, model: str, *, insecure: b
             if time.monotonic() > deadline:
                 finish = "timeout"
                 break
-            kw = dict(model=mid, max_tokens=cfg.coach_max_tokens, system=system, tools=defs, messages=msgs)
+            # top-level automatic caching: the breakpoint follows the end of the conversation, so each turn of the tool loop reads the
+            # previous turns (and their tool results) from the cache instead of paying for them again
+            kw = dict(model=mid, max_tokens=cfg.coach_max_tokens, system=system, tools=defs, messages=msgs,
+                      cache_control={"type": "ephemeral"})
             if st.over_budget:
                 kw["tool_choice"] = {"type": "none"}
             with be.gated_client(egress_purpose(spec), len(json.dumps(msgs, default=str)) + len(user)).messages.stream(**kw) as stream:
@@ -647,8 +650,12 @@ def run_openai(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool
     tools.specs = {k: v for k, v in tools.specs.items() if k in names}
     fdefs = [{"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}}
              for t in tools.listing()]
-    msgs: list = [{"role": "system", "content": P.system_prompt(st.max_calls)}, {"role": "user", "content": user}]
-    tin = tout = cached = 0
+    msgs: list = [be.system_message(P.system_prompt(st.max_calls)), {"role": "user", "content": user}]
+    cache = be.conversation_cache(model)
+    if be.host == "openrouter.ai":       # one random id per run: OpenRouter keeps the loop on the provider that holds its cache
+        import secrets as _s
+        cache["session_id"] = "coach-" + _s.token_hex(8)
+    tin = tout = cached = written = 0
     cost: Optional[float] = 0.0
     t0 = time.monotonic()
     finish, err = "stop", None
@@ -662,7 +669,7 @@ def run_openai(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool
             if remaining <= 0:
                 finish = "timeout"
                 break
-            body = {"model": model, "temperature": 0, "max_tokens": cfg.coach_max_tokens, "messages": msgs, "tools": fdefs}
+            body = {"model": model, "temperature": 0, "max_tokens": cfg.coach_max_tokens, "messages": msgs, "tools": fdefs, **cache}
             if st.over_budget:
                 body["tool_choice"] = "none"
             r = be.chat(body, egress_purpose(spec), timeout=min(remaining, 300))
@@ -674,8 +681,8 @@ def run_openai(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool
             if r.status_code >= 400:
                 raise RuntimeError(f"HTTP {r.status_code}")
             res = r.json()
-            a, b, c, usd = be.usage_of(res)
-            tin, tout, cached = tin + a, tout + b, cached + c
+            a, b, c, w, usd = be.usage_of(res)
+            tin, tout, cached, written = tin + a, tout + b, cached + c, written + w
             cost = None if cost is None or usd is None else cost + usd
             choice = (res.get("choices") or [{}])[0]
             m = choice.get("message") or {}
@@ -713,7 +720,7 @@ def run_openai(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool
         if own:
             tools.close()
     # cost: what the provider reported (OpenRouter does); None when it did not, never a guess
-    usage = Usage("openai-compatible", model, f"coach:{spec.id}", len(st.calls), tin, tout, cached, 0,
+    usage = Usage("openai-compatible", model, f"coach:{spec.id}", len(st.calls), tin, tout, cached, written,
                   None if cost is None else round(cost, 6), cost is None, round(time.monotonic() - t0, 2))
     return st.result(finish, usage, "openai-compatible", model, err)
 

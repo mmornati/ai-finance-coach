@@ -109,7 +109,7 @@ def test_the_gold_merchants_are_never_shown_to_the_model_as_the_answer(cfg, con)
     p = M.plan(con, cfg, ["haiku"])
     static = p["models"][0]["jobs"][0][1]["static"]
     dynamic = p["models"][0]["jobs"][0][1]["dynamic"]
-    examples = dynamic.split("Items (direction=out")[0]
+    examples = (static + dynamic).split("Items (direction=out")[0]     # the user's labels are in the cached prefix
     assert "OTHER SHOP" in examples                                    # a user label of a merchant outside the gold set stays a convention
     assert "ACME GROCERS" not in examples and "ACME GROCERS" not in static            # the user-labelled GOLD merchant is held out of the examples ...
     assert "similar" not in dynamic                                    # ... and no nearest-neighbour hint hands it the answer

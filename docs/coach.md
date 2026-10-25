@@ -143,7 +143,7 @@ included); the real names stay in standard mode.
 | Backend | How it runs | Notes |
 |---|---|---|
 | `claude-code` (default) | headless `claude -p` + the finance MCP server | your Claude subscription. **Policy note:** a Max subscription is for personal, interactive-scale use. This runner is for you asking a few questions a day and an opt-in weekly digest. For automation at scale, sharing the app with other people or anything unattended and frequent, use an API key (`anthropic-api`). Check Anthropic's current usage terms. Cost shown is notional. |
-| `anthropic-api` | the SDK's tool-use loop in this process over the same tools, prompt caching on the system prompt and the tool definitions, base url pinned, key from the Keychain secret `anthropic_api_key` | per-token billing, estimated cost logged. |
+| `anthropic-api` | the SDK's tool-use loop in this process over the same tools, prompt caching on the tool definitions, the system prompt and the conversation, base url pinned, key from the Keychain secret `anthropic_api_key` | per-token billing, estimated cost logged. |
 | `ollama` | tool-calling loop against `[llm] ollama_url` (loopback unless allowed) | only models whose capabilities include `tools`; otherwise the coach refuses with a clear message. Not streamed token by token. |
 | `openai-compatible` | the OpenAI `/chat/completions` tool-calling loop against `[llm] openai_base_url` (OpenRouter by default, Eden AI, a self-hosted vLLM ...), same tools, key from the secret `openai_api_key` (environment: `COACH_OPENAI_API_KEY`, never `OPENAI_API_KEY`) | the model id is the provider's (`anthropic/claude-sonnet-4.5` on OpenRouter) and must support tool calling, otherwise the coach refuses. Cost logged only when the provider reports it (OpenRouter does), never guessed. On OpenRouter, `[llm] openrouter_deny_data_collection = true` (default) routes only to providers that do not store or train on prompts. Not streamed token by token. |
 
@@ -239,7 +239,10 @@ calls nothing.
 
 Every run writes one `llm_usage` row (`purpose` `coach:ask`, `coach:digest-weekly`, ...): tokens in / out, cache reads / writes,
 cost (API: estimated from the price table; claude-code: the CLI's notional `total_cost_usd`). Typical shape: a question makes
-3-6 tool calls of 1-24 kB each. The anthropic backend caches the system prompt and the tool definitions.
+3-6 tool calls of 1-24 kB each. The anthropic backend caches the tool definitions and the system prompt, plus the conversation so far
+(top-level automatic caching), so each turn of the tool loop reads the earlier turns and their tool results from the cache. On
+OpenRouter the system message is marked for caching, an `anthropic/` model also gets top-level automatic caching, and each run sends
+a random `session_id` so the loop stays on the provider that holds its cache.
 
 ## Skills (E7)
 

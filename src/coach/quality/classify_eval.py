@@ -225,14 +225,14 @@ def evaluate_all(rows: list[dict], equiv: frozenset = frozenset()) -> dict:
 def fingerprint(con, cfg) -> tuple[str, dict]:
     """A hash of everything a result depends on: taxonomy, rules, the label prompt, the model settings, the equivalence map, the memory
     annotations and the gold set. Two runs with the same hash must give the same numbers."""
-    from coach.classify.llm import label_prompt
+    from coach.classify.llm import label_static
 
     def sha(s: str) -> str:
         return hashlib.sha256(s.encode("utf-8")).hexdigest()[:12]
     parts = {
         "taxonomy": sha(json.dumps(R.TAXONOMY, sort_keys=True, default=str)),
         "rules": sha(json.dumps(R.load_rules(), sort_keys=True, default=str)),
-        "prompt": sha(label_prompt([], [])[0]),
+        "prompt": sha(label_static()),
         "model": sha(f"{cfg.llm_backend}|{cfg.llm_model}|{cfg.llm_anthropic_model}|{cfg.llm_ollama_model}|{cfg.knn_enabled}|{cfg.knn_threshold}"),
         "equivalence": sha(json.dumps(sorted(sorted(p) for p in load_equivalence(cfg)))),
         "annotations": sha(json.dumps(R.load_annotations(cfg.memory_dir), sort_keys=True, default=str)),

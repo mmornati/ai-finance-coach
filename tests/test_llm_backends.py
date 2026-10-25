@@ -429,6 +429,58 @@ def test_openai_compatible_http_contract_and_provider_cost():
     assert usage.cost_usd == 0.0012 and usage.cost_is_estimate is False       # reported by the provider, not guessed
 
 
+def test_openai_compatible_marks_the_static_prompt_for_caching_on_openrouter_only():
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append(json)
+        return OAResp(oa_answer(__import__("json").dumps(results_json(1)),
+                                {"prompt_tokens": 300, "completion_tokens": 40,
+                                 "prompt_tokens_details": {"cached_tokens": 0, "cache_write_tokens": 250}}))
+    _, usage = backends.OpenAICompatBackend("https://openrouter.ai/api/v1", api_key="k", post=post).complete(
+        "STATIC", "DYNAMIC", LABEL_SCHEMA, "anthropic/claude-haiku-4.5", "label", 1)
+    system, user = sent[0]["messages"]
+    assert system["content"] == [{"type": "text", "text": "STATIC", "cache_control": {"type": "ephemeral"}}]
+    assert user["content"] == "DYNAMIC"                                       # the batch is after the breakpoint
+    assert "cache_control" not in sent[0] and "session_id" not in sent[0]   # a one-shot call: no write premium on the batch itself
+    assert (usage.cache_read_tokens, usage.cache_write_tokens) == (0, 250)
+    backends.OpenAICompatBackend("https://llm.example.test/v1", api_key="k", post=post).complete(
+        "STATIC", "DYNAMIC", LABEL_SCHEMA, "m", "label", 1)
+    assert sent[1]["messages"][0] == {"role": "system", "content": "STATIC"}
+
+
+def test_openai_compatible_json_mode_fallback_keeps_the_cache_marker():
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append(json)
+        if len(sent) == 1:
+            return OAResp({}, 400, "response_format json_schema is not supported")
+        return OAResp(oa_answer(__import__("json").dumps(results_json(1))))
+    backends.OpenAICompatBackend("https://openrouter.ai/api/v1", api_key="k", post=post).complete(
+        "STATIC", "DYNAMIC", LABEL_SCHEMA, "qwen/qwen3", "label", 1)
+    part = sent[1]["messages"][0]["content"][0]
+    assert part["text"].startswith("STATIC") and "JSON schema" in part["text"] and part["cache_control"] == {"type": "ephemeral"}
+
+
+def test_cache_reads_are_priced_per_model():
+    assert estimate_cost("claude-sonnet-5-5", 0, 0, 1_000_000) == pytest.approx(0.2)        # 0.1x
+    assert estimate_cost("claude-opus-5-5", 0, 0, 1_000_000) == pytest.approx(0.2)          # 0.05x of 4.00
+    assert estimate_cost("claude-fable-5-1", 0, 0, 1_000_000) == pytest.approx(0.25)        # 0.025x of 10.00
+    assert estimate_cost("claude-haiku-5-5", 1_000_000, 1_000_000) == pytest.approx(0.6)    # a known price, not NULL
+    assert backends.ALIASES["haiku"] == "claude-haiku-4-5"                                   # the default model is unchanged
+
+
+def test_the_user_labels_are_in_the_cached_prefix_shared_by_every_batch():
+    ex = [("K1", "N1", "food.groceries"), ("K2", "N2", "health.pharmacy")]
+    s1, d1 = label_prompt([{"id": 0, "key": "A"}], ex)
+    s2, d2 = label_prompt([{"id": 0, "key": "B", "similar": [{"key": "K1"}]}], ex)
+    assert s1 == s2 and '"K1" → food.groceries (N1)' in s1                  # one cache entry for the whole run
+    assert "K1" not in d1 and d1.startswith("Items (direction=out") and "A" in d1
+    from coach.classify.llm import label_static
+    assert s1.startswith(label_static())
+
+
 def test_openai_compatible_other_hosts_get_no_openrouter_options_and_unknown_cost():
     sent = []
 

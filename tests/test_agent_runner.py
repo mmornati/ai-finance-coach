@@ -198,6 +198,9 @@ def test_anthropic_loop_uses_the_same_tools_caches_the_prompt_and_logs_usage(cfg
     assert res.usage.cost_usd and res.usage.cost_usd > 0
     first = client.calls[0]
     assert first["system"][0]["cache_control"] == {"type": "ephemeral"} and first["tools"][-1]["cache_control"] == {"type": "ephemeral"}
+    # top-level automatic caching on every turn: the second turn reads the first one (and its tool results) from the cache
+    assert all(c["cache_control"] == {"type": "ephemeral"} for c in client.calls)
+    assert sum("cache_control" in t for t in first["tools"]) + len(first["system"]) + 1 <= 4     # the API allows 4 breakpoints
     assert {t["name"] for t in first["tools"]} == set(TOOL_NAMES)
     results = client.calls[1]["messages"][-1]["content"]
     assert [r["tool_use_id"] for r in results] == ["tu1", "tu2"] and "account-main-1" in results[0]["content"]
@@ -320,6 +323,45 @@ def test_openai_compatible_tool_loop(cfg, world):
     assert [c["name"] for c in res.tool_calls] == ["coverage"]
     assert res.usage.tokens_in == 30 and res.usage.cost_usd == pytest.approx(0.003) and res.usage.cost_is_estimate is False
     assert bodies[0]["tools"][0]["type"] == "function" and bodies[0]["provider"] == {"data_collection": "deny"}
+
+
+def _cache_loop(cfg, model, base="https://openrouter.ai/api/v1"):
+    bodies = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        bodies.append(json)
+        usage = {"prompt_tokens": 100, "completion_tokens": 5, "cost": 0.001,
+                 "prompt_tokens_details": {"cached_tokens": 60 if len(bodies) > 1 else 0, "cache_write_tokens": 40}}
+        if len(bodies) == 1:
+            return R({"choices": [{"finish_reason": "tool_calls", "message": {"content": None, "tool_calls": [
+                {"id": "call_1", "type": "function", "function": {"name": "coverage", "arguments": "{}"}}]}}], "usage": usage})
+        return R({"choices": [{"finish_reason": "stop", "message": {"content": "Fine."}}], "usage": usage})
+    cfg.llm_openai_base_url = base
+    res, _ = go(cfg, backend="openai-compatible", model=model, post=post, api_key="k")
+    return res, bodies
+
+
+def test_openai_compatible_on_openrouter_marks_the_prompt_for_caching(cfg, world):
+    res, bodies = _cache_loop(cfg, "anthropic/claude-sonnet-4.5")
+    assert len(bodies) == 2
+    for b in bodies:
+        assert b["messages"][0]["role"] == "system"
+        assert b["messages"][0]["content"][0]["cache_control"] == {"type": "ephemeral"}       # the fixed prefix
+        assert b["cache_control"] == {"type": "ephemeral"}                                   # anthropic/: the growing history too
+    sid = bodies[0]["session_id"]
+    assert sid.startswith("coach-") and bodies[1]["session_id"] == sid                       # one sticky session per run ...
+    assert res.session_id not in sid                                                         # ... a fresh id, not the coach's own
+    assert (res.usage.cache_read_tokens, res.usage.cache_write_tokens) == (60, 80)
+    _, other = _cache_loop(cfg, "anthropic/claude-sonnet-4.5")
+    assert other[0]["session_id"] != sid
+
+
+def test_openai_compatible_cache_hints_depend_on_the_host_and_the_model(cfg, world):
+    _, bodies = _cache_loop(cfg, "openai/gpt-5")                     # caches on its own: no top-level field, the marker is harmless
+    assert "cache_control" not in bodies[0] and bodies[0]["messages"][0]["content"][0]["cache_control"]
+    _, bodies = _cache_loop(cfg, "some-model", base="https://llm.example.test/v1")     # another gateway: nothing it may not know
+    assert isinstance(bodies[0]["messages"][0]["content"], str)
+    assert not {"cache_control", "session_id", "provider"} & set(bodies[0])
 
 
 def test_openai_compatible_model_without_tools_is_a_clear_refusal(cfg, world):
