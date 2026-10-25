@@ -5,6 +5,18 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed: prompt caching (cheaper LLM runs)
+- The coach on `anthropic-api` caches the conversation too (top-level automatic caching): each turn of the tool loop reads the earlier turns
+  and their tool results from the cache instead of paying for them again.
+- `openai-compatible` on OpenRouter marks the system message for caching (Anthropic and Qwen models cache only what is marked; OpenAI,
+  DeepSeek, Grok and Gemini cache on their own); an `anthropic/` coach model also gets top-level automatic caching, and each coach run sends
+  a random `session_id` so the loop stays on the provider that holds its cache. Other hosts get a plain system message.
+
+### Fixed: LLM cost accounting
+- Cache writes reported by OpenRouter are logged (they were always 0).
+- Cache reads are priced per model (Claude Opus 5.5 0.05x, Claude Fable 5.1 0.025x the input price, 0.1x elsewhere); `claude-haiku-5-5`
+  has a price (its cost was logged as unknown). The default model is unchanged.
+
 ## [1.0.1] - 2026-10-18
 
 The `v1.0.0` tag exists, but its release job failed and published nothing: 1.0.1 is the first published release.

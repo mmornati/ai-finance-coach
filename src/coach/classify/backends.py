@@ -31,11 +31,13 @@ from coach.claude_cli import DENIED_BUILTINS, ISOLATION_ARGS, claude_env
 
 BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible")
 ALIASES = {"haiku": "claude-haiku-4-5", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
-# USD per million tokens (input, output); cached reads cost 0.1x input, cache writes 1.25x, batch calls 0.5x
-PRICES = {"claude-haiku-4-5": (1.0, 5.0), "claude-sonnet-5-5": (2.0, 10.0), "claude-sonnet-5": (2.0, 10.0),
+# USD per million tokens (input, output); cached reads cost 0.1x input (CACHE_READ below), cache writes 1.25x, batch calls 0.5x
+PRICES = {"claude-haiku-4-5": (1.0, 5.0), "claude-haiku-5-5": (0.1, 0.5), "claude-sonnet-5-5": (2.0, 10.0), "claude-sonnet-5": (2.0, 10.0),
           "claude-sonnet-4-6": (3.0, 15.0), "claude-opus-5-5": (4.0, 20.0), "claude-opus-5": (5.0, 25.0),
           "claude-opus-4-8": (5.0, 25.0), "claude-opus-4-7": (5.0, 25.0), "claude-opus-4-6": (5.0, 25.0),
           "claude-fable-5-1": (10.0, 50.0), "claude-fable-5": (10.0, 50.0)}
+# the models whose cache reads are not 0.1x the input price
+CACHE_READ = {"claude-opus-5-5": 0.05, "claude-fable-5-1": 0.025}
 
 
 @dataclass
@@ -60,7 +62,7 @@ def estimate_cost(model: str, tokens_in: int, tokens_out: int, cache_read: int =
     if model not in PRICES:
         return None
     pin, pout = PRICES[model]
-    usd = (tokens_in * pin + cache_read * pin * 0.1 + cache_write * pin * 1.25 + tokens_out * pout) / 1e6
+    usd = (tokens_in * pin + cache_read * pin * CACHE_READ.get(model, 0.1) + cache_write * pin * 1.25 + tokens_out * pout) / 1e6
     return round(usd * (0.5 if batch else 1.0), 6)
 
 
@@ -494,6 +496,18 @@ class OpenAICompatBackend(LLMBackend):
             return {"provider": {"data_collection": "deny"}}
         return {}
 
+    def system_message(self, text: str) -> dict:
+        """The system message. On OpenRouter its text carries a cache breakpoint: Anthropic and Qwen models cache only what is marked,
+        Gemini uses the last marker, OpenAI / DeepSeek / Grok cache on their own and are not affected. Other hosts get plain text (a
+        local vLLM or another gateway may reject the field)."""
+        if self.host != "openrouter.ai":
+            return {"role": "system", "content": text}
+        return {"role": "system", "content": [{"type": "text", "text": text, "cache_control": {"type": "ephemeral"}}]}
+
+    def conversation_cache(self, model: str) -> dict:
+        """OpenRouter + an Anthropic model: top-level automatic caching, so a tool loop reads its growing history from the cache."""
+        return {"cache_control": {"type": "ephemeral"}} if self.host == "openrouter.ai" and model.startswith("anthropic/") else {}
+
     def chat(self, body: dict, purpose: str, timeout: float | None = None):
         """POST /chat/completions after the egress gate. Returns the raw response (status_code, json(), text)."""
         payload = {**body, **self.provider_options()}
@@ -503,34 +517,34 @@ class OpenAICompatBackend(LLMBackend):
         return post(f"{self.base_url}/chat/completions", json=payload, headers=self._headers(), timeout=timeout or self.timeout)
 
     @staticmethod
-    def usage_of(body: dict) -> tuple[int, int, int, float | None]:
-        """(tokens_in, tokens_out, cached_in, provider-reported USD cost or None)."""
+    def usage_of(body: dict) -> tuple[int, int, int, int, float | None]:
+        """(tokens_in, tokens_out, cache reads, cache writes, provider-reported USD cost or None)."""
         u = body.get("usage") or {}
-        cached = int(((u.get("prompt_tokens_details") or {}).get("cached_tokens")) or 0)
+        details = u.get("prompt_tokens_details") or {}
         cost = u.get("cost")
-        return int(u.get("prompt_tokens") or 0), int(u.get("completion_tokens") or 0), cached, \
-            (float(cost) if isinstance(cost, (int, float)) else None)
+        return int(u.get("prompt_tokens") or 0), int(u.get("completion_tokens") or 0), int(details.get("cached_tokens") or 0), \
+            int(details.get("cache_write_tokens") or 0), (float(cost) if isinstance(cost, (int, float)) else None)
 
     def complete(self, static, dynamic, schema, model, purpose="label", items=0, web_search=False):
         if web_search:
             raise NotImplementedError("web enrichment needs the claude-code backend (WebSearch tool)")
         t0 = time.monotonic()
         s = with_additional_properties_false(schema)
-        msgs = [{"role": "system", "content": static}, {"role": "user", "content": dynamic}]
+        msgs = [self.system_message(static), {"role": "user", "content": dynamic}]
         body = {"model": model, "temperature": 0, "messages": msgs,
                 "response_format": {"type": "json_schema", "json_schema": {"name": "result", "strict": _strict_ok(s), "schema": s}}}
         r = self.chat(body, journal_purpose(purpose))
         if r.status_code == 400 and any(w in (r.text or "") for w in ("response_format", "json_schema", "structured")):
             # a model without JSON-schema output: JSON mode, with the schema spelled out in the instructions
             body["response_format"] = {"type": "json_object"}
-            body["messages"] = [{"role": "system", "content": static + "\n\nAnswer with ONE JSON object matching this JSON schema:\n"
-                                 + json.dumps(s)}, msgs[1]]
+            body["messages"] = [self.system_message(static + "\n\nAnswer with ONE JSON object matching this JSON schema:\n"
+                                                    + json.dumps(s)), msgs[1]]
             r = self.chat(body, journal_purpose(purpose))
         if r.status_code >= 400:
             raise RuntimeError(f"{self.host} answered HTTP {r.status_code}: {safe_diagnostic(r.text, static + dynamic)}")
         res = r.json()
-        tin, tout, cached, cost = self.usage_of(res)
-        usage = Usage(self.name, model, purpose, items, tin, tout, cached, 0, cost, cost is None, round(time.monotonic() - t0, 2))
+        tin, tout, cached, written, cost = self.usage_of(res)
+        usage = Usage(self.name, model, purpose, items, tin, tout, cached, written, cost, cost is None, round(time.monotonic() - t0, 2))
         choice = (res.get("choices") or [{}])[0]
         try:
             if choice.get("finish_reason") in ("length", "content_filter"):
