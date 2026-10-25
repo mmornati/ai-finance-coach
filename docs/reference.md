@@ -339,8 +339,8 @@ finished batch is committed with its usage before the next one; a failed batch n
 only for the missing merchants). With `batch_api = true` the batch id is saved in `llm_batches`: after a timeout the same
 command resumes it (nothing is paid twice) and only failed jobs are retried. `ollama_url` must be a loopback address
 unless `ollama_allow_remote = true`; the Anthropic client always uses https://api.anthropic.com (`ANTHROPIC_BASE_URL`
-is ignored; `llm.anthropic_base_url` overrides). Prompt caching: the static prompt (instructions + taxonomy + the user's confirmed labels, the
-same for every batch of a run) is the cacheable prefix; models have a minimum cacheable length (512 tokens on Haiku 5.5, 4096 on
+is ignored; `llm.anthropic_base_url` overrides). Prompt caching: the static prompt (instructions + taxonomy) is the cacheable prefix (the user's
+confirmed labels stay in the user message: merchant names are third-party text, never put in the system role); models have a minimum cacheable length (512 tokens on Haiku 5.5, 4096 on
 Haiku 4.5) below which caching silently does not happen: `llm_usage.cache_read_tokens` tells whether it did. On OpenRouter
 (`openai-compatible`) the system message carries a `cache_control` marker (Anthropic and Qwen models cache only what is marked;
 OpenAI, DeepSeek, Grok and Gemini cache on their own); other hosts get a plain system message. Cache writes reported by

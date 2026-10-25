@@ -92,23 +92,17 @@ def categories_text() -> str:
     return "\n".join(f"- {k}: {v}" for k, v in CATEGORIES.items())
 
 
-def label_static() -> str:
-    """The instructions and the taxonomy: identical for every label call with the same taxonomy."""
-    return f"{LABEL_HEAD}\n\nCategories:\n{categories_text()}"
-
-
 def label_prompt(items: list[dict], examples: list[tuple[str, str, str]]) -> tuple[str, str]:
-    """(static, dynamic) prompt parts. `static` (instructions, taxonomy, the user's labels) is identical for every batch of a run,
-    so it is the cached prefix; `dynamic` holds the batch. static + dynamic is the whole prompt, the boundary only moves the cache."""
+    """(static, dynamic) prompt parts. `static` is identical for every call with the same taxonomy."""
+    static = f"{LABEL_HEAD}\n\nCategories:\n{categories_text()}"
     shots = "\n".join(f'- "{k}" → {c} ({n})' for k, n, c in examples) or "(none yet)"
-    static = f"""{label_static()}
+    note = SIMILAR_NOTE if any(i.get("similar") for i in items) else ""
+    dynamic = f"""
 
 Labels confirmed by the user (follow these conventions):
 {shots}
 
-"""
-    note = SIMILAR_NOTE if any(i.get("similar") for i in items) else ""
-    dynamic = f"""{note}Items (direction=out means money spent; avg_amount in EUR):
+{note}Items (direction=out means money spent; avg_amount in EUR):
 {json.dumps(items, ensure_ascii=False)}"""
     return static, dynamic
 
@@ -205,13 +199,10 @@ def dry_run_payload(jobs) -> list[dict]:
     """What `classify run --dry-run` prints: the redacted items, examples and hints of every request, no call."""
     import hashlib
     out = []
-    fixed = label_static()
     for i, (b, j) in enumerate(jobs, 1):
-        # the fixed instructions + taxonomy are summarised by a hash; everything else (the user's labels, the items) is shown verbatim
-        head = fixed if j["static"].startswith(fixed) else j["static"]
-        body = j["static"][len(head):] + j["dynamic"]
-        out.append({"request": i, "merchants": len(b), "static_prompt_chars": len(head),
-                    "static_prompt_sha256": hashlib.sha256(head.encode()).hexdigest()[:16],
+        body = j["dynamic"]
+        out.append({"request": i, "merchants": len(b), "static_prompt_chars": len(j["static"]),
+                    "static_prompt_sha256": hashlib.sha256(j["static"].encode()).hexdigest()[:16],
                     "dynamic_prompt": body})
     return out
 
