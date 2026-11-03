@@ -67,6 +67,7 @@ def test_skipped_when_nothing_is_new_or_too_soon_and_run_again_after_new_data(cf
 
 def test_the_monthly_review_runs_once_per_month_when_there_is_new_data(cfg, world, monkeypatch):
     calls = []
+    monkeypatch.setattr(I, "_now", lambda: "2026-10-04T09:00:00+00:00")        # "same month" compares the stamp with the pinned dates
     monkeypatch.setattr(dg, "run_agent", fake_run(calls=calls))
     assert dg.run_digest(cfg, "monthly", insecure=True, today=D(2026, 10, 4))["status"] == "done"
     add_tx(world, "fo", "newtx", "2026-10-09", -12.0, "ACME GROCERS", "card")
