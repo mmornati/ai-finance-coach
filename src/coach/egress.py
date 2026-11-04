@@ -447,10 +447,10 @@ def status(cfg) -> dict:
             "alert_channels_enabled": [n for n in ("ntfy", "email", "telegram") if alerts and alerts.channel(n).enabled]}
 
 
-def journal_summary(con, days: int = 30) -> dict:
-    """Aggregates of the last `days` days of the journal: rows per (kind, host, purpose), totals, denials."""
+def journal_summary(con, days: int = 30, now=None) -> dict:
+    """Aggregates of the last `days` days (before `now`, default the clock) of the journal: rows per (kind, host, purpose), totals, denials."""
     import datetime as dt
-    since = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=days)).isoformat(timespec="seconds")
+    since = ((now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(days=days)).isoformat(timespec="seconds")
     try:
         rows = con.execute("""SELECT kind, host, purpose, COUNT(*), COALESCE(SUM(bytes),0), SUM(outcome='denied'), MAX(ts), MAX(web)
                               FROM egress_journal WHERE ts >= ? GROUP BY kind, host, purpose ORDER BY kind, host, purpose""",

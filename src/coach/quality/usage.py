@@ -90,7 +90,7 @@ def summary(con, cfg, days: int = 30, now: Optional[dt.datetime] = None) -> dict
     total_cost = round(sum(ln["cost_usd"] or 0 for ln in lines), 4)
     notional = round(sum(ln["cost_usd"] or 0 for ln in lines if ln["notional"]), 4)
     from coach import egress
-    dest = egress.journal_summary(con, days)
+    dest = egress.journal_summary(con, days, now)
     destinations = [{"kind": r["kind"], "host": r["host"], "purpose": r["purpose"], "calls": r["count"], "bytes": r["bytes"],
                      "denied": r["denied"], "web": r["web"], "last": r["last"]}
                     for r in dest["rows"] if r["kind"].startswith("llm.") or r["purpose"].startswith(("eval", "coach"))]
