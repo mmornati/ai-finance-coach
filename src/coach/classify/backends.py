@@ -20,6 +20,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 from dataclasses import dataclass
@@ -594,4 +595,20 @@ def record_usage(con, usage: Usage) -> bool:
                       (now_iso(), usage.backend, usage.model, usage.purpose, usage.items, usage.tokens_in,
                        usage.tokens_out, usage.cache_read_tokens, usage.cache_write_tokens, usage.cost_usd,
                        int(usage.cost_is_estimate), usage.duration_s, usage.ref))
+    if cur.rowcount > 0:
+        log_usage(usage)
     return cur.rowcount > 0
+
+
+def log_usage(usage: Usage) -> None:
+    """With ``COACH_USAGE_LOG=1``, one JSON line on stderr per recorded call, for a log collector on the same machine. Numbers and
+    names only (never a prompt, an answer or an item), and no network call: whatever ships the container's log does that."""
+    if os.environ.get("COACH_USAGE_LOG") != "1":
+        return
+    from coach.quality.usage import job_of
+    print(json.dumps({"event": "llm_usage", "app": "ai-finance-coach", "gen_ai_provider_name": usage.backend,
+                      "gen_ai_request_model": usage.model, "job": job_of(usage.purpose),
+                      "gen_ai_usage_input_tokens": usage.tokens_in, "gen_ai_usage_output_tokens": usage.tokens_out,
+                      "cache_read_tokens": usage.cache_read_tokens, "cache_write_tokens": usage.cache_write_tokens,
+                      "cost_usd": usage.cost_usd, "cost_is_estimate": bool(usage.cost_is_estimate),
+                      "duration_s": usage.duration_s}), file=sys.stderr, flush=True)

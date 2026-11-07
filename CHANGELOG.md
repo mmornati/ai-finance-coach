@@ -5,6 +5,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: optional LLM usage log line
+- With `COACH_USAGE_LOG=1`, each recorded model call also writes one JSON line on stderr (model, job, tokens, cost, duration; never a
+  prompt or an answer), so a log collector on the same machine can chart it. Off by default, and the app makes no new network call.
+
 ### Changed: prompt caching (cheaper LLM runs)
 - The coach on `anthropic-api` caches the conversation too (top-level automatic caching): each turn of the tool loop reads the earlier turns
   and their tool results from the cache instead of paying for them again.

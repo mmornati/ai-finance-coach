@@ -209,3 +209,21 @@ def test_config_validation_and_defaults(tmp_path):
         p.write_text(bad)
         with pytest.raises(ConfigError):
             load_config(p, env={})
+
+
+def test_usage_log_line_is_opt_in_and_holds_numbers_only(con, monkeypatch, capsys):
+    call = Usage("claude-code", "sonnet", "coach:ask", 5, 100, 20, 0, 0, 0.05, True, 3.0)
+    record_usage(con, call)
+    assert capsys.readouterr().err == ""
+    monkeypatch.setenv("COACH_USAGE_LOG", "1")
+    record_usage(con, call)
+    line = json.loads(capsys.readouterr().err)
+    assert line["event"] == "llm_usage" and line["gen_ai_request_model"] == "sonnet" and line["job"] == "coach ask"
+    assert line["gen_ai_usage_input_tokens"] == 100 and line["cost_usd"] == 0.05
+
+
+def test_usage_log_skips_a_batch_result_already_counted(con, monkeypatch, capsys):
+    monkeypatch.setenv("COACH_USAGE_LOG", "1")
+    call = Usage("anthropic-api", "claude-opus-5-5", "label", tokens_in=1, ref="batch:1")
+    assert record_usage(con, call) and not record_usage(con, call)
+    assert len(capsys.readouterr().err.splitlines()) == 1
