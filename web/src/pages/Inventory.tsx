@@ -230,16 +230,16 @@ function UsagePanel({ row: r }: { row: InvRow }) {
 
 /* ------------------------------------------------------------------ E8-6: decisions */
 function DecisionPanel({ row: r }: { row: InvRow }) {
-  const [decision, setDecision] = useState("cancelled");
-  const [before, setBefore] = useState(r.monthly ?? "");
-  const [after, setAfter] = useState("");
-  const [date, setDate] = useState("");
-  const [eff, setEff] = useState("");
+  const d = r.decision;      // the form opens on the last recorded decision, so its dates stay visible
+  const [decision, setDecision] = useState(d?.decision ?? "cancelled");
+  const [before, setBefore] = useState(d?.before_monthly ?? r.monthly ?? "");
+  const [after, setAfter] = useState(d?.after_monthly ?? "");
+  const [date, setDate] = useState(d?.decided_on ?? "");
+  const [eff, setEff] = useState(d?.effective_on ?? "");
   const body = { ref: r.ref, decision, before_monthly: before === "" ? null : Number(before), after_monthly: decision === "cancelled" ? 0 : decision === "kept" ? Number(before) : after === "" ? null : Number(after), decided_on: date || null, effective_on: eff || null };
   const check = useDryRun<{ valid: boolean; monthly_saving: number }>("/subs/decisions", body, true);
   const { t } = useTranslation("subscriptions");
   const save = useWrite(() => api.post("/subs/decisions", body), { success: t("decision.recorded") });
-  const d = r.decision;
   return (
     <section aria-label={t("decision.region")} className="grid gap-2 text-[13px]">
       <h4 className="flex items-center gap-2 text-sm font-semibold"><ThumbsUp className="size-4" aria-hidden /> {t("decision.title")}</h4>

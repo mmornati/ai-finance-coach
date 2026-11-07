@@ -249,4 +249,18 @@ describe("the subscriptions inventory", () => {
     expect(JSON.parse(w.init!.body as string)).toMatchObject({ ref: "rec_1", decision: "cancelled", before_monthly: 12.99, after_monthly: 0 });
     expect(await within(panel).findByText(/Saves/)).toBeInTheDocument();
   });
+
+  it("opens the decision form on the recorded decision, with its dates", async () => {
+    const decision = { id: "dec_1", decision: "renegotiated", decided_on: "2026-09-10", effective_on: "2026-10-01", before_monthly: "12.99", after_monthly: "8.99", monthly_saving: "4.00",
+      months_counted: 0, since_decision: "0.00", note: null, source: "ui", status: "pending" as const, reason: "waiting", check_on: null, reminder: false };
+    vi.mocked(fetch).mockImplementation(async (url) => new Response(JSON.stringify(String(url).startsWith("/api/v1/subs/inventory") ? { ...inventory, rows: [row({ decision })] } : {}), { status: 200, headers: { "Content-Type": "application/json" } }));
+    renderApp(<InventoryView />);
+    const card = (await screen.findByRole("heading", { name: "StreamBox" })).closest("section")!;
+    await userEvent.click(within(card).getByRole("button", { name: /details/i }));
+    const panel = within(within(card).getByRole("region", { name: "Decision" }));
+    expect(panel.getByLabelText("Decision")).toHaveValue("renegotiated");
+    expect(panel.getByLabelText(/Decided on/)).toHaveValue("2026-09-10");
+    expect(panel.getByLabelText(/Takes effect/)).toHaveValue("2026-10-01");
+    expect(panel.getByLabelText(/cost after/)).toHaveValue("8.99");
+  });
 });
