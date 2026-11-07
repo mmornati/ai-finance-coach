@@ -273,7 +273,7 @@ function RuleDialog({ d, onClose }: { d: HouseholdOverview; onClose: () => void 
           )}
         </Field>
         <Field label={t("household.ruleDialog.card")} hint={t("household.ruleDialog.cardHint")}>
-          {(fid) => <Input id={fid} value={card} onChange={(e) => setCard(e.target.value)} inputMode="numeric" maxLength={4} placeholder="4242" />}
+          {(fid) => <Input id={fid} value={card} onChange={(e) => setCard(e.target.value)} maxLength={8} placeholder="4242" />}
         </Field>
         <Field label={t("household.ruleDialog.merchantMatch")}>{(fid) => <Input id={fid} value={merchant} onChange={(e) => setMerchant(e.target.value)} placeholder="^SKATE SHOP" />}</Field>
         <Field label={t("household.ruleDialog.descriptionMatch")}>{(fid) => <Input id={fid} value={desc} onChange={(e) => setDesc(e.target.value)} />}</Field>

@@ -24,6 +24,8 @@ from coach.household.people import JOINT, People, account_owner_member, fold
 # Only forms where the digits are clearly a card's tail: a masked number (X4242, ****4242), "CB*4242", "CARTE N° 4242". A bare "CB 0210" is
 # a date on many French statements and is NOT read as a card.
 CARD_RE = re.compile(r"(?:[X*\u2022]{2,}[ -]?|\b(?:CB|CARTE|CARD|CARTA)\s*[X*\u2022]+[ -]?|\b(?:CB|CARTE|CARD|CARTA)\s*(?:N°|N\.|NO\.?|#)\s*[X*\u2022]*[ -]?)(\d{4})\b", re.I)
+# The first six digits and the last one (Caisse d'Epargne: "123456******7"), kept as "123456*7": that is all the bank shows of the card.
+BIN_LAST_RE = re.compile(r"\b(\d{6})\*{4,}(\d)\b")
 
 
 class HouseholdError(Exception):
@@ -43,6 +45,8 @@ class Attribution:
 
 def card_last4(desc: Optional[str]) -> Optional[str]:
     """The last four digits of the card a bank printed in a description (``CARTE X4242``, ``CB*4242``, ``****4242``), or None."""
+    if m := BIN_LAST_RE.search(desc or ""):
+        return f"{m.group(1)}*{m.group(2)}"
     m = CARD_RE.search(desc or "")
     return m.group(1) if m else None
 

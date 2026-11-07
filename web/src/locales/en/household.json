@@ -74,7 +74,7 @@
       "account": "Account (uid or label)",
       "anyAccount": "Any account",
       "card": "Card's last four digits",
-      "cardHint": "only when the bank prints them in the description",
+      "cardHint": "only when the bank prints them in the description; or 123456*7 when it shows the first six digits and the last one",
       "merchantMatch": "Merchant matches (regex)",
       "descriptionMatch": "Description matches (regex)",
       "preview_one": "It matches <b>{{count}}</b> transaction; <b>{{change}}</b> would change person.",

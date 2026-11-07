@@ -75,7 +75,7 @@
       "account": "Compte (uid ou libellé)",
       "anyAccount": "N'importe quel compte",
       "card": "Quatre derniers chiffres de la carte",
-      "cardHint": "seulement si la banque les indique dans le libellé",
+      "cardHint": "seulement si la banque les indique dans le libellé ; ou 123456*7 si elle montre les six premiers chiffres et le dernier",
       "merchantMatch": "Le commerçant correspond à (regex)",
       "descriptionMatch": "Le libellé correspond à (regex)",
       "preview_one": "Elle correspond à <b>{{count}}</b> transaction ; <b>{{change}}</b> changerait de personne.",

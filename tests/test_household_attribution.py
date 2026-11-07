@@ -8,6 +8,7 @@ from coach.analytics import api as analytics_api, cashflow as cashflow_mod
 from coach.analytics.dataset import load_dataset
 from coach.household import attribution as attr, people as people_mod
 from coach.household.attribution import HouseholdError, card_last4
+from coach.memory import schemas
 from coach.memory.store import MemoryStore, ValidationFailed
 from hhhelpers import TODAY, hh_world
 
@@ -61,6 +62,13 @@ def test_schema_rules_are_validated(cfg):
 def test_card_last4_reads_only_masked_numbers():
     assert card_last4("CARTE X4242 12/10 SHOP") == "4242" and card_last4("CB*1234 SHOP") == "1234" and card_last4("****9876") == "9876"
     assert card_last4("PAIEMENT CB 0210 SHOP") is None and card_last4("CARTE 02/10 RELAY") is None and card_last4(None) is None
+
+
+def test_card_reads_the_first_six_and_last_digit_form():
+    # some banks print the first six digits and the last one: the card is kept as "123456*7"
+    assert card_last4("CB SHOP FACT 010125          400000******3") == "400000*3"
+    assert card_last4("CB SHOP FACT 020125 511111******9") == "511111*9"
+    assert schemas.AttributionRule(id="x", member="mia", match={"card_last4": "400000*3"}).match.card_last4 == "400000*3"
 
 
 def test_default_is_the_account_owner_then_rules_then_manual(cfg):

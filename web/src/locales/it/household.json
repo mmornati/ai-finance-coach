@@ -75,7 +75,7 @@
       "account": "Conto (uid o nome)",
       "anyAccount": "Qualsiasi conto",
       "card": "Ultime quattro cifre della carta",
-      "cardHint": "solo se la banca le riporta nella descrizione",
+      "cardHint": "solo se la banca le riporta nella descrizione; oppure 123456*7 se mostra le prime sei cifre e l’ultima",
       "merchantMatch": "L'esercente corrisponde a (regex)",
       "descriptionMatch": "La descrizione corrisponde a (regex)",
       "preview_one": "Corrisponde a <b>{{count}}</b> transazione; <b>{{change}}</b> cambierebbero persona.",

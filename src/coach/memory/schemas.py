@@ -568,8 +568,9 @@ class AttributionMatch(Strict):
     @field_validator("card_last4")
     @classmethod
     def _l4(cls, v):
-        if v is not None and not re.fullmatch(r"\d{4}", str(v)):
-            raise ValueError("card_last4 must be exactly four digits (quote it: '0123')")
+        if v is not None and not re.fullmatch(r"\d{4}|\d{6}\*\d", str(v)):
+            raise ValueError("card_last4 must be exactly four digits (quote it: '0123'), or '123456*7' when the bank prints "
+                             "only the first six digits and the last one")
         return v
 
     @field_validator("merchant_key")
