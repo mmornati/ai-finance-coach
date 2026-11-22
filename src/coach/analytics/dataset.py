@@ -71,6 +71,7 @@ class Tx:
     split_index: Optional[int] = None
     split_of_c: Optional[int] = None
     person: Optional[str] = None            # E14-3: the household member it belongs to, 'joint', or None (see coach.household.attribution)
+    asset: Optional[str] = None             # linked asset id from memory/assets.yaml (e.g. vehicle, real estate)
 
     @property
     def month(self) -> str:
@@ -227,7 +228,7 @@ class Dataset:
                 big = max(parts, key=lambda p: (abs(p.amount_c), -(p.split_index or 0)))
                 w.append(Tx(key, big.date, parts[0].split_of_c if parts[0].split_of_c is not None
                             else sum(p.amount_c for p in parts), big.category, "split", big.tags, big.event,
-                            big.entity, big.merchant, big.mkey, big.account, big.type, big.desc, None, None, big.person))
+                            big.entity, big.merchant, big.mkey, big.account, big.type, big.desc, None, None, big.person, big.asset))
             w.sort(key=lambda t: (t.date, t.key))
             self._cache["whole"] = w
         return w
@@ -338,7 +339,8 @@ def load_dataset(con, memory_dir=None, *, today: Optional[dt.date] = None, setti
                       frozenset(t["tags"]), t["event"], t["entity"] or t["merchant"] or t["key"] or t["tx_key"],
                       t["merchant"], t["key"] or "", t["account"], t["type"], t["desc"] or "", split,
                       to_cents(t["split_of"]) if split is not None else None,
-                      attributor.attribute(t["tx_key"], t["account"], t["desc"] or "", t["key"] or "", t["amount"]).person))
+                      attributor.attribute(t["tx_key"], t["account"], t["desc"] or "", t["key"] or "", t["amount"]).person,
+                      t.get("asset")))
     txs.sort(key=lambda t: (t.date, t.key, t.split_index or 0))
     stats: dict[str, tuple] = {}
     for uid, lo, hi, n in con.execute("SELECT account_uid, MIN(booking_date), MAX(booking_date), COUNT(*) "

@@ -152,6 +152,7 @@ class Annotation(Strict):
     id: StrictStr
     match: Match
     category: Optional[StrictStr] = None
+    asset: Optional[StrictStr] = None
     tags: list[StrictStr] = Field(default_factory=list)
     event: Optional[StrictStr] = None
     note: Optional[StrictStr] = None
@@ -490,6 +491,7 @@ class Contract(Base):
     kind: Optional[Literal["energy", "telecom", "insurance_home", "insurance_car", "insurance_health", "health",
                            "streaming", "software", "membership", "insurance_other", "water", "other"]] = None
     holder: Optional[str] = None                # E8-5: who signed it: a household member id or "joint" (letters); unknown -> a placeholder
+    asset: Optional[str] = None                 # linked asset id from assets.yaml (e.g. vehicle, real estate, pet)
     amount_match: Optional[AmountMatch] = None
     contract_number: Optional[str] = None       # E8-5: printed on cancellation letters (local only; masked for models)
     merchant_match: Optional[str] = None
@@ -884,16 +886,39 @@ class QuestionsFile(Base):
 
 class Document(Base):
     id: str
-    sha256: str
-    filename: str
-    stored_as: str
-    kind: Literal["loan", "contract", "insurance", "statement", "other"]
-    size: int
+    sha256: Optional[str] = None
+    filename: Optional[str] = None
+    stored_as: Optional[str] = None
+    kind: Literal["loan", "contract", "insurance", "statement", "reference", "other"] = "other"
+    size: Optional[int] = None
     added: dt.date
     for_id: Optional[str] = Field(default=None, alias="for")
     mime: Optional[str] = None
+    url: Optional[str] = None
+    provider: Optional[str] = None
 
     model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    @field_validator("id")
+    @classmethod
+    def _id(cls, v):
+        return _slug(v, "document id")
+
+    @field_validator("url")
+    @classmethod
+    def _validate_url(cls, v):
+        if v is not None:
+            if not isinstance(v, str) or not v.startswith("https://"):
+                raise ValueError(f"document url must start with https:// (got {v!r})")
+        return v
+
+    @model_validator(mode="after")
+    def _validate_source(self):
+        has_url = bool(self.url)
+        has_file = all(getattr(self, f) is not None for f in ("sha256", "filename", "stored_as", "size"))
+        if not has_url and not has_file:
+            raise ValueError("document requires either a valid https:// url or complete file fields (sha256, filename, stored_as, size)")
+        return self
 
 
 class DocumentsFile(Base):

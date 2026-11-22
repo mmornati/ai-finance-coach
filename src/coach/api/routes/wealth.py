@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends
 from coach.analytics.common import money_str, to_cents
 from coach.analytics.forecast import resolve_liability_account
 from coach.api.deps import get_snapshot, get_state
+from coach.api.errors import ApiError
 from coach.api.state import AppState, Snapshot
 from coach.i18n_msg import server_msg
 from coach.loans import history as nw_history, networth as nw_mod, service as loans_service
@@ -96,6 +97,7 @@ def liability_dict(ds, rec, questions, rel: str, l, months: int) -> dict:
             "first_payment": _m(l.first_payment), "residual_value": _m(l.residual_value), "mileage_limit_km": l.mileage_limit_km,
             "excess_km_fee": _m(l.excess_km_fee), "initial_km": l.initial_km,
             "odometer": [{"date": o.date.isoformat(), "km": o.km} for o in sorted(l.odometer, key=lambda o: o.date)], "notes": l.notes,
+            "documents": list(l.documents) if l.documents else [],
             "missing": missing, "missing_codes": codes, "open_questions": qs,
             "payments": ({"series_id": s.id, "last_date": s.last_date.isoformat(), "next_expected": _date(s.next_expected),
                           "amount": money_str(abs(s.expected_amount_c)), "status": s.status} if s else None),
@@ -138,8 +140,24 @@ def contracts(snap: Snapshot = Depends(get_snapshot)):
                     "start_date": _date(c.start_date), "renewal": _date(c.renewal),
                     "billing": {"amount": _m(c.billing.amount), "period": c.billing.period} if c.billing else None,
                     "commitment_end": _date(c.commitment_end), "notice_period_days": c.notice_period_days,
+                    "documents": list(c.documents) if c.documents else [], "asset": getattr(c, "asset", None),
                     "usage": c.usage, "keep": c.keep, "notes": c.notes})
     return {"contracts": out}
+
+
+@router.get("/assets/{asset_id}/tco", summary="Total Cost of Ownership (TCO) breakdown for a physical asset")
+def asset_tco(asset_id: str, as_of: Optional[str] = None, snap: Snapshot = Depends(get_snapshot)):
+    from coach.loans.tco import compute_asset_tco
+    as_of_date = None
+    if as_of:
+        try:
+            as_of_date = dt.date.fromisoformat(as_of)
+        except ValueError:
+            raise ApiError(400, "invalid_date", f"invalid date format {as_of!r}, expected YYYY-MM-DD")
+    res = compute_asset_tco(snap.ds, asset_id, as_of=as_of_date)
+    if "error" in res:
+        raise ApiError(404, "not_found", res["error"])
+    return res
 
 
 @router.get("/net-worth", summary="Net worth from balances, manual assets and liabilities: unknowns are listed, never guessed")

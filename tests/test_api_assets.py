@@ -73,3 +73,18 @@ def test_holder_joint_and_the_new_fields_are_written_and_read_back(ctx):
     r = ctx.put("/memory/assets/pee-anna", {"fields": {"holder": "luca"}, "unset": ["holders"]}).json()
     a = next(x for x in ctx.get("/assets").json()["assets"] if x["id"] == "pee-anna")
     assert r["changed"] and a["holder"] == "luca" and a["holders"] is None
+
+
+def test_asset_tco_endpoint(ctx):
+    # Test valid asset
+    r = ctx.get("/assets/family-house/tco")
+    assert r.status_code == 200
+    d = r.json()
+    assert d["asset_id"] == "family-house"
+    assert "liabilities" in d
+    assert "contracts" in d
+    assert "fixed_monthly" in d
+
+    # Test unknown asset 404
+    assert ctx.get("/assets/unknown-asset/tco").status_code == 404
+

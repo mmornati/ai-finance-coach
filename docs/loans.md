@@ -170,12 +170,20 @@ kind only, never its id or lender). Everything is an estimate and ends with "gen
 * **Return checklist**: general (notice period, inspection, documents, tyres, mileage proof, insurance and direct debit, buying the car): verify your
   own contract.
 
+### Asset Total Cost of Ownership (`coach loans tco <asset_id>`)
+
+Aggregates all costs tied to a physical asset (vehicle, real estate):
+* **Financing**: liabilities linked via `asset: <id>` (loans, LOA/LLD lease payments, down payment, residual value, term).
+* **Contracts**: insurance policies, maintenance and service contracts linked via `asset: <id>` (monthly and annual equivalents).
+* **Operating expenses**: transactions tagged with `asset: <id>` via annotations (fuel, tolls, repairs, parking).
+* **Summary**: fixed monthly commitments (financing + contracts), average monthly operating expenses, total spent to date, and projected lifetime cost of ownership.
+
 ## API, CLI, MCP
 
 | | |
 |---|---|
-| CLI | `coach loans list|show|schedule|payments|alerts|infer|add|edit|odometer|lease|scenario`, `coach networth` |
-| API | `GET /liabilities` (schedule summary, capital + source, alerts, lease, suggestions), `GET /loans/{id}`, `GET /loans/{id}/payments`, `POST /loans/{id}/scenario`, `POST /loans/{id}/odometer` (`dry_run`), `POST /loans/{id}/infer/propose`, `GET /net-worth[?history=true]`, `GET /net-worth/history`, `POST /net-worth/snapshot` (session + CSRF on every mutation) |
+| CLI | `coach loans list|show|schedule|payments|alerts|infer|add|edit|odometer|lease|scenario|tco`, `coach networth` |
+| API | `GET /liabilities` (schedule summary, capital + source, alerts, lease, suggestions), `GET /loans/{id}`, `GET /loans/{id}/payments`, `GET /assets/{id}/tco`, `POST /loans/{id}/scenario`, `POST /loans/{id}/odometer` (`dry_run`), `POST /loans/{id}/infer/propose`, `GET /net-worth[?history=true]`, `GET /net-worth/history`, `POST /net-worth/snapshot` (session + CSRF on every mutation) |
 | MCP (read-only) | `net_worth(history?, months?)`, `loans_overview()`; `mortgage_check` and `what_if` use the schedules |
 | Schedule | the daily job stores a net-worth snapshot and back-fills the past (warn-only step `networth`); `coach sync` stores one too |
 

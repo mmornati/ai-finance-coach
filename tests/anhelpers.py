@@ -19,13 +19,13 @@ def D(s) -> dt.date:
 
 
 def tx(date, amount, category="food.groceries", account="a", entity=None, tags=(), event=None, key=None, desc="",
-       mkey=None, type_="card", source="rule", split=None) -> Tx:
+       mkey=None, type_="card", source="rule", split=None, person=None, asset=None) -> Tx:
     """amount in EUR (negative = money out)."""
     _n[0] += 1
     ent = entity or category.split(".")[-1].upper()
     return Tx(key or f"t{_n[0]:05d}", D(date) if isinstance(date, str) else date, to_cents(amount), category, source,
               frozenset(tags), event, ent, ent, mkey or ent.upper(), account, type_, desc or ent.lower(),
-              split, None)
+              split, None, person, asset)
 
 
 def account(uid="a", label="Main", owner="joint", purpose="main", bank="Test Bank") -> AccountInfo:

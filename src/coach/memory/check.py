@@ -217,6 +217,11 @@ def run_check(store: MemoryStore, con=None, *, stale_months: int = 6, asset_stal
                 "memoryCheck.contractRenewalPassed", f"renewal date {m.renewal} has passed: update it", renewal_date=m.renewal), "renewal")
         if m.merchant_match and txs is not None:
             hits = [t for t in _regex_hits(m.merchant_match, txs, desc=False) if t["amount"] < 0]
+            if m.amount_match and m.amount_match.amount:
+                target_amt = m.amount_match.amount
+                tol_pct = m.amount_match.tolerance_pct if m.amount_match.tolerance_pct is not None else 10.0
+                tol = tol_pct / 100.0
+                hits = [t for t in hits if abs(abs(t["amount"]) - target_amt) <= target_amt * tol]
             if not hits:
                 add("warning", "merchant_match_nothing", rel, server_msg(
                     "memoryCheck.merchantMatchNothing", f"merchant_match /{m.merchant_match}/ matches 0 payments", pattern=m.merchant_match),
@@ -385,9 +390,11 @@ def run_check(store: MemoryStore, con=None, *, stale_months: int = 6, asset_stal
                 f"questions[{q.id}]")
 
     # ---- 8a. document links: files named in `documents:` must exist; files in documents/ must be recorded
-    recorded = {d.stored_as for d in store.documents()}
+    recorded = {d.stored_as for d in store.documents() if d.stored_as}
     for rel, m in [*store.liabilities(), *store.contracts()]:
         for ref in m.documents:
+            if ref.startswith("https://"):
+                continue
             try:
                 present = store.exists(ref)
             except Exception:                                        # noqa: BLE001
@@ -406,7 +413,9 @@ def run_check(store: MemoryStore, con=None, *, stale_months: int = 6, asset_stal
 
     # ---- 8. documents
     for d in store.documents():
-        p = store.root / "documents" / d.stored_as
+        if d.url:
+            continue
+        p = store.root / "documents" / (d.stored_as or "")
         if not p.exists():
             add("error", "document_missing", "documents.yaml", server_msg(
                 "memoryCheck.documentMissing", f"{d.id}: stored file {d.stored_as} is missing", id=d.id, name=d.stored_as), f"documents[{d.id}]")

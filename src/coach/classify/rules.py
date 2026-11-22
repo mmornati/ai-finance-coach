@@ -421,7 +421,8 @@ def categorised(con, rules: dict | None = None, annotations: list[dict] | None =
                     merchant=r["merchant"], entity=r["entity"], category=cat, source=src, desc=r["desc"],
                     pre_category=pre_cat, pre_source=pre_src, annotation=ann.get("id") if ann else None,
                     tags=set(ann.get("tags", [])) if ann else set(),
-                    event=ann.get("event") if ann else None, account=r["account"], bank=r["bank"])
+                    event=ann.get("event") if ann else None,
+                    asset=ann.get("asset") if ann else None, account=r["account"], bank=r["bank"])
         parts = r["splits"]
         if parts:
             for i, (amt, scat, note) in enumerate(parts):

@@ -482,6 +482,76 @@ def cmd_lease(a, cfg):
         con.close()
 
 
+def cmd_tco(a, cfg):
+    from coach.loans import tco as TCO
+    con, ds, _ = _ctx(a, cfg)
+    try:
+        as_of_date = dt.date.fromisoformat(a.as_of) if getattr(a, "as_of", None) else ds.today
+        res = TCO.compute_asset_tco(ds, a.id, as_of=as_of_date)
+        if "error" in res:
+            print(f"Error: {res['error']}")
+            return
+        if a.json:
+            print(_j(res))
+            return
+        print(f"Asset: {res['description']} ({res['asset_id']}) [{res['asset_kind']}]")
+        if res.get("purchase_date"):
+            print(f"Purchase / Start: {res['purchase_date']}")
+        if res.get("purchase_price"):
+            print(f"Purchase price: {_m(res['purchase_price'])}")
+
+        print("\nFinancing (Liabilities):")
+        if not res.get("liabilities"):
+            print("  None linked")
+        else:
+            for l in res["liabilities"]:
+                fin = f"  - {l['id']} ({l['kind']})"
+                if l.get("lender"):
+                    fin += f" - {l['lender']}"
+                if l.get("monthly_payment"):
+                    fin += f": {_m(l['monthly_payment'])}/mo"
+                if l.get("term_months"):
+                    fin += f" (term: {l['term_months']} mo)"
+                if l.get("total_financing"):
+                    fin += f" | Total: {_m(l['total_financing'])}"
+                print(fin)
+            print(f"  Financing monthly: {_m(res['financing_monthly'])}/mo")
+
+        print("\nContracts (Insurance / Subscriptions):")
+        if not res.get("contracts"):
+            print("  None linked")
+        else:
+            for c in res["contracts"]:
+                docs_note = f" [{len(c['documents'])} doc(s)]" if c.get("documents") else ""
+                monthly_fmt = f"{_m(c['monthly'])}/mo" if c.get("monthly") is not None else "unknown"
+                print(f"  - {c['id']} ({c.get('kind') or 'service'}) - {c.get('provider') or ''}: {_m(c['billing_amount'])} ({c['period']}) -> {monthly_fmt}{docs_note}")
+            print(f"  Contracts monthly: {_m(res['contracts_monthly'])}/mo")
+
+        print("\nOperating Expenses (Transactions):")
+        print(f"  Tracked: {_m(res['expenses_total'])} across {res['expenses_count']} transactions")
+        print(f"  Monthly average: ~{_m(res['operating_monthly_avg'])}/mo")
+        if res.get("expenses_by_category"):
+            print("  By category:")
+            for cat, amt in res["expenses_by_category"].items():
+                print(f"    * {cat}: {amt}")
+
+        print("\nTotal Ownership Cost Summary:")
+        print(f"  Fixed Monthly (Financing + Contracts): {_m(res['fixed_monthly'])}/mo")
+        print(f"  Total Estimated Monthly TCO: ~{_m(res['total_monthly'])}/mo")
+        spent = _m(res['total_spent_to_date']) if res.get('total_spent_to_date') is not None else "unknown"
+        print(f"  Total Spent to Date: {spent}")
+        if res.get("projected_total") is not None:
+            print(f"  Projected Lifetime TCO (estimate): {_m(res['projected_total'])}")
+        else:
+            print("  Projected Lifetime TCO: unknown")
+        if res.get("notes"):
+            print("\nNotes:")
+            for note in res["notes"]:
+                print(f"  - {note}")
+    finally:
+        con.close()
+
+
 def cmd_scenario(a, cfg):
     con, ds, rec = _ctx(a, cfg)
     try:
@@ -635,6 +705,9 @@ def register(sub, add) -> None:
     s.add_argument("--reason"); s.add_argument("--yes", action="store_true")
     s = add(lsub, "lease", cmd_lease, "lease end-of-contract view: decision, mileage projection, return checklist")
     s.add_argument("id", nargs="?"); s.add_argument("--market-value", type=float, help="market value of the same car (EUR, a quote you looked up)")
+    s.add_argument("--json", action="store_true"); s.add_argument("--as-of")
+    s = add(lsub, "tco", cmd_tco, "Total Cost of Ownership breakdown for an asset (financing, contracts, expenses)")
+    s.add_argument("id", help="the asset id from assets.yaml (e.g. car-novamobile)")
     s.add_argument("--json", action="store_true"); s.add_argument("--as-of")
     s = add(lsub, "scenario", cmd_scenario, "early repayment / renegotiation / insurance scenario on the real schedule")
     s.add_argument("what", choices=["prepay", "renegotiate", "insurance"]); s.add_argument("id")
