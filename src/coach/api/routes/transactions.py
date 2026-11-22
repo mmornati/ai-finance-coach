@@ -282,6 +282,8 @@ def _annotation_parts(state: AppState, req: AnnotationRequest):
         ann["event"] = req.event
     if req.note:
         ann["note"] = req.note
+    if req.asset:
+        ann["asset"] = req.asset
     same = None if req.id else _same_match(store.annotations(), match)
     if same is not None:
         # first match wins: a second annotation with the same match would never apply, so the fields given replace the old ones
@@ -317,7 +319,7 @@ def _annotation_parts(state: AppState, req: AnnotationRequest):
         raise
     value = jsonable(model.model_dump(mode="python", exclude_none=True))
     value["match"] = {k: v for k, v in value["match"].items() if v is not None}
-    value = {k: value[k] for k in ("id", "match", "category", "tags", "event", "note") if value.get(k) not in (None, [], {})}
+    value = {k: value[k] for k in ("id", "match", "category", "tags", "event", "note", "asset") if value.get(k) not in (None, [], {})}
     from coach.memory import proposals as prop_mod
     op = {"op": "append", "path": "annotations", "value": prop_mod.rehydrate(value)}
     ops = ([{"op": "create", "value": {"annotations": []}}] if not store.exists("categorization.yaml") else []) + [op]
@@ -492,8 +494,8 @@ def annotations(snap: Snapshot = Depends(get_snapshot), state: AppState = Depend
 
 @router.post("/annotations", summary="Add tags / a note / an event / a category to transactions (dry_run=true: preview)")
 def create_annotation(req: AnnotationRequest, dry_run: bool = False, state: AppState = Depends(get_state)):
-    if not (req.category or req.tags or req.event):
-        raise ApiError(422, "no_effect", "an annotation needs a category, tags or an event")
+    if not (req.category or req.tags or req.event or req.asset):
+        raise ApiError(422, "no_effect", "an annotation needs a category, tags, an event or an asset")
     if req.category and req.category not in CATEGORIES:
         raise ApiError(422, "unknown_category", f"unknown category {req.category!r}")
     model, ops, aid = _annotation_parts(state, req)

@@ -9,7 +9,7 @@ import { useFilters, useGet, usePeople, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { errorText, serverLabel, tServer, tServerList } from "@/i18n/server";
 import { catLabel, fmtDate, fmtMoney } from "@/lib/format";
-import type { AttributionWhy, CategoryChangePreview, EditResult, TxDetail } from "@/api/types";
+import type { Asset, AttributionWhy, CategoryChangePreview, EditResult, TxDetail } from "@/api/types";
 import { cn } from "@/lib/utils";
 
 /** Where a category came from (the server sends the code; an unknown code is shown as it is). */
@@ -86,7 +86,10 @@ function Why({ d }: { d: TxDetail }) {
             <div className="font-medium">{t("tx.why.annotations")}</div>
             <ul className="mt-1 grid gap-1 text-muted">
               {d.memory.annotations.map((a) => (
-                <li key={a.id}>{a.matched ? (a.winner ? "✓ " : "~ ") : "· "}<code className="text-xs">{a.id}</code>: {tServer(a.reason_msg, a.reason)}</li>
+                <li key={a.id}>
+                  {a.matched ? (a.winner ? "✓ " : "~ ") : "· "}<code className="text-xs">{a.id}</code>: {tServer(a.reason_msg, a.reason)}
+                  {a.asset && <Badge tone="neutral" className="ml-2">{a.asset}</Badge>}
+                </li>
               ))}
             </ul>
           </li>
@@ -194,18 +197,29 @@ function ChangeCategory({ d, onDone }: { d: TxDetail; onDone: () => void }) {
 function Annotate({ d }: { d: TxDetail }) {
   const { t: tr } = useTranslation();
   const filters = useFilters();
+  const assetsQ = useGet<{ assets: Asset[] }>("/assets");
   const [tags, setTags] = useState<string[]>([]);
   const [custom, setCustom] = useState("");
   const [event, setEvent] = useState("");
+  const [asset, setAsset] = useState("");
   const [note, setNote] = useState("");
-  const dirty = tags.length > 0 || !!event || !!note;
-  const body = useMemo(() => ({ tx_keys: [d.transaction.tx_key], tags, event: event || undefined, note: note || undefined }), [d.transaction.tx_key, tags, event, note]);
+  const dirty = tags.length > 0 || !!event || !!asset || !!note;
+  const body = useMemo(
+    () => ({
+      tx_keys: [d.transaction.tx_key],
+      tags,
+      event: event || undefined,
+      asset: asset || undefined,
+      note: note || undefined,
+    }),
+    [d.transaction.tx_key, tags, event, asset, note],
+  );
   const [preview, setPreview] = useState<EditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     setPreview(null);
     setError(null);
-    if (!tags.length && !event) return;
+    if (!tags.length && !event && !asset) return;
     const ctl = new AbortController();
     const t = setTimeout(() => {
       api.post<EditResult>("/annotations", body, { dry_run: true }).then((r) => !ctl.signal.aborted && setPreview(r)).catch((e) => !ctl.signal.aborted && setError(errorText(e)));
@@ -214,12 +228,13 @@ function Annotate({ d }: { d: TxDetail }) {
       clearTimeout(t);
       ctl.abort();
     };
-  }, [body, tags.length, event]);
+  }, [body, tags.length, event, asset]);
   const apply = useWrite(() => api.post<EditResult>("/annotations", body, { dry_run: false }), {
     success: tr("tx.annotate.saved"),
     onSuccess: () => {
       setTags([]);
       setEvent("");
+      setAsset("");
       setNote("");
     },
   });
@@ -247,6 +262,20 @@ function Annotate({ d }: { d: TxDetail }) {
           </Select>
         )}
       </Field>
+      {(assetsQ.data?.assets ?? []).length > 0 && (
+        <Field label={tr("tx.annotate.asset", "Linked asset")} hint={tr("tx.annotate.assetHint", "Attach this transaction to a tracked vehicle, property, or asset")}>
+          {(id) => (
+            <Select id={id} value={asset} onChange={(e) => setAsset(e.target.value)}>
+              <option value="">{tr("tx.annotate.noAsset", "No asset")}</option>
+              {assetsQ.data?.assets.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.description ? `${a.description} (${a.id})` : a.id}
+                </option>
+              ))}
+            </Select>
+          )}
+        </Field>
+      )}
       <Field label={tr("tx.annotate.note")}>{(id) => <Textarea id={id} value={note} onChange={(e) => setNote(e.target.value)} placeholder={tr("tx.annotate.notePlaceholder")} />}</Field>
       {error && <Notice tone="neg">{error}</Notice>}
       {preview && (
@@ -255,7 +284,7 @@ function Annotate({ d }: { d: TxDetail }) {
           <DiffView diff={preview.diff} />
         </div>
       )}
-      {!tags.length && !event && note && <Notice>{tr("tx.annotate.noteAlone")}</Notice>}
+      {!tags.length && !event && !asset && note && <Notice>{tr("tx.annotate.noteAlone")}</Notice>}
       <div className="flex justify-end">
         <Button variant="primary" disabled={!preview || !dirty} busy={apply.isPending} onClick={() => apply.mutate(undefined as never)}>{tr("tx.annotate.save")}</Button>
       </div>

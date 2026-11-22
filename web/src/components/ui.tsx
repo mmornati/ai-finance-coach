@@ -354,3 +354,6 @@ export function Async<T>({ q, children, skeleton, empty }: { q: UseQueryResult<T
   if (q.isError) return <ErrorState error={q.error} retry={() => void q.refetch()} />;
   return <>{children(q.data)}</>;
 }
+
+export { DocumentLink } from "./DocumentLink";
+

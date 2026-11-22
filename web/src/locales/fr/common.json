@@ -107,6 +107,7 @@
   "ui": {
     "close": "Fermer",
     "loading": "Chargement",
+    "cloudDoc": "Document cloud",
     "diff": {
       "empty": "Aucun changement.",
       "label": "Modification proposée"
@@ -261,6 +262,7 @@
       "bankLabel": "Libellé bancaire du paiement (regex)",
       "lender": "Prêteur",
       "asset": "Bien financé",
+      "assetHint": "Identifiant du bien lié (ex. car-renault-austral)",
       "borrower": "Emprunteur",
       "borrowerHint": "Qui le doit, pour le patrimoine par personne",
       "firstPaymentDate": "Première échéance le",
@@ -332,7 +334,9 @@
       "displayName": "Nom affiché",
       "displayNameHint": "Affiché dans les listes à la place de l'identifiant",
       "employer": "Employeur",
-      "opened": "Ouvert le"
+      "opened": "Ouvert le",
+      "documents": "Documents",
+      "documentsHint": "Fichiers ou URLs cloud (Google Drive, Dropbox...) séparés par des virgules"
     },
     "option": {
       "liabilityKind": {
@@ -517,9 +521,12 @@
       "event": "Événement",
       "eventHint": "Voyages, travaux, projets ponctuels. Les événements viennent de votre mémoire.",
       "noEvent": "Aucun événement",
+      "asset": "Bien associé",
+      "assetHint": "Associer cette transaction à un véhicule, bien immobilier ou équipement",
+      "noAsset": "Aucun bien",
       "note": "Note",
       "notePlaceholder": "Facultatif. Conservée dans l'annotation.",
-      "noteAlone": "Une note seule n'est pas enregistrée : ajoutez aussi une étiquette ou un événement.",
+      "noteAlone": "Une note seule n'est pas enregistrée : ajoutez aussi une étiquette, un événement ou un bien.",
       "save": "Enregistrer dans la mémoire",
       "saved": "Enregistré dans la mémoire"
     },
@@ -568,6 +575,7 @@
   },
   "loan": {
     "unknown": "inconnu",
+    "documents": "Documents de référence",
     "noAlert": "Aucune alerte de paiement : toutes les échéances dues ont été vues, au montant attendu.",
     "dialogDescription": "Calculé à partir du fichier du prêt et des paiements bancaires. Un chiffre manquant est signalé, jamais deviné.",
     "close": "Fermer",

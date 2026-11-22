@@ -3,7 +3,7 @@ import { Trans, useTranslation } from "react-i18next";
 import type { ParseKeys } from "i18next";
 import { Link, useSearchParams } from "react-router";
 import { Check, Pencil, Plus, RotateCcw, ShieldAlert, Trash2, X } from "lucide-react";
-import { Async, Badge, Button, Card, Chips, Dialog, DiffView, EmptyState, Field, Input, Money, Notice, PageHeader, Select, Skeleton, Spinner, Tabs, Textarea } from "@/components/ui";
+import { Async, Badge, Button, Card, Chips, Dialog, DiffView, DocumentLink, EmptyState, Field, Input, Money, Notice, PageHeader, Select, Skeleton, Spinner, Tabs, Textarea } from "@/components/ui";
 import { ItemDialog, Kind } from "@/components/ItemForm";
 import { CopyCommand } from "@/components/CopyCommand";
 import { useDryRun, useGet, useProposals, useQuestions, useWrite } from "@/api/hooks";
@@ -202,16 +202,33 @@ function ItemsTab() {
   const con = useGet<{ contracts: Record<string, any>[] }>("/contracts");
   const ast = useGet<{ assets: (Asset & Record<string, any>)[] }>("/assets");
   const [edit, setEdit] = useState<{ kind: Kind; id?: string; initial?: Record<string, any> } | null>(null);
-  const Row = ({ title, sub, onEdit, warn }: { title: string; sub: string; onEdit: () => void; warn?: string }) => (
-    <li className="flex items-center gap-3 py-2.5"><div className="min-w-0 flex-1"><div className="truncate font-medium">{title}</div><div className="truncate text-xs text-muted">{sub}</div>{warn && <div className="text-xs text-warn">{warn}</div>}</div><Button size="sm" variant="ghost" aria-label={t("items.edit", { name: title })} onClick={onEdit}><Pencil className="size-3.5" /></Button></li>
+  const Row = ({ title, sub, onEdit, warn, asset, documents }: { title: string; sub: string; onEdit: () => void; warn?: string; asset?: string | null; documents?: string[] }) => (
+    <li className="flex items-center gap-3 py-2.5">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="truncate font-medium">{title}</span>
+          {asset && <Badge tone="neutral" className="text-[11px]">{asset}</Badge>}
+        </div>
+        <div className="truncate text-xs text-muted">{sub}</div>
+        {warn && <div className="text-xs text-warn">{warn}</div>}
+        {documents && documents.length > 0 && (
+          <div className="mt-1 flex flex-wrap gap-1">
+            {documents.map((doc) => (
+              <DocumentLink key={doc} doc={doc} />
+            ))}
+          </div>
+        )}
+      </div>
+      <Button size="sm" variant="ghost" aria-label={t("items.edit", { name: title })} onClick={onEdit}><Pencil className="size-3.5" /></Button>
+    </li>
   );
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card title={t("items.loans")} action={<Button size="sm" onClick={() => setEdit({ kind: "liabilities" })}><Plus className="size-3.5" aria-hidden /> {t("items.addLoan")}</Button>}>
-        <Async q={liab}>{(d) => d.liabilities.length ? <ul className="divide-y divide-border">{d.liabilities.map((l) => <Row key={l.id} title={l.lender ?? l.id} sub={`${holdingKindLabel(l.kind)}${l.monthly_payment ? t("items.perMonth", { amount: fmtMoney(l.monthly_payment) }) : ""}`} warn={l.missing.length ? t("items.missing", { fields: l.missing.join(", ") }) : undefined} onEdit={() => setEdit({ kind: "liabilities", id: l.id, initial: l })} />)}</ul> : <EmptyState title={t("items.noLoan")} />}</Async>
+        <Async q={liab}>{(d) => d.liabilities.length ? <ul className="divide-y divide-border">{d.liabilities.map((l) => <Row key={l.id} title={l.lender ?? l.id} sub={`${holdingKindLabel(l.kind)}${l.monthly_payment ? t("items.perMonth", { amount: fmtMoney(l.monthly_payment) }) : ""}`} warn={l.missing.length ? t("items.missing", { fields: l.missing.join(", ") }) : undefined} asset={l.asset} documents={l.documents} onEdit={() => setEdit({ kind: "liabilities", id: l.id, initial: l })} />)}</ul> : <EmptyState title={t("items.noLoan")} />}</Async>
       </Card>
       <Card title={t("items.contracts")} action={<Button size="sm" onClick={() => setEdit({ kind: "contracts" })}><Plus className="size-3.5" aria-hidden /> {t("items.addContract")}</Button>}>
-        <Async q={con}>{(d) => d.contracts.length ? <ul className="divide-y divide-border">{d.contracts.map((c) => <Row key={c.id} title={c.provider ?? c.id} sub={`${holdingKindLabel(c.kind ?? "other")}${c.billing?.amount ? ` · ${fmtMoney(c.billing.amount)}` : ""}${c.renewal ? t("items.renews", { date: fmtDate(c.renewal) }) : ""}`} onEdit={() => setEdit({ kind: "contracts", id: c.id, initial: c })} />)}</ul> : <EmptyState title={t("items.noContract")}>{t("items.noContractBody")}</EmptyState>}</Async>
+        <Async q={con}>{(d) => d.contracts.length ? <ul className="divide-y divide-border">{d.contracts.map((c) => <Row key={c.id} title={c.provider ?? c.id} sub={`${holdingKindLabel(c.kind ?? "other")}${c.billing?.amount ? ` · ${fmtMoney(c.billing.amount)}` : ""}${c.renewal ? t("items.renews", { date: fmtDate(c.renewal) }) : ""}`} asset={c.asset} documents={c.documents} onEdit={() => setEdit({ kind: "contracts", id: c.id, initial: c })} />)}</ul> : <EmptyState title={t("items.noContract")}>{t("items.noContractBody")}</EmptyState>}</Async>
       </Card>
       <Card title={t("items.assets")} className="lg:col-span-2" action={<Button size="sm" onClick={() => setEdit({ kind: "assets" })}><Plus className="size-3.5" aria-hidden /> {t("items.addAsset")}</Button>}>
         <Async q={ast}>{(d) => d.assets.length ? <ul className="divide-y divide-border">{d.assets.map((a) => <Row key={a.id} title={a.description ?? a.id} sub={`${holdingKindLabel(a.kind)}${a.value ? ` · ${fmtMoney(a.value, { round: true })}` : ""}${a.as_of ? t("items.asOf", { date: fmtDate(a.as_of) }) : ""}`} warn={a.unknown_value ? t("items.valueUnknown") : a.stale ? t("items.valueOld") : undefined} onEdit={() => setEdit({ kind: "assets", id: a.id, initial: a })} />)}</ul> : <EmptyState title={t("items.noAsset")} />}</Async>

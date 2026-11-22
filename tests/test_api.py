@@ -30,6 +30,36 @@ def test_taxonomy_and_filters(ctx):
     assert "one_off" in f["tags"] and any(e["id"] == "kitchen-2026" for e in f["events"]) and "food" in f["groups"]
 
 
+def test_add_taxonomy_category(ctx):
+    # Preview with dry_run=True: returns diff without writing
+    pv = ctx.post("/meta/taxonomy/categories", {"cid": "transport.ev_charging", "description": "Electric vehicle charging"}, dry_run=True).json()
+    assert pv["dry_run"] is True
+    assert pv["changed"] is True
+    assert "ev_charging: Electric vehicle charging" in pv["diff"]
+    assert pv["taxonomy"] is None
+    # Category was not written yet
+    assert "transport.ev_charging" not in {c["id"] for g in ctx.get("/meta/taxonomy").json()["groups"] for c in g["categories"]}
+
+    # Write without dry_run
+    r = ctx.post("/meta/taxonomy/categories", {"group": "transport", "leaf": "ev_charging", "description": "Electric vehicle charging"})
+    assert r.status_code == 200
+    d = r.json()
+    assert d["dry_run"] is False
+    assert d["changed"] is True
+    assert d["category"] == "transport.ev_charging"
+    assert d["description"] == "Electric vehicle charging"
+    cats = {c["id"] for g in d["taxonomy"]["groups"] for c in g["categories"]}
+    assert "transport.ev_charging" in cats
+
+    # Duplicate should fail with 409
+    dup = ctx.post("/meta/taxonomy/categories", {"group": "transport", "leaf": "ev_charging", "description": "Duplicate"})
+    assert dup.status_code == 409
+    assert dup.json()["error"]["code"] == "taxonomy_error"
+
+    # Missing fields should fail with 422
+    assert ctx.post("/meta/taxonomy/categories", {"description": "No group or leaf"}).status_code == 422
+
+
 def test_health_coverage_balances(ctx):
     h = ctx.get("/health").json()
     assert h["banks"] and "memory" in h and h["level"] in ("green", "amber", "red")
@@ -393,16 +423,19 @@ def test_category_fix_validation(ctx):
 
 
 def test_annotations_tags_notes_events(ctx):
-    pv = ctx.post("/annotations", {"tx_keys": ["fm0"], "tags": ["one_off", "reimbursable"], "event": "kitchen-2026", "note": "gift"}, dry_run=True).json()
+    pv = ctx.post("/annotations", {"tx_keys": ["fm0"], "tags": ["one_off", "reimbursable"], "event": "kitchen-2026", "note": "gift", "asset": "family-house"}, dry_run=True).json()
     assert pv["affected"]["matched"] == 1 and pv["affected"]["tag_changes"] == 1 and pv["affected"]["count"] == 0 and "reimbursable" in pv["diff"] and pv["id"]
-    w = ctx.post("/annotations", {"tx_keys": ["fm0"], "tags": ["one_off", "reimbursable"], "event": "kitchen-2026", "note": "gift", "id": "gift-fm0"})
+    assert "family-house" in pv["diff"]
+    w = ctx.post("/annotations", {"tx_keys": ["fm0"], "tags": ["one_off", "reimbursable"], "event": "kitchen-2026", "note": "gift", "asset": "family-house", "id": "gift-fm0"})
     assert w.json()["changed"]
     items = ctx.get("/transactions", tag="reimbursable").json()["items"]
     assert [i["tx_key"] for i in items] == ["fm0"] and items[0]["event"] == "kitchen-2026"
     ann = {a["id"]: a for a in ctx.get("/annotations").json()["annotations"]}
     assert ann["gift-fm0"]["matched"] == 1 and ann["gift-fm0"]["applies_to"] == 1 and "kitchen-works" in ann
+    assert ann["gift-fm0"]["asset"] == "family-house"
     assert ctx.post("/annotations", {"tx_keys": ["fm1"], "tags": ["x"], "id": "gift-fm0"}).json()["error"]["code"] == "annotation_exists"
     assert ctx.post("/annotations", {"tx_keys": ["fm1"], "event": "no-such-event"}).json()["error"]["code"] == "memory_invalid"
+    assert ctx.post("/annotations", {"tx_keys": ["fm1"], "asset": "no-such-asset"}).json()["error"]["code"] == "memory_invalid"
     assert ctx.post("/annotations", {"tx_keys": ["fm1"]}).json()["error"]["code"] == "no_effect"
     assert ctx.post("/annotations", {"tags": ["x"]}).json()["error"]["code"] == "no_match"
     assert ctx.post("/annotations", {"tx_keys": ["fm1"], "tags": ["Bad Tag"]}).json()["error"]["code"] == "invalid_annotation"

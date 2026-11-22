@@ -107,6 +107,7 @@
   "ui": {
     "close": "Chiudi",
     "loading": "Caricamento",
+    "cloudDoc": "Documento cloud",
     "diff": {
       "empty": "Nessuna modifica.",
       "label": "Modifica proposta"
@@ -261,6 +262,7 @@
       "bankLabel": "Descrizione bancaria del pagamento (regex)",
       "lender": "Finanziatore",
       "asset": "Bene finanziato",
+      "assetHint": "ID del bene associato (es. car-renault-austral)",
       "borrower": "Mutuatario",
       "borrowerHint": "Chi lo deve, per il patrimonio per persona",
       "firstPaymentDate": "Prima rata il",
@@ -332,7 +334,9 @@
       "displayName": "Nome mostrato",
       "displayNameHint": "Mostrato negli elenchi al posto dell'identificativo",
       "employer": "Datore di lavoro",
-      "opened": "Aperto il"
+      "opened": "Aperto il",
+      "documents": "Documenti",
+      "documentsHint": "Nomi file o URL cloud (Google Drive, Dropbox...) separati da virgole"
     },
     "option": {
       "liabilityKind": {
@@ -517,9 +521,12 @@
       "event": "Evento",
       "eventHint": "Viaggi, lavori, progetti una tantum. Gli eventi vengono dalla tua memoria.",
       "noEvent": "Nessun evento",
+      "asset": "Bene associato",
+      "assetHint": "Associa questa transazione a un veicolo, immobile o bene patrimoniale",
+      "noAsset": "Nessun bene",
       "note": "Nota",
       "notePlaceholder": "Facoltativa. Conservata nell'annotazione.",
-      "noteAlone": "Una nota da sola non viene salvata: aggiungi anche un tag o un evento.",
+      "noteAlone": "Una nota da sola non viene salvata: aggiungi anche un tag, un evento o un bene.",
       "save": "Salva nella memoria",
       "saved": "Salvato nella memoria"
     },
@@ -568,6 +575,7 @@
   },
   "loan": {
     "unknown": "sconosciuto",
+    "documents": "Documenti di riferimento",
     "noAlert": "Nessun avviso di pagamento: tutte le rate dovute sono state viste, all'importo atteso.",
     "dialogDescription": "Calcolato dal file del prestito e dai pagamenti bancari. Una cifra mancante viene elencata, mai indovinata.",
     "close": "Chiudi",

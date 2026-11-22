@@ -91,8 +91,8 @@ export interface TxDetail {
   parsed: Record<string, string | number | null>;
   steps: ExplainStep[];
   split: { amount: Money; category: string; note: string | null }[] | null;
-  memory: { annotations: { id: string; matched: boolean; reason: string; reason_msg?: ServerMsg | null; line: number | null; winner?: boolean }[]; winner: string | null };
-  final: { category: string; source: string; tags: string[]; event: string | null; before_memory: { category: string; source: string } };
+  memory: { annotations: { id: string; matched: boolean; reason: string; reason_msg?: ServerMsg | null; line: number | null; winner?: boolean; asset?: string }[]; winner: string | null };
+  final: { category: string; source: string; tags: string[]; event: string | null; asset?: string | null; before_memory: { category: string; source: string } };
   consistent: boolean;
   override: { category: string; note: string | null } | null;
   transfer_link: { id: number; out: string; in: string; method: string; confidence: number } | null;
@@ -157,13 +157,13 @@ export interface Liability {
   monthly_payment: Money | null; insurance: { provider: string | null; monthly: Money | null; delegated?: boolean | null; rate_pct?: number | null; basis?: string | null } | null;
   deferral?: { months: number; kind: "partial" | "total" } | null; debited_account: string | null; debited_account_label: string | null;
   payment_match: string | null; early_repayment_penalty: string | number | null; first_payment?: Money | null; residual_value: Money | null; mileage_limit_km: number | null; excess_km_fee?: Money | null; initial_km?: number | null;
-  odometer?: { date: string; km: number }[]; notes: string | null;
+  odometer?: { date: string; km: number }[]; notes: string | null; documents?: string[];
   /** English labels of the missing fields; `missing_codes` (same order) are the codes the web translates (labels.loanField). */
   missing: string[]; missing_codes?: string[]; open_questions: string[]; payments: { series_id: string; last_date: string; next_expected: string | null; amount: Money; status: string } | null;
   schedule: LoanScheduleSummary; remaining_capital: Money | null; remaining_capital_source: "schedule" | "declared" | null; alerts: LoanAlert[]; payments_seen: number; lease: LeaseStatus | null; inferred: InferredField[];
 }
 export interface LoanDetail {
-  id: string; kind: string; schedule: LoanScheduleSummary; lease: LeaseStatus | null; alerts: LoanAlert[];
+  id: string; kind: string; schedule: LoanScheduleSummary; lease: LeaseStatus | null; alerts: LoanAlert[]; documents?: string[];
   payments: { count: number; first: string | null; last: string | null; last_amount: Money | null; median_amount: Money | null; recent: { date: string; amount: Money; account: string }[] };
   inference: { status: string; fields?: InferredField[]; notes?: string[]; notes_msg?: ServerMsg[]; missing?: string[]; missing_msg?: ServerMsg[] };
 }
@@ -217,7 +217,7 @@ export interface Proposal {
 export interface MemoryOverview { files: string[]; history_enabled: boolean; counts: Record<string, number>; check: { errors: number; warnings: number; info: number; by_code: Record<string, number> } }
 export interface CheckIssue { level: "error" | "warning" | "info"; code: string; file: string; path: string; message: string; message_msg?: ServerMsg | null; line?: number }
 export interface Change { id: string; date: string; subject: string; files: string[]; reason: string | null; source: string | null }
-export interface Annotation { id: string; category?: string; tags?: string[]; event?: string; note?: string; match: Record<string, unknown>; matched: number; applies_to: number; total: Money }
+export interface Annotation { id: string; category?: string; tags?: string[]; event?: string; note?: string; asset?: string; match: Record<string, unknown>; matched: number; applies_to: number; total: Money }
 
 export interface ConnAccount { uid: string; bank: string | null; label: string | null; name: string | null; iban_last4: string; currency: string | null; owner: string | null; purpose: string | null; excluded: boolean; source: string; session_status: string | null; needs_review: boolean; tx_count: number; syncs_left_today: number | null }
 export interface Consent { session_id: string; bank: string; country: string; valid_until: string | null; days_left: number | null; status: string; live_status: string | null; live_checked_at: string | null; accounts: number }

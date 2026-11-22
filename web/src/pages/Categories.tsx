@@ -1,26 +1,49 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Trans, useTranslation } from "react-i18next";
-import { Async, Badge, Card, EmptyState, Input, Money, Notice, PageHeader, Segmented, Skeleton } from "@/components/ui";
+import { Plus } from "lucide-react";
+import { Async, Badge, Button, Card, Dialog, DiffView, EmptyState, Field, Input, Money, Notice, PageHeader, Segmented, Select, Skeleton } from "@/components/ui";
 import { ShareBar } from "@/components/charts";
-import { useScoped } from "@/api/hooks";
+import { useDryRun, useScoped, useWrite } from "@/api/hooks";
+import { api } from "@/lib/api";
 import { catLabel, fmtMoney, fmtMonth, groupLabel, parseMoney } from "@/lib/format";
-import type { CategoryOverview } from "@/api/types";
+import type { CategoryOverview, EditResult } from "@/api/types";
 import { tServerList } from "@/i18n/server";
 
 export default function Categories() {
   const q = useScoped<CategoryOverview>("/categories");
   const [view, setView] = useState<"groups" | "flat">("groups");
   const [text, setText] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
   const { t } = useTranslation("categories");
   return (
     <>
-      <PageHeader title={t("overview.title")} subtitle={t("overview.subtitle")} actions={<Segmented label={t("overview.view")} value={view} onChange={setView} options={[{ value: "groups", label: t("overview.grouped") }, { value: "flat", label: t("overview.ranked") }]} />} />
+      <PageHeader
+        title={t("overview.title")}
+        subtitle={t("overview.subtitle")}
+        actions={
+          <div className="flex items-center gap-2">
+            <Segmented
+              label={t("overview.view")}
+              value={view}
+              onChange={setView}
+              options={[
+                { value: "groups", label: t("overview.grouped") },
+                { value: "flat", label: t("overview.ranked") },
+              ]}
+            />
+            <Button variant="secondary" onClick={() => setShowAdd(true)}>
+              <Plus className="size-4" /> {t("overview.addCategory")}
+            </Button>
+          </div>
+        }
+      />
       <Async q={q} skeleton={<Skeleton className="h-96 w-full" />}>
         {(d) => {
           const rows = d.categories.filter((c) => !text || catLabel(c.category).toLowerCase().includes(text.toLowerCase()) || c.category.includes(text.toLowerCase()));
           const max = Math.max(...rows.map((r) => parseMoney(r.monthly_avg) ?? 0), 1);
           const groups = groupRows(rows, d.groups);
+          const existingGroups = d.groups.map((g) => g.group);
           return (
             <div className="grid gap-4">
               <Card>
@@ -45,11 +68,153 @@ export default function Categories() {
                 ))
               )}
               {d.unavailable.length > 0 && <Notice title={t("overview.unavailableTitle")}>{t("overview.unavailable", { list: d.unavailable.map((u) => catLabel(u.category)).join(", ") })}</Notice>}
+              {showAdd && (
+                <AddCategoryDialog
+                  open={showAdd}
+                  onClose={() => setShowAdd(false)}
+                  existingGroups={existingGroups}
+                />
+              )}
             </div>
           );
         }}
       </Async>
     </>
+  );
+}
+
+function AddCategoryDialog({
+  open,
+  onClose,
+  existingGroups,
+}: {
+  open: boolean;
+  onClose: () => void;
+  existingGroups: string[];
+}) {
+  const { t } = useTranslation("categories");
+  const defaultGroup = existingGroups[0] || "daily";
+  const [selectedGroup, setSelectedGroup] = useState(defaultGroup);
+  const [customGroup, setCustomGroup] = useState("");
+  const [leaf, setLeaf] = useState("");
+  const [description, setDescription] = useState("");
+
+  const group = selectedGroup === "__new__" ? customGroup.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_") : selectedGroup;
+  const cleanLeaf = leaf.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+  const cid = group && cleanLeaf ? `${group}.${cleanLeaf}` : "";
+
+  const ready = Boolean(cid && description.trim());
+  const body = useMemo(
+    () => ({ cid, description: description.trim() }),
+    [cid, description],
+  );
+
+  const pv = useDryRun<EditResult>("/meta/taxonomy/categories", body, ready);
+
+  const add = useWrite(
+    () => api.post<EditResult>("/meta/taxonomy/categories", body, { dry_run: false }),
+    {
+      success: t("add.success"),
+      onSuccess: () => {
+        onClose();
+        setLeaf("");
+        setDescription("");
+        setCustomGroup("");
+      },
+    },
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ready || pv.error || pv.loading) return;
+    add.mutate(undefined as never);
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title={t("add.title")}
+      description={t("add.description")}
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose}>
+            {t("add.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            disabled={!ready || Boolean(pv.error) || pv.loading}
+            busy={add.isPending}
+            onClick={handleSubmit}
+          >
+            {t("add.submit")}
+          </Button>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="grid gap-4">
+        {pv.error && <Notice tone="neg">{pv.error}</Notice>}
+        <Field label={t("add.groupLabel")} hint={t("add.groupHint")}>
+          {(id) => (
+            <Select
+              id={id}
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+            >
+              {existingGroups.map((g) => (
+                <option key={g} value={g}>
+                  {groupLabel(g)} ({g})
+                </option>
+              ))}
+              <option value="__new__">{t("add.newGroup")}</option>
+            </Select>
+          )}
+        </Field>
+        {selectedGroup === "__new__" && (
+          <Field label={t("add.customGroupName")}>
+            {(id) => (
+              <Input
+                id={id}
+                value={customGroup}
+                onChange={(e) => setCustomGroup(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_"))}
+                placeholder="e.g. pets"
+              />
+            )}
+          </Field>
+        )}
+        <Field label={t("add.leafLabel")} hint={t("add.leafHint")}>
+          {(id) => (
+            <Input
+              id={id}
+              value={leaf}
+              onChange={(e) => setLeaf(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_"))}
+              placeholder="e.g. vet_expenses"
+            />
+          )}
+        </Field>
+        <Field label={t("add.descLabel")} hint={t("add.descHint")}>
+          {(id) => (
+            <Input
+              id={id}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="e.g. Veterinary visits, medications, pet care"
+            />
+          )}
+        </Field>
+        {cid && (
+          <div className="rounded-lg border border-border bg-surface-2 p-3 text-xs text-muted">
+            <span className="font-medium text-text">{t("add.previewId")}:</span> <code className="font-semibold text-accent">{cid}</code>
+          </div>
+        )}
+        {pv.data?.diff && (
+          <div className="grid gap-1">
+            <span className="text-xs font-medium text-muted">{t("add.diffPreview")}</span>
+            <DiffView diff={pv.data.diff} />
+          </div>
+        )}
+      </form>
+    </Dialog>
   );
 }
 

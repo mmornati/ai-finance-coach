@@ -182,10 +182,15 @@ class Annotation(Strict):
     def _event(cls, v):
         return None if v is None else _slug(v, "event")
 
+    @field_validator("asset")
+    @classmethod
+    def _asset(cls, v):
+        return None if v is None else _slug(v, "asset")
+
     @model_validator(mode="after")
     def _has_effect(self):
-        if not (self.category or self.tags or self.event):
-            raise ValueError("an annotation needs an effect: category, tags and/or event")
+        if not (self.category or self.tags or self.event or self.asset):
+            raise ValueError("an annotation needs an effect: category, tags, event and/or asset")
         return self
 
 

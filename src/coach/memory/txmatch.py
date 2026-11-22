@@ -25,6 +25,8 @@ def ann_plain(a: schemas.Annotation) -> dict:
         d["event"] = a.event
     if a.note:
         d["note"] = a.note
+    if getattr(a, "asset", None):
+        d["asset"] = a.asset
     return d
 
 

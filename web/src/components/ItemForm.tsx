@@ -60,11 +60,13 @@ function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
     { key: "mileage_limit_km", label: t("itemForm.field.mileageLimit"), type: "int", when: isLease },
     { key: "excess_km_fee", label: t("itemForm.field.excessKmFee"), type: "number", when: isLease },
     { key: "initial_km", label: t("itemForm.field.initialKm"), type: "int", hint: t("itemForm.field.initialKmHint"), when: isLease },
+    { key: "documents", label: t("itemForm.field.documents"), type: "list", hint: t("itemForm.field.documentsHint"), wide: true },
     { key: "notes", label: t("itemForm.field.notes"), type: "textarea", wide: true },
   ],
   contracts: [
     { key: "provider", label: t("itemForm.field.provider"), type: "text" },
     { key: "kind", label: t("itemForm.field.kind"), type: "select", options: CONTRACT_KINDS.map(([code, key]): [string, string] => [code, t(`itemForm.option.contractKind.${key}`)]) },
+    { key: "asset", label: t("itemForm.field.asset"), type: "text", hint: t("itemForm.field.assetHint") },
     { key: "merchant_match", label: t("itemForm.field.bankLabel"), type: "text" },
     { key: "start_date", label: t("itemForm.field.startDate"), type: "date" },
     { key: "renewal", label: t("itemForm.field.renewal"), type: "date" },
@@ -78,6 +80,7 @@ function buildSpecs(t: TFunction): Record<Kind, Spec[]> {
     { key: "usage.last_used", label: t("itemForm.field.lastUsed"), type: "date" },
     { key: "usage.note", label: t("itemForm.field.usageNote"), type: "text" },
     { key: "keep", label: t("itemForm.field.decision"), type: "select", options: [["true", t("itemForm.option.keep.true")], ["review", t("itemForm.option.keep.review")], ["false", t("itemForm.option.keep.false")]] },
+    { key: "documents", label: t("itemForm.field.documents"), type: "list", hint: t("itemForm.field.documentsHint"), wide: true },
     { key: "notes", label: t("itemForm.field.notes"), type: "textarea", wide: true },
   ],
   assets: [

@@ -548,6 +548,7 @@ class MemoryStore:
             return out
         from coach.classify.rules import CATEGORIES
         events = self.event_ids()
+        assets = {a.id for a in self.assets()}
         for a in model.annotations:
             if a.category and a.category not in CATEGORIES:
                 out.append(_unknown_category(rel, a.category, f"annotations[{a.id}].category"))
@@ -561,6 +562,10 @@ class MemoryStore:
                 out.append(Issue.of("error" if strict else "warning", "unknown_event", rel, server_msg(
                     "memoryCheck.unknownEvent", f"event {a.event!r} is not defined in events.md (a `## {a.event}` heading) or events.yaml",
                     event=a.event), f"annotations[{a.id}].event"))
+            if a.asset and a.asset not in assets:
+                out.append(Issue.of("error" if strict else "warning", "unknown_asset", rel, server_msg(
+                    "memoryCheck.unknownAsset", f"asset {a.asset!r} is not defined in assets.yaml",
+                    asset=a.asset), f"annotations[{a.id}].asset"))
         return out
 
     def _household_issues(self, model, strict: bool) -> list[Issue]:

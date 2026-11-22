@@ -98,6 +98,7 @@ class AnnotationRequest(BaseModel):
     tags: list[str] = []
     event: Optional[str] = None
     note: Optional[str] = None
+    asset: Optional[str] = None
     id: Optional[str] = None
     reason: Optional[str] = None
 
@@ -113,3 +114,11 @@ class Written(BaseModel):
     changed: bool
     change_id: Optional[str] = None
     diff: str = ""
+
+
+class AddCategoryRequest(BaseModel):
+    group: Optional[str] = None
+    leaf: Optional[str] = None
+    cid: Optional[str] = None
+    description: str = Field(min_length=1)
+

@@ -6,6 +6,7 @@ splits) and rewrites rules.yaml; memory/ is never touched: the annotations that 
 """
 from __future__ import annotations
 
+import difflib
 import json
 import os
 import re
@@ -111,7 +112,7 @@ def _no_unresolved_journal() -> None:
                             "with any coach command (it completes or forgets the rename), then retry")
 
 
-def add_leaf(cid: str, desc: str) -> None:
+def add_leaf(cid: str, desc: str, dry_run: bool = False) -> str:
     _no_unresolved_journal()
     if not ID_RE.match(cid):
         raise TaxonomyError(f"{cid!r} is not a valid id: use group.leaf, lowercase letters, digits and _")
@@ -121,10 +122,20 @@ def add_leaf(cid: str, desc: str) -> None:
         raise TaxonomyError("give a description")
     group, leaf = cid.split(".")
     path = rules_mod.ensure_user_file("taxonomy")
-    lines = path.read_text().splitlines()
+    old_text = path.read_text()
+    lines = old_text.splitlines()
     text = "\n".join(_insert_leaf(lines, group, leaf, desc)) + "\n"
-    _atomic_write(path, _validated(text, set(rules_mod.CATEGORIES) | {cid}))
-    rules_mod.reload_taxonomy()
+    validated_text = _validated(text, set(rules_mod.CATEGORIES) | {cid})
+    diff = "".join(difflib.unified_diff(
+        old_text.splitlines(True),
+        validated_text.splitlines(True),
+        fromfile="taxonomy.yaml",
+        tofile="taxonomy.yaml",
+    ))
+    if not dry_run:
+        _atomic_write(path, validated_text)
+        rules_mod.reload_taxonomy()
+    return diff
 
 
 def memory_references(memory_dir, cid: str) -> list[str]:

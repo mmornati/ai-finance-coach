@@ -11,6 +11,7 @@
     "noMonth": "no month is fully covered by every account",
     "filter": "Filter categories",
     "empty": "No category",
+    "addCategory": "Add category",
     "usualMonth": "usual month <b><amount/></b>",
     "lowConfidence": "low confidence",
     "unavailableTitle": "No fair average yet for",
@@ -100,5 +101,25 @@
         "decided_by_rule": "A classification rule already decides this merchant."
       }
     }
+  },
+  "add": {
+    "title": "Add a category",
+    "description": "Create a new custom category in your taxonomy",
+    "groupLabel": "Group",
+    "groupHint": "Top-level domain (e.g. housing, vehicle, daily)",
+    "newGroup": "+ New group...",
+    "customGroupName": "New group code",
+    "leafLabel": "Category code",
+    "leafHint": "Identifier within the group (e.g. vet_expenses)",
+    "descLabel": "Description",
+    "descHint": "Helps the AI classify relevant transactions",
+    "previewId": "Category ID",
+    "diffPreview": "Changes preview",
+    "cancel": "Cancel",
+    "submit": "Add category",
+    "success": "Category created successfully",
+    "missingGroup": "Please select or enter a group",
+    "missingLeaf": "Please enter a category name",
+    "missingDescription": "Please enter a description"
   }
 }

@@ -107,6 +107,7 @@
   "ui": {
     "close": "Close",
     "loading": "Loading",
+    "cloudDoc": "Cloud document",
     "diff": {
       "empty": "No change.",
       "label": "Proposed change"
@@ -260,6 +261,7 @@
       "bankLabel": "Bank label of the payment (regex)",
       "lender": "Lender",
       "asset": "Financed asset",
+      "assetHint": "ID of the linked asset (e.g. car-renault-austral)",
       "borrower": "Borrower",
       "borrowerHint": "Who owes it, for the net worth by person",
       "firstPaymentDate": "First instalment on",
@@ -331,7 +333,9 @@
       "displayName": "Name shown",
       "displayNameHint": "Shown in the lists instead of the id",
       "employer": "Employer",
-      "opened": "Opened on"
+      "opened": "Opened on",
+      "documents": "Documents",
+      "documentsHint": "Comma-separated document filenames or cloud URLs"
     },
     "option": {
       "liabilityKind": {
@@ -513,9 +517,12 @@
       "event": "Event",
       "eventHint": "Trips, works, one-off projects. Events come from your memory.",
       "noEvent": "No event",
+      "asset": "Linked asset",
+      "assetHint": "Attach this transaction to a tracked vehicle, property, or asset",
+      "noAsset": "No asset",
       "note": "Note",
       "notePlaceholder": "Optional. Kept in the annotation.",
-      "noteAlone": "A note alone is not saved: add a tag or an event as well.",
+      "noteAlone": "A note alone is not saved: add a tag, an event, or an asset as well.",
       "save": "Save to memory",
       "saved": "Saved to memory"
     },
@@ -564,6 +571,7 @@
   },
   "loan": {
     "unknown": "unknown",
+    "documents": "Reference documents",
     "noAlert": "No payment alert: every instalment due was seen, at the expected amount.",
     "dialogDescription": "Computed from the loan file and the bank payments. A missing figure is listed, never guessed.",
     "close": "Close",

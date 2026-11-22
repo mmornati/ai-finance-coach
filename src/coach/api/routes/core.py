@@ -9,7 +9,7 @@ from coach import __version__
 from coach.analytics.common import money_str
 from coach.api import views
 from coach.api.deps import ScopeParams, get_member_snapshot, get_snapshot, get_state
-from coach.api.models import AnalyticsJson, SessionInfo
+from coach.api.models import AddCategoryRequest, AnalyticsJson, SessionInfo
 from coach.api.state import AppState, Snapshot
 from coach.ingest import health as health_mod
 
@@ -82,6 +82,38 @@ def session(request: Request, state: AppState = Depends(get_state)):
 @router.get("/meta/taxonomy", tags=["core"], summary="Category taxonomy (groups and leaves)")
 def taxonomy(snap: Snapshot = Depends(get_snapshot)):
     return views.taxonomy()
+
+
+@router.post("/meta/taxonomy/categories", tags=["core"], summary="Add a category to the taxonomy (dry_run=true: preview diff)")
+def add_taxonomy_category(req: AddCategoryRequest, dry_run: bool = False, state: AppState = Depends(get_state)):
+    from coach.api.errors import ApiError
+    from coach.classify import taxonomy as tax_mod
+    cid = req.cid
+    if not cid:
+        if not req.group or not req.leaf:
+            raise ApiError(422, "missing_fields", "provide cid as 'group.leaf' or both group and leaf")
+        cid = f"{req.group.strip().lower()}.{req.leaf.strip().lower()}"
+    desc = req.description.strip()
+    if not desc:
+        raise ApiError(422, "missing_description", "give a description")
+    try:
+        diff = tax_mod.add_leaf(cid, desc, dry_run=dry_run)
+    except tax_mod.TaxonomyError as e:
+        msg = str(e)
+        code = 409 if "already exists" in msg else 422
+        raise ApiError(code, "taxonomy_error", msg) from None
+    if not dry_run:
+        state.touch()
+    return {
+        "dry_run": dry_run,
+        "changed": bool(diff),
+        "diff": diff,
+        "change_id": None,
+        "warnings": [],
+        "category": cid,
+        "description": desc,
+        "taxonomy": views.taxonomy() if not dry_run else None,
+    }
 
 
 # the disclaimers the web app shows itself (its locale files never copy them); general_advice, loan, tax: also the Rental page (4g)

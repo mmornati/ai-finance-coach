@@ -19,7 +19,24 @@ const overview = {
 
 beforeEach(() => {
   resetCsrfForTests();
-  vi.stubGlobal("fetch", vi.fn(async (url: string) => new Response(JSON.stringify(url.startsWith("/api/v1/categories") ? overview : {}), { status: 200, headers: { "Content-Type": "application/json" } })));
+  vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+    if (url.startsWith("/api/v1/categories")) {
+      return new Response(JSON.stringify(overview), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    if (url.startsWith("/api/v1/meta/taxonomy/categories")) {
+      const isDryRun = url.includes("dry_run=true");
+      return new Response(JSON.stringify({
+        dry_run: isDryRun,
+        changed: true,
+        diff: "--- taxonomy.yaml\n+++ taxonomy.yaml\n@@ -1,3 +1,4 @@\n+  housing.garden: Garden and lawn maintenance\n",
+        change_id: null,
+        warnings: [],
+        category: "housing.garden",
+        description: "Garden and lawn maintenance",
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    return new Response(JSON.stringify({}), { status: 200, headers: { "Content-Type": "application/json" } });
+  }));
 });
 afterEach(() => vi.unstubAllGlobals());
 
@@ -43,5 +60,34 @@ describe("categories page shows the analytics' group figures, never its own sums
     expect(within(housing).getByText("Electricity and gas")).toBeInTheDocument();          // the id matches too
     expect(nb(housing.textContent)).toContain("2 051 €");
     expect(screen.queryByRole("link", { name: "Food" })).not.toBeInTheDocument();      // a group with no matching row disappears
+  });
+
+  it("opens add category dialog and previews changes via dry_run", async () => {
+    renderApp(<Categories />);
+    await screen.findByRole("link", { name: "Housing" });
+    const addBtn = screen.getByRole("button", { name: /add category/i });
+    await userEvent.click(addBtn);
+
+    // Dialog is visible
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /add a category/i })).toBeInTheDocument();
+
+    // Fill leaf and description (group is already defaulting to existing group "housing")
+    const leafInput = screen.getByLabelText(/category code/i);
+    await userEvent.type(leafInput, "garden");
+    const descInput = screen.getByLabelText(/description/i);
+    await userEvent.type(descInput, "Garden and lawn maintenance");
+
+    // Diff view should appear with the dry_run preview
+    expect(await screen.findByText(/garden and lawn maintenance/i)).toBeInTheDocument();
+
+    // Click submit
+    const dialog = screen.getByRole("dialog");
+    const submitBtn = within(dialog).getByRole("button", { name: /^add category$/i });
+    expect(submitBtn).toBeEnabled();
+    await userEvent.click(submitBtn);
+
+    // Dialog closes
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

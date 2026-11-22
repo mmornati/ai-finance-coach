@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { AlertTriangle, Calculator, CarFront, Check, FileSpreadsheet, Lightbulb } from "lucide-react";
-import { Badge, Button, DiffView, Dialog, Disclosure, Field, Input, Money, Notice, Select, Spinner, Stat, Tabs } from "./ui";
+import { Badge, Button, DiffView, Dialog, Disclosure, DocumentLink, Field, Input, Money, Notice, Select, Spinner, Stat, Tabs } from "./ui";
 import { CopyCommand } from "./CopyCommand";
 import { useDisclaimers, useDryRun, useGet, useWrite } from "@/api/hooks";
 import { serverLabel, tServerOr, useServerText } from "@/i18n/server";
@@ -51,6 +51,14 @@ export default function LoanDialog({ loan, onClose, onEdit }: { loan: Liability;
     <Dialog open onClose={onClose} size="lg" title={`${loan.lender ?? loan.id}${loan.asset ? ` · ${loan.asset}` : ""}`} description={t("loan.dialogDescription")}
       footer={<><Button variant="ghost" onClick={onClose}>{t("loan.close")}</Button><Button onClick={onEdit}>{t("loan.edit")}</Button></>}>
       <div className="grid gap-4">
+        {((detail.data?.documents && detail.data.documents.length > 0) || (loan.documents && loan.documents.length > 0)) && (
+          <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-surface-2 p-2.5">
+            <span className="text-xs font-medium text-muted">{t("loan.documents")}:</span>
+            {(detail.data?.documents ?? loan.documents ?? []).map((doc) => (
+              <DocumentLink key={doc} doc={doc} />
+            ))}
+          </div>
+        )}
         <Tabs label={t("loan.sections")} value={tab} onChange={setTab} tabs={tabs} />
         {detail.isLoading && <Spinner label={t("loan.loadingSchedule")} />}
         {detail.error && <Notice tone="neg">{detail.error.message}</Notice>}

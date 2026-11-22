@@ -12,6 +12,7 @@
     "noMonth": "nessun mese è coperto per intero da tutti i conti",
     "filter": "Filtra le categorie",
     "empty": "Nessuna categoria",
+    "addCategory": "Aggiungi categoria",
     "usualMonth": "mese tipico <b><amount/></b>",
     "lowConfidence": "affidabilità bassa",
     "unavailableTitle": "Ancora nessuna media affidabile per",
@@ -106,5 +107,25 @@
         "decided_by_rule": "Una regola di classificazione decide già questo esercente."
       }
     }
+  },
+  "add": {
+    "title": "Aggiungi una categoria",
+    "description": "Crea una nuova categoria personalizzata nella tua tassonomia",
+    "groupLabel": "Gruppo",
+    "groupHint": "Ambito principale (es. housing, vehicle, daily)",
+    "newGroup": "+ Nuovo gruppo...",
+    "customGroupName": "Codice nuovo gruppo",
+    "leafLabel": "Codice categoria",
+    "leafHint": "Identificatore nel gruppo (es. vet_expenses)",
+    "descLabel": "Descrizione",
+    "descHint": "Aiuta l'IA a classificare le transazioni pertinenti",
+    "previewId": "ID categoria",
+    "diffPreview": "Anteprima modifiche",
+    "cancel": "Annulla",
+    "submit": "Aggiungi categoria",
+    "success": "Categoria creata con successo",
+    "missingGroup": "Seleziona o inserisci un gruppo",
+    "missingLeaf": "Inserisci un nome di categoria",
+    "missingDescription": "Inserisci una descrizione"
   }
 }

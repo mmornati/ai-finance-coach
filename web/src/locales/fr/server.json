@@ -873,6 +873,7 @@
     "unknownCategory": "catégorie inconnue « {{category}} » (voir `{{command}}`)",
     "unknownCategoryBare": "catégorie inconnue « {{category}} »",
     "unknownCategoryIn": "catégorie inconnue « {{category}} » dans category_in",
+    "unknownAsset": "l'actif « {{asset}} » n'est pas défini dans assets.yaml",
     "unknownEvent": "l'événement « {{event}} » n'est défini ni dans events.md (un titre `## {{event}}`) ni dans events.yaml",
     "unknownField": "le champ « {{field}} » ne fait pas partie du schéma (conservé tel quel)",
     "unknownFieldTypo": "champ inconnu (faute de frappe ?)",

@@ -814,6 +814,7 @@
     "unknownCategory": "unknown category '{{category}}' (see `{{command}}`)",
     "unknownCategoryBare": "unknown category '{{category}}'",
     "unknownCategoryIn": "unknown category '{{category}}' in category_in",
+    "unknownAsset": "asset '{{asset}}' is not defined in assets.yaml",
     "unknownEvent": "event '{{event}}' is not defined in events.md (a `## {{event}}` heading) or events.yaml",
     "unknownField": "field '{{field}}' is not part of the schema (kept as is)",
     "unknownFieldTypo": "unknown field (typo?)",

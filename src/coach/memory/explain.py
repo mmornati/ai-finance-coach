@@ -227,15 +227,15 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
     for a in anns:
         why, why_msg = R.annotation_mismatch_msg(a, tx_key, mkey, desc, bdate, amount, real_cat, op_date, aliases)
         entry = {"id": a.get("id"), "matched": why is None, "reason": why or "all criteria match", "reason_msg": why_msg,
-                 "line": lines.get(str(a.get("id")))}
+                 "line": lines.get(str(a.get("id"))), "asset": a.get("asset")}
         if why is None and winner is None:
             winner = a
             entry["winner"] = True
         considered.append(entry)
     final_cat, final_src = real_cat, real_src
-    tags, event, edit_hint = [], None, None
+    tags, event, asset, edit_hint = [], None, None, None
     if winner:
-        tags, event = list(winner.get("tags", [])), winner.get("event")
+        tags, event, asset = list(winner.get("tags", [])), winner.get("event"), winner.get("asset")
         if winner.get("category"):
             final_cat, final_src = winner["category"], "memory"
         line = next((c["line"] for c in considered if c["id"] == winner.get("id")), None)
@@ -260,7 +260,7 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
         "transaction": tx, "parsed": parsed, "steps": steps,
         "split": split, "memory": {"annotations": considered, "winner": winner.get("id") if winner else None},
         "final": {"category": final_cat, "source": final_src, "tags": sorted(tags), "event": event,
-                  "before_memory": {"category": real_cat, "source": real_src}},
+                  "asset": asset, "before_memory": {"category": real_cat, "source": real_src}},
         "edit": edit_hint if not parts else f"`coach split {tx_key} --clear` (the split decides the categories)",
         "consistent": consistent,
         "attribution": attribution,
