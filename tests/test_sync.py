@@ -196,3 +196,20 @@ def test_only_booked_entries_become_transactions_and_a_dateless_one_never_does(c
     assert con.execute("SELECT COUNT(*) FROM transactions WHERE booking_date IS NULL").fetchone()[0] == 0
     assert con.execute("SELECT booking_date FROM transactions WHERE entry_reference='b1'").fetchone()[0] == "2025-10-03"
     assert con.execute("SELECT COUNT(*) FROM pending_transactions").fetchone()[0] == 2
+
+
+def test_sync_empty_remittance_info_dedups_and_does_not_rekey(con):
+    tx = eb_tx("pos-ref-1", "2026-11-18", -42.0, "", creditor="Novashop")
+    fc = FakeClient({"acc1": [{"transactions": [tx]}, {"transactions": [tx]}]})
+    res1 = sync_account(con, fc, "acc1", full=False, force=False, out=lambda *_: None)
+    assert res1["status"] == "ok" and res1["new"] == 1
+    row1 = con.execute("SELECT tx_key, description, counterparty FROM transactions WHERE entry_reference='pos-ref-1'").fetchone()
+    assert row1[1] == ""
+    assert row1[2] == "Novashop"
+
+    # Second sync of the exact same entry
+    res2 = sync_account(con, fc, "acc1", full=False, force=True, out=lambda *_: None)
+    assert res2["status"] == "ok" and res2["new"] == 0
+    rows = con.execute("SELECT tx_key, description FROM transactions WHERE entry_reference='pos-ref-1'").fetchall()
+    assert len(rows) == 1
+    assert rows[0][0] == row1[0]

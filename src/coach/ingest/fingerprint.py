@@ -101,6 +101,11 @@ def rekey_tables(con, old: str, new: str) -> None:
     con.execute("UPDATE transfer_links SET in_tx_key=? WHERE in_tx_key=?", (new, old))
     con.execute("UPDATE transfer_rejections SET out_tx_key=? WHERE out_tx_key=?", (new, old))
     con.execute("UPDATE transfer_rejections SET in_tx_key=? WHERE in_tx_key=?", (new, old))
+    if con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='settlement_links'").fetchone():
+        con.execute("UPDATE settlement_links SET funding_tx_key=? WHERE funding_tx_key=?", (new, old))
+        con.execute("UPDATE settlement_links SET settled_tx_key=? WHERE settled_tx_key=?", (new, old))
+        con.execute("UPDATE settlement_rejections SET funding_tx_key=? WHERE funding_tx_key=?", (new, old))
+        con.execute("UPDATE settlement_rejections SET settled_tx_key=? WHERE settled_tx_key=?", (new, old))
 
 
 def replace_tx_key(con, old: str, new: str, reason: str = "import superseded by bank feed") -> None:
@@ -118,6 +123,12 @@ def replace_tx_key(con, old: str, new: str, reason: str = "import superseded by 
     con.execute("UPDATE OR IGNORE transfer_rejections SET out_tx_key=? WHERE out_tx_key=?", (new, old))
     con.execute("UPDATE OR IGNORE transfer_rejections SET in_tx_key=? WHERE in_tx_key=?", (new, old))
     con.execute("DELETE FROM transfer_rejections WHERE out_tx_key=? OR in_tx_key=?", (old, old))
+    if con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='settlement_links'").fetchone():
+        con.execute("UPDATE settlement_links SET funding_tx_key=? WHERE funding_tx_key=?", (new, old))
+        con.execute("UPDATE settlement_links SET settled_tx_key=? WHERE settled_tx_key=?", (new, old))
+        con.execute("UPDATE OR IGNORE settlement_rejections SET funding_tx_key=? WHERE funding_tx_key=?", (new, old))
+        con.execute("UPDATE OR IGNORE settlement_rejections SET settled_tx_key=? WHERE settled_tx_key=?", (new, old))
+        con.execute("DELETE FROM settlement_rejections WHERE funding_tx_key=? OR settled_tx_key=?", (old, old))
     con.execute("DELETE FROM tx_overrides WHERE tx_key=?", (old,))
     con.execute("DELETE FROM tx_enriched WHERE tx_key=?", (old,))
     con.execute("DELETE FROM tx_parse_meta WHERE tx_key=?", (old,))

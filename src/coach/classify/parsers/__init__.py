@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from typing import Callable
 
-from coach.classify.parsers import caisse_epargne, cic, fortuneo, french, italian, revolut
+from coach.classify.parsers import caisse_epargne, cic, fortuneo, french, italian, paypal, revolut
 from coach.classify.parsers.common import (PARSED_KEYS, Household, RawTx, candidate_holders, holder_sets, household,
                                            is_own_name, lead_tokens, looks_like_person, merchant_key, owner_tokens,
                                            strip_accents, _holder_name, _name_tokens)
@@ -36,6 +36,7 @@ register("fortuneo", fortuneo.parse, r"\bfortuneo\b")
 register("caisse_epargne", caisse_epargne.parse, r"caisse d.?epargne|\bbpce\b|\bcaisse epargne\b")
 register("cic", cic.parse, r"(^|\b)cic\b|credit industriel")
 register("revolut", revolut.parse, r"\brevolut\b")
+register("paypal", paypal.parse, r"\bpaypal\b")
 register("italian", italian.parse)
 register("generic", lambda tx, h: french.parse(tx, h))
 

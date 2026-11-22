@@ -44,6 +44,7 @@ DEFAULT_MIN_CONFIDENCE = 0.85
 # card payments to these merchants are usually top-ups of another own account (Revolut card funded by the main
 # card...): they may pair with the credit on the other account, as PROPOSALS only, never auto-linked
 DEFAULT_TOPUPS = ("REVOLUT", "LYDIA", "PAYPAL")
+SETTLEMENT_PROVIDERS = ("PAYPAL", "LYDIA")
 
 
 class TransferError(Exception):
@@ -84,7 +85,9 @@ def _legs(con, topups: tuple[str, ...] = DEFAULT_TOPUPS) -> list[Leg]:
              JOIN tx_enriched e ON e.tx_key=t.tx_key
              WHERE t.amount <> 0 AND t.booking_date IS NOT NULL AND e.tx_type IS NOT NULL
                AND t.tx_key NOT IN (SELECT out_tx_key FROM transfer_links)
-               AND t.tx_key NOT IN (SELECT in_tx_key FROM transfer_links)"""
+               AND t.tx_key NOT IN (SELECT in_tx_key FROM transfer_links)
+               AND t.tx_key NOT IN (SELECT funding_tx_key FROM settlement_links)
+               AND t.tx_key NOT IN (SELECT settled_tx_key FROM settlement_links)"""
     top = re.compile(r"\b(" + "|".join(re.escape(t.upper()) for t in topups) + r")\b") if topups else None
     out = []
     for r in con.execute(sql):
@@ -100,6 +103,13 @@ def _legs(con, topups: tuple[str, ...] = DEFAULT_TOPUPS) -> list[Leg]:
 def _days(a: str, b: str) -> int | None:
     try:
         return abs((date.fromisoformat(a[:10]) - date.fromisoformat(b[:10])).days)
+    except ValueError:
+        return None
+
+
+def _days_signed(funding_date: str, settled_date: str) -> int | None:
+    try:
+        return (date.fromisoformat(funding_date[:10]) - date.fromisoformat(settled_date[:10])).days
     except ValueError:
         return None
 
@@ -176,9 +186,129 @@ def opts(cfg) -> dict:
     return out
 
 
+def find_settlement_pairs(con, window_days: int = 7, min_confidence: float = DEFAULT_MIN_CONFIDENCE,
+                          providers: tuple[str, ...] = SETTLEMENT_PROVIDERS,
+                          auto_link: bool = False) -> MatchResult:
+    """Match intermediary payment provider debits (e.g. FastPay) with funding debits on bank accounts.
+
+    In a settlement, the user buys something through a provider (e.g. FastPay -> HostCorp for -42.00 EUR on day T).
+    A few days later (day T+2), the user's main bank account (e.g. Novabank) is debited for the same
+    amount (-42.00 EUR) with a description mentioning the provider (e.g. 'PRLV SEPA FASTPAY...').
+
+    Matching links the bank debit (funding leg) to the provider debit (settled leg). The bank debit is
+    classified as transfer.internal (source settlement_link) so it drops out of spending, while the provider
+    debit preserves its genuine merchant and classification.
+    """
+    prov_pat = r"\b(" + "|".join(re.escape(p.upper()) for p in providers) + r")\b"
+    prov_re = re.compile(prov_pat, re.I)
+
+    # 1. Identify provider accounts: check bank identity first, fallback to name only if bank is empty (never user label)
+    accounts = con.execute("SELECT uid, label, name, bank FROM accounts").fetchall()
+    provider_uids = {uid for uid, label, name, bank in accounts if prov_re.search(bank or "")}
+    if not provider_uids:
+        provider_uids = {uid for uid, label, name, bank in accounts if not bank and prov_re.search(name or "")}
+    if not provider_uids:
+        return MatchResult()
+
+    # 2. Exclude already linked or rejected
+    rejected = {(f, s) for f, s in con.execute("SELECT funding_tx_key, settled_tx_key FROM settlement_rejections")}
+
+    linked = {k for r in con.execute("SELECT out_tx_key, in_tx_key FROM transfer_links") for k in r}
+    linked |= {k for r in con.execute("SELECT funding_tx_key, settled_tx_key FROM settlement_links") for k in r}
+
+    # 3. Query candidate settled transactions on provider accounts
+    prov_placeholders = ",".join("?" for _ in provider_uids)
+    sql_settled = f"""
+        SELECT t.tx_key, t.account_uid, COALESCE(a.label, a.name, a.uid), t.booking_date, t.amount,
+               t.currency, t.description, e.tx_type, e.merchant_key, a.bank
+        FROM transactions t
+        LEFT JOIN accounts a ON a.uid=t.account_uid
+        LEFT JOIN tx_enriched e ON e.tx_key=t.tx_key
+        WHERE t.amount <> 0 AND t.booking_date IS NOT NULL
+          AND t.account_uid IN ({prov_placeholders})
+    """
+    settled_candidates = [
+        Leg(*r[:9], bank=r[9]) for r in con.execute(sql_settled, list(provider_uids)).fetchall()
+        if r[0] not in linked
+    ]
+
+    # Index settled by (cents, currency, sign)
+    settled_by_amt: dict[tuple[int, str, int], list[Leg]] = {}
+    for s in settled_candidates:
+        cents = round(abs(s.amount) * 100)
+        sign = 1 if s.amount > 0 else -1
+        settled_by_amt.setdefault((cents, s.currency or "", sign), []).append(s)
+
+    # 4. Query candidate funding transactions on non-provider accounts
+    sql_funding = f"""
+        SELECT t.tx_key, t.account_uid, COALESCE(a.label, a.name, a.uid), t.booking_date, t.amount,
+               t.currency, t.description, e.tx_type, e.merchant_key, a.bank, e.merchant_raw
+        FROM transactions t
+        LEFT JOIN accounts a ON a.uid=t.account_uid
+        LEFT JOIN tx_enriched e ON e.tx_key=t.tx_key
+        WHERE t.amount <> 0 AND t.booking_date IS NOT NULL
+          AND t.account_uid NOT IN ({prov_placeholders})
+    """
+    funding_rows = con.execute(sql_funding, list(provider_uids)).fetchall()
+    funding_candidates: list[Leg] = []
+    for r in funding_rows:
+        if r[0] in linked:
+            continue
+        text = f"{r[6] or ''} {r[8] or ''} {r[10] or ''}"
+        if prov_re.search(text):
+            funding_candidates.append(Leg(*r[:9], bank=r[9]))
+
+    # 5. Match candidates
+    cand_settled_for_funding: dict[str, list[tuple[Leg, int]]] = {}
+    cand_funding_for_settled: dict[str, list[Leg]] = {}
+    funding_map: dict[str, Leg] = {}
+
+    for f in funding_candidates:
+        funding_map[f.tx_key] = f
+        cents = round(abs(f.amount) * 100)
+        sign = 1 if f.amount > 0 else -1
+        for s in settled_by_amt.get((cents, f.currency or "", sign), []):
+            if (f.tx_key, s.tx_key) in rejected:
+                continue
+            gap = _days_signed(f.date, s.date)
+            if gap is None or gap < -1 or gap > window_days:
+                continue
+            cand_settled_for_funding.setdefault(f.tx_key, []).append((s, gap))
+            cand_funding_for_settled.setdefault(s.tx_key, []).append(f)
+
+    res = MatchResult()
+    for fk, s_list in sorted(cand_settled_for_funding.items(), key=lambda kv: funding_map[kv[0]].date):
+        f = funding_map[fk]
+        if len(s_list) == 1 and len(cand_funding_for_settled[s_list[0][0].tx_key]) == 1:
+            s, gap = s_list[0]
+            conf = round(min(0.99, max(0.50, 0.98 - 0.02 * max(0, gap))), 2) if gap >= 0 else 0.90
+            p = {
+                "debit": f, "credit": s,
+                "funding": f, "settled": s,
+                "days": gap, "strong": True, "topup": False,
+                "confidence": conf, "scope": "own", "to_child": False,
+                "kind": "settlement",
+            }
+            (res.linked if auto_link and conf >= min_confidence else res.proposals).append(p)
+        else:
+            res.ambiguous.append({
+                "debit": f,
+                "candidates": [s for s, _ in s_list],
+                "competing_debits": sorted({
+                    x.tx_key for s, _ in s_list for x in cand_funding_for_settled.get(s.tx_key, [])
+                    if x.tx_key != fk
+                }),
+                "kind": "settlement",
+            })
+
+    return res
+
+
 def find_pairs(con, window_days: int = 3, min_confidence: float = DEFAULT_MIN_CONFIDENCE,
                topups: tuple[str, ...] = DEFAULT_TOPUPS, annotations: list[dict] | None = None,
-               cross_window_days: int | None = None, people=None) -> MatchResult:
+               cross_window_days: int | None = None, people=None,
+               include_settlements: bool = True, settlement_window_days: int = 7,
+               auto_link_settlements: bool = False) -> MatchResult:
     from coach.classify.rules import annotation_for, load_rules, resolve
     rules = load_rules()
     annotations = annotations or []
@@ -267,20 +397,38 @@ def find_pairs(con, window_days: int = 3, min_confidence: float = DEFAULT_MIN_CO
             matched_debits.add(d.tx_key)
         if used:      # an ambiguous pass-1 group whose debit or credits were just settled is no longer open
             res.ambiguous = [g for g in res.ambiguous if g["debit"].tx_key not in used]
+
+    # PASS 3: payment settlement matching (e.g. PayPal purchase funded by bank direct debit)
+    if include_settlements:
+        sres = find_settlement_pairs(con, window_days=settlement_window_days, min_confidence=min_confidence,
+                                     auto_link=auto_link_settlements)
+        res.linked.extend(sres.linked)
+        res.proposals.extend(sres.proposals)
+        res.ambiguous.extend(sres.ambiguous)
+
     return res
 
 
 def match_transfers(con, window_days: int = 3, dry_run: bool = False, auto_link: bool = True,
                     min_confidence: float = DEFAULT_MIN_CONFIDENCE, topups: tuple[str, ...] = DEFAULT_TOPUPS,
-                    annotations: list[dict] | None = None, cross_window_days: int | None = None, people=None) -> MatchResult:
+                    annotations: list[dict] | None = None, cross_window_days: int | None = None, people=None,
+                    include_settlements: bool = True, settlement_window_days: int = 7,
+                    auto_link_settlements: bool = False) -> MatchResult:
     """Detect pairs; with `auto_link` store those at or above `min_confidence`. Without it (the scheduled job's
     default) nothing is written: the pairs are only proposed."""
-    res = find_pairs(con, window_days, min_confidence, topups, annotations, cross_window_days, people)
+    res = find_pairs(con, window_days, min_confidence, topups, annotations, cross_window_days, people,
+                     include_settlements=include_settlements, settlement_window_days=settlement_window_days,
+                     auto_link_settlements=auto_link_settlements)
     if not dry_run and auto_link:
         for p in res.linked:
-            con.execute("INSERT INTO transfer_links(out_tx_key, in_tx_key, amount, confidence, method, created_at) "
-                        "VALUES (?,?,?,?, 'auto', ?)",
-                        (p["debit"].tx_key, p["credit"].tx_key, abs(p["debit"].amount), p["confidence"], now_iso()))
+            if p.get("kind") == "settlement":
+                con.execute("INSERT OR IGNORE INTO settlement_links(funding_tx_key, settled_tx_key, amount, confidence, method, created_at) "
+                            "VALUES (?,?,?,?, 'auto', ?)",
+                            (p["funding"].tx_key, p["settled"].tx_key, abs(p["funding"].amount), p["confidence"], now_iso()))
+            else:
+                con.execute("INSERT INTO transfer_links(out_tx_key, in_tx_key, amount, confidence, method, created_at) "
+                            "VALUES (?,?,?,?, 'auto', ?)",
+                            (p["debit"].tx_key, p["credit"].tx_key, abs(p["debit"].amount), p["confidence"], now_iso()))
         con.commit()
     return res
 
@@ -298,10 +446,41 @@ def resolve_tx(con, ref: str) -> str:
     raise TransferError(f"No transaction matches {ref!r}")
 
 
-def link_transfer(con, out_ref: str, in_ref: str, allow_amount_mismatch: bool = False) -> int:
+def link_settlement(con, funding_ref: str, settled_ref: str, allow_amount_mismatch: bool = False) -> int:
+    funding_key, settled_key = resolve_tx(con, funding_ref), resolve_tx(con, settled_ref)
+    f = con.execute("SELECT account_uid, amount, currency FROM transactions WHERE tx_key=?", (funding_key,)).fetchone()
+    s = con.execute("SELECT account_uid, amount, currency FROM transactions WHERE tx_key=?", (settled_key,)).fetchone()
+    if f[0] == s[0]:
+        raise TransferError("both transactions are on the same account")
+    if round(abs(f[1]) * 100) != round(abs(s[1]) * 100) and not allow_amount_mismatch:
+        raise TransferError(f"amounts differ ({f[1]} vs {s[1]}); use --allow-amount-mismatch for a settlement with "
+                            "fees or a currency change")
+    for key in (funding_key, settled_key):
+        if (row := con.execute("SELECT id FROM settlement_links WHERE funding_tx_key=? OR settled_tx_key=?",
+                               (key, key)).fetchone()):
+            raise TransferError(f"{key} is already part of settlement link #{row[0]} (unlink it first)")
+        if (row := con.execute("SELECT id FROM transfer_links WHERE out_tx_key=? OR in_tx_key=?",
+                               (key, key)).fetchone()):
+            raise TransferError(f"{key} is already part of transfer link #{row[0]} (unlink it first)")
+    cur = con.execute("INSERT INTO settlement_links(funding_tx_key, settled_tx_key, amount, confidence, method, created_at) "
+                      "VALUES (?,?,?,1.0,'manual',?)", (funding_key, settled_key, abs(f[1]), now_iso()))
+    con.execute("DELETE FROM settlement_rejections WHERE funding_tx_key=? AND settled_tx_key=?", (funding_key, settled_key))
+    con.commit()
+    return cur.lastrowid
+
+
+def link_transfer(con, out_ref: str, in_ref: str, allow_amount_mismatch: bool = False,
+                  settlement: bool = False) -> int:
     out_key, in_key = resolve_tx(con, out_ref), resolve_tx(con, in_ref)
     o = con.execute("SELECT account_uid, amount, currency FROM transactions WHERE tx_key=?", (out_key,)).fetchone()
     i = con.execute("SELECT account_uid, amount, currency FROM transactions WHERE tx_key=?", (in_key,)).fetchone()
+    if (o[1] < 0 and i[1] < 0) or (o[1] > 0 and i[1] > 0):
+        if not settlement:
+            raise TransferError("the first transaction must be the debit (negative) and the second the credit (positive); "
+                                "pass settlement=True or --settlement to link payment settlements")
+        return link_settlement(con, out_key, in_key, allow_amount_mismatch)
+    if settlement:
+        raise TransferError("settlement links connect two debits (or two refunds); for a transfer between accounts, do not use --settlement")
     if o[1] >= 0 or i[1] <= 0:
         raise TransferError("the first transaction must be the debit (negative) and the second the credit (positive)")
     if o[0] == i[0]:
@@ -313,11 +492,29 @@ def link_transfer(con, out_ref: str, in_ref: str, allow_amount_mismatch: bool = 
         if (row := con.execute("SELECT id FROM transfer_links WHERE out_tx_key=? OR in_tx_key=?",
                                (key, key)).fetchone()):
             raise TransferError(f"{key} is already part of link #{row[0]} (unlink it first)")
+        if (row := con.execute("SELECT id FROM settlement_links WHERE funding_tx_key=? OR settled_tx_key=?",
+                               (key, key)).fetchone()):
+            raise TransferError(f"{key} is already part of settlement link #{row[0]} (unlink it first)")
     cur = con.execute("INSERT INTO transfer_links(out_tx_key, in_tx_key, amount, confidence, method, created_at) "
                       "VALUES (?,?,?,1.0,'manual',?)", (out_key, in_key, abs(o[1]), now_iso()))
     con.execute("DELETE FROM transfer_rejections WHERE out_tx_key=? AND in_tx_key=?", (out_key, in_key))
     con.commit()
     return cur.lastrowid
+
+
+def unlink_settlement(con, ref: str) -> dict:
+    row = None
+    if ref.isdigit():
+        row = con.execute("SELECT id, funding_tx_key, settled_tx_key FROM settlement_links WHERE id=?", (int(ref),)).fetchone()
+    if not row:
+        row = con.execute("SELECT id, funding_tx_key, settled_tx_key FROM settlement_links WHERE funding_tx_key=? OR settled_tx_key=?",
+                          (ref, ref)).fetchone()
+    if not row:
+        raise TransferError(f"No settlement link matches {ref!r} (see `coach transfers`)")
+    con.execute("DELETE FROM settlement_links WHERE id=?", (row[0],))
+    con.execute("INSERT OR REPLACE INTO settlement_rejections VALUES (?,?,?)", (row[1], row[2], now_iso()))
+    con.commit()
+    return {"id": row[0], "funding": row[1], "settled": row[2], "kind": "settlement"}
 
 
 def unlink_transfer(con, ref: str) -> dict:
@@ -328,12 +525,18 @@ def unlink_transfer(con, ref: str) -> dict:
     if not row:
         row = con.execute("SELECT id, out_tx_key, in_tx_key FROM transfer_links WHERE out_tx_key=? OR in_tx_key=?",
                           (ref, ref)).fetchone()
-    if not row:
-        raise TransferError(f"No transfer link matches {ref!r} (see `coach transfers`)")
-    con.execute("DELETE FROM transfer_links WHERE id=?", (row[0],))
-    con.execute("INSERT OR REPLACE INTO transfer_rejections VALUES (?,?,?)", (row[1], row[2], now_iso()))
-    con.commit()
-    return {"id": row[0], "out": row[1], "in": row[2]}
+    if row:
+        con.execute("DELETE FROM transfer_links WHERE id=?", (row[0],))
+        con.execute("INSERT OR REPLACE INTO transfer_rejections VALUES (?,?,?)", (row[1], row[2], now_iso()))
+        con.commit()
+        return {"id": row[0], "out": row[1], "in": row[2]}
+
+    try:
+        return unlink_settlement(con, ref)
+    except TransferError:
+        pass
+
+    raise TransferError(f"No transfer or settlement link matches {ref!r} (see `coach transfers`)")
 
 
 def list_links(con) -> list[dict]:
@@ -347,7 +550,22 @@ def list_links(con) -> list[dict]:
         ORDER BY COALESCE(o.booking_date, ''), l.id""").fetchall()
     keys = ["id", "amount", "confidence", "method", "created_at", "out_key", "out_date", "out_account", "out_desc",
             "in_key", "in_date", "in_account", "in_desc", "out_owner", "in_owner"]
-    return [dict(zip(keys, r)) for r in rows]
+    out = [dict(zip(keys, r)) for r in rows]
+    srows = con.execute("""
+        SELECT s.id, s.amount, s.confidence, s.method, s.created_at,
+               f.tx_key, f.booking_date, COALESCE(af.label, af.name, af.uid), f.description,
+               t.tx_key, t.booking_date, COALESCE(at.label, at.name, at.uid), COALESCE(e.merchant_raw, t.description),
+               af.owner, at.owner
+        FROM settlement_links s
+        LEFT JOIN transactions f ON f.tx_key=s.funding_tx_key LEFT JOIN accounts af ON af.uid=f.account_uid
+        LEFT JOIN transactions t ON t.tx_key=s.settled_tx_key LEFT JOIN accounts at ON at.uid=t.account_uid
+        LEFT JOIN tx_enriched e ON e.tx_key=t.tx_key
+        ORDER BY COALESCE(f.booking_date, ''), s.id""").fetchall()
+    for r in srows:
+        d = dict(zip(keys, r))
+        d["kind"] = "settlement"
+        out.append(d)
+    return out
 
 
 def format_links(links: list[dict]) -> str:
@@ -355,9 +573,11 @@ def format_links(links: list[dict]) -> str:
         return "no transfer links (run `coach transfers match`)"
     lines = [f"{'id':>4} {'amount':>10} {'conf':>5} {'how':<7} {'from':<24} -> {'to':<24} dates"]
     for l in links:
+        arrow = "=>" if l.get("kind") == "settlement" else "->"
+        note = " (settlement)" if l.get("kind") == "settlement" else ""
         lines.append(f"{l['id']:>4} {l['amount']:>10.2f} {l['confidence']:>5.2f} {l['method']:<7} "
-                     f"{(l['out_account'] or '?')[:24]:<24} -> {(l['in_account'] or '?')[:24]:<24} "
-                     f"{l['out_date']} / {l['in_date']}")
+                     f"{(l['out_account'] or '?')[:24]:<24} {arrow} {(l['in_account'] or '?')[:24]:<24} "
+                     f"{l['out_date']} / {l['in_date']}{note}")
     return "\n".join(lines)
 
 
@@ -368,10 +588,15 @@ def format_proposals(res: MatchResult) -> str:
     lines = [f"{len(items)} candidate pair(s) not linked yet; confirm with `coach transfers link OUT_KEY IN_KEY` "
              "(or `coach transfers match` for the auto-linkable ones):"]
     for kind, p in items:
-        scope = ", household transfer" + (" to a child" if p.get("to_child") else "") if p.get("scope") == "household" else ""
-        lines.append(f"\n  {p['confidence']:.2f} {kind} ({'strong' if p['strong'] else 'weak'} evidence{', card top-up' if p['topup'] else ''}{scope}, {p['days']}d apart)"
-                     f"\n  OUT {p['debit'].short()}\n      key {p['debit'].tx_key}"
-                     f"\n  IN  {p['credit'].short()}\n      key {p['credit'].tx_key}")
+        if p.get("kind") == "settlement":
+            lines.append(f"\n  {p['confidence']:.2f} {kind} (payment settlement, {p['days']}d apart)"
+                         f"\n  FUNDING {p['debit'].short()}\n      key {p['debit'].tx_key}"
+                         f"\n  SETTLED {p['credit'].short()}\n      key {p['credit'].tx_key}")
+        else:
+            scope = ", household transfer" + (" to a child" if p.get("to_child") else "") if p.get("scope") == "household" else ""
+            lines.append(f"\n  {p['confidence']:.2f} {kind} ({'strong' if p['strong'] else 'weak'} evidence{', card top-up' if p['topup'] else ''}{scope}, {p['days']}d apart)"
+                         f"\n  OUT {p['debit'].short()}\n      key {p['debit'].tx_key}"
+                         f"\n  IN  {p['credit'].short()}\n      key {p['credit'].tx_key}")
     return "\n".join(lines)
 
 
@@ -381,10 +606,11 @@ def format_ambiguous(res: MatchResult) -> str:
     lines = [f"{len(res.ambiguous)} debit(s) with several (or contested) candidate credits; "
              "pick with `coach transfers link OUT_KEY IN_KEY`:"]
     for g in res.ambiguous:
-        lines.append(f"\n  OUT {g['debit'].short()}\n      key {g['debit'].tx_key}")
+        kind = " (settlement)" if g.get("kind") == "settlement" else ""
+        lines.append(f"\n  OUT {g['debit'].short()}\n      key {g['debit'].tx_key}{kind}")
         for c in g["candidates"]:
             lines.append(f"    IN  {c.short()}\n      key {c.tx_key}")
-        if g["competing_debits"]:
+        if g.get("competing_debits"):
             lines.append(f"      (also claimed by {len(g['competing_debits'])} other debit(s))")
     return "\n".join(lines)
 
@@ -394,4 +620,6 @@ def linked_keys(con) -> set[str]:
     for a, b in con.execute("SELECT out_tx_key, in_tx_key FROM transfer_links"):
         out.add(a)
         out.add(b)
+    for a, in con.execute("SELECT funding_tx_key FROM settlement_links"):
+        out.add(a)
     return out

@@ -326,3 +326,87 @@ def test_cli_proposals_listing(cfg, con, capsys):
     main(["--config", str(cfg.config_path), "--insecure", "transfers", "--proposals"])
     out = capsys.readouterr().out
     assert "proposal" in out and "rent_out" in out and "rent_in" in out
+
+
+# ---- settlement links (FastPay / PayPal payment intermediary matching)
+
+def test_settlement_pair_proposed_by_default_and_resolved(con):
+    add_bank(con, "s_pp", "PayPal", "FR", [("pp", "PP0001", "PayPal Balance")])
+    add_tx(con, "pp", "s1", "2026-11-18", -62.38, "HostCorp", "card")
+    add_tx(con, "ce", "f1", "2026-11-20", -62.38, "PRLV SEPA PAYPAL EUROPE S.A.R.L.", "direct_debit")
+
+    # Settlements are proposals by default (never auto-linked into settlement_links without confirmation)
+    res = tm.match_transfers(con)
+    assert not res.linked and not res.ambiguous
+    assert len(res.proposals) == 1
+    assert res.proposals[0]["kind"] == "settlement"
+    assert con.execute("SELECT COUNT(*) FROM settlement_links").fetchone()[0] == 0
+
+    # Explicit auto_link_settlements=True allows automated linking
+    res_auto = tm.match_transfers(con, auto_link_settlements=True)
+    assert len(res_auto.linked) == 1
+    assert res_auto.linked[0]["kind"] == "settlement"
+
+    rows = con.execute("SELECT funding_tx_key, settled_tx_key, amount, method FROM settlement_links").fetchall()
+    assert rows == [("f1", "s1", 62.38, "auto")]
+
+    # Funding leg resolves to transfer.internal and drops out of spending
+    assert resolve(con, "f1", "direct_debit", "PAYPAL", RULES) == ("transfer.internal", "transfer_link")
+    # Settled leg keeps its real classification (not transfer.internal)
+    assert resolve(con, "s1", "card", "HOSTCORP", RULES)[0] != "transfer.internal"
+
+
+def test_settlement_window_and_gap(con):
+    add_bank(con, "s_pp", "PayPal", "FR", [("pp", "PP0001", "PayPal Balance")])
+    add_tx(con, "pp", "s1", "2026-11-10", -50.0, "MERCHANT A", "card")
+    add_tx(con, "ce", "f1", "2026-11-19", -50.0, "PRLV PAYPAL", "direct_debit")  # gap = 9 days (> 7)
+    res = tm.find_settlement_pairs(con, window_days=7)
+    assert res.proposals == []
+
+    # within 7 days
+    con.execute("UPDATE transactions SET booking_date='2026-11-15' WHERE tx_key='f1'")
+    con.commit()
+    res = tm.find_settlement_pairs(con, window_days=7)
+    assert len(res.proposals) == 1
+    assert res.proposals[0]["funding"].tx_key == "f1"
+    assert res.proposals[0]["settled"].tx_key == "s1"
+
+
+def test_settlement_ambiguous_two_identical_amounts(con):
+    add_bank(con, "s_pp", "PayPal", "FR", [("pp", "PP0001", "PayPal Balance")])
+    add_tx(con, "pp", "s1", "2026-03-10", -12.0, "Daily News", "card")
+    add_tx(con, "pp", "s2", "2026-03-10", -12.0, "Knowledge Org", "card")
+    add_tx(con, "ce", "f1", "2026-03-11", -12.0, "PRLV PAYPAL", "direct_debit")
+
+    res = tm.find_settlement_pairs(con)
+    assert res.linked == []
+    assert len(res.ambiguous) == 1
+    amb = res.ambiguous[0]
+    assert amb["debit"].tx_key == "f1"
+    assert {c.tx_key for c in amb["candidates"]} == {"s1", "s2"}
+
+
+def test_settlement_manual_link_and_unlink(con):
+    add_bank(con, "s_pp", "PayPal", "FR", [("pp", "PP0001", "PayPal Balance")])
+    add_tx(con, "pp", "s1", "2026-11-18", -45.0, "STORE", "card")
+    add_tx(con, "ce", "f1", "2026-11-20", -45.0, "PRLV PAYPAL", "direct_debit")
+
+    tm.link_settlement(con, "f1", "s1")
+    assert con.execute("SELECT COUNT(*) FROM settlement_links WHERE funding_tx_key='f1'").fetchone()[0] == 1
+
+    tm.unlink_settlement(con, "f1")
+    assert con.execute("SELECT COUNT(*) FROM settlement_links WHERE funding_tx_key='f1'").fetchone()[0] == 0
+
+    # Calling link_transfer with two debits requires explicit settlement=True
+    with pytest.raises(tm.TransferError, match="settlement"):
+        tm.link_transfer(con, "f1", "s1")
+
+    # link_transfer with settlement=True links settlement
+    tm.link_transfer(con, "f1", "s1", settlement=True)
+    assert con.execute("SELECT COUNT(*) FROM settlement_links WHERE funding_tx_key='f1'").fetchone()[0] == 1
+    assert con.execute("SELECT COUNT(*) FROM transfer_links").fetchone()[0] == 0
+
+    # unlink_transfer can unlink from either side
+    tm.unlink_transfer(con, "s1")
+    assert con.execute("SELECT COUNT(*) FROM settlement_links WHERE funding_tx_key='f1'").fetchone()[0] == 0
+

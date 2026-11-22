@@ -226,6 +226,7 @@ def merge_accounts(con, old_ref: str, new_ref: str) -> str:
                 for t in ("tx_enriched", "tx_overrides", "import_rows", "tx_parse_meta", "tx_splits"):
                     con.execute(f"DELETE FROM {t} WHERE tx_key=?", (key,))
                 con.execute("DELETE FROM transfer_links WHERE out_tx_key=? OR in_tx_key=?", (key, key))
+                con.execute("DELETE FROM settlement_links WHERE funding_tx_key=? OR settled_tx_key=?", (key, key))
                 con.execute("DELETE FROM transactions WHERE tx_key=?", (key,))
             elif nk != key:
                 rekey_tables(con, key, nk)       # every table that refers to the key follows (E2: splits, parse meta...)

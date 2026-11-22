@@ -318,7 +318,8 @@ def cmd_transfers_match(a, cfg):
 def cmd_transfers_link(a, cfg):
     con = connect(cfg, insecure=a.insecure)
     try:
-        lid = transfers_mod.link_transfer(con, a.out_tx, a.in_tx, a.allow_amount_mismatch)
+        lid = transfers_mod.link_transfer(con, a.out_tx, a.in_tx, a.allow_amount_mismatch,
+                                         settlement=getattr(a, "settlement", False))
     except transfers_mod.TransferError as e:
         _fail(e)
     print(f"linked as #{lid}")

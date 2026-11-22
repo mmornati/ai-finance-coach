@@ -294,6 +294,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--dry-run", action="store_true"); s.add_argument("--window", type=int)
     s = add(tsub, "link", ic.cmd_transfers_link, "link a debit and a credit by hand")
     s.add_argument("out_tx"); s.add_argument("in_tx"); s.add_argument("--allow-amount-mismatch", action="store_true")
+    s.add_argument("--settlement", action="store_true", help="link an intermediary settlement pair (two debits)")
     s = add(tsub, "unlink", ic.cmd_transfers_unlink, "remove a link (id or either leg's tx_key)")
     s.add_argument("ref")
     s = add(sub, "sync", ic.cmd_sync, "pull new transactions and balances")

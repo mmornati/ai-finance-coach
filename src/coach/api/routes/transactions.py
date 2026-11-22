@@ -210,6 +210,11 @@ def detail(tx_key: str, snap: Snapshot = Depends(get_member_snapshot), state: Ap
         ov = con.execute("SELECT category, note FROM tx_overrides WHERE tx_key=?", (tx_key,)).fetchone()
         link = con.execute("SELECT id, out_tx_key, in_tx_key, method, confidence FROM transfer_links WHERE out_tx_key=? OR in_tx_key=?",
                            (tx_key, tx_key)).fetchone()
+        if not link:
+            slink = con.execute("SELECT id, funding_tx_key, settled_tx_key, method, confidence FROM settlement_links WHERE funding_tx_key=? OR settled_tx_key=?",
+                                (tx_key, tx_key)).fetchone()
+            if slink:
+                link = slink
         same_merchant = con.execute("SELECT COUNT(*) FROM tx_enriched WHERE merchant_key=? AND merchant_key<>''",
                                     (ex["parsed"]["merchant_key"] or "",)).fetchone()[0]
     ex["transaction"] = {k: v for k, v in ex["transaction"].items()}
@@ -530,12 +535,14 @@ class LinkRequest(BaseModel):
     out_tx: str
     in_tx: str
     allow_amount_mismatch: bool = False
+    settlement: bool = False
 
 
 @router.post("/transfers/link", summary="Link a debit and a credit as an internal transfer")
 def link(req: LinkRequest, state: AppState = Depends(get_state)):
     with state.write() as con:
-        lid = transfers_mod.link_transfer(con, req.out_tx, req.in_tx, req.allow_amount_mismatch)
+        lid = transfers_mod.link_transfer(con, req.out_tx, req.in_tx, req.allow_amount_mismatch,
+                                          settlement=req.settlement)
     return {"id": lid}
 
 

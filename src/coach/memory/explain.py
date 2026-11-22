@@ -116,6 +116,14 @@ def explain(con, store: MemoryStore, tx_key: str, rules: Optional[dict] = None) 
         step("transfer link", "transferLink", True, text,
              _msg("explain.transferLink", text, other=other, method=lk[3], confidence=f"{lk[2]:.2f}"),
              "transfer.internal", f"`coach transfers unlink {tx_key}`", "transfer_link")
+    elif (slk := con.execute(
+            "SELECT funding_tx_key, settled_tx_key, confidence, method FROM settlement_links WHERE funding_tx_key=?",
+            (tx_key,)).fetchone()):
+        other = slk[1]
+        text = f"funding leg of a payment settlement with {other} ({slk[3]}, confidence {slk[2]:.2f})"
+        step("transfer link", "transferLink", True, text,
+             _msg("explain.transferLink", text, other=other, method=slk[3], confidence=f"{slk[2]:.2f}"),
+             "transfer.internal", f"`coach transfers unlink {tx_key}`", "transfer_link")
     else:
         step("transfer link", "transferLink", False, "not linked to another own account",
              _msg("explain.noTransferLink", "not linked to another own account"))

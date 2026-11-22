@@ -191,6 +191,7 @@ def llm_candidates(con, refresh: bool = False, include_ruled: bool = False, memo
     family, first = household_names(con)
     places = known_places(con, memory_dir)
     known = known_merchants(con)
+    settle_sql = "AND t.tx_key NOT IN (SELECT funding_tx_key FROM settlement_links)"
     q = f"""SELECT e.merchant_key, COUNT(*) n, ROUND(SUM(ABS(t.amount)),2), GROUP_CONCAT(DISTINCT e.tx_type),
                    GROUP_CONCAT(DISTINCT COALESCE(a.bank, '')), MAX(e.merchant_raw), MAX(m.source), MAX(m.category)
             FROM tx_enriched e JOIN transactions t USING(tx_key) LEFT JOIN accounts a ON a.uid=t.account_uid
@@ -198,6 +199,7 @@ def llm_candidates(con, refresh: bool = False, include_ruled: bool = False, memo
             WHERE {needs_llm_sql()} AND e.merchant_key <> ''
               AND t.tx_key NOT IN (SELECT out_tx_key FROM transfer_links)
               AND t.tx_key NOT IN (SELECT in_tx_key FROM transfer_links)
+              {settle_sql}
               AND ((m.merchant_key IS NULL AND e.merchant_key NOT IN
                         (SELECT a2.merchant_key FROM merchant_aliases a2 JOIN merchant_entities en ON en.id=a2.entity_id
                          WHERE en.category IS NOT NULL))

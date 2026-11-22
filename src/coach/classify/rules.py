@@ -309,6 +309,9 @@ def resolve(con, tx_key, tx_type, mkey, rules: dict | None = None, linked: bool 
     if linked is None:
         linked = con.execute("SELECT 1 FROM transfer_links WHERE out_tx_key=? OR in_tx_key=?",
                              (tx_key, tx_key)).fetchone() is not None
+        if not linked:
+            linked = con.execute("SELECT 1 FROM settlement_links WHERE funding_tx_key=?",
+                                 (tx_key,)).fetchone() is not None
     if linked:
         return "transfer.internal", "transfer_link"
     by_purpose = (rules.get("type_rules_by_account_purpose") or {}).get(purpose or "", {})
@@ -350,6 +353,7 @@ def resolved_rows(con, rules: dict | None = None, include_excluded: bool = False
                           LEFT JOIN accounts a ON a.uid=t.account_uid""").fetchall()
     excluded = set() if include_excluded else {r[0] for r in con.execute("SELECT uid FROM accounts WHERE exclude=1 OR needs_review=1")}
     linked = {k for r in con.execute("SELECT out_tx_key, in_tx_key FROM transfer_links") for k in r}
+    linked |= {r[0] for r in con.execute("SELECT funding_tx_key FROM settlement_links")}
     aliases: dict[str, list[str]] = {}
     for old, new in con.execute("SELECT old_key, new_key FROM tx_key_remap"):
         aliases.setdefault(new, []).append(old)

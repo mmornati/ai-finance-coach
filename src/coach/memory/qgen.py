@@ -102,9 +102,10 @@ def merchant_questions(con, cfg, store, today, min_stake, limit):
     known = known_merchants(con)
     rows = review_rows(con, cfg, 0.7, 10**9)
     out, held_n, held_total = [], 0, 0.0
+    extra_settle = " UNION SELECT funding_tx_key FROM settlement_links"
     for r in rows:
-        if con.execute("""SELECT COUNT(*) FROM tx_enriched e WHERE e.merchant_key=? AND e.tx_key NOT IN
-                          (SELECT out_tx_key FROM transfer_links UNION SELECT in_tx_key FROM transfer_links)""",
+        if con.execute(f"""SELECT COUNT(*) FROM tx_enriched e WHERE e.merchant_key=? AND e.tx_key NOT IN
+                          (SELECT out_tx_key FROM transfer_links UNION SELECT in_tx_key FROM transfer_links{extra_settle})""",
                        (r["key"],)).fetchone()[0] == 0:
             continue                                  # every transaction is a leg of a linked internal transfer
         if r["reason"] == "held_back_person_like" or _person_like(r["key"], r["raw_example"], r["types"], family, first, known,

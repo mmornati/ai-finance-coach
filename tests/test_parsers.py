@@ -31,11 +31,12 @@ def test_registry_picks_the_parser_by_bank_then_iban_country():
     assert parser_name_for("Caisse d'Epargne Normandie") == "caisse_epargne"
     assert parser_name_for("CIC") == "cic"
     assert parser_name_for("Revolut") == "revolut"
+    assert parser_name_for("PayPal") == "paypal"
     assert parser_name_for("Banca Test", iban="IT60X0542811101000000123456") == "italian"
     assert parser_name_for("Banca Test", country="IT") == "italian"
     assert parser_name_for("Some Bank", iban="FR76") == "generic"
     assert parser_name_for(None) == "generic"
-    assert set(PARSERS) >= {"fortuneo", "caisse_epargne", "cic", "revolut", "italian", "generic"}
+    assert set(PARSERS) >= {"fortuneo", "caisse_epargne", "cic", "revolut", "paypal", "italian", "generic"}
 
 
 def test_bank_parser_hands_unknown_lines_to_the_generic_one():
@@ -232,6 +233,40 @@ def test_revolut_transfers_between_household_members_vs_friends():
     assert junior["tx_type"] == "internal_transfer"
     # the free-text note between people is not kept
     assert friend["reference"] is None
+
+
+# ---------------------------------------------------------------- PayPal
+
+def test_paypal_merchant_card_payments_and_refunds():
+    r = P("PayPal", "", -62.38, counterparty="HostCorp")
+    assert (r["tx_type"], r["merchant_raw"], r["merchant_key"], r["parser"]) == ("card", "HostCorp", "HOSTCORP", "paypal")
+
+    r2 = P("PayPal", "", -14.99, counterparty="StreamCorp")
+    assert (r2["tx_type"], r2["merchant_key"]) == ("card", "STREAMCORP")
+
+    r3 = P("PayPal", "", 15.0, counterparty="Digital Services")
+    assert (r3["tx_type"], r3["merchant_key"]) == ("card_refund", "DIGITAL SERVICES")
+
+
+def test_paypal_fx_and_description_fallback():
+    r = P("PayPal", "", -50.0, counterparty="Gaming Store",
+          raw={"exchange_rate": {"instructed_amount": {"currency": "USD", "amount": "55.0"}}}, currency="EUR")
+    assert (r["fx_amount"], r["fx_currency"]) == (55.0, "USD")
+
+    # Fallback to description if counterparty is empty
+    r2 = P("PayPal", "Sponsor Club", -10.0)
+    assert (r2["tx_type"], r2["merchant_key"]) == ("card", "SPONSOR CLUB")
+
+
+def test_paypal_person_transfers_and_household():
+    own = P("PayPal", "", -30.0, counterparty="Paul Durand")
+    assert own["tx_type"] == "internal_transfer"
+
+    friend_out = P("PayPal", "", -25.0, counterparty="Marc Dupont")
+    assert (friend_out["tx_type"], friend_out["merchant_raw"]) == ("person_transfer_out", "Marc Dupont")
+
+    friend_in = P("PayPal", "", 25.0, counterparty="Marc Dupont")
+    assert (friend_in["tx_type"], friend_in["merchant_raw"]) == ("person_transfer_in", "Marc Dupont")
 
 
 # ---------------------------------------------------------------- Italian (synthetic: no Italian bank connected yet)
