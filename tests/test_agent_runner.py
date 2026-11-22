@@ -406,3 +406,42 @@ def test_claude_gets_the_oauth_token_secret_and_the_mcp_server_the_secret_locati
     env = mcp_config(cfg, "s1", insecure=True)["mcpServers"]["finance"]["env"]
     assert env["COACH_SECRETS_BACKEND"] == "file" and env["COACH_SECRETS_DIR"] == "/run/secrets"   # the child finds /run/secrets
     assert "COACH_DB_KEY" not in env and "CLAUDE_CODE_OAUTH_TOKEN" not in env                     # never a secret value
+
+
+# ---------------------------------------------------------------- antigravity
+
+def test_antigravity_tool_loop(cfg, world):
+    turns_called = []
+
+    def mock_runner(cmd, prompt_text, env, remaining):
+        turns_called.append(prompt_text)
+        if len(turns_called) == 1:
+            return {
+                "status": "SUCCESS",
+                "structured_output": {
+                    "thought": "Let's check the coverage.",
+                    "tool_name": "coverage",
+                    "tool_arguments": {},
+                    "answer": ""
+                },
+                "usage": {"input_tokens": 100, "output_tokens": 20, "cache_read_tokens": 50}
+            }, 0, ""
+        return {
+            "status": "SUCCESS",
+            "structured_output": {
+                "thought": "Coverage is clear.",
+                "tool_name": "none",
+                "tool_arguments": {},
+                "answer": "Coverage looks solid."
+            },
+            "usage": {"input_tokens": 120, "output_tokens": 30, "cache_read_tokens": 100}
+        }, 0, ""
+
+    res, _ = go(cfg, backend="antigravity", model="", runner=mock_runner)
+    assert res.text == "Coverage looks solid."
+    assert res.usage.backend == "antigravity"
+    assert res.usage.tokens_in == 220
+    assert res.usage.tokens_out == 50
+    assert res.usage.cache_read_tokens == 150
+    assert [c["name"] for c in res.tool_calls] == ["coverage"]
+

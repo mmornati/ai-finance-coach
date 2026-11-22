@@ -105,6 +105,19 @@ INVENTORY: tuple[Flow, ...] = (
          local_only="refused", offline="refused",
          purposes=("classify.label", "classify.compare", "coach.ask", "coach.digest", "coach.skill", "memory.doc_extract", "eval.models"),
          host="openrouter.ai", mode="item-redact"),
+    Flow("llm.antigravity", "LLM through the `agy` CLI (Google Antigravity)",
+         "Google (the `agy -p` process talks to Gemini)",
+         "classify run/compare and `eval models`: redacted merchant descriptors without the known towns, payment counts and types, amounts rounded to an "
+         "order of magnitude, nearest labelled merchants as hints, the category list and a few labelled examples; coach ask/digest/skills: the question, and the REDACTED, pseudonymised "
+         "results of the finance tools (computed figures, `h_` refs, merchant titles generalised); memory doc extract: a redacted document text",
+         "item-redact: IBANs, e-mails, phones, long digits, ids, titled people and household name tokens removed; person-like merchants "
+         "never sent (coach.classify.candidates); finance tools pseudonymise accounts / people (coach.analytics.privacy); documents "
+         "redacted (coach.memory.docredact)",
+         "llm.backend / coach.backend = \"antigravity\"",
+         "[privacy] local_only = true and llm.backend / coach.backend = \"ollama\"; or do not run those commands",
+         local_only="refused", offline="refused",
+         purposes=("classify.label", "classify.compare", "coach.ask", "coach.digest", "coach.skill", "memory.doc_extract", "eval.models"),
+         host="Google Gemini (via the agy CLI)", mode="item-redact"),
     Flow("alerts.ntfy", "Alert channel: ntfy push",
          "the ntfy server of [alerts.ntfy] url (public ntfy.sh or your own)",
          "an alert title + one short line (minimal: no merchant, no account, no bank, no name; amounts only in `summary` detail)",
@@ -162,9 +175,9 @@ ENFORCED = tuple(k for k in KINDS if k != "skill.web_search")     # called throu
 # file (relative to src/coach) -> (kinds it can reach, one-line description)
 CALL_SITES: dict[str, tuple[tuple[str, ...], str]] = {
     "ingest/client.py": (("enable_banking",), "Enable Banking REST client (requests)"),
-    "classify/backends.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama", "llm.openai-compatible"),
+    "classify/backends.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama", "llm.openai-compatible", "llm.antigravity"),
                              "LLM backends of classify run/enrich/compare and memory doc extract"),
-    "agent/runner.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama", "llm.openai-compatible"), "the coach runtime (ask, digests, skills)"),
+    "agent/runner.py": (("llm.claude-code", "llm.anthropic-api", "llm.ollama", "llm.openai-compatible", "llm.antigravity"), "the coach runtime (ask, digests, skills)"),
     "alerts/channels.py": (("alerts.ntfy", "alerts.email", "alerts.telegram", "alerts.macos"), "alert channels"),
     "classify/llm.py": ((), "re-exports `subprocess` for tests; no call"),
     "notify.py": (("alerts.macos",), "osascript notification (this machine)"),

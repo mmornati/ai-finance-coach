@@ -107,6 +107,17 @@ def test_the_claude_command_matters_only_for_the_claude_code_backend(home, monke
     assert D.check_claude_cli(cfg).level == "info"
 
 
+def test_the_antigravity_command_matters_only_for_the_antigravity_backend(home, monkeypatch):
+    cfg = cfg_of(home)
+    cfg.llm_backend = cfg.coach_backend = "antigravity"
+    monkeypatch.setattr(D.shutil, "which", lambda name: None)
+    assert D.check_antigravity_cli(cfg).level == "warn" and "AntiGravity" in D.check_antigravity_cli(cfg).hint
+    monkeypatch.setattr(D.shutil, "which", lambda name: "/opt/homebrew/bin/agy")
+    assert D.check_antigravity_cli(cfg).level == "ok"
+    cfg.llm_backend = cfg.coach_backend = "claude-code"
+    assert D.check_antigravity_cli(cfg).level == "info"
+
+
 def test_in_a_container_the_claude_code_backend_needs_the_cli_and_the_token(home, monkeypatch):
     monkeypatch.setenv("COACH_IN_CONTAINER", "1")
     monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)

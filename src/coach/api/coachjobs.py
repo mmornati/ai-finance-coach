@@ -97,6 +97,11 @@ def availability(cfg, backend: Optional[str] = None, model: Optional[str] = None
             return False, f"No API key for the OpenAI-compatible provider: run `uv run coach config set-secret openai_api_key`, or choose another [{section}] backend."
         if not (model if backend else cfg.coach_model_effective):
             return False, "No model for the OpenAI-compatible provider: set [coach] model or [llm] openai_model in config.toml."
+    if b == "antigravity":
+        cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
+        if shutil.which(cli) is None:
+            return False, f"The `{cli}` command is not installed or not in PATH: install AntiGravity CLI, or set [{section}] backend in config.toml."
+        return True, ""
     return True, ""
 
 

@@ -205,6 +205,19 @@ def check_claude_cli(cfg) -> Check:
     return Check("claude", "info", "claude command", "not installed (optional: only the claude-code backend needs it)")
 
 
+def check_antigravity_cli(cfg) -> Check:
+    needs = "antigravity" in (cfg.llm_backend, cfg.coach_backend)
+    cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
+    found = shutil.which(cli)
+    if found:
+        return Check("antigravity", "ok" if needs else "info", "agy command",
+                     f"found at {found} ({'used by antigravity backend' if needs else 'optional, not used by current backends'})")
+    if needs:
+        return Check("antigravity", "warn", "agy command", f"not found (`{cli}`), but a backend is set to antigravity",
+                     "install AntiGravity CLI, ensure it is on PATH, or set [llm] antigravity_cli_path in config.toml")
+    return Check("antigravity", "info", "agy command", "not installed (optional: only the antigravity backend needs it)")
+
+
 def check_backends(cfg, env=None) -> list[Check]:
     out = []
     if "anthropic-api" in (cfg.llm_backend, cfg.coach_backend):
@@ -242,7 +255,7 @@ def run_checks(cfg, env=None) -> list[Check]:
     checks += check_secret_store(env)
     checks.append(check_database(cfg))
     checks += check_enable_banking(cfg)
-    checks += [check_permissions(cfg), check_web(), check_claude_cli(cfg)]
+    checks += [check_permissions(cfg), check_web(), check_claude_cli(cfg), check_antigravity_cli(cfg)]
     checks += check_backends(cfg, env)
     checks += [check_git(cfg), privacy_summary(cfg)]
     return checks

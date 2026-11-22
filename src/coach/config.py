@@ -23,7 +23,7 @@ class ConfigError(Exception):
     pass
 
 
-ALLOWED_LLM_BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible")
+ALLOWED_LLM_BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible", "antigravity")
 
 
 def _typed(name: str, value, typ):
@@ -144,6 +144,8 @@ class Config:
     llm_openai_base_url: str = "https://openrouter.ai/api/v1"  # openai-compatible: the provider's /v1 root (OpenRouter, Eden AI, vLLM ...)
     llm_openai_model: str = ""           # openai-compatible: the provider's model id (e.g. "anthropic/claude-haiku-4.5" on OpenRouter)
     llm_openrouter_deny_data_collection: bool = True   # OpenRouter: only route to providers that do not store / train on prompts
+    llm_antigravity_cli_path: str = "agy"  # antigravity: CLI binary name or path
+    llm_antigravity_model: str = "gemini-3.8-flash-medium"  # antigravity: classification model
     llm_allowlist: tuple = ()            # regexes of transfer-like merchant keys that may be sent to the LLM
     knn_enabled: bool = True             # label near-duplicates of already-labelled merchants without the LLM
     knn_threshold: float = 0.92          # minimum cosine similarity for such an automatic label
@@ -192,8 +194,9 @@ class Config:
     ui_sso_issuer: str = ""              # [ui] sso_issuer: the token's expected `iss` ("" = not checked; the signature always is)
     ui_sso_audience: str = ""            # [ui] sso_audience: the token's expected `aud` (the provider's client id; "" = not checked)
     ui_sso_users: dict = field(default_factory=dict)   # [ui.sso_users]: identity (username, e-mail or subject) -> "owner" or a `coach users` login id
-    coach_backend: str = "claude-code"   # [coach] backend: claude-code | anthropic-api | ollama | openai-compatible (the LLM coach, not the classifier)
+    coach_backend: str = "claude-code"   # [coach] backend: claude-code | anthropic-api | ollama | openai-compatible | antigravity (the LLM coach, not the classifier)
     coach_model: str | None = None       # [coach] model; None = the backend's default (see coach_model_effective)
+    coach_antigravity_model: str = "gemini-3.8-flash-high"  # [coach] antigravity_model: default model for antigravity coach
     coach_max_tool_calls: int = 12       # [coach] max_tool_calls per question (digests get twice as many)
     coach_max_tokens: int = 4096         # [coach] max_tokens per model answer (anthropic-api / ollama / openai-compatible)
     coach_timeout: int = 180             # [coach] timeout_seconds for one question (digests: three times)
@@ -221,6 +224,8 @@ class Config:
             return self.coach_model
         if self.coach_backend == "openai-compatible":
             return self.llm_openai_model
+        if self.coach_backend == "antigravity":
+            return self.coach_antigravity_model
         return {"claude-code": "sonnet", "anthropic-api": "claude-sonnet-5-5"}.get(self.coach_backend, self.llm_ollama_model)
 
     @property
@@ -331,6 +336,8 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         llm_openai_model=_typed("llm.openai_model", pick("llm.openai_model", "llm", ""), str),
         llm_openrouter_deny_data_collection=_typed("llm.openrouter_deny_data_collection",
                                                    pick("llm.openrouter_deny_data_collection", "llm", True), bool),
+        llm_antigravity_cli_path=_typed("llm.antigravity_cli_path", pick("llm.antigravity_cli_path", "llm", "agy", "COACH_AGY_CLI"), str),
+        llm_antigravity_model=_typed("llm.antigravity_model", pick("llm.antigravity_model", "llm", "gemini-3.8-flash-medium"), str),
         llm_allowlist=_names_re(pick("classify.llm_allowlist", "classify", [])),
         knn_enabled=_typed("classify.knn_enabled", pick("classify.knn_enabled", "classify", True), bool),
         knn_threshold=_conf_knn(pick("classify.knn_threshold", "classify", 0.92)),
@@ -387,6 +394,7 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         ui_sso_users=_sso_users(pick("ui.sso_users", "ui", {})),
         coach_backend=_typed("coach.backend", pick("coach.backend", "coach", "claude-code"), str),
         coach_model=_opt_str("coach.model", pick("coach.model", "coach", None)),
+        coach_antigravity_model=_typed("coach.antigravity_model", pick("coach.antigravity_model", "coach", "gemini-3.8-flash-high"), str),
         coach_max_tool_calls=_typed("coach.max_tool_calls", pick("coach.max_tool_calls", "coach", 12), int),
         coach_max_tokens=_typed("coach.max_tokens", pick("coach.max_tokens", "coach", 4096), int),
         coach_timeout=_typed("coach.timeout_seconds", pick("coach.timeout_seconds", "coach", 180), int),
@@ -506,6 +514,8 @@ def effective(cfg: Config) -> list[tuple[str, str, str]]:
         ("llm.openai_model", cfg.llm_openai_model or "(unset)", s.get("llm.openai_model", "")),
         ("llm.openrouter_deny_data_collection", str(cfg.llm_openrouter_deny_data_collection).lower(),
          s.get("llm.openrouter_deny_data_collection", "")),
+        ("llm.antigravity_cli_path", cfg.llm_antigravity_cli_path, s.get("llm.antigravity_cli_path", "")),
+        ("llm.antigravity_model", cfg.llm_antigravity_model, s.get("llm.antigravity_model", "")),
         ("classify.llm_allowlist", ", ".join(cfg.llm_allowlist) or "(none)", s.get("classify.llm_allowlist", "")),
         ("classify.knn_enabled", str(cfg.knn_enabled).lower(), s.get("classify.knn_enabled", "")),
         ("classify.knn_threshold", str(cfg.knn_threshold), s.get("classify.knn_threshold", "")),
@@ -545,6 +555,7 @@ def effective(cfg: Config) -> list[tuple[str, str, str]]:
         ("privacy.egress_journal_days", str(cfg.privacy_egress_journal_days), s.get("privacy.egress_journal_days", "")),
         ("coach.backend", cfg.coach_backend, s.get("coach.backend", "")),
         ("coach.model", cfg.coach_model_effective + ("" if cfg.coach_model else " (backend default)"), s.get("coach.model", "")),
+        ("coach.antigravity_model", cfg.coach_antigravity_model, s.get("coach.antigravity_model", "")),
         ("coach.max_tool_calls", str(cfg.coach_max_tool_calls), s.get("coach.max_tool_calls", "")),
         ("coach.max_tokens", str(cfg.coach_max_tokens), s.get("coach.max_tokens", "")),
         ("coach.timeout_seconds", str(cfg.coach_timeout), s.get("coach.timeout_seconds", "")),

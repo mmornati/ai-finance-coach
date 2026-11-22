@@ -560,3 +560,48 @@ def test_claude_code_backend_logs_in_with_the_oauth_token_secret_when_set(monkey
     assert "CLAUDE_CODE_OAUTH_TOKEN" not in seen[0]                 # no token: the CLI's own login
     assert "COACH_DB_KEY" not in seen[1]                            # still the minimal environment
     assert seen[1]["CLAUDE_CODE_OAUTH_TOKEN"] == "test-oauth-token"
+
+
+# ---------------------------------------------------------------- antigravity
+
+def test_antigravity_backend_complete():
+    res_obj = results_json(1)
+
+    def mock_runner(cmd, prompt, env, timeout):
+        assert "--output-format" in cmd and "json" in cmd
+        assert "--json-schema" in cmd
+        return {
+            "status": "SUCCESS",
+            "structured_output": res_obj,
+            "usage": {"input_tokens": 500, "output_tokens": 50, "cache_read_tokens": 200}
+        }, 0, ""
+
+    b = backends.AntiGravityBackend(runner=mock_runner)
+    data, usage = b.complete("Static prompt", "Dynamic prompt", LABEL_SCHEMA, "gemini-model", "label", 1)
+    assert data["results"][0]["id"] == 0
+    assert usage.backend == "antigravity"
+    assert usage.tokens_in == 500
+    assert usage.tokens_out == 50
+    assert usage.cache_read_tokens == 200
+    assert usage.cost_usd is None
+    assert usage.cost_is_estimate is True
+
+
+def test_antigravity_backend_error_handling():
+    def mock_fail(cmd, prompt, env, timeout):
+        return {"status": "ERROR", "error": "model error"}, 1, "Process failed"
+
+    b = backends.AntiGravityBackend(runner=mock_fail)
+    with pytest.raises(RuntimeError, match="agy failed"):
+        b.complete("S", "D", LABEL_SCHEMA, "m", "label", 1)
+
+
+def test_antigravity_config(tmp_path):
+    p = tmp_path / "c.toml"
+    p.write_text('[llm]\nbackend = "antigravity"\nantigravity_model = "gemini-pro"\n'
+                 '[coach]\nbackend = "antigravity"\nmodel = "gemini-pro"\n')
+    cfg = load_config(p, env={})
+    b = get_backend(cfg)
+    assert isinstance(b, backends.AntiGravityBackend)
+    assert backends.default_model(cfg, b) == "gemini-pro"
+    assert cfg.coach_model_effective == "gemini-pro"

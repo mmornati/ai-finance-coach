@@ -20,10 +20,12 @@ private_key_path = ""             # the .pem downloaded when you created the app
 # api_url = "https://api.enablebanking.com"
 
 [llm]
-backend = "claude-code"           # claude-code (headless `claude -p`) | anthropic-api (SDK, key = secret
+backend = "claude-code"           # claude-code (headless `claude -p`) | antigravity (headless `agy`) | anthropic-api (SDK, key = secret
                                   # anthropic_api_key) | ollama (local HTTP server) | openai-compatible (OpenRouter,
                                   # Eden AI, vLLM ...: any OpenAI-style /chat/completions API, key = secret openai_api_key)
 model = "sonnet"                  # model for claude-code (sonnet | haiku | opus); `classify run --model` overrides
+# antigravity_cli_path = ""       # antigravity: explicit path to `agy` (default: found via PATH)
+# antigravity_model = ""          # antigravity: model name passed to `agy --model` (default: agy default)
 anthropic_model = "claude-haiku-4-5"   # anthropic-api: model id (aliases haiku | sonnet | opus also accepted)
 batch_api = false                 # anthropic-api: send a run as ONE Message Batches request (50% cheaper, async)
 ollama_url = "http://localhost:11434"  # ollama: base URL of the server
@@ -144,10 +146,11 @@ egress_journal_days = 365         # `schedule run` deletes journal rows older th
 
 [coach]                           # the LLM coach: "Ask the coach", `coach coach ask|digest`, Claude Code + the finance MCP (docs/coach.md)
 backend = "claude-code"           # "claude-code" (headless `claude -p`, your personal Max subscription: low-frequency personal use only)
+                                  # | "antigravity" (headless `agy`, uses your Gemini / AntiGravity session & tools)
                                   # | "anthropic-api" (API key from the Keychain secret anthropic_api_key: use it for automation / sharing)
                                   # | "ollama" ([llm] ollama_url; only models that support tool calling, otherwise the coach refuses)
                                   # | "openai-compatible" ([llm] openai_base_url + secret openai_api_key; a model with tool calling)
-# model = "sonnet"                # default: sonnet (claude-code), claude-sonnet-5-5 (anthropic-api), [llm] ollama_model (ollama),
+# model = "sonnet"                # default: sonnet (claude-code), agy default (antigravity), claude-sonnet-5-5 (anthropic-api), [llm] ollama_model (ollama),
                                   # [llm] openai_model (openai-compatible; e.g. "anthropic/claude-sonnet-4.5" on OpenRouter)
 max_tool_calls = 12               # tool calls per question (digests get twice as many); the job stops beyond it
 max_tokens = 4096                 # per model answer (anthropic-api / ollama / openai-compatible)

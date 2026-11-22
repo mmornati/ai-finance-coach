@@ -35,7 +35,7 @@ from typing import Callable, Optional
 from coach import egress
 from coach.agent import prompt as P
 from coach.claude_cli import ENV_ALLOW, SECRET_ENV, claude_env  # noqa: F401  (re-exported: tests and callers import them here)
-from coach.classify.backends import Usage, estimate_cost
+from coach.classify.backends import Usage, estimate_cost, safe_diagnostic
 from coach.mcp import guard as G
 from coach.mcp.tools import REF_RE, TOOL_NAMES, ToolSession
 
@@ -725,6 +725,169 @@ def run_openai(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool
     return st.result(finish, usage, "openai-compatible", model, err)
 
 
+# ---------------------------------------------------------------- AntiGravity (agy)
+
+TURN_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "thought": {"type": "string", "description": "Reasoning about financial data or answering the question"},
+        "tool_name": {"type": "string", "description": "The tool name to call (e.g. 'get_balances', 'get_transactions'), or 'none' if ready to give the final answer"},
+        "tool_arguments": {"type": "object", "description": "Arguments for the tool call, or empty object {} if no arguments or tool_name is 'none'"},
+        "answer": {"type": "string", "description": "The final Markdown answer to the user when tool_name is 'none'"}
+    },
+    "required": ["thought", "tool_name", "tool_arguments", "answer"],
+    "additionalProperties": False,
+}
+
+
+def antigravity_command(cfg, model: str = "") -> list[str]:
+    cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
+    cmd = [cli, "--output-format", "json", "--disable-slash-commands", "--dangerously-skip-permissions",
+           "--json-schema", json.dumps(TURN_SCHEMA)]
+    if model:
+        cmd.extend(["--model", model])
+    return cmd
+
+
+def run_antigravity(cfg, spec, user: str, st: RunState, model: str, *, insecure: bool,
+                    runner=None, tools: Optional[ToolSession] = None) -> RunResult:
+    from coach.antigravity_cli import antigravity_env
+    from coach.classify.backends import parse_json_text
+
+    cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
+    if runner is None and shutil.which(cli) is None:
+        raise CoachUnavailable(f"the `{cli}` command is not installed or not in PATH (backend antigravity): install "
+                               "AntiGravity CLI, or set [coach] backend in config.toml")
+
+    own = tools is None
+    tools = tools or ToolSession(cfg, insecure=insecure, session_id=st.session_id)
+    names = spec.tools or TOOL_NAMES
+    tools.specs = {k: v for k, v in tools.specs.items() if k in names}
+
+    tool_docs = "\n\n".join(
+        f"### {t['name']}\n{t['description']}\nInput schema: {json.dumps(t['input_schema'])}"
+        for t in tools.listing()
+    )
+
+    system = (
+        f"{P.system_prompt(st.max_calls)}\n\n"
+        "You have access to the following finance tools to inspect financial figures:\n"
+        f"{tool_docs}\n\n"
+        "Instructions for each turn:\n"
+        "- If you need data from a tool, set `tool_name` to the exact tool name and `tool_arguments` to its parameters.\n"
+        "- If you have enough information or need no tools, set `tool_name` to 'none' and provide your final response in `answer`.\n"
+    )
+
+    turns = [
+        {"role": "user", "content": f"{system}\n\nUser Question:\n{user}"}
+    ]
+
+    tin = tout = cached = 0
+    t0 = time.monotonic()
+    finish, err = "stop", None
+    timeout = cfg.coach_timeout * spec.timeout_factor
+    deadline = t0 + timeout
+
+    try:
+        for turn_idx in range(st.max_calls + 2):
+            if st.cancel.is_set():
+                finish = "cancelled"
+                break
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                finish = "timeout"
+                break
+
+            prompt_text = "\n\n".join(
+                f"[{m['role'].upper()}]: {m['content']}" for m in turns
+            )
+
+            egress.allow("llm.antigravity", {"purpose": egress_purpose(spec),
+                                             "bytes": len(prompt_text.encode("utf-8"))}, cfg=cfg)
+
+            cmd = antigravity_command(cfg, model)
+            env = antigravity_env(cfg)
+
+            if runner is not None:
+                res, out_code, out_err = runner(cmd, prompt_text, env, remaining)
+            else:
+                run_dir = tempfile.mkdtemp(prefix="coach-run-agy-")
+                try:
+                    out = subprocess.run(cmd, input=prompt_text, capture_output=True, text=True,
+                                         timeout=min(remaining, 300), env=env, cwd=run_dir)
+                finally:
+                    shutil.rmtree(run_dir, ignore_errors=True)
+                res = json.loads(out.stdout) if out.stdout.strip().startswith("{") else {}
+                out_code = out.returncode
+                out_err = out.stderr
+
+            if out_code != 0 or res.get("status") == "ERROR" or res.get("is_error"):
+                diag = safe_diagnostic(out_err or res.get("error"), prompt_text)
+                raise RuntimeError(f"agy failed (exit {out_code}"
+                                   + (f", {res.get('error')}" if res.get('error') else "") + ")"
+                                   + (f": {diag}" if diag else ""))
+
+            u = res.get("usage") or {}
+            tin += int(u.get("input_tokens") or 0)
+            tout += int(u.get("output_tokens") or 0)
+            cached += int(u.get("cache_read_tokens") or 0)
+
+            data = res.get("structured_output")
+            if data is None and res.get("response"):
+                try:
+                    data = parse_json_text(res["response"])
+                except Exception:
+                    data = {}
+
+            if not isinstance(data, dict):
+                data = {}
+
+            tool_name = (data.get("tool_name") or "").strip()
+            tool_args = data.get("tool_arguments") or {}
+            if isinstance(tool_args, str):
+                try:
+                    tool_args = json.loads(tool_args)
+                except ValueError:
+                    tool_args = {}
+            answer = data.get("answer") or ""
+
+            if not tool_name or tool_name.lower() in ("none", "null", ""):
+                if answer:
+                    st.text(answer)
+                elif res.get("response"):
+                    st.text(res["response"])
+                break
+
+            if tool_name not in tools.specs:
+                turns.append({"role": "model", "content": f"Called unknown tool {tool_name}"})
+                turns.append({"role": "user", "content": f"Unknown tool '{tool_name}'. Available tools: {', '.join(tools.specs.keys())}. Provide answer or call a valid tool."})
+                continue
+
+            cid = f"agy{len(st.calls)}_{turn_idx}"
+            if not st.tool_call(cid, tool_name, tool_args):
+                turns.append({"role": "user", "content": "tool budget spent: answer now with what you already have"})
+                finish = "max_tool_calls"
+                continue
+
+            res_tool = tools.call(tool_name, tool_args)
+            st.tool_result(cid, res_tool.text, res_tool.ok)
+            turns.append({"role": "model", "content": f"Call {tool_name}({json.dumps(tool_args)})"})
+            turns.append({"role": "user", "content": f"Result from {tool_name}:\n{res_tool.text}"})
+        else:
+            finish = "max_tool_calls"
+    except CoachUnavailable:
+        raise
+    except Exception as e:
+        finish, err = "error", f"antigravity error ({type(e).__name__}): {str(e)[:160]}"
+    finally:
+        if own:
+            tools.close()
+
+    usage = Usage("antigravity", model, f"coach:{spec.id}", len(st.calls), tin, tout, cached, 0,
+                  None, True, round(time.monotonic() - t0, 2))
+    return st.result(finish, usage, "antigravity", model, err)
+
+
 # ---------------------------------------------------------------- entry point
 
 def run_agent(cfg, spec: P.PromptSpec, question: Optional[str] = None, *, emit: Optional[Emit] = None,
@@ -750,4 +913,6 @@ def run_agent(cfg, spec: P.PromptSpec, question: Optional[str] = None, *, emit: 
         return run_ollama(cfg, spec, user, st, model, insecure=insecure, **backend_kw)
     if backend == "openai-compatible":
         return run_openai(cfg, spec, user, st, model, insecure=insecure, **backend_kw)
+    if backend == "antigravity":
+        return run_antigravity(cfg, spec, user, st, model, insecure=insecure, **backend_kw)
     raise CoachUnavailable(f"unknown coach backend {backend!r}")

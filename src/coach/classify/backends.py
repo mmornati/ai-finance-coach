@@ -28,9 +28,10 @@ from dataclasses import dataclass
 import requests
 
 from coach import egress
+from coach.antigravity_cli import antigravity_env
 from coach.claude_cli import DENIED_BUILTINS, ISOLATION_ARGS, claude_env
 
-BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible")
+BACKENDS = ("claude-code", "anthropic-api", "ollama", "openai-compatible", "antigravity")
 ALIASES = {"haiku": "claude-haiku-4-5", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
 # USD per million tokens (input, output); cached reads cost 0.1x input (CACHE_READ below), cache writes 1.25x, batch calls 0.5x
 PRICES = {"claude-haiku-4-5": (1.0, 5.0), "claude-haiku-5-5": (0.1, 0.5), "claude-sonnet-5-5": (2.0, 10.0), "claude-sonnet-5": (2.0, 10.0),
@@ -555,6 +556,68 @@ class OpenAICompatBackend(LLMBackend):
             raise LLMError(str(e)[:200], usage) from e
 
 
+# ---------------------------------------------------------------- AntiGravity (agy)
+
+def antigravity_classify_command(cfg, model: str, schema: dict) -> tuple[list[str], int]:
+    """The `agy` CLI command for classification / extraction calls. Returns (argv, timeout)."""
+    cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
+    cmd = [cli, "--output-format", "json", "--disable-slash-commands", "--dangerously-skip-permissions",
+           "--json-schema", json.dumps(schema)]
+    if model:
+        cmd.extend(["--model", model])
+    return cmd, 600
+
+
+class AntiGravityBackend(LLMBackend):
+    name = "antigravity"
+    supports_web_search = False
+
+    def __init__(self, cfg=None, runner=None):
+        self.cfg = cfg
+        self._runner = runner
+
+    def complete(self, static, dynamic, schema, model, purpose="label", items=0, web_search=False):
+        prompt = static + dynamic
+        egress.allow("llm.antigravity", {"purpose": journal_purpose(purpose), "bytes": len(prompt.encode("utf-8")),
+                                         "web_search": False}, cfg=self.cfg)
+        t0 = time.monotonic()
+        cfg = egress.policy_of(self.cfg).cfg
+        cmd, timeout = antigravity_classify_command(cfg, model, schema)
+        env = antigravity_env(cfg)
+        if self._runner is not None:
+            res, out_returncode, out_stderr = self._runner(cmd, prompt, env, timeout)
+        else:
+            run_dir = tempfile.mkdtemp(prefix="coach-classify-agy-")
+            try:
+                out = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=timeout, env=env, cwd=run_dir)
+            finally:
+                shutil.rmtree(run_dir, ignore_errors=True)
+            res = json.loads(out.stdout) if out.stdout.strip().startswith("{") else {}
+            out_returncode = out.returncode
+            out_stderr = out.stderr
+
+        if out_returncode != 0 or res.get("status") == "ERROR" or res.get("is_error"):
+            diag = safe_diagnostic(out_stderr or res.get("error"), prompt)
+            raise RuntimeError(f"agy failed (exit {out_returncode}"
+                               + (f", {res.get('error')}" if res.get('error') else "") + ")"
+                               + (f": {diag}" if diag else ""))
+        u = res.get("usage") or {}
+        tin = int(u.get("input_tokens") or 0)
+        tout = int(u.get("output_tokens") or 0)
+        cached = int(u.get("cache_read_tokens") or 0)
+        try:
+            data = res.get("structured_output")
+            if data is None and res.get("response"):
+                data = parse_json_text(res["response"])
+            if not isinstance(data, dict):
+                raise ValueError("structured_output missing or not a dict")
+        except Exception as e:
+            raise LLMError(f"agy returned an unusable answer ({type(e).__name__})", Usage(
+                self.name, model, purpose, items, tin, tout, cached, 0, None, True, round(time.monotonic() - t0, 2))) from e
+        usage = Usage(self.name, model, purpose, items, tin, tout, cached, 0, None, True, round(time.monotonic() - t0, 2))
+        return data, usage
+
+
 def get_backend(cfg=None, name: str | None = None) -> LLMBackend:
     name = name or (cfg.llm_backend if cfg else "claude-code")
     if cfg is not None and name in BACKENDS:      # E11-4: a configured backend the privacy mode forbids is refused up front
@@ -572,6 +635,8 @@ def get_backend(cfg=None, name: str | None = None) -> LLMBackend:
     if name == "openai-compatible":
         return OpenAICompatBackend(getattr(cfg, "llm_openai_base_url", "https://openrouter.ai/api/v1"),
                                    deny_data_collection=bool(getattr(cfg, "llm_openrouter_deny_data_collection", True)), cfg=cfg)
+    if name == "antigravity":
+        return AntiGravityBackend(cfg=cfg)
     raise ValueError(f"unknown llm backend {name!r}; allowed: {', '.join(BACKENDS)}")
 
 
@@ -582,6 +647,8 @@ def default_model(cfg, backend: LLMBackend) -> str:
         return getattr(cfg, "llm_ollama_model", "llama3.1")
     if backend.name == "openai-compatible":
         return getattr(cfg, "llm_openai_model", "")
+    if backend.name == "antigravity":
+        return getattr(cfg, "llm_antigravity_model", "")
     return cfg.llm_model
 
 
