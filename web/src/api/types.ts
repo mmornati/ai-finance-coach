@@ -245,6 +245,19 @@ export interface JobState { kind: string; state: "idle" | "running" | "done" | "
 export interface Connections {
   accounts: ConnAccount[]; consents: Consent[]; health: Health; purposes: string[]; sync: JobState & { daily_limit: number }; enable_banking_configured: boolean; connect: JobState;
 }
+export interface ImportProfile { name: string; description: string }
+export interface ImportPreviewRow { date: string; amount: number; currency: string; description: string; counterparty?: string | null }
+export interface ImportPreviewResponse {
+  file_name: string; format: string; iban: string | null; suggested_account_uid: string | null;
+  account_uid: string | null; account_created: boolean; date_min: string | null; date_max: string | null;
+  rows_total: number; rows_new: number; rows_duplicate: number; rows_skipped: number;
+  already_imported: string | null; sample_rows: ImportPreviewRow[]; warnings: string[];
+}
+export interface ImportExecuteResponse {
+  file: string; format: string; account_uid: string; account_created: boolean;
+  rows_total: number; rows_new: number; rows_duplicate: number; rows_skipped: number;
+  date_min: string | null; date_max: string | null; already_imported: string | null; warnings: string[];
+}
 export interface Transfers { links: { id: number; amount: Money; confidence: number; method: string; out_account: string; in_account: string; out_date: string; in_date: string; out_key: string; in_key: string }[]; proposals: { debit: { tx_key: string; date: string; amount: Money; account: string; description: string }; credit: { tx_key: string; date: string; amount: Money; account: string; description: string }; confidence: number; days: number; topup: boolean }[]; ambiguous: number }
 
 export interface OnboardingStep {

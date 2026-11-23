@@ -37,6 +37,7 @@ export const useInsights = () => useScoped<T.Insights>("/insights");
 export const useQuestions = (status = "open") => useGet<T.Questions>("/questions", { status });
 export const useProposals = () => useGet<{ proposals: T.Proposal[] }>("/proposals", { status: "pending" });
 export const useConnections = () => useGet<T.Connections>("/connections");
+export const useImportProfiles = () => useGet<{ profiles: T.ImportProfile[] }>("/connections/import/profiles");
 
 /** Write helper: after any write, every cached read is refetched (a memory change can move any figure). */
 export function useWrite<R, V>(fn: (v: V) => Promise<R>, o?: { success?: string; onSuccess?: (r: R, v: V) => void; invalidate?: boolean }) {

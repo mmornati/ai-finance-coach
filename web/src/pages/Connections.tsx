@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Link2, Pencil, Plug, RefreshCw } from "lucide-react";
+import { ExternalLink, FileText, Link2, Pencil, Plug, RefreshCw, Upload } from "lucide-react";
 import { Async, Badge, Button, Card, Dialog, Dot, EmptyState, Field, Input, Money, Notice, PageHeader, ProgressBar, Select, Skeleton, Spinner } from "@/components/ui";
 import { SyncButton } from "@/components/Layout";
-import { useConnections, useFilters, useGet, useWrite } from "@/api/hooks";
+import { useConnections, useFilters, useGet, useImportProfiles, useWrite } from "@/api/hooks";
 import { api } from "@/lib/api";
 import { errorText, purposeLabel, serverLabel, tServer } from "@/i18n/server";
 import { fmtDate, fmtDateTime, fmtMoney } from "@/lib/format";
-import type { ConnAccount, Consent, HealthBank, JobState, LastRun, Transfers } from "@/api/types";
+import type { ConnAccount, Consent, HealthBank, ImportExecuteResponse, ImportPreviewResponse, JobState, LastRun, Transfers } from "@/api/types";
 
 /** The last scheduled run, from its structured log (step names, durations and counts only: no description, name or amount is ever logged). */
 export function LastRunCard({ r }: { r: LastRun | null }) {
@@ -35,10 +35,25 @@ export default function Connections() {
   const { t } = useTranslation("connections");
   const q = useConnections();
   const [connect, setConnect] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [edit, setEdit] = useState<ConnAccount | null>(null);
   return (
     <>
-      <PageHeader title={t("title")} subtitle={t("subtitle")} actions={<><Button onClick={() => setConnect(true)}><Plug className="size-4" aria-hidden /> {t("connect")}</Button><SyncButton /></>} />
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <>
+            <Button variant="secondary" onClick={() => setImportOpen(true)}>
+              <Upload className="size-4" aria-hidden /> {t("importStatement")}
+            </Button>
+            <Button onClick={() => setConnect(true)}>
+              <Plug className="size-4" aria-hidden /> {t("connect")}
+            </Button>
+            <SyncButton />
+          </>
+        }
+      />
       <Async q={q} skeleton={<Skeleton className="h-96 w-full" />}>
         {(d) => (
           <div className="grid gap-4">
@@ -70,6 +85,7 @@ export default function Connections() {
         )}
       </Async>
       {connect && <ConnectDialog onClose={() => setConnect(false)} />}
+      {importOpen && <ImportDialog accounts={q.data?.accounts ?? []} onClose={() => setImportOpen(false)} />}
       {edit && <AccountDialog a={edit} onClose={() => setEdit(null)} />}
     </>
   );
@@ -216,5 +232,336 @@ function TransfersCard() {
         )}
       </Async>
     </Card>
+  );
+}
+
+function ImportDialog({ accounts, onClose }: { accounts: ConnAccount[]; onClose: () => void }) {
+  const { t } = useTranslation("connections");
+  const qc = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const profiles = useImportProfiles();
+
+  const [file, setFile] = useState<File | null>(null);
+  const [b64, setB64] = useState<string>("");
+  const [profile, setProfile] = useState<string>("");
+  const [accountMode, setAccountMode] = useState<"existing" | "new">("existing");
+  const [selectedAccount, setSelectedAccount] = useState<string>(accounts[0]?.uid ?? "");
+  const [newAccountLabel, setNewAccountLabel] = useState<string>("");
+  const [newAccountBank, setNewAccountBank] = useState<string>("");
+
+  const [preview, setPreview] = useState<ImportPreviewResponse | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isPreviewing, setIsPreviewing] = useState<boolean>(false);
+  const [result, setResult] = useState<ImportExecuteResponse | null>(null);
+
+  const formatSize = (bytes: number) =>
+    bytes > 1024 * 1024 ? `${(bytes / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
+
+  const runPreview = async (fileName: string, contentB64: string, prof?: string) => {
+    setIsPreviewing(true);
+    setPreviewError(null);
+    try {
+      const res = await api.post<ImportPreviewResponse>("/connections/import/preview", {
+        file_name: fileName,
+        content_base64: contentB64,
+        profile: prof || undefined,
+      });
+      setPreview(res);
+      if (res.suggested_account_uid) {
+        setSelectedAccount(res.suggested_account_uid);
+        setAccountMode("existing");
+      }
+    } catch (err) {
+      setPreviewError(errorText(err));
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
+
+  const handleFile = (f: File) => {
+    setFile(f);
+    setResult(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const res = reader.result as string;
+      const data = res.includes(",") ? res.split(",")[1] : res;
+      setB64(data);
+      void runPreview(f.name, data, profile);
+    };
+    reader.readAsDataURL(f);
+  };
+
+  const handleProfileChange = (newProfile: string) => {
+    setProfile(newProfile);
+    if (file && b64) {
+      void runPreview(file.name, b64, newProfile);
+    }
+  };
+
+  const executeImport = useWrite(
+    () => {
+      const targetAccount = accountMode === "new" ? `new:${newAccountLabel.trim()}` : selectedAccount;
+      return api.post<ImportExecuteResponse>("/connections/import/execute", {
+        file_name: file!.name,
+        content_base64: b64,
+        account: targetAccount,
+        bank: accountMode === "new" ? newAccountBank.trim() || undefined : undefined,
+        profile: profile || undefined,
+      });
+    },
+    {
+      onSuccess: (data) => {
+        setResult(data);
+        void qc.invalidateQueries({ queryKey: ["/connections"] });
+        void qc.invalidateQueries({ queryKey: ["/accounts"] });
+        void qc.invalidateQueries({ queryKey: ["/transfers"] });
+      },
+    }
+  );
+
+  return (
+    <Dialog
+      open
+      onClose={onClose}
+      title={t("importDialog.title")}
+      description={t("importDialog.description")}
+      footer={
+        result ? (
+          <Button variant="primary" onClick={onClose}>
+            {t("importDialog.close")}
+          </Button>
+        ) : (
+          <>
+            <Button variant="ghost" onClick={onClose}>
+              {t("importDialog.cancel")}
+            </Button>
+            <Button
+              variant="primary"
+              busy={executeImport.isPending}
+              disabled={
+                !file ||
+                isPreviewing ||
+                !preview ||
+                (accountMode === "new" ? !newAccountLabel.trim() : !selectedAccount) ||
+                (preview.rows_new === 0 && preview.format !== "csv")
+              }
+              onClick={() => executeImport.mutate(undefined as never)}
+            >
+              {preview && preview.rows_new > 0
+                ? t("importDialog.importButton", { count: preview.rows_new })
+                : t("importDialog.importNone")}
+            </Button>
+          </>
+        )
+      }
+    >
+      <div className="grid gap-4">
+        {result ? (
+          <div className="grid gap-3">
+            <Notice tone="pos" title={t("importDialog.successTitle")}>
+              {t("importDialog.successBody", {
+                count: result.rows_new,
+                account: accounts.find((a) => a.uid === result.account_uid)?.label ?? (newAccountLabel || result.account_uid),
+              })}
+            </Notice>
+            <p className="text-xs text-muted">{t("importDialog.nextStepHint")}</p>
+          </div>
+        ) : (
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.csv,.ofx,.qfx,.xml"
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files?.[0]) handleFile(e.target.files[0]);
+              }}
+            />
+
+            {!file ? (
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 text-center transition hover:border-accent hover:bg-surface-2"
+              >
+                <Upload className="mb-2 size-8 text-muted" aria-hidden />
+                <p className="text-sm font-medium">{t("importDialog.dropzone")}</p>
+                <p className="mt-1 text-xs text-muted">{t("importDialog.supportedFormats")}</p>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="mt-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                >
+                  {t("importDialog.selectFile")}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between rounded-lg border border-border bg-surface-2 px-4 py-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <FileText className="size-5 shrink-0 text-accent" aria-hidden />
+                  <div className="truncate">
+                    <p className="truncate text-sm font-medium">{file.name}</p>
+                    <p className="text-xs text-muted">{formatSize(file.size)}</p>
+                  </div>
+                </div>
+                <Button size="sm" variant="ghost" onClick={() => fileInputRef.current?.click()}>
+                  {t("importDialog.changeFile")}
+                </Button>
+              </div>
+            )}
+
+            {isPreviewing && <Spinner label={t("importDialog.previewing")} />}
+            {previewError && <Notice tone="neg">{previewError}</Notice>}
+
+            {preview && (
+              <div className="grid gap-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge tone="neutral">{t("importDialog.detectedFormat", { format: preview.format.toUpperCase() })}</Badge>
+                  {preview.iban && <Badge tone="info">{t("importDialog.detectedIban", { iban: preview.iban })}</Badge>}
+                </div>
+
+                {preview.already_imported && (
+                  <Notice tone="warn">
+                    {t("importDialog.alreadyImportedWarning", { date: fmtDate(preview.already_imported) })}
+                  </Notice>
+                )}
+
+                {preview.format === "csv" && (
+                  <Field label={t("importDialog.csvProfile")} hint={t("importDialog.selectProfileHint")}>
+                    {(id) => (
+                      <Select id={id} value={profile} onChange={(e) => handleProfileChange(e.target.value)}>
+                        <option value="">{t("importDialog.selectProfile")}</option>
+                        {profiles.data?.profiles.map((p) => (
+                          <option key={p.name} value={p.name}>
+                            {p.name} {p.description ? `(${p.description})` : ""}
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                  </Field>
+                )}
+
+                <div className="grid gap-2">
+                  <label className="text-xs font-medium text-muted">{t("importDialog.targetAccount")}</label>
+                  <div className="flex gap-4 text-sm">
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="accountMode"
+                        checked={accountMode === "existing"}
+                        onChange={() => setAccountMode("existing")}
+                      />
+                      {t("importDialog.existingAccount")}
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="accountMode"
+                        checked={accountMode === "new"}
+                        onChange={() => setAccountMode("new")}
+                      />
+                      {t("importDialog.newAccount")}
+                    </label>
+                  </div>
+
+                  {accountMode === "existing" ? (
+                    <Select value={selectedAccount} onChange={(e) => setSelectedAccount(e.target.value)}>
+                      {accounts.map((a) => (
+                        <option key={a.uid} value={a.uid}>
+                          {a.label ?? a.name} {a.bank ? `(${a.bank})` : ""} {a.iban_last4 ? `· ${a.iban_last4}` : ""}
+                        </option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Input
+                        placeholder={t("importDialog.newAccountLabel")}
+                        value={newAccountLabel}
+                        onChange={(e) => setNewAccountLabel(e.target.value)}
+                      />
+                      <Input
+                        placeholder={t("importDialog.newAccountBank")}
+                        value={newAccountBank}
+                        onChange={(e) => setNewAccountBank(e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-xs font-medium text-muted mb-2">{t("importDialog.summary")}</div>
+                  <div className="flex flex-wrap items-center gap-3 text-xs">
+                    <span className="font-medium">{t("importDialog.rowsTotal")}: {preview.rows_total}</span>
+                    <Badge tone={preview.rows_new > 0 ? "pos" : "neutral"}>
+                      {t("importDialog.rowsNew", { count: preview.rows_new })}
+                    </Badge>
+                    {preview.rows_duplicate > 0 && (
+                      <Badge tone="warn">
+                        {t("importDialog.rowsDuplicate", { count: preview.rows_duplicate })}
+                      </Badge>
+                    )}
+                    {preview.rows_skipped > 0 && (
+                      <Badge tone="neutral">
+                        {t("importDialog.rowsSkipped", { count: preview.rows_skipped })}
+                      </Badge>
+                    )}
+                    {preview.date_min && preview.date_max && (
+                      <span className="text-muted ml-auto">
+                        {t("importDialog.dateRange", {
+                          from: fmtDate(preview.date_min),
+                          to: fmtDate(preview.date_max),
+                        })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {preview.sample_rows.length > 0 && (
+                  <div className="grid gap-1.5">
+                    <div className="text-xs font-medium text-muted">
+                      {t("importDialog.sampleTitle", { count: preview.sample_rows.length })}
+                    </div>
+                    <div className="max-h-48 overflow-y-auto rounded-lg border border-border">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-surface-2 text-muted sticky top-0">
+                          <tr>
+                            <th className="px-3 py-1.5">{t("importDialog.date")}</th>
+                            <th className="px-3 py-1.5">{t("importDialog.description")}</th>
+                            <th className="px-3 py-1.5 text-right">{t("importDialog.amount")}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                          {preview.sample_rows.map((r, i) => (
+                            <tr key={i}>
+                              <td className="whitespace-nowrap px-3 py-1.5 font-mono">{fmtDate(r.date)}</td>
+                              <td className="px-3 py-1.5 truncate max-w-[200px]" title={r.description}>
+                                {r.counterparty ? <span className="font-medium">{r.counterparty} · </span> : null}
+                                {r.description}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-1.5 text-right">
+                                <Money v={r.amount} signed colored />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {executeImport.error && <Notice tone="neg">{errorText(executeImport.error)}</Notice>}
+          </>
+        )}
+      </div>
+    </Dialog>
   );
 }

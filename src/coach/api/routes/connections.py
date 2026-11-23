@@ -2,6 +2,10 @@
 is ever returned (no tokens, no keys, no Enable Banking credentials)."""
 from __future__ import annotations
 
+import base64
+import tempfile
+import uuid
+from pathlib import Path, PurePath
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -14,6 +18,7 @@ from coach.api.state import AppState
 from coach.config import ConfigError
 from coach.ingest import accounts as accounts_mod, auth, consent as consent_mod, health as health_mod
 from coach.ingest.client import ApiError as EbApiError, EnableBankingClient
+from coach.ingest.imports import core as import_core, parsers as import_parsers, profiles as import_profiles
 
 router = APIRouter(tags=["connections"])
 
@@ -147,3 +152,215 @@ def banks(country: str = Query(..., min_length=2, max_length=2), q: Optional[str
     out = [{"name": b["name"], "country": b["country"], "max_consent_days": (b.get("maximum_consent_validity") or 0) // 86400,
             "beta": bool(b.get("beta"))} for b in items if not q or q.lower() in b["name"].lower()]
     return {"banks": out[:200]}
+
+
+# ---------------------------------------------------------------- statement imports
+
+class ImportPreviewRequest(BaseModel):
+    file_name: str = Field(..., min_length=1)
+    content_base64: str = Field(..., min_length=1)
+    account: Optional[str] = None
+    profile: Optional[str] = None
+    bank: Optional[str] = None
+    currency: Optional[str] = None
+    force: bool = False
+
+
+class ImportExecuteRequest(BaseModel):
+    file_name: str = Field(..., min_length=1)
+    content_base64: str = Field(..., min_length=1)
+    account: str = Field(..., min_length=1)
+    profile: Optional[str] = None
+    bank: Optional[str] = None
+    currency: Optional[str] = None
+    force: bool = False
+
+
+MAX_UPLOAD_BASE64_LEN = 20 * 1024 * 1024  # 20 MB base64 string
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024       # 10 MB raw binary data
+ALLOWED_UPLOAD_SUFFIXES = {".pdf", ".csv", ".ofx", ".qfx", ".xml"}
+
+
+def _decode_and_validate_upload(b64_str: str) -> bytes:
+    if len(b64_str) > MAX_UPLOAD_BASE64_LEN:
+        raise ApiError(400, "file_too_large", f"File upload exceeds base64 length limit ({MAX_UPLOAD_BASE64_LEN // (1024 * 1024)} MB)")
+    try:
+        data = base64.b64decode(b64_str, validate=True)
+    except Exception as e:
+        raise ApiError(400, "invalid_base64", f"Could not decode base64 file content: {e}")
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise ApiError(400, "file_too_large", f"File upload exceeds maximum allowed size ({MAX_UPLOAD_BYTES // (1024 * 1024)} MB)")
+    return data
+
+
+def _write_safe_temp_upload(tmpdir: Path | str, client_filename: str, data: bytes) -> Path:
+    raw_suffix = Path(client_filename).suffix.lower()
+    suffix = raw_suffix if raw_suffix in ALLOWED_UPLOAD_SUFFIXES else ".bin"
+    safe_name = f"upload_{uuid.uuid4().hex[:12]}{suffix}"
+    dest = (Path(tmpdir) / safe_name).resolve()
+    base_dir = Path(tmpdir).resolve()
+    if not dest.is_relative_to(base_dir) or dest.parent != base_dir:
+        raise ApiError(400, "invalid_filename", "Invalid upload filename")
+    dest.write_bytes(data)
+    return dest
+
+
+@router.get("/connections/import/profiles", summary="List available CSV import profiles")
+def list_import_profiles(state: AppState = Depends(get_state)):
+    profiles = [{"name": name, "description": desc} for name, desc in import_profiles.list_profiles(state.cfg.import_profiles_dir)]
+    return {"profiles": profiles}
+
+
+@router.post("/connections/import/preview", summary="Preview statement import (dedup check, format detection, date range)")
+def preview_import(req: ImportPreviewRequest, state: AppState = Depends(get_state)):
+    data = _decode_and_validate_upload(req.content_base64)
+    clean_client_filename = PurePath(req.file_name).name or "statement"
+
+    prof = None
+    if req.profile:
+        try:
+            prof = import_profiles.load_profile(state.cfg.import_profiles_dir, req.profile)
+        except import_profiles.ProfileError as e:
+            raise ApiError(400, "invalid_profile", str(e))
+
+    try:
+        fmt = import_parsers.detect_format(req.file_name, data)
+    except import_parsers.ParseError as e:
+        raise ApiError(400, "unsupported_format", str(e))
+
+    if fmt == "csv" and not prof:
+        raise ApiError(400, "profile_required", "CSV statements require an import profile. Please select a profile.")
+
+    with state.write(quiet=True) as con:
+        try:
+            if fmt == "ofx":
+                parsed = import_parsers.parse_ofx(data)
+            elif fmt == "camt053":
+                parsed = import_parsers.parse_camt053(data)
+            elif fmt == "pdf":
+                parsed = import_parsers.parse_pdf(data, prof, bank=req.bank)
+            elif fmt == "csv":
+                parsed = import_parsers.parse_csv(data, prof)
+            else:
+                raise ApiError(400, "unsupported_format", f"Unknown format: {fmt}")
+        except (import_parsers.ParseError, import_profiles.ProfileError) as e:
+            raise ApiError(400, "parse_error", str(e))
+
+        suggested_account_uid = None
+        if parsed.iban:
+            norm_iban = accounts_mod.normalize_iban(parsed.iban)
+            h = accounts_mod.ident_hash(norm_iban)
+            acc = con.execute("SELECT uid FROM accounts WHERE identification_hash=?", (h,)).fetchone()
+            if acc:
+                suggested_account_uid = acc[0]
+
+        target_account = req.account or suggested_account_uid
+
+        if target_account:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmppath = _write_safe_temp_upload(tmpdir, clean_client_filename, data)
+                try:
+                    rep = import_core.import_file(
+                        con, tmppath, account=target_account, profile=prof,
+                        fmt=fmt, dry_run=True, bank=req.bank,
+                        currency_filter=req.currency, force=req.force
+                    )
+                except import_core.ImportFailed as e:
+                    raise ApiError(400, "import_failed", str(e))
+
+                rows_to_sample = rep.new_rows if rep.new_rows else parsed.rows
+                sample = [
+                    {
+                        "date": r.date,
+                        "amount": float(r.amount),
+                        "currency": r.currency,
+                        "description": r.description,
+                        "counterparty": r.counterparty
+                    }
+                    for r in rows_to_sample[:15]
+                ]
+                return {
+                    "file_name": clean_client_filename,
+                    "format": rep.format,
+                    "iban": parsed.iban,
+                    "suggested_account_uid": suggested_account_uid,
+                    "account_uid": rep.account_uid,
+                    "account_created": rep.account_created,
+                    "date_min": rep.date_min,
+                    "date_max": rep.date_max,
+                    "rows_total": rep.rows_total,
+                    "rows_new": rep.rows_new,
+                    "rows_duplicate": rep.rows_duplicate,
+                    "rows_skipped": rep.rows_skipped,
+                    "already_imported": rep.already_imported,
+                    "sample_rows": sample,
+                    "warnings": rep.warnings,
+                }
+
+        rows = parsed.rows
+        sample = [
+            {
+                "date": r.date,
+                "amount": float(r.amount),
+                "currency": r.currency,
+                "description": r.description,
+                "counterparty": r.counterparty
+            }
+            for r in rows[:15]
+        ]
+        return {
+            "file_name": clean_client_filename,
+            "format": parsed.format,
+            "iban": parsed.iban,
+            "suggested_account_uid": None,
+            "account_uid": None,
+            "account_created": False,
+            "date_min": min((r.date for r in rows), default=None),
+            "date_max": max((r.date for r in rows), default=None),
+            "rows_total": len(rows),
+            "rows_new": len(rows),
+            "rows_duplicate": 0,
+            "rows_skipped": 0,
+            "already_imported": None,
+            "sample_rows": sample,
+            "warnings": list(parsed.warnings),
+        }
+
+
+@router.post("/connections/import/execute", summary="Execute statement file import")
+def execute_import(req: ImportExecuteRequest, state: AppState = Depends(get_state)):
+    data = _decode_and_validate_upload(req.content_base64)
+    clean_client_filename = PurePath(req.file_name).name or "statement"
+
+    prof = None
+    if req.profile:
+        try:
+            prof = import_profiles.load_profile(state.cfg.import_profiles_dir, req.profile)
+        except import_profiles.ProfileError as e:
+            raise ApiError(400, "invalid_profile", str(e))
+
+    with state.write() as con:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmppath = _write_safe_temp_upload(tmpdir, clean_client_filename, data)
+            try:
+                rep = import_core.import_file(
+                    con, tmppath, account=req.account, profile=prof,
+                    dry_run=False, bank=req.bank, currency_filter=req.currency, force=req.force
+                )
+            except (import_core.ImportFailed, import_parsers.ParseError, import_profiles.ProfileError) as e:
+                raise ApiError(400, "import_failed", str(e))
+
+    return {
+        "file": clean_client_filename,
+        "format": rep.format,
+        "account_uid": rep.account_uid,
+        "account_created": rep.account_created,
+        "rows_total": rep.rows_total,
+        "rows_new": rep.rows_new,
+        "rows_duplicate": rep.rows_duplicate,
+        "rows_skipped": rep.rows_skipped,
+        "date_min": rep.date_min,
+        "date_max": rep.date_max,
+        "already_imported": rep.already_imported,
+        "warnings": rep.warnings,
+    }

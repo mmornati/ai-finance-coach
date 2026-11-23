@@ -767,6 +767,26 @@ def test_banks_listing_is_mocked(ctx, monkeypatch):
     assert ctx.get("/banks", country="FRA").status_code == 422
 
 
+def test_import_endpoints(ctx):
+    import base64
+    r = ctx.get("/connections/import/profiles")
+    assert r.status_code == 200
+    assert "profiles" in r.json()
+
+    ofx = b"""OFXHEADER:100\nDATA:OFXSGML\nVERSION:102\n<OFX><BANKMSGSRSV1><STMTTRNRS><STMTRS><CURDEF>EUR\n<BANKACCTFROM><BANKID>1</BANKID><ACCTID>NL01TEST0123456789</ACCTID><ACCTTYPE>CHECKING</BANKACCTFROM>\n<BANKTRANLIST><DTSTART>20260101</DTSTART><DTEND>20260131</DTEND>\n<STMTTRN><TRNTYPE>DEBIT</TRNTYPE><DTPOSTED>20260115</DTPOSTED><TRNAMT>-25.00</TRNAMT><FITID>1</FITID><NAME>Shop</NAME></STMTTRN>\n</BANKTRANLIST></STMTRS></STMTTRNRS></BANKMSGSRSV1></OFX>"""
+    b64 = base64.b64encode(ofx).decode("ascii")
+
+    pv = ctx.post("/connections/import/preview", {"file_name": "test.ofx", "content_base64": b64})
+    assert pv.status_code == 200
+    assert pv.json()["rows_total"] == 1
+
+    ex = ctx.post("/connections/import/execute", {"file_name": "test.ofx", "content_base64": b64, "account": "new:Test Import Acc"})
+    assert ex.status_code == 200
+    assert ex.json()["account_created"] is True
+    assert ex.json()["rows_new"] == 1
+
+
+
 # (the coach endpoints are tested in test_api_coach.py)
 
 
