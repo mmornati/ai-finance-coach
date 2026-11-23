@@ -266,7 +266,7 @@ def build_parser() -> argparse.ArgumentParser:
     s = add(sub, "health", ic.cmd_health, "connector health per bank/account; exit 1 if anything is red")
     s.add_argument("--json", action="store_true"); s.add_argument("--refresh", action="store_true",
                                                                 help="refresh live consent status first (network)")
-    s = add(sub, "import", ic.cmd_import, "import a CSV / OFX / QFX / CAMT.053 statement into an account")
+    s = add(sub, "import", ic.cmd_import, "import a CSV / OFX / QFX / CAMT.053 / PDF statement into an account")
     s.add_argument("file", nargs="?"); s.add_argument("--account", help="uid | label | new:Label")
     s.add_argument("--profile", help="CSV mapping profile name (config/import_profiles/NAME.toml)")
     s.add_argument("--dry-run", action="store_true", help="show what would be inserted, write nothing")

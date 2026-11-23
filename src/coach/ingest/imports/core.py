@@ -120,6 +120,8 @@ def import_file(con, path: Path, account: str, profile: Profile | None = None, f
             parsed = parsers.parse_ofx(data)
         elif fmt == "camt053":
             parsed = parsers.parse_camt053(data)
+        elif fmt == "pdf":
+            parsed = parsers.parse_pdf(data, profile, bank=bank)
         elif fmt == "csv":
             if profile is None:
                 raise ImportFailed("a CSV import needs --profile NAME or an inline mapping "

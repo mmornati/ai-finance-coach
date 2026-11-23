@@ -236,11 +236,135 @@ def test_camt_refuses_entity_declarations_and_garbage():
         parsers.parse_camt053(b"<a><b></a>")
 
 
-def test_pdf_is_refused_with_a_clear_message(tmp_path, con):
+def _create_test_pdf(lines: list[str]) -> bytes:
+    import io
+    from pypdf import PdfWriter
+    from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+
+    writer = PdfWriter()
+    page = writer.add_blank_page(width=612, height=792)
+
+    stream_content = ["BT", "/F1 12 Tf", "72 700 Td"]
+    for idx, l in enumerate(lines):
+        if idx > 0:
+            stream_content.append("0 -20 Td")
+        safe_l = l.replace("(", "").replace(")", "")
+        stream_content.append(f"({safe_l}) Tj")
+    stream_content.append("ET")
+
+    stream = DecodedStreamObject()
+    stream.set_data("\n".join(stream_content).encode("latin1"))
+
+    page[NameObject("/Contents")] = writer._add_object(stream)
+    font_dict = DictionaryObject({
+        NameObject("/Type"): NameObject("/Font"),
+        NameObject("/Subtype"): NameObject("/Type1"),
+        NameObject("/BaseFont"): NameObject("/Helvetica"),
+    })
+    font_ref = writer._add_object(font_dict)
+    page[NameObject("/Resources")] = DictionaryObject({
+        NameObject("/Font"): DictionaryObject({
+            NameObject("/F1"): font_ref
+        })
+    })
+
+    buf = io.BytesIO()
+    writer.write(buf)
+    return buf.getvalue()
+
+
+def test_pdf_parsing_and_import(tmp_path, con):
+    pdf_bytes = _create_test_pdf([
+        "Date: 01-10-2026",
+        "Account: NL00ABNA0123456789",
+        "Total amount debit 100,00",
+        "Total amount credit 250,00",
+        "01-10 Salary Acme Corp 250,00",
+        "02-10 Supermarket Groceries 100,00-",
+    ])
     f = tmp_path / "statement.pdf"
-    f.write_bytes(b"%PDF-1.7 ...")
-    with pytest.raises(core.ImportFailed, match="PDF statements are not supported"):
+    f.write_bytes(pdf_bytes)
+
+    # Test parser directly
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert parsed.format == "pdf"
+    assert parsed.iban == "NL00ABNA0123456789"
+    assert len(parsed.rows) == 2
+    assert parsed.rows[0].date == "2026-10-01"
+    assert parsed.rows[0].amount == pytest.approx(250.0)
+    assert "Salary Acme Corp" in parsed.rows[0].description
+    assert parsed.rows[1].date == "2026-10-02"
+    assert parsed.rows[1].amount == pytest.approx(-100.0)
+
+    # Test import into new account
+    rep = core.import_file(con, f, "new:ABN Test Account", bank="ABN AMRO")
+    assert rep.rows_total == 2
+    assert rep.rows_new == 2
+    assert rep.format == "pdf"
+    assert rep.account_created is True
+
+    # Test deduplication on re-import
+    rep2 = core.import_file(con, f, rep.account_uid)
+    assert rep2.rows_total == 2
+    assert rep2.rows_new == 0
+    assert rep2.rows_duplicate == 2
+
+
+def test_pdf_corrupted_fails_gracefully(tmp_path, con):
+    f = tmp_path / "corrupted.pdf"
+    f.write_bytes(b"%PDF-1.7 corrupted garbage stream...")
+    with pytest.raises(core.ImportFailed, match="unreadable or corrupted PDF file"):
         core.import_file(con, f, "new:X")
+
+
+def test_pdf_size_limit_enforced():
+    large_pdf = b"%PDF-1.7 " + b"0" * (10 * 1024 * 1024 + 1)
+    with pytest.raises(parsers.ParseError, match="exceeds maximum allowed size"):
+        parsers.parse_pdf(large_pdf)
+
+
+def test_pdf_page_limit_enforced():
+    import io
+    from pypdf import PdfWriter
+    writer = PdfWriter()
+    for _ in range(51):
+        writer.add_blank_page(width=100, height=100)
+    buf = io.BytesIO()
+    writer.write(buf)
+    pdf_bytes = buf.getvalue()
+
+    with pytest.raises(parsers.ParseError, match="exceeds maximum allowed page count"):
+        parsers.parse_pdf(pdf_bytes)
+
+
+def test_pdf_checksum_reconciliation_warning():
+    # Stated debit 500,00 but actual debit is 100,00
+    pdf_bytes = _create_test_pdf([
+        "Date: 01-10-2026",
+        "Account: NL00ABNA0123456789",
+        "Total amount debit 500,00",
+        "Total amount credit 250,00",
+        "01-10 Salary Acme Corp 250,00",
+        "02-10 Supermarket Groceries 100,00-",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 2
+    assert any("checksum mismatch" in w for w in parsed.warnings)
+
+
+def test_pdf_generic_skips_balance_lines():
+    pdf_bytes = _create_test_pdf([
+        "Date: 01-10-2026",
+        "Account: NL00ABNA0123456789",
+        "Opening balance 1.500,00",
+        "Closing balance 1.650,00",
+        "01-10 Salary Acme Corp 250,00",
+        "02-10 Supermarket Groceries 100,00-",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 2
+    # Ensure neither balance line was ingested as a row
+    assert all("balance" not in r.description.lower() for r in parsed.rows)
 
 
 # ---------------------------------------------------------------- dedup guarantees
