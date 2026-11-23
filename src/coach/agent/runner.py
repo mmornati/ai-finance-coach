@@ -741,8 +741,9 @@ TURN_SCHEMA = {
 
 
 def antigravity_command(cfg, model: str = "") -> list[str]:
+    from coach.antigravity_cli import ISOLATION_ARGS
     cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
-    cmd = [cli, "--output-format", "json", "--disable-slash-commands", "--dangerously-skip-permissions",
+    cmd = [cli, "--output-format", "json", *ISOLATION_ARGS,
            "--json-schema", json.dumps(TURN_SCHEMA)]
     if model:
         cmd.extend(["--model", model])

@@ -410,10 +410,28 @@ def test_claude_gets_the_oauth_token_secret_and_the_mcp_server_the_secret_locati
 
 # ---------------------------------------------------------------- antigravity
 
+def test_antigravity_command_isolation(cfg):
+    """Assert coach antigravity_command has no dangerous flags and enforces sandbox isolation."""
+    from coach.agent.runner import TURN_SCHEMA, antigravity_command
+    from coach.antigravity_cli import ISOLATION_ARGS
+
+    cmd = antigravity_command(cfg, "gemini-3.8-flash-high")
+    assert "--dangerously-skip-permissions" not in cmd
+    assert "--sandbox" in cmd
+    assert "--disable-slash-commands" in cmd
+    assert cmd[cmd.index("--output-format") + 1] == "json"
+    assert cmd[cmd.index("--model") + 1] == "gemini-3.8-flash-high"
+    assert cmd[cmd.index("--json-schema") + 1] == json.dumps(TURN_SCHEMA)
+    assert all(arg in cmd for arg in ISOLATION_ARGS)
+
+
 def test_antigravity_tool_loop(cfg, world):
     turns_called = []
 
     def mock_runner(cmd, prompt_text, env, remaining):
+        assert "--dangerously-skip-permissions" not in cmd
+        assert "--sandbox" in cmd
+        assert "--disable-slash-commands" in cmd
         turns_called.append(prompt_text)
         if len(turns_called) == 1:
             return {

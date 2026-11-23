@@ -560,8 +560,9 @@ class OpenAICompatBackend(LLMBackend):
 
 def antigravity_classify_command(cfg, model: str, schema: dict) -> tuple[list[str], int]:
     """The `agy` CLI command for classification / extraction calls. Returns (argv, timeout)."""
+    from coach.antigravity_cli import ISOLATION_ARGS
     cli = getattr(cfg, "llm_antigravity_cli_path", "agy")
-    cmd = [cli, "--output-format", "json", "--disable-slash-commands", "--dangerously-skip-permissions",
+    cmd = [cli, "--output-format", "json", *ISOLATION_ARGS,
            "--json-schema", json.dumps(schema)]
     if model:
         cmd.extend(["--model", model])
