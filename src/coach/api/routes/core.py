@@ -88,11 +88,9 @@ def taxonomy(snap: Snapshot = Depends(get_snapshot)):
 def add_taxonomy_category(req: AddCategoryRequest, dry_run: bool = False, state: AppState = Depends(get_state)):
     from coach.api.errors import ApiError
     from coach.classify import taxonomy as tax_mod
-    cid = req.cid
-    if not cid:
-        if not req.group or not req.leaf:
-            raise ApiError(422, "missing_fields", "provide cid as 'group.leaf' or both group and leaf")
-        cid = f"{req.group.strip().lower()}.{req.leaf.strip().lower()}"
+    cid = req.cid.strip()
+    if not cid or "." not in cid:
+        raise ApiError(422, "missing_fields", "provide cid as 'group.leaf'")
     desc = req.description.strip()
     if not desc:
         raise ApiError(422, "missing_description", "give a description")

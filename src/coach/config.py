@@ -207,6 +207,7 @@ class Config:
     coach_allowed_plugins: tuple = ()        # [coach] allowed_plugins: plugin ids the claude init event may list (default none)
     coach_allow_builtin_plugins: bool = True  # [coach] allow_builtin_plugins: plugins whose id ends with "@builtin" are Claude Code's own
     coach_claude_env: tuple = ()         # [coach] claude_env: extra environment variable NAMES passed to `claude` (a proxy, a config dir ...)
+    coach_antigravity_env: tuple = ()    # [coach] antigravity_env: extra environment variable NAMES passed to `agy`
     coach_claude_restricted: bool = False  # [coach] claude_restricted: pass --restricted to `claude -p` (ignores user/project settings)
     schedule_eval: bool = True           # [schedule] eval (E12-2): `schedule run` runs the offline classification evaluation once a week (warn-only)
     usage_monthly_warn_usd: float = 0.0  # [usage] monthly_warn_usd (E12-4): `llm_usage_high` alert (local feed) when the month's LLM cost passes it; 0 = off
@@ -406,6 +407,7 @@ def load_config(path: str | os.PathLike | None = None, env=None) -> Config:
         coach_allowed_plugins=_agentnames(pick("coach.allowed_plugins", "coach", [])),
         coach_allow_builtin_plugins=_typed("coach.allow_builtin_plugins", pick("coach.allow_builtin_plugins", "coach", True), bool),
         coach_claude_env=_envnames(pick("coach.claude_env", "coach", [])),
+        coach_antigravity_env=_envnames(pick("coach.antigravity_env", "coach", [])),
         coach_claude_restricted=_typed("coach.claude_restricted", pick("coach.claude_restricted", "coach", False), bool),
         analytics=dict(raw.get("analytics") or {}) if isinstance(raw.get("analytics") or {}, dict) else {},
         alerts=dict(raw.get("alerts") or {}) if isinstance(raw.get("alerts") or {}, dict) else {},
@@ -566,6 +568,7 @@ def effective(cfg: Config) -> list[tuple[str, str, str]]:
         ("coach.allowed_plugins", ", ".join(cfg.coach_allowed_plugins) or "(none)", s.get("coach.allowed_plugins", "")),
         ("coach.allow_builtin_plugins", str(cfg.coach_allow_builtin_plugins).lower(), s.get("coach.allow_builtin_plugins", "")),
         ("coach.claude_env", ", ".join(cfg.coach_claude_env) or "(none)", s.get("coach.claude_env", "")),
+        ("coach.antigravity_env", ", ".join(cfg.coach_antigravity_env) or "(none)", s.get("coach.antigravity_env", "")),
         ("coach.claude_restricted", str(cfg.coach_claude_restricted).lower(), s.get("coach.claude_restricted", "")),
         ("ui.host", cfg.ui_host, s.get("ui.host", "")),
         ("ui.port", str(cfg.ui_port), s.get("ui.port", "")),

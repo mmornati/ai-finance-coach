@@ -586,12 +586,13 @@ def format_proposals(res: MatchResult) -> str:
     if not items:
         return "no transfer proposals"
     lines = [f"{len(items)} candidate pair(s) not linked yet; confirm with `coach transfers link OUT_KEY IN_KEY` "
-             "(or `coach transfers match` for the auto-linkable ones):"]
+             "(add `--settlement` for settlements, or `coach transfers match` for the auto-linkable ones):"]
     for kind, p in items:
         if p.get("kind") == "settlement":
             lines.append(f"\n  {p['confidence']:.2f} {kind} (payment settlement, {p['days']}d apart)"
                          f"\n  FUNDING {p['debit'].short()}\n      key {p['debit'].tx_key}"
-                         f"\n  SETTLED {p['credit'].short()}\n      key {p['credit'].tx_key}")
+                         f"\n  SETTLED {p['credit'].short()}\n      key {p['credit'].tx_key}"
+                         f"\n      confirm: coach transfers link {p['debit'].tx_key} {p['credit'].tx_key} --settlement")
         else:
             scope = ", household transfer" + (" to a child" if p.get("to_child") else "") if p.get("scope") == "household" else ""
             lines.append(f"\n  {p['confidence']:.2f} {kind} ({'strong' if p['strong'] else 'weak'} evidence{', card top-up' if p['topup'] else ''}{scope}, {p['days']}d apart)"
@@ -604,7 +605,7 @@ def format_ambiguous(res: MatchResult) -> str:
     if not res.ambiguous:
         return "no ambiguous transfer candidates"
     lines = [f"{len(res.ambiguous)} debit(s) with several (or contested) candidate credits; "
-             "pick with `coach transfers link OUT_KEY IN_KEY`:"]
+             "pick with `coach transfers link OUT_KEY IN_KEY` (add `--settlement` for settlements):"]
     for g in res.ambiguous:
         kind = " (settlement)" if g.get("kind") == "settlement" else ""
         lines.append(f"\n  OUT {g['debit'].short()}\n      key {g['debit'].tx_key}{kind}")

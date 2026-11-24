@@ -30,6 +30,15 @@ def _slug(v: Any, what: str = "id") -> str:
     return v
 
 
+DOC_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+
+def _doc_id(v: Any, what: str = "document id") -> str:
+    if not isinstance(v, str) or not DOC_ID_RE.match(v):
+        raise ValueError(f"{what} must consist of letters, digits, '.', '-' or '_' (got {v!r})")
+    return v
+
+
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 Number = Union[StrictInt, StrictFloat]
 
@@ -907,7 +916,7 @@ class Document(Base):
     @field_validator("id")
     @classmethod
     def _id(cls, v):
-        return _slug(v, "document id")
+        return _doc_id(v, "document id")
 
     @field_validator("url")
     @classmethod

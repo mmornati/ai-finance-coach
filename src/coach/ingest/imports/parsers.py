@@ -699,14 +699,21 @@ class GenericPdfProfile:
             except ValueError:
                 continue
 
-            # Sign disambiguation: if unsigned, determine if debit or credit
+            # Sign disambiguation: if unsigned, determine if debit or credit.
+            # Use word-boundary matching and exclude common debit card / payment terms (e.g. "credit card").
             if not (amt_raw.startswith(("+", "-")) or amt_raw.endswith(("+", "-")) or amt_raw.startswith("(")):
                 low_desc = desc.lower()
-                if any(w in low_desc for w in (
-                    "virement reçu", "salaire", "salary", "remboursement", "refund",
-                    "credit", "crédit", "deposit", "bij", "storting", "inkomen",
-                    "ontvangen", "gecrediteerd", "loonaanbetaling", "interest", "intérêts"
-                )):
+                is_card_or_payment = bool(re.search(r"\b(?:credit\s+card|carte\s+(?:de\s+)?cr[ée]dit|paiement|payment|card\s+payment|pr[ée]l[èe]vement)\b", low_desc))
+                is_credit_keyword = bool(re.search(
+                    r"\b(?:virement\s+re[çc]u|salaire|salary|remboursement|refund|deposit|storting|inkomen|"
+                    r"ontvangen|gecrediteerd|loonaanbetaling|int[ée]r[êe]ts?|interest|gutschrift|einzahlung|bijschrijving)\b",
+                    low_desc,
+                ))
+                has_credit_term = (
+                    bool(re.search(r"\b(?:credit\s+note|avoir|cr[ée]dit\s+en\s+votre\s+faveur)\b", low_desc))
+                    or (bool(re.search(r"\b(?:credit|cr[ée]dit)\b", low_desc)) and not is_card_or_payment)
+                )
+                if not is_card_or_payment and (is_credit_keyword or has_credit_term):
                     amt = abs(amt)
                 else:
                     amt = -abs(amt)
@@ -745,14 +752,13 @@ def parse_pdf(data: bytes, profile: Profile | str | None = None, bank: str | Non
     """
     import io
     from pypdf import PdfReader
-    from pypdf.errors import PdfReadError
 
     if len(data) > MAX_PDF_SIZE_BYTES:
         raise ParseError(f"PDF file exceeds maximum allowed size ({MAX_PDF_SIZE_BYTES // (1024 * 1024)} MB)")
 
     try:
         reader = PdfReader(io.BytesIO(data))
-    except (PdfReadError, Exception) as e:
+    except Exception as e:
         raise ParseError("unreadable or corrupted PDF file") from e
 
     if not reader.pages:

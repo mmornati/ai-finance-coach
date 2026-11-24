@@ -206,11 +206,10 @@ def test_import_validation_errors(ctx: Ctx):
 
 
 def test_import_arbitrary_file_write_path_traversal_prevented(ctx: Ctx, tmp_path):
-    from pathlib import Path
-
-    target_escape_1 = Path("/tmp/malicious_payload_test.ofx")
-    target_escape_2 = Path("/tmp/evil_test.ofx")
-    for p in (target_escape_1, target_escape_2):
+    target_escape_1 = tmp_path / "malicious_payload_test.ofx"
+    target_escape_2 = tmp_path / "evil_test.ofx"
+    target_escape_3 = tmp_path / "escape.ofx"
+    for p in (target_escape_1, target_escape_2, target_escape_3):
         if p.exists():
             p.unlink()
 
@@ -218,7 +217,7 @@ def test_import_arbitrary_file_write_path_traversal_prevented(ctx: Ctx, tmp_path
 
     # 1. Absolute path injection
     res_abs = ctx.post("/connections/import/preview", {
-        "file_name": "/tmp/malicious_payload_test.ofx",
+        "file_name": str(target_escape_1),
         "content_base64": b64,
     })
     assert res_abs.status_code == 200
@@ -227,9 +226,9 @@ def test_import_arbitrary_file_write_path_traversal_prevented(ctx: Ctx, tmp_path
     # Response filename is sanitized to pure basename without leading slash
     assert res_abs.json()["file_name"] == "malicious_payload_test.ofx"
 
-    # 2. Directory traversal attempt with ../
+    # 2. Directory traversal attempt
     res_trav = ctx.post("/connections/import/preview", {
-        "file_name": "../../../../tmp/evil_test.ofx",
+        "file_name": f"../../../../../../..{target_escape_2}",
         "content_base64": b64,
     })
     assert res_trav.status_code == 200
@@ -238,12 +237,12 @@ def test_import_arbitrary_file_write_path_traversal_prevented(ctx: Ctx, tmp_path
 
     # 3. Execution endpoint with directory traversal attempt
     res_exec = ctx.post("/connections/import/execute", {
-        "file_name": "../../../escape.ofx",
+        "file_name": f"../../../../../../..{target_escape_3}",
         "content_base64": b64,
         "account": "new:Protected Account",
     })
     assert res_exec.status_code == 200
-    assert not Path("/tmp/escape.ofx").exists()
+    assert not target_escape_3.exists()
     assert res_exec.json()["file"] == "escape.ofx"
 
 

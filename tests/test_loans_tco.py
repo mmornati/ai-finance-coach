@@ -177,6 +177,26 @@ def test_compute_asset_tco_unknown_financing_and_unknown_term():
     assert "Projected total is unknown (term is unknown; no assumed horizon is used)" in notes
 
 
+def test_compute_asset_tco_contract_missing_period_is_unknown():
+    asset = schemas.Asset(id="car-novamobile", kind="vehicle")
+    from types import SimpleNamespace
+    contract = schemas.Contract.model_construct(
+        id="ins-novamobile",
+        kind="insurance_car",
+        provider="SafeGuardInsurance",
+        asset="car-novamobile",
+        billing=SimpleNamespace(amount=120.0, period=None),
+        documents=[],
+    )
+    mem = MemorySnapshot(assets=[asset], liabilities=[], contracts=[("contracts/ins-novamobile.yaml", contract)])
+    ds = make_ds(txs=[], memory=mem, today=TODAY)
+    res = TCO.compute_asset_tco(ds, "car-novamobile")
+
+    assert res["contracts"][0]["monthly"] is None
+    assert res["contracts"][0]["period"] == "unknown"
+    assert "missing billing period" in " ".join(res["notes"])
+
+
 def test_compute_asset_tco_handles_missing_asset():
     ds = make_tco_dataset()
     res = TCO.compute_asset_tco(ds, "non-existent-asset")

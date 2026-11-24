@@ -41,7 +41,7 @@ def test_add_taxonomy_category(ctx):
     assert "transport.ev_charging" not in {c["id"] for g in ctx.get("/meta/taxonomy").json()["groups"] for c in g["categories"]}
 
     # Write without dry_run
-    r = ctx.post("/meta/taxonomy/categories", {"group": "transport", "leaf": "ev_charging", "description": "Electric vehicle charging"})
+    r = ctx.post("/meta/taxonomy/categories", {"cid": "transport.ev_charging", "description": "Electric vehicle charging"})
     assert r.status_code == 200
     d = r.json()
     assert d["dry_run"] is False
@@ -52,7 +52,7 @@ def test_add_taxonomy_category(ctx):
     assert "transport.ev_charging" in cats
 
     # Duplicate should fail with 409
-    dup = ctx.post("/meta/taxonomy/categories", {"group": "transport", "leaf": "ev_charging", "description": "Duplicate"})
+    dup = ctx.post("/meta/taxonomy/categories", {"cid": "transport.ev_charging", "description": "Duplicate"})
     assert dup.status_code == 409
     assert dup.json()["error"]["code"] == "taxonomy_error"
 

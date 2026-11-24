@@ -84,13 +84,15 @@ class AssetTco(Result):
 def _contract_monthly_cents(c) -> tuple[str, int, Optional[int]]:
     """Returns (period, billing_amount_c, monthly_equivalent_c).
 
-    Unrecognised billing periods return None for monthly equivalent so that
+    Missing or unrecognised billing periods return None for monthly equivalent so that
     unknowns are made explicit rather than silently assumed monthly.
     """
     if not c.billing or c.billing.amount is None:
         return "none", 0, 0
     amt_c = to_cents(c.billing.amount)
-    period = (c.billing.period or "monthly").lower().strip()
+    if not c.billing.period or not c.billing.period.strip():
+        return "unknown", amt_c, None
+    period = c.billing.period.lower().strip()
     if period in ("monthly", "month"):
         return "monthly", amt_c, amt_c
     if period in ("yearly", "annual", "year"):
@@ -192,18 +194,24 @@ def compute_asset_tco(ds, asset_id: str, as_of: Optional[dt.date] = None) -> dic
     # 2. Linked contracts (only match c.asset == asset_id)
     contracts_cost: list[ContractCost] = []
     contracts_monthly_c = 0
-    contracts_paid_to_date_c = 0
+    contracts_paid_to_date_c: Optional[int] = 0
+    contracts_has_unknown = False
+    has_contracts = False
     tx_pool = getattr(ds, "whole", None) or ds.txs
 
     for _, c in ds.memory.contracts:
         if getattr(c, "asset", None) == asset_id:
+            has_contracts = True
             period, b_amt_c, m_c = _contract_monthly_cents(c)
             if m_c is not None:
                 contracts_monthly_c += m_c
                 ann_c = m_c * 12
             else:
                 ann_c = None
-                notes.append(f"Contract '{c.id}' has unrecognised billing period '{period}'; monthly equivalent is unknown.")
+                if period == "unknown":
+                    notes.append(f"Contract '{c.id}' has missing billing period; monthly equivalent is unknown.")
+                else:
+                    notes.append(f"Contract '{c.id}' has unrecognised billing period '{period}'; monthly equivalent is unknown.")
 
             contracts_cost.append(ContractCost(
                 id=c.id,
@@ -229,11 +237,18 @@ def compute_asset_tco(ds, asset_id: str, as_of: Optional[dt.date] = None) -> dic
                     notes.append(f"Contract '{c.id}' has invalid merchant_match regex: {c.merchant_match!r}.")
 
             if c_txs:
-                contracts_paid_to_date_c += sum(abs(t.amount_c) for t in c_txs)
+                if contracts_paid_to_date_c is not None:
+                    contracts_paid_to_date_c += sum(abs(t.amount_c) for t in c_txs)
             elif c.merchant_match:
                 notes.append(f"Contract '{c.id}' has merchant_match '{c.merchant_match}' but no matching transactions found.")
             else:
+                contracts_has_unknown = True
                 notes.append(f"Contract '{c.id}' has no merchant_match; paid-to-date from bank transactions cannot be determined.")
+
+    if contracts_has_unknown:
+        contracts_paid_to_date_c = None
+    elif not has_contracts:
+        contracts_paid_to_date_c = 0
 
     # 3. Operating expenses from transactions tagged with asset
     matching_txs = [t for t in ds.txs if getattr(t, "asset", None) == asset_id and t.amount_c < 0 and t.date <= today]
@@ -277,7 +292,7 @@ def compute_asset_tco(ds, asset_id: str, as_of: Optional[dt.date] = None) -> dic
     total_monthly_c = fixed_monthly_c + expenses_monthly_avg_c
 
     # Total spent to date
-    if financing_paid_to_date_c is not None:
+    if financing_paid_to_date_c is not None and contracts_paid_to_date_c is not None:
         total_spent_to_date_c = (
             (purchase_price_c if not liabilities_cost and purchase_price_c else 0)
             + financing_paid_to_date_c
@@ -286,7 +301,12 @@ def compute_asset_tco(ds, asset_id: str, as_of: Optional[dt.date] = None) -> dic
         )
     else:
         total_spent_to_date_c = None
-        notes.append("Total spent to date is unknown because financing paid-to-date is unknown.")
+        missing = []
+        if financing_paid_to_date_c is None:
+            missing.append("financing")
+        if contracts_paid_to_date_c is None:
+            missing.append("contracts")
+        notes.append(f"Total spent to date is unknown because {' and '.join(missing)} paid-to-date is unknown.")
 
     # Projected total: never guess horizon (e.g. 36 or 60 months)
     projected_term_months = None

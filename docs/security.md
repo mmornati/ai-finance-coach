@@ -155,6 +155,10 @@ keyring"`; `uv run coach ...` itself is not blocked.
 5. **A provider sees what it is sent** (and Anthropic's `claude -p` may itself send telemetry according to its own settings): this application
    cannot audit the `claude` binary. The egress journal records what the coach handed to it, under the host `api.anthropic.com`: if you list
    `ANTHROPIC_BASE_URL` or a proxy variable in `[coach] claude_env`, the traffic goes where YOU pointed it and the journal still says Anthropic.
+   When using the Google AntiGravity backend (`[coach] backend = "antigravity"` or `[llm] backend = "antigravity"`), the `agy` CLI is executed
+   with `--sandbox` and `--disable-slash-commands`, within an isolated temporary directory, and with strict environment variable allowlisting.
+   The `--sandbox` flag guarantees execution inside an isolated environment, preventing unauthorized access to local files outside the temporary
+   workspace, disabling skill/hook auto-loading, and disallowing arbitrary host system access.
 6. **The egress gate with no activated policy** loads `config.toml` (or `$COACH_CONFIG`) and applies it; if that is impossible every outbound
    call is refused. **The egress gate is cooperative inside the process**: it stops the application's own call sites (and the coverage test keeps them registered),
    it does not stop another program on the machine, nor a person editing `config.toml`. It cannot enforce the interactive skills' web search (a
