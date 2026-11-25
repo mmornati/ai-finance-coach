@@ -40,7 +40,8 @@ def api(path: str) -> str:
 class RecClient(TestClient):
     def request(self, method, url, *a, **kw):
         r = super().request(method, url, *a, **kw)
-        CALLS.add((method.upper(), str(url).split("?")[0], r.status_code))
+        # int(): a handler may answer with an http.HTTPStatus, which xdist cannot hand to its controller (the worker's calls would be lost)
+        CALLS.add((method.upper(), str(url).split("?")[0], int(r.status_code)))
         return r
 
 
