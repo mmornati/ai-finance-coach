@@ -61,7 +61,7 @@ Example (from the synthetic household of `tests/test_horae_brief.py`, shortened)
 | Protocol | MCP streamable HTTP, stateless, JSON answers (no event stream, no session kept), one tool: `brief(schema_version: int = 1)`. The finance tools of `coach mcp serve` are **not** reachable here |
 | Auth | `Authorization: Bearer <token>`, compared in constant time with the secret `horae_brief_token`. Missing or wrong: `401` (the body is not read) |
 | Off | without the secret, with a token shorter than 32 characters, or with `[privacy] local_only` or `offline`: `/mcp` answers `404` like any unknown path |
-| Limits | request body 64 KiB (`413` above), the document 16 KiB, no compression, `Cache-Control: no-store` |
+| Limits | POST only (`405` otherwise), request body 64 KiB (`413` above, also when streamed), 30 s per request, the document 16 KiB, no compression, `Cache-Control: no-store` |
 | Logs | one line per brief with the state and counts; never the token, a request or an answer |
 | Journal | each answer is one `horae.brief` row in the egress journal (size only), listed by `coach privacy report` |
 

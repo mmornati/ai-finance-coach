@@ -14,7 +14,8 @@ Access (all enforced here, whatever the proxy does):
 * **Bounded**: a request body over :data:`MAX_REQUEST_BYTES` is refused (413), the answer is one document of at most
   :data:`coach.horae.brief.MAX_BYTES`, no compression, ``Cache-Control: no-store``.
 * **Only ``brief``**: the finance tools of ``coach mcp serve`` are not reachable here. Stateless JSON mode: no session is kept between
-  requests, nothing is streamed, a GET stream is refused.
+  requests, nothing is streamed: only POST is served (GET and DELETE answer 405 before the MCP layer sees them, since a GET would open an
+  event stream that never ends), and a request that is not complete within :data:`REQUEST_TIMEOUT` seconds is cut.
 * The web app's guard middleware still applies first (the ``Host`` check against ``[ui] allowed_hosts``). Each answer is journaled through
   ``egress.allow("horae.brief")`` (size only, never content).
 """
@@ -35,6 +36,7 @@ TOOL = "brief"
 TOKEN_SECRET = "horae_brief_token"
 MIN_TOKEN = 32
 MAX_REQUEST_BYTES = 64 * 1024
+REQUEST_TIMEOUT = 30.0          # seconds for a whole request (waiting for the lock, reading the body, computing, answering)
 SERVER_NAME = "finance-coach-brief"
 INPUT_SCHEMA = {"type": "object", "additionalProperties": False,
                 "properties": {"schema_version": {"type": "integer", "minimum": 1, "default": 1,
@@ -148,13 +150,21 @@ class BriefEndpoint:
             await _plain(send, 401, "unauthorized", "a valid bearer token is required",
                          ((b"www-authenticate", b'Bearer realm="coach-brief"'),))
             return
+        if scope.get("method") != "POST":
+            await _plain(send, 405, "method_not_allowed", "POST only", ((b"allow", b"POST"),))
+            return
         length = next((v for k, v in headers if k.lower() == b"content-length"), b"0")
         if not length.isdigit() or int(length) > MAX_REQUEST_BYTES:
             await _plain(send, 413, "too_large", "request too large")
             return
         from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 
+        started = False
+
         async def send_no_store(message):
+            nonlocal started
+            if message["type"] == "http.response.start":
+                started = True
             if message["type"] == "http.response.start":
                 hs = [(k, v) for k, v in message.get("headers", []) if k.lower() not in (b"cache-control", b"content-encoding")]
                 message = {**message, "headers": hs + [(b"cache-control", b"no-store")]}
@@ -163,8 +173,12 @@ class BriefEndpoint:
         # one stateless manager per request: nothing outlives the request, and the app needs no lifespan hook
         manager = StreamableHTTPSessionManager(build_server(self._answer_once), json_response=True, stateless=True,
                                                max_request_body_size=MAX_REQUEST_BYTES)
-        async with self._lock, manager.run():
-            await manager.handle_request(scope, receive, send_no_store)
+        # one request at a time, and never for longer than REQUEST_TIMEOUT: a stalled body or a slow client cannot hold the endpoint
+        with anyio.move_on_after(REQUEST_TIMEOUT) as cut:
+            async with self._lock, manager.run():
+                await manager.handle_request(scope, receive, send_no_store)
+        if cut.cancelled_caught and not started:
+            await _plain(send, 408, "timeout", "request timed out")
 
     def _answer_once(self) -> Optional[dict]:
         return self.answer()

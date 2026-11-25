@@ -259,6 +259,17 @@ def test_the_token_opens_the_brief_only_never_the_api_or_another_host(cfg, tmp_p
     assert post(other, INIT).status_code == 421                          # the Host check of the web app still applies first
 
 
+def test_only_post_is_served_a_get_would_hold_an_event_stream_open_forever(cfg, tmp_path, monkeypatch):
+    app = make_app(cfg, tmp_path, monkeypatch)
+    c = make_client(app, base_url=f"https://{HOST}", logged_in=False)
+    auth = dict(MCP_HEADERS, Authorization=f"Bearer {TOKEN}")
+    for method in ("GET", "DELETE"):
+        r = c.request(method, E.PATH, headers=auth)
+        assert r.status_code == 405 and r.headers["allow"] == "POST", method
+    assert c.get(E.PATH, headers=MCP_HEADERS).status_code == 401           # no token: still 401 first
+    assert post(c, INIT).status_code == 200                              # and the endpoint is not left held by the refused calls
+
+
 def test_an_oversized_request_is_refused(cfg, tmp_path, monkeypatch):
     app = make_app(cfg, tmp_path, monkeypatch)
     c = make_client(app, base_url=f"https://{HOST}", logged_in=False)
