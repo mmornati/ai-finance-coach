@@ -5,6 +5,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: Claude in GitHub (repository tooling, nothing changes in the app)
+- `@claude` in issues and pull requests (`.github/workflows/claude.yml`), for the owner and collaborators.
+- Automatic review of pull requests from a branch of this repository (`.github/workflows/claude-review.yml`): inline
+  comments and a summary checked against the privacy rules of `CLAUDE.md`, then an approval once every CI check is green.
+  Merging and releasing stay manual; fork pull requests are reviewed only on request (`@claude review`).
+
 ### Added: optional LLM usage log line
 - With `COACH_USAGE_LOG=1`, each recorded model call also writes one JSON line on stderr (model, job, tokens, cost, duration; never a
   prompt or an answer), so a log collector on the same machine can chart it. Off by default, and the app makes no new network call.
