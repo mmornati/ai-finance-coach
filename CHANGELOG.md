@@ -5,6 +5,20 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added: a daily brief for Horae (`/mcp`)
+- The web app can serve Horae's `brief()` tool (contract v1 of horae-dev/plugin-mcp-brief) at `/mcp`, over MCP streamable HTTP (stateless,
+  JSON answers). One tool only, `brief`: the finance tools are not reachable there. Off unless the new secret `horae_brief_token`
+  (`COACH_HORAE_BRIEF_TOKEN`, or `/run/secrets/horae_brief_token`) holds at least 32 characters; refused under `[privacy] local_only` or `offline`.
+- Bearer token compared in constant time, `401` without it, `404` when off; request body capped at 64 KiB, the document at 16 KiB, no
+  compression, nothing of the token or the bodies in the logs. Each answer is journaled as `horae.brief` (size only); `coach security audit`
+  reports the endpoint (`horae_brief`).
+- The brief holds aggregates only: the month's everyday spending and budget statuses (headline), alerts for an expired consent or a bank that
+  keeps failing to sync (`crit`), a consent about to expire, a failing sync and a budget over its envelope (`warn`), a budget on course to
+  overrun (`info`), tasks to renew a consent, categorise uncategorised transactions, check unsure labels, review proposals and answer open
+  questions, and links into the app (`[ui] allowed_hosts`). Never a transaction, merchant, bank, account, person or IBAN; a child's money is
+  left out of the totals. Stable hashed keys, the privacy guard on every text and the vendored v1 schema checked before it is sent.
+- Docs: `docs/horae.md` (what it holds, how to turn it on, the Traefik router for `/mcp` without the SSO middleware).
+
 ### Added: Claude in GitHub (repository tooling, nothing changes in the app)
 - `@claude` in issues and pull requests (`.github/workflows/claude.yml`), for the owner and collaborators.
 - Automatic review of pull requests from a branch of this repository (`.github/workflows/claude-review.yml`): inline

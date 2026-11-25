@@ -168,6 +168,9 @@ labels:
 authentik's forwardAuth must list `X-authentik-jwt` and `X-authentik-meta-jwks` in its `authResponseHeaders` (authentik's own Traefik
 template does).
 
+Serving [Horae's brief](../horae.md) too? Its `/mcp` route needs one more router, for that exact path and without the SSO middleware (the
+app checks a bearer token there): the labels are in [Horae brief](../horae.md#behind-traefik-and-authentik). Every other path keeps SSO.
+
 When the identity is not mapped, the login page says which name authentik sent, so you can add it. When the token is refused (expired,
 wrong issuer or audience, unknown key, an `algorithm` that does not match `sso_signing`), the page says why in one word and `coach ui` logs the reason, never the token. **Sign out** revokes
 the app's cookie and then goes to authentik's sign-out, or the session would reopen on the next request. `coach security audit` reports
