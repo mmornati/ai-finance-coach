@@ -564,6 +564,14 @@ def audit(cfg, *, scan_root: Optional[Path] = None, lsof: Optional[LsofRunner] =
     if cfg.ui_passkeys:
         add(Check("exposure", "ui_passkeys", INFO, "passkeys are enabled: a session can start from a passkey enrolled in an earlier session",
                   "review the enrolled passkeys in the web app (Household > Passkeys, or My money for a child); a lost device: remove its passkey there"))
+    from coach.horae import endpoint as brief_endpoint            # Horae's brief (/mcp): on only with the secret horae_brief_token
+    _token, brief_state = brief_endpoint.load_token(cfg)
+    if brief_state == "enabled":
+        add(Check("exposure", "horae_brief", INFO, "Horae's brief endpoint (/mcp of the web app, tool `brief`) is on: whoever holds the "
+                  "secret horae_brief_token reads the day's aggregates (no transaction, merchant, account or person)",
+                  "only the /mcp route may skip the proxy's SSO; remove the secret and restart the web app to turn it off"))
+    else:
+        add(Check("exposure", "horae_brief", OK, f"Horae's brief endpoint is off ({brief_state.replace('_', ' ')})"))
     run = (lsof or default_lsof)()
     if run is None:
         add(Check("exposure", "listening_sockets", SKIP, "could not list listening sockets (lsof unavailable)"))

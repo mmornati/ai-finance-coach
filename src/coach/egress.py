@@ -155,6 +155,15 @@ INVENTORY: tuple[Flow, ...] = (
          "[ui] sso = \"authentik\" (OFF by default) with sso_jwks_url and a [ui.sso_users] table",
          "[ui] sso = \"none\"; [privacy] offline = true refuses it (the one-time login link still works)",
          local_only="allowed", offline="refused", purposes=("jwks",), host="(identity provider)", mode="none"),
+    Flow("horae.brief", "The daily brief served to Horae (`/mcp` of the web app, tool `brief`)",
+         "whoever presents the bearer token `horae_brief_token` (your Horae instance, which puts it in a note, tasks and pushes)",
+         "aggregates only: the month-to-date spending total, budget percentages and statuses by category, counts (uncategorised transactions, "
+         "pending proposals, open questions), days left on a bank consent and failed-sync counts; never a transaction, merchant, bank, account, "
+         "person or IBAN (a child's money is left out of the totals and budgets)",
+         "brief-aggregate: fixed templates + numbers, hashed ids, the finance tools' privacy guard on every text, the v1 schema checked",
+         "the secret horae_brief_token (OFF without it); the request comes IN, the answer is the only data sent",
+         "remove the secret and restart; [privacy] local_only or offline turns the endpoint off",
+         local_only="refused", offline="refused", purposes=("brief",), host="(Horae)", mode="brief-aggregate"),
     Flow("skill.web_search", "Web search by the interactive skills find-cheaper / mortgage-check (Claude Code WebSearch)",
          "the search engine behind Claude Code's WebSearch tool",
          "generic, non-personal queries written by the skill (a service type, a country, a rate): never a name, address, account or "

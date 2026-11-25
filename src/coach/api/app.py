@@ -220,6 +220,10 @@ def create_app(cfg: Config, *, insecure: bool = False, port: Optional[int] = Non
                 pass
         return resp
 
+    # Horae's brief (`/mcp`, one MCP tool): off unless the secret horae_brief_token exists; its own bearer-token check, no session
+    from coach.horae import endpoint as brief_endpoint
+    app.state.brief = brief_endpoint.mount(app, state, cfg)
+
     for r in ROUTERS:
         app.include_router(r.router, prefix=API_PREFIX)
 
