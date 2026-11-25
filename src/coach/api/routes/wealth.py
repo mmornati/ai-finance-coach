@@ -44,12 +44,13 @@ def asset_dict(a, today: dt.date, months: int) -> dict:
 LIABILITY_FIELDS = (("monthly_payment", "monthly payment"), ("outstanding", "outstanding capital"),
                     ("outstanding_as_of", "date of the outstanding capital"), ("end_date", "end date"),
                     ("debited_account", "debited account"), ("payment_match", "how its payments are recognised"))
+LEASE_OR_CLOSED_FIELDS = ("monthly_payment", "end_date", "debited_account", "payment_match")
 RATE_FIELD = ("rate", "interest rate")
 # the English label of each field a loan card says is missing; the web translates `labels.loanField.<code>` (server.json)
 LOAN_FIELD_LABEL = dict(LIABILITY_FIELDS + (RATE_FIELD,))
 
 
-def _loan_extras(ds, rec, l) -> dict:
+def _loan_extras(ds, rec, l) -> tuple[dict, dict]:
     """E9: the schedule summary, the capital still due and where it comes from, the payment alerts, the lease view and the suggestions."""
     o = loans_service.overview_of(ds, rec, l)
     sch = o["schedule"]
@@ -61,17 +62,26 @@ def _loan_extras(ds, rec, l) -> dict:
     cap, source = (sch.get("remaining_capital"), sch.get("source") or "schedule") if sch["status"] == "computed" else (
         (_m(l.outstanding), "declared") if l.outstanding is not None else (None, None))
     inf = o["inference"]
-    return {"schedule": summary, "remaining_capital": cap, "remaining_capital_source": source, "alerts": o["alerts"],
-            "payments_seen": o["payments"]["count"], "lease": o["lease"],
-            "inferred": [{k: f[k] for k in ("field", "value", "confidence", "method", "method_msg", "note", "note_msg") if k in f}
-                         for f in inf.get("fields", [])]}
+    pmts = o["payments"]
+    extras = {"schedule": summary, "remaining_capital": cap, "remaining_capital_source": source, "alerts": o["alerts"],
+              "payments_seen": pmts["count"], "lease": o["lease"],
+              "inferred": [{k: f[k] for k in ("field", "value", "confidence", "method", "method_msg", "note", "note_msg") if k in f}
+                           for f in inf.get("fields", [])]}
+    return extras, pmts
 
 
 def liability_dict(ds, rec, questions, rel: str, l, months: int) -> dict:
     today = ds.today
-    codes = [f for f, _label in LIABILITY_FIELDS if getattr(l, f) in (None, "")]
-    if l.rate is None or l.rate.nominal is None:
-        codes.append(RATE_FIELD[0])
+    if l.kind in ("loa", "lld"):
+        codes = [f for f in LEASE_OR_CLOSED_FIELDS if getattr(l, f) in (None, "")]
+    elif l.end_date and l.end_date < today:
+        codes = [f for f in LEASE_OR_CLOSED_FIELDS if getattr(l, f) in (None, "")]
+        if (l.rate is None or l.rate.nominal is None) and l.principal is not None:
+            codes.append(RATE_FIELD[0])
+    else:
+        codes = [f for f, _label in LIABILITY_FIELDS if getattr(l, f) in (None, "")]
+        if l.rate is None or l.rate.nominal is None:
+            codes.append(RATE_FIELD[0])
     missing = [LOAN_FIELD_LABEL[c] for c in codes]
     uid = resolve_liability_account(ds, l)
     series = [x for x in rec.series if any(k.kind == "liability" and k.id == l.id for k in x.links)]
@@ -80,11 +90,21 @@ def liability_dict(ds, rec, questions, rel: str, l, months: int) -> dict:
         (q.suggested_target and q.suggested_target.file == rel) or l.id in " ".join(str(v) for v in q.evidence.values())
         or l.id in q.question)]
     ins = l.insurance
+    extras, obs_pmts = _loan_extras(ds, rec, l)
+    if s:
+        pmts = {"series_id": s.id, "last_date": s.last_date.isoformat(), "next_expected": _date(s.next_expected),
+                "amount": money_str(abs(s.expected_amount_c)), "status": s.status}
+    elif obs_pmts.get("count", 0) > 0 and obs_pmts.get("last"):
+        pmts = {"series_id": None, "last_date": obs_pmts["last"], "next_expected": None,
+                "amount": obs_pmts.get("last_amount"),
+                "status": "ended" if l.end_date and l.end_date < today else "observed"}
+    else:
+        pmts = None
     return {"id": l.id, "file": rel, "kind": l.kind, "lender": l.lender, "asset": l.asset, "holder": l.holder, "start_date": _date(l.start_date),
             "end_date": _date(l.end_date), "first_payment_date": _date(l.first_payment_date), "term_months": l.term_months,
             "payment_day": l.payment_day, "principal": _m(l.principal), "outstanding": _m(l.outstanding),
             "outstanding_as_of": _date(l.outstanding_as_of),
-            "outstanding_stale": l.outstanding is not None and _stale(l.outstanding_as_of, months, today),
+            "outstanding_stale": l.outstanding is not None and not (l.end_date and l.end_date < today) and _stale(l.outstanding_as_of, months, today),
             "rate": {"type": l.rate.type, "nominal": l.rate.nominal, "taeg": l.rate.taeg, "index": l.rate.index, "margin": l.rate.margin,
                      "cap": l.rate.cap} if l.rate else None,
             "monthly_payment": _m(l.monthly_payment),
@@ -99,24 +119,26 @@ def liability_dict(ds, rec, questions, rel: str, l, months: int) -> dict:
             "odometer": [{"date": o.date.isoformat(), "km": o.km} for o in sorted(l.odometer, key=lambda o: o.date)], "notes": l.notes,
             "documents": list(l.documents) if l.documents else [],
             "missing": missing, "missing_codes": codes, "open_questions": qs,
-            "payments": ({"series_id": s.id, "last_date": s.last_date.isoformat(), "next_expected": _date(s.next_expected),
-                          "amount": money_str(abs(s.expected_amount_c)), "status": s.status} if s else None),
-            **_loan_extras(ds, rec, l)}
+            "payments": pmts,
+            **extras}
 
 
-@router.get("/liabilities", summary="Loans and other liabilities, with what is missing and the matching bank payments")
+@router.get("/liabilities", summary="Loans and other liabilities, with what is missing and the matching bank payments (ended liabilities excluded from monthly payment total)")
 def liabilities(snap: Snapshot = Depends(get_snapshot), state: AppState = Depends(get_state)):
     ds = snap.ds
     months = state.cfg.memory_stale_months
     qs = state.store.questions()
     rows = [liability_dict(ds, snap.recurring(), qs, rel, l, months) for rel, l in ds.memory.liabilities]
     owed = sum(to_cents(r["remaining_capital"]) for r in rows if r["remaining_capital"] is not None)
+    active_payments = sum(to_cents(r["monthly_payment"]) for r in rows
+                          if r["monthly_payment"] and not (r["end_date"] and r["end_date"] < ds.today.isoformat()))
     return {"as_of": ds.today.isoformat(), "liabilities": rows,
             "totals": {"outstanding_known": money_str(owed),
-                       "monthly_payments": money_str(sum(to_cents(r["monthly_payment"]) for r in rows if r["monthly_payment"])),
+                       "monthly_payments": money_str(active_payments),
                        "n_unknown_outstanding": sum(1 for r in rows if r["remaining_capital"] is None and r["kind"] not in ("loa", "lld"))},
-            **_note(server_msg("netWorth.liabilitiesNote", "Remaining capital comes from the amortization schedule when it is computable, else "
-                                                          "the declared figure."))}
+            **_note(server_msg("netWorth.liabilitiesNote",
+                               "Remaining capital comes from the amortization schedule when it is computable, else the declared figure. "
+                               "Ended liabilities are excluded from monthly payment totals. "))}
 
 
 def _note(m: dict, field: str = "note") -> dict:

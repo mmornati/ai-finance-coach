@@ -34,7 +34,8 @@ def manual_totals(store: MemoryStore, today: Optional[dt.date] = None, asset_sta
     liab, l_unknown, l_stale, monthly = [], [], [], 0.0
     owed = 0.0
     for rel, m in store.liabilities():
-        monthly += m.monthly_payment or 0
+        if not (m.end_date and m.end_date < today):
+            monthly += m.monthly_payment or 0
         if m.outstanding is None:
             l_unknown.append(m.id)
             continue

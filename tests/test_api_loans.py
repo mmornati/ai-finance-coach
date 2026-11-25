@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import datetime as dt
 
+import pytest
 from fastapi.testclient import TestClient
 
 from apihelpers import HOST, TODAY, api, ctx, world  # noqa: F401
+from coach.memory import totals
 from coach.memory.store import MemoryStore
 
 
@@ -184,3 +186,71 @@ def test_new_nested_fields_can_be_added_to_an_existing_loan_file(ctx):
     rows = ctx.get("/loans/defer").json()["schedule"]["rows"]
     assert [x["kind"] for x in rows[:4]] == ["deferral", "deferral", "deferral", "regular"] and rows[0]["payment"] == "0.00"
     assert rows[0]["insurance"] == "62.50"                                                      # 250,000 x 0.3 % / 12
+
+
+def test_lease_missing_fields_and_unknown_outstanding(ctx):
+    r = ctx.put("/memory/liabilities/lease-car", {"fields": {
+        "kind": "loa", "monthly_payment": 350, "end_date": "2028-01-01",
+        "debited_account": "ce", "payment_match": "^LEASE"}})
+    assert r.status_code == 200
+    res = ctx.get("/liabilities").json()
+    d = next(x for x in res["liabilities"] if x["id"] == "lease-car")
+    assert d["missing"] == []
+    assert d["missing_codes"] == []
+    assert d["outstanding"] is None
+    # Leases do not count towards n_unknown_outstanding
+    assert res["totals"]["n_unknown_outstanding"] == 0
+
+
+def test_closed_loan_excluded_from_monthly_payments_and_no_missing_fields(ctx):
+    r = ctx.put("/memory/liabilities/old-loan", {"fields": {
+        "kind": "consumer_loan", "monthly_payment": 250, "end_date": "2024-01-01",
+        "debited_account": "ce", "payment_match": "^OLDLOAN",
+        "outstanding": 0, "outstanding_as_of": "2024-01-01"}})
+    assert r.status_code == 200
+    res = ctx.get("/liabilities").json()
+    d = next(x for x in res["liabilities"] if x["id"] == "old-loan")
+    assert d["missing"] == []
+    assert d["missing_codes"] == []
+    assert d["outstanding_stale"] is False
+    # Ended loan's monthly_payment is excluded from totals.monthly_payments
+    home_loan = next(x for x in res["liabilities"] if x["id"] == "home-loan")
+    expected_active_monthly = float(home_loan["monthly_payment"] or 0)
+    assert float(res["totals"]["monthly_payments"]) == pytest.approx(expected_active_monthly)
+    # Also excluded from manual_totals in memory
+    t = totals.manual_totals(store(ctx), TODAY)
+    assert t["liabilities"]["monthly_payments_total"] == pytest.approx(expected_active_monthly)
+
+
+def test_liability_with_observed_payments_and_no_recurring_series(ctx):
+    # Insert a transaction matching ^OBSLOAN into the database
+    with ctx.state.write() as con:
+        con.execute(
+            "INSERT INTO transactions(tx_key, account_uid, booking_date, amount, currency, description) "
+            "VALUES ('obs1', 'ce', '2026-08-15', -120.0, 'EUR', 'OBSLOAN MONTHLY')"
+        )
+        con.execute(
+            "INSERT INTO tx_enriched(tx_key, tx_type, merchant_raw, merchant_key) "
+            "VALUES ('obs1', 'direct_debit', 'OBSLOAN MONTHLY', 'OBSLOAN')"
+        )
+        con.commit()
+    r = ctx.put("/memory/liabilities/obs-loan", {"fields": {
+        "kind": "car_loan", "monthly_payment": 120, "end_date": "2028-01-01",
+        "payment_match": "^OBSLOAN"}})
+    assert r.status_code == 200
+    res = ctx.get("/liabilities").json()
+    d = next(x for x in res["liabilities"] if x["id"] == "obs-loan")
+    assert d["payments"] is not None
+    assert d["payments"]["series_id"] is None
+    assert d["payments"]["last_date"] == "2026-08-15"
+    assert d["payments"]["amount"] == "120.00"
+    assert d["payments"]["status"] == "observed"
+
+    # When end_date is in the past, status is "ended"
+    r2 = ctx.put("/memory/liabilities/obs-loan", {"fields": {
+        "kind": "car_loan", "monthly_payment": 120, "end_date": "2024-01-01",
+        "payment_match": "^OBSLOAN"}})
+    assert r2.status_code == 200
+    res2 = ctx.get("/liabilities").json()
+    d2 = next(x for x in res2["liabilities"] if x["id"] == "obs-loan")
+    assert d2["payments"]["status"] == "ended"

@@ -168,7 +168,7 @@ def run_check(store: MemoryStore, con=None, *, stale_months: int = 6, asset_stal
             if m.outstanding_as_of is None:
                 add("warning", "outstanding_undated", rel, server_msg(
                     "memoryCheck.outstandingUndated", "outstanding capital has no outstanding_as_of date"), "outstanding_as_of")
-            elif m.outstanding_as_of < cut6:
+            elif not (m.end_date and m.end_date < today) and m.outstanding_as_of < cut6:
                 add("warning", "stale_fact", rel, server_msg(
                     "memoryCheck.staleOutstanding", f"outstanding capital is from {m.outstanding_as_of} (older than {stale_months} months): update it",
                     as_of_date=m.outstanding_as_of, count=stale_months), "outstanding_as_of")
@@ -178,10 +178,15 @@ def run_check(store: MemoryStore, con=None, *, stale_months: int = 6, asset_stal
                 "memoryCheck.liabilityEnded", f"end_date {m.end_date} is in the past: is the liability closed?", end_date=m.end_date), "end_date")
         if m.payment_match and txs is not None:
             hits = [t for t in _regex_hits(m.payment_match, txs) if t["amount"] < 0]
+            has_ended = bool(m.end_date and m.end_date < today)
+            payments_after_end = [t for t in hits if m.end_date and t["date"] > m.end_date.isoformat()] if has_ended else []
             if not hits:
-                add("warning", "payment_match_nothing", rel, server_msg(
-                    "memoryCheck.paymentMatchNothing", f"payment_match /{m.payment_match}/ matches 0 payments", pattern=m.payment_match),
-                    "payment_match")
+                if not has_ended:
+                    add("warning", "payment_match_nothing", rel, server_msg(
+                        "memoryCheck.paymentMatchNothing", f"payment_match /{m.payment_match}/ matches 0 payments", pattern=m.payment_match),
+                        "payment_match")
+            elif has_ended and not payments_after_end:
+                pass
             else:
                 amts = [abs(t["amount"]) for t in hits]
                 med = statistics.median(amts)

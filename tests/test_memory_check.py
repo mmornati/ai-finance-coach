@@ -135,6 +135,16 @@ def test_payment_match_matching_nothing(world):
     assert by_code(run_check(store, con), "payment_match_nothing")
 
 
+def test_ended_loan_without_recent_payments_skips_payment_match_nothing_and_stale(world):
+    con, store = world
+    store.set_value("home-loan", "end_date", "2024-01-01")
+    store.set_value("home-loan", "payment_match", "^NEVERSEEN")
+    issues = run_check(store, con)
+    assert not by_code(issues, "payment_match_nothing")
+    assert not by_code(issues, "stale_fact")
+    assert by_code(issues, "liability_ended")
+
+
 def test_payment_amount_inconsistent_with_monthly_payment(world):
     con, store = world
     store.set_value("home-loan", "monthly_payment", 1200)
