@@ -274,7 +274,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--bank", help="bank name for a new manual account"); s.add_argument("--iban", help="IBAN of a new account")
     s.add_argument("--currency", help="import only this currency's rows")
     s.add_argument("--force", action="store_true",
-                   help="new:Label although the file's IBAN already belongs to another account")
+                   help="new:Label although the file's IBAN already belongs to another account, or bypass statement checksum mismatch")
     g = s.add_argument_group("inline CSV mapping (overrides the profile; --save-profile NAME keeps it)")
     g.add_argument("--date-col"); g.add_argument("--value-date-col"); g.add_argument("--desc-col", nargs="+")
     g.add_argument("--amount-col"); g.add_argument("--debit-col"); g.add_argument("--credit-col")

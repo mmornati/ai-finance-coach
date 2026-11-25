@@ -343,13 +343,13 @@ class AbnAmroPdfProfile:
     def matches(cls, text: str, profile_name: str, bank_name: str) -> bool:
         low_p = (profile_name or "").lower()
         low_b = (bank_name or "").lower()
-        if "abn" in low_p or "abn" in low_b:
+        if cls.name in low_p or "abn" in low_p or "abn" in low_b:
             return True
         low_t = text[:3000].lower()
         return "abn amro" in low_t or "abnamro" in low_t
 
     @classmethod
-    def parse(cls, reader, p0: str, all_text: str) -> Parsed:
+    def parse(cls, reader, p0: str, all_text: str, force: bool = False) -> Parsed:
         warnings: list[str] = []
 
         # Account IBAN detection: Dutch format NLxxABNA..., excluding VAT numbers (NL82...B01)
@@ -632,7 +632,7 @@ class CommerzbankPdfProfile:
     def matches(cls, text: str, profile_name: str, bank_name: str) -> bool:
         low_p = (profile_name or "").lower()
         low_b = (bank_name or "").lower()
-        if "commerz" in low_p or "commerz" in low_b:
+        if cls.name in low_p or "commerz" in low_p or "commerz" in low_b:
             return True
         low_t = text[:3000].lower()
         if re.search(r"\bbic\s*:\s*cobadeff", low_t):
@@ -954,7 +954,7 @@ class GenericPdfProfile:
         return True
 
     @classmethod
-    def parse(cls, reader, p0: str, all_text: str) -> Parsed:
+    def parse(cls, reader, p0: str, all_text: str, force: bool = False) -> Parsed:
         warnings: list[str] = ["statement parsed using generic fallback: please verify transactions against original PDF"]
 
         # IBAN detection
@@ -1092,7 +1092,6 @@ def parse_pdf(data: bytes, profile: Profile | str | None = None, bank: str | Non
     and layout handling) or a safe generic statement parser with balance exclusion and
     reconciliation warnings.
     """
-    import inspect
     import io
     from pypdf import PdfReader
 
@@ -1124,9 +1123,7 @@ def parse_pdf(data: bytes, profile: Profile | str | None = None, bank: str | Non
     if not selected:
         selected = GenericPdfProfile
 
-    if "force" in inspect.signature(selected.parse).parameters:
-        return selected.parse(reader, p0, all_text, force=force)
-    return selected.parse(reader, p0, all_text)
+    return selected.parse(reader, p0, all_text, force=force)
 
 
 # ---------------------------------------------------------------- detection

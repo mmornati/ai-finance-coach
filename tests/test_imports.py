@@ -463,6 +463,27 @@ def test_commerzbank_pdf_value_date_december_rollover():
     assert parsed.rows[0].value_date == "2025-12-30"
 
 
+def test_parse_pdf_profile_selection_by_name():
+    # PDF with generic text but explicit profile selection
+    abn_pdf = _create_test_pdf([
+        "Date: 01-10-2026",
+        "Account: NL00ABNA0123456789",
+        "01-10-2026 Salary Acme 250,00+",
+    ])
+    parsed_abn = parsers.parse_pdf(abn_pdf, profile="abn_amro")
+    assert parsed_abn.iban == "NL00ABNA0123456789"
+    assert len(parsed_abn.rows) == 1
+
+    cb_pdf = _create_test_pdf([
+        "IBAN: DE89 3704 0044 0532 0130 00",
+        "Buchungsdatum: 01.10.2026",
+        "Kartenzahlung Supermarkt 01.10 45,50-",
+    ])
+    parsed_cb = parsers.parse_pdf(cb_pdf, profile="commerzbank")
+    assert parsed_cb.iban == "DE89370400440532013000"
+    assert len(parsed_cb.rows) == 1
+
+
 # ---------------------------------------------------------------- dedup guarantees
 
 def write(tmp_path, name, text, enc="utf-8"):
