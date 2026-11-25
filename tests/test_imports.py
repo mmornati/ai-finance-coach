@@ -484,6 +484,180 @@ def test_parse_pdf_profile_selection_by_name():
     assert len(parsed_cb.rows) == 1
 
 
+def test_credit_agricole_pdf_profile_parsing(tmp_path, con):
+    # Dummy French test IBAN from test suite
+    test_iban = "FR7630006000011234567890189"
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "RELEVE DE COMPTES EN EUROS N° 005",
+        f"IBAN : {test_iban[:4]} {test_iban[4:8]} {test_iban[8:12]} {test_iban[12:16]} {test_iban[16:20]} {test_iban[20:24]} {test_iban[24:]}",
+        "Date d'arrêté : 12 Mai 2026",
+        "Ancien solde créditeur au 12.04.2026 1 000,00",
+        "Date Opération Date Valeur Débit Euros Crédit Euros",
+        "15.04 Carte 15/04 Boulangerie Martin 15.04 12,50-",
+        "25.04 Prélèvement SEPA Energie Lumiere Ref EDF12345 25.04 85,00-",
+        "28.04 Virement de Employeur SA Salaire 28.04 2 500,00+",
+        "Nouveau solde créditeur au 12.05.2026 3 402,50",
+    ])
+    f = tmp_path / "ca_nord_stmt.pdf"
+    f.write_bytes(pdf_bytes)
+
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert parsed.format == "pdf"
+    assert parsed.iban == test_iban
+    assert parsed.currency == "EUR"
+    assert len(parsed.rows) == 3
+    assert not parsed.warnings
+
+    # Row 0
+    assert parsed.rows[0].date == "2026-04-15"
+    assert parsed.rows[0].amount == pytest.approx(-12.50)
+    assert "Boulangerie Martin" in parsed.rows[0].description
+
+    # Row 1
+    assert parsed.rows[1].date == "2026-04-25"
+    assert parsed.rows[1].amount == pytest.approx(-85.00)
+    assert "Energie Lumiere" in parsed.rows[1].description
+
+    # Row 2
+    assert parsed.rows[2].date == "2026-04-28"
+    assert parsed.rows[2].amount == pytest.approx(2500.00)
+    assert "Employeur SA" in parsed.rows[2].description
+
+    # Test import into database
+    rep = core.import_file(con, f, "new:CA Nord Test", bank="Crédit Agricole")
+    assert rep.rows_total == 3
+    assert rep.rows_new == 3
+    assert rep.account_created is True
+
+
+def test_credit_agricole_csl_pdf_profile_parsing():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "RELEVE ANNUEL 2026",
+        "COMPTE SUR LIVRET ( CSL ) n° 12345678901",
+        "ANCIEN SOLDE AU 01.01.2025 : 10 000,00",
+        "25.06.2025 Virement De Epargne 01.07.2025 5 000,00",
+        "15.09.2025 Virement Web Retrait 16.09.2025 -1 000,00",
+        "31.12.2025 Intérêts De L'année 01.01.2026 150,00",
+        "NOUVEAU SOLDE AU 01.01.2026 : 14 150,00",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert parsed.format == "pdf"
+    assert parsed.currency == "EUR"
+    assert len(parsed.rows) == 3
+    assert not parsed.warnings
+    assert parsed.rows[0].amount == pytest.approx(5000.00)
+    assert parsed.rows[1].amount == pytest.approx(-1000.00)
+    assert parsed.rows[2].amount == pytest.approx(150.00)
+
+
+def test_credit_agricole_csl_pdf_dropped_lines_warning():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "RELEVE ANNUEL 2026",
+        "COMPTE SUR LIVRET ( CSL ) n° 12345678901",
+        "ANCIEN SOLDE AU 01.01.2025 : 10 000,00",
+        "25.06.2025 Virement De Epargne 01.07.2025 5 000,00",
+        "99.99.2025 Invalid Date Line 01.01.2026 150,00",
+        "NOUVEAU SOLDE AU 01.01.2026 : 15 000,00",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 1
+    assert any("skipped 1 transaction line(s) in CSL statement due to parsing error" in w for w in parsed.warnings)
+
+
+def test_credit_agricole_pdf_checksum_mismatch():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "RELEVE DE COMPTES EN EUROS N° 001",
+        "Ancien solde au 12.04.2026 1 000,00",
+        "15.04 Carte 15/04 Test 15.04 10,00-",
+        "Nouveau solde au 12.05.2026 2 000,00",
+    ])
+    with pytest.raises(parsers.ParseError, match="checksum mismatch"):
+        parsers.parse_pdf(pdf_bytes)
+
+    parsed = parsers.parse_pdf(pdf_bytes, force=True)
+    assert len(parsed.rows) == 1
+    assert any("checksum mismatch" in w for w in parsed.warnings)
+
+
+def test_credit_agricole_font_normalization_pua():
+    orig = "CREDIT AGRICOLE NORD DE FRANCE 1234,56 EUR"
+    shifted = "".join(chr(0xE000 + 2 + ord(c)) for c in orig)
+    decoded = parsers.CreditAgricolePdfProfile._normalize_ca_text(shifted)
+    assert decoded == orig
+
+
+def test_credit_agricole_pdf_debit_balance():
+    # Starting overdrawn (-100.00) and ending positive (+400.00) via +500.00 deposit
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE PROVENCE COTE D'AZUR",
+        "RELEVE DE COMPTES EN EUROS N° 002",
+        "Ancien solde débiteur au 12.04.2026 100,00",
+        "Date Opération Date Valeur Débit Euros Crédit Euros",
+        "20.04 Virement de Remboursement 20.04 500,00+",
+        "Nouveau solde créditeur au 12.05.2026 400,00",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 1
+    assert parsed.rows[0].amount == pytest.approx(500.00)
+    assert not parsed.warnings
+
+
+def test_credit_agricole_pdf_no_iban_leaves_none():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "RELEVE DE COMPTES EN EUROS N° 005",
+        "Compte de dépôt n° 98765432109",
+        "Ancien solde au 12.04.2026 1 000,00",
+        "15.04 Carte 15/04 Boulangerie 15.04 10,00-",
+        "Nouveau solde au 12.05.2026 990,00",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert parsed.iban is None
+    assert len(parsed.rows) == 1
+
+
+def test_credit_agricole_pdf_single_line_fallback_and_reconciliation():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "Ancien solde au 01.01.2026 : 100,00",
+        "15.01.2026 Virement Test 50,00+",
+        "Nouveau solde au 01.02.2026 : 150,00",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 1
+    assert parsed.rows[0].amount == pytest.approx(50.00)
+    assert not parsed.warnings
+
+
+def test_credit_agricole_pdf_unparsed_balance_headers_warning():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "Date d'arrêté : 12.05.2026",
+        "Ancien solde au format inhabituel",
+        "15.04.2026 Carte 15/04 Boulangerie 15.04 10,00-",
+        "Nouveau solde au format inhabituel",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 1
+    assert any("statement contains balance headers but balances could not be parsed" in w for w in parsed.warnings)
+
+
+def test_credit_agricole_pdf_no_balances_warning():
+    pdf_bytes = _create_test_pdf([
+        "CREDIT AGRICOLE NORD DE FRANCE",
+        "RELEVE DE COMPTES EN EUROS N° 005",
+        "Date d'arrêté : 12.05.2026",
+        "15.04.2026 Carte 15/04 Boulangerie 15.04 10,00-",
+    ])
+    parsed = parsers.parse_pdf(pdf_bytes)
+    assert len(parsed.rows) == 1
+    assert any("statement contains no balance lines for checksum reconciliation" in w for w in parsed.warnings)
+
+
 # ---------------------------------------------------------------- dedup guarantees
 
 def write(tmp_path, name, text, enc="utf-8"):
