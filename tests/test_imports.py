@@ -484,6 +484,54 @@ def test_parse_pdf_profile_selection_by_name():
     assert len(parsed_cb.rows) == 1
 
 
+def test_abn_amro_pdf_matches_own_header():
+    # Matches on BIC
+    assert parsers.AbnAmroPdfProfile.matches("BIC: ABNANL2A\nAccount details", "", "") is True
+    # Matches on ABN AMRO + Dutch statement keywords
+    assert parsers.AbnAmroPdfProfile.matches("ABN AMRO Bank N.V.\nRekeningafschrift 2026-01\nBlad 1", "", "") is True
+    assert parsers.AbnAmroPdfProfile.matches("ABN AMRO\nPeriodiek overzicht betalingsverkeer", "", "") is True
+    assert parsers.AbnAmroPdfProfile.matches("ABN AMRO\nAfschrift volgnummer 12", "", "") is True
+    # Matches on ABN AMRO + Dutch IBAN
+    assert parsers.AbnAmroPdfProfile.matches("ABN AMRO Bank\nRekening NL20 ABNA 0123 4567 89", "", "") is True
+    # Matches on explicit profile or bank parameter
+    assert parsers.AbnAmroPdfProfile.matches("Generic statement", "abn_amro", "") is True
+    assert parsers.AbnAmroPdfProfile.matches("Generic statement", "", "ABN AMRO") is True
+
+
+def test_abn_amro_pdf_does_not_match_other_bank_with_counterparty():
+    # French bank statement with counterparty transfer mentioning ABN AMRO
+    fr_stmt = (
+        "CREDIT AGRICOLE NORD DE FRANCE\n"
+        "RELEVE DE COMPTES EN EUROS\n"
+        "15.04.2026 Virement vers ABN AMRO Bank 12,50-\n"
+    )
+    assert parsers.AbnAmroPdfProfile.matches(fr_stmt, "", "") is False
+
+    # German bank statement with counterparty transfer mentioning ABN AMRO
+    de_stmt = (
+        "COMMERZBANK AG\n"
+        "Kontoauszug vom 31.05.2026\n"
+        "15.05.2026 Überweisung an ABN AMRO 100,00-\n"
+    )
+    assert parsers.AbnAmroPdfProfile.matches(de_stmt, "", "") is False
+
+    # Generic statement with simple mention
+    generic_stmt = "Bank of Example\nStatement of Account\nPayment to ABN AMRO\n"
+    assert parsers.AbnAmroPdfProfile.matches(generic_stmt, "", "") is False
+
+
+def test_pdf_package_imports_and_backwards_compatibility():
+    from coach.ingest.imports import pdf
+    assert pdf.parse_pdf is parsers.parse_pdf
+    assert pdf.AbnAmroPdfProfile is parsers.AbnAmroPdfProfile
+    assert pdf.CommerzbankPdfProfile is parsers.CommerzbankPdfProfile
+    assert pdf.CreditAgricolePdfProfile is parsers.CreditAgricolePdfProfile
+    assert pdf.GenericPdfProfile is parsers.GenericPdfProfile
+    assert pdf.PDF_PROFILES == parsers.PDF_PROFILES
+    assert pdf.MAX_PDF_SIZE_BYTES == parsers.MAX_PDF_SIZE_BYTES
+    assert pdf.MAX_PDF_PAGES == parsers.MAX_PDF_PAGES
+
+
 def test_credit_agricole_pdf_profile_parsing(tmp_path, con):
     # Dummy French test IBAN from test suite
     test_iban = "FR7630006000011234567890189"
